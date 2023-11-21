@@ -13,6 +13,10 @@ interface props{
     obj: resProps
 }
 export default function VendaEmpresa({obj}: props){
+    if(!obj){
+        return <div></div>
+    }
+    
     return(
         <div className={styles.itemVenda}>
             <div className={styles.header}>
