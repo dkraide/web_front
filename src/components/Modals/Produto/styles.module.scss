@@ -1,0 +1,89 @@
+.content {
+    height: 100%;
+    padding: 10px 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.codBarras{
+    display: flex;
+    padding: 5px 10px;
+    flex-direction: column;
+    width: 49%;
+    height: 50%;
+    overflow-y: auto;
+    max-height: 250px;
+    background-color: var(--gray-200);
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+.codigoItem{
+    margin-bottom: 5px;
+    transition: all 0.1s;
+    cursor: pointer;
+    a{
+        margin-right: 10px;
+    }
+    label{
+        font-size: 18px;
+        font-weight: bold;
+    }
+    &:hover{
+        background-color: var(--gray-200);
+    }
+}
+.codigoItemSelected{
+    background-color: var(--gray-200);
+    margin-bottom: 5px;
+    a{
+        margin-right: 10px;
+    }
+    label{
+        font-size: 18px;
+        font-weight: bold;
+    }
+}
+.codigos{
+    display: flex;
+    flex-direction: column;
+}
+
+.button {
+    position: absolute;
+    bottom: 0;
+    padding: 10px 30px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+
+    button {
+        margin-right: 10px;
+
+    }
+}
+
+.btnCancel {
+    background-color: var(--danger);
+
+    &:hover {
+        background-color: var(--danger-press);
+    }
+
+    &:disabled {
+        background-color: var(--danger-press);
+    }
+
+}
+
+.btnSuccess {
+    background-color: var(--success);
+
+    &:hover {
+        background-color: var(--success-press);
+    }
+
+    &:disabled {
+        background-color: var(--success-press);
+    }
+}

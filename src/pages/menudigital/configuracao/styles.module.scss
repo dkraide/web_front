@@ -1,0 +1,23 @@
+.container {
+    padding: 10px 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    .day{
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        input{
+            color: var(--main);
+            font-weight: bold;
+            font-size: 15;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+    }
+}
+.containerDias{
+    display: flex;
+    flex-direction: column;
+}

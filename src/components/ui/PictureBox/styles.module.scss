@@ -1,0 +1,14 @@
+.img{
+    border-radius: 15px;
+    object-fit: fill
+}
+.box{
+  border-radius: 15px;
+  box-shadow: #00000029 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+  margin: 10px;
+  cursor: pointer;
+  transition: all 0.3s;
+  &:hover{
+    transform: scale(1.03);
+  }
+}

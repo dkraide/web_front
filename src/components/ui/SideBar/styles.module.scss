@@ -1,0 +1,19 @@
+.openClose{
+    display: flex;
+    flex-direction: row;
+    justify-content: end;
+    padding: 10px 20px;
+
+    a{
+        cursor: pointer;
+        transition:  all 0.21s;
+
+        &:hover{
+            scale: 1.1;
+        }
+    }
+}
+.main{
+    width: 100%;
+    padding: 10px
+}

@@ -1,0 +1,37 @@
+export default interface IUsuarioCaixa{
+    id: number
+    iDUsuario: number
+    login: string
+    senha: string
+    email: string
+    nome: string
+    telefone: string
+    rg: string
+    cpf: string
+    tipo: string
+    localCriacao: string
+    lastChange: Date
+    menuSAT: boolean
+    menuEmpresa: boolean
+    menuRelatorio: boolean
+    menuTributacao: boolean
+    menuProduto: boolean
+    menuPromocao: boolean
+    vendaDiaria: boolean
+    lancarRemessaCompra: boolean
+    cancelarVenda: boolean
+    menuCaixa: boolean
+    menuHistorico: boolean
+    valorFechamento: boolean
+    alteraValorCarrinho: boolean
+    alteraDescontoVenda: boolean
+    editarComanda: boolean
+    visualizarEstoquePesquisa: boolean
+    visualizaLucroProduto: boolean
+    cadastroProduto: boolean
+    materiaPrima: boolean
+    removeProduto: boolean
+    visualizaVendasAntigas: boolean
+    finalizaVendaSemEstoque: boolean
+    empresa: string
+}

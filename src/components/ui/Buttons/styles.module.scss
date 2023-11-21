@@ -1,0 +1,6 @@
+.dark{
+    background-color: var(--main);
+    &:hover{
+        background-color: var(--main-focus);
+    }
+}
