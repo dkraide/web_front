@@ -72,6 +72,7 @@ export default function Despesa() {
     const columns = [
         {
             name: '#',
+            selector: row => row.id,
             cell: ({ id }: IDespesa) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'warning'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
             sortable: true,
             width: '10%',
@@ -84,7 +85,7 @@ export default function Despesa() {
         },
         {
             name: 'Descricao',
-            selector: row => row.descricao,
+            selector: (row: IDespesa) => row.descricao,
             cell: (row: IDespesa) => (row.motivoLancamento?.nome ||  row.descricao).toString(),
             sortable: true,
             width: '40%',
@@ -112,7 +113,8 @@ export default function Despesa() {
         },
         {
             name: 'Status',
-            selector: (row: IDespesa) => <StatusBadge dataVencimento={row.dataVencimento} statusLancamento={row.statusLancamento} />,
+            selector: row => row.statusLancamento,
+            cell: (row: IDespesa) => <StatusBadge dataVencimento={row.dataVencimento} statusLancamento={row.statusLancamento} />,
             sortable: true,
             width: '10%',
         }
