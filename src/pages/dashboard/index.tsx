@@ -39,6 +39,7 @@ const loadData = async () => {
     const user = getUser();
     await api.get(`/Dashboard/Vendas?Empresa=${(await user).empresaSelecionada}`)
       .then(({ data }: AxiosResponse<resProps>) => {
+        console.log(data);
         setObj(data);
       }).catch((err: AxiosError) => {
         toast.error(`Erro ao buscar vendas. `);

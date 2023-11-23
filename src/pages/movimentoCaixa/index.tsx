@@ -65,7 +65,7 @@ export default function MovimentoCaixa(){
     const columns = [
         {
             name: 'Caixa',
-            cell: ({idMovimentoCaixa, id }: IMovimentoCaixa) => <a href='#' onClick={() => {setShowMovimento(id)}}>{idMovimentoCaixa}</a>,
+            cell: ({idMovimentoCaixa, id }: IMovimentoCaixa) => <a style={{textDecorationLine: 'underline', color: 'var(--main)'}} href='#' onClick={() => {setShowMovimento(id)}}>{idMovimentoCaixa}</a>,
             selector: row => row.idMovimentoCaixa,
             sortable: true,
             grow: 0,

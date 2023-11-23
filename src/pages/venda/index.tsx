@@ -12,6 +12,7 @@ import { InputGroup } from "@/components/ui/InputGroup"
 import { fGetNumber } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
+import CustomButton from "@/components/ui/Buttons"
 
 interface searchProps{
     vendedorId: number
@@ -38,19 +39,24 @@ export default function Venda(){
           setSearch({vendedorId: 0, dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd'), movimentoCaixa: '', status: 0, statusSat: 0});
        }
        loadData();
-    }, [search])
+    }, [])
 
     const loadData = async () => {
-        if(!search){
-            return;
-        }
         var u: any;
        if(!user){
         var res = await getUser();
         setUser(res);
         u = res;
         }
-        await api.get(`/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}&vendedorId=${search.vendedorId}&movimentoCaixa=${search.movimentoCaixa}&status=${search.status}`)
+        var url = '';
+        if(!search){
+            var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+            var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
+            url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}&vendedorId=$0}&movimentoCaixa=${0}&status=${0}`;
+        }else{
+            url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}&vendedorId=${search.vendedorId}&movimentoCaixa=${search.movimentoCaixa}&status=${search.status}`;
+        }
+        await api.get(url)
         .then(({data}: AxiosResponse<IVenda[]>) => {
             setVendas(data);
             console.log(data);
@@ -63,46 +69,48 @@ export default function Venda(){
     const columns = [
         {
             name: 'Venda',
-            cell: ({ id, idVenda }: IVenda) => <a  href='#' onClick={() => {setShowVenda(id)}}>{idVenda}</a>,
+            cell: ({ id, idVenda }: IVenda) => <a style={{textDecorationLine: 'underline', color: 'var(--main)'}}  href='#' onClick={() => {setShowVenda(id)}}>{idVenda}</a>,
             sortable: true,
             selector: row => row.idVenda,
-            grow: 0
+            width: '10%',
         },
         {
             name: 'Caixa',
-            cell: ({idMovimentoCaixa, movimentoCaixaId }: IVenda) => <a href='#' onClick={() => {setShowMovimento(movimentoCaixaId)}}>{idMovimentoCaixa}</a>,
+            cell: ({idMovimentoCaixa, movimentoCaixaId }: IVenda) => <a style={{textDecorationLine: 'underline', color: 'var(--main)'}} href='#' onClick={() => {setShowMovimento(movimentoCaixaId)}}>{idMovimentoCaixa}</a>,
             selector: row => row.idMovimentoCaixa,
             sortable: true,
-            grow: 0,
+            width: '10%',
         },
         {
             name: 'Data',
             cell: ({dataVenda }: IVenda) => <p>{format(new Date(dataVenda.toString()), 'dd/MM/yyyy HH:mm')}</p>,
             selector: row => row.dataVenda,
             sortable: true,
+            width: '25%',
         },
         {
             name: 'Usuario',
             selector: row => row.usuario?.nome || '--',
             sortable: true,
+            width: '25%',
         },
         {
             name: 'Tipo',
             selector: row => row['estd'] ? 'FATURADO': 'ORCAMENTO',
             sortable: true,
-            grow: 0
+            width: '10%',
         },
         {
             name: 'Status',
             selector: row => row['statusVenda'] ? 'OK' : 'CANCELADO',
             sortable: true,
-            grow: 0
+            width: '10%',
         },
         {
             name: 'Valor',
             selector: row => `${row.valorTotal.toFixed(2)}`,
             sortable: true,
-            grow: 0
+            width: '10%',
         }
     ]
 
@@ -111,8 +119,9 @@ export default function Venda(){
         <h4>Vendas</h4>
         <div className={styles.boxSearch}>
             <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => {setSearch({...search, dateIn: v.target.value})}}  title={'Inicio'} width={'20%'}/>
-            <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()}  onChange={(v) => {setSearch({...search, dateIn: v.target.value})}}  title={'Final'} width={'20%'}/>
+            <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()}  onChange={(v) => {setSearch({...search, dateFim: v.target.value})}}  title={'Final'} width={'20%'}/>
             <InputGroup type={'number'} value={search?.movimentoCaixa}  onChange={(v) => {setSearch({...search, movimentoCaixa: v.target.value})}}  title={'Caixa'} width={'20%'}/>
+            <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
         </div>
         <hr/>
         <CustomTable
