@@ -7,7 +7,7 @@ export function setupAPIClient(ctx = undefined) {
     let cookies = parseCookies(ctx);
 
     const api = axios.create({
-         baseURL: 'https://http://api.krdsystem.com/api',
+         baseURL: 'https://api.krdsystem.com/api',
      //   baseURL: 'https://localhost:3334/api',
         headers: {
             Authorization: `Bearer ${cookies['@web_front.token']}`,
