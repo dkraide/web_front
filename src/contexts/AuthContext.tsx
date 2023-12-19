@@ -21,6 +21,7 @@ type UserProps = {
 type SignInProps = {
     userName: string;
     password: string;
+    empresa?: number
 }
 type SignUpPropos = {
     name: string;
@@ -54,16 +55,25 @@ export function signOut (){
 }
 
 export function AuthProvider({children}: AuthProviderProps){
-    async function signIn({userName, password}: SignInProps){
-        try{ 
-          const response = await api.post('/User/Login', {
+    async function signIn({userName, password, empresa}: SignInProps){
+        try{
+            var url = '/User/Login';
+            var isPdv = false;
+            if(empresa && empresa > 0){
+                 url = '/user/LoginPDV',
+                 isPdv = true;
+            }
+          const response = await api.post(url, {
              email: userName,
-             password
+             password,
+             empresaId: empresa
           });
-          const {token,  nome,empresaId, empresas} =  response.data;
+          const {token,  nome,empresaId, empresas, caixa} =  response.data;
           var user = {
                nome,
                empresaSelecionada: empresaId,
+               isPdv,
+               usuarioCaixa: caixa,
           }
           setCookie(undefined, '@web_front.token',   token, {
              maxAge: 60 * 60 * 24 * 30, //expirar em 1 mes,

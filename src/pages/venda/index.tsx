@@ -9,7 +9,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { fGetNumber } from "@/utils/functions"
+import { fGetNumber, printHTML } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import CustomButton from "@/components/ui/Buttons"
@@ -65,6 +65,7 @@ export default function Venda(){
         });
         setLoading(false);
     }
+    
 
     const columns = [
         {

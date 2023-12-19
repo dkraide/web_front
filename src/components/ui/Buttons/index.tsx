@@ -6,10 +6,11 @@ import styles from './styles.module.scss'
 interface props extends  ButtonHTMLAttributes<HTMLButtonElement>{
     typeButton: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'dark'
     loading?: boolean
+    size?: "sm" | "lg"
 }
 
-export default function CustomButton  ({loading, typeButton,children, onClick, ...rest}: props){
-   return <Button variant={typeButton} onClick={onClick} disabled={loading} {...rest} className={styles[typeButton]}>
+export default function CustomButton  ({size, loading, typeButton,children, onClick, ...rest}: props){
+   return <Button size={size} variant={typeButton} onClick={onClick} disabled={loading} {...rest} className={styles[typeButton]}>
     {loading ? <Loading/> : children}
    </Button>
 }

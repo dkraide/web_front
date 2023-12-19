@@ -34,7 +34,7 @@ export  default function SelectMateriaPrima({width, selected, setSelected}: selP
         formas.map((forma) => {
             var x = {
                 value: forma.id.toString(),
-                text: forma.nome || ''
+                label: forma.nome || ''
             }
             data.push(x);
         });

@@ -1,0 +1,28 @@
+.carrinho{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    h5{
+        width: 100%;
+    }
+    button{
+        width: 100px;
+        height: 50px;
+        background-color: var(--main-light-100);
+        border: solid 1pt var(--main);
+        border-radius: 7px;
+        color: var(--main);
+        font-weight: bold;
+        transition: all 0.1s;
+        &:hover{
+            background-color: var(--main-light);
+        }
+        margin: 0px 5px 5px 0px;
+    }
+    background-color: var(--white);
+    height: 100%;
+    border-radius: 8px;
+    padding: 5px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}

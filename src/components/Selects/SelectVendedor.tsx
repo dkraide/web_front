@@ -34,7 +34,7 @@ export default function SelectProduto({ width, selected, setSelected }: selProps
         formas.map((forma) => {
             var x = {
                 value: forma.id.toString(),
-                text: `${forma.cod.toString()} - ${forma.nome}` || ''
+                label: `${forma.cod.toString()} - ${forma.nome}` || ''
             }
             data.push(x);
         });

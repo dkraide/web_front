@@ -34,7 +34,7 @@ export  default function SelectMotivoLancamento({width, selected, setSelected}: 
         formas.map((forma) => {
             var x = {
                 value: forma.id.toString(),
-                text: forma.nome || ''
+                label: forma.nome || ''
             }
             data.push(x);
         });

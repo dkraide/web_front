@@ -35,7 +35,7 @@ export  default function SelectCidade({uf, width, selected, setSelected}: selPro
         formas.map((forma) => {
             var x = {
                 value: forma.id,
-                text: forma.nome || ''
+                label: forma.nome || ''
             }
             data.push(x);
         });

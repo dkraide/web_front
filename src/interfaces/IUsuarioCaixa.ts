@@ -1,6 +1,6 @@
 export default interface IUsuarioCaixa{
     id: number
-    iDUsuario: number
+    idUsuario: number
     login: string
     senha: string
     email: string
@@ -33,5 +33,5 @@ export default interface IUsuarioCaixa{
     removeProduto: boolean
     visualizaVendasAntigas: boolean
     finalizaVendaSemEstoque: boolean
-    empresa: string
+    empresaId: number
 }

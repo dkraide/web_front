@@ -1,5 +1,5 @@
 import ISangriaReforco from "./ISangriaReforco"
-import IUsuario from "./IUsuario"
+import IUsuarioCaixa from "./IUsuarioCaixa"
 import IVenda from "./IVenda"
 
 export default interface IMovimentoCaixa{
@@ -13,7 +13,7 @@ export default interface IMovimentoCaixa{
  valorDinheiro: number
  valorDinheiroFinal: number
  computadorID: string
- usuario: IUsuario
+ usuario: IUsuarioCaixa
  empresaId: number
  sangrias: ISangriaReforco[]
  vendas: IVenda[]

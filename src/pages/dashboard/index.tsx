@@ -17,6 +17,7 @@ import Loading from '@/components/Loading';
 import IVendaProduto from '@/interfaces/IVendaProduto';
 import { Badge } from 'react-bootstrap';
 import { LabelGroup } from '@/components/ui/LabelGroup';
+import { canSSRAuth } from '@/utils/CanSSRAuth';
 
 
 interface resProps {
@@ -148,3 +149,10 @@ const Despesa = ({descricao, statusLancamento, valorTotal, dataVencimento}) => {
   </div>
  )
 }
+export const getServerSideProps = canSSRAuth(async (ctx) => {
+  return {
+      props: {
+
+      }
+  }
+})

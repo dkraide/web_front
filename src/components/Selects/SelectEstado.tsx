@@ -36,7 +36,7 @@ export  default function SelectProduto({width, selected, setSelected}: selProps)
         formas.map((forma) => {
             var x = {
                 value: forma.sigla,
-                text: forma.nome || ''
+                label: forma.nome || ''
             }
             data.push(x);
         });

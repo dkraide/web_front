@@ -1,0 +1,30 @@
+.container{
+    h3{
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    height: 100%;
+}
+.button{
+    padding: 10px 30px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+    button{
+        width: 200px;
+        max-width: 600px;
+        margin-left: 10px;
+        border: 0;
+        padding: 0.4rem;
+        color: var(--white);
+        transition: filter 0.2s;
+        border: 1pt solid rgba(255, 255, 255, 0.3);
+        margin-bottom: 1rem;
+        font-weight: bold;
+        height: 37px;
+    }
+}

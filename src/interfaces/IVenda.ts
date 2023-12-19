@@ -1,6 +1,9 @@
+import ICliente from "./ICliente"
+import IEmpresa from "./IEmpresa"
 import IUsuario from "./IUsuario"
 import IVendaPagamento from "./IVendaPagamento"
 import IVendaProduto from "./IVendaProduto"
+import IXml from "./IXml"
 
 export default interface IVenda{
          idVenda: number
@@ -21,7 +24,7 @@ export default interface IVenda{
          complemento: string
          bairro: string
          municipio: string
-         uF: string
+         uf: string
          cep: string
          ibge: number
          nomeCliente: string
@@ -37,7 +40,7 @@ export default interface IVenda{
          idComanda: number
          pontosGanhos: number
          idUsuarioCancelamento: number
-         empresa: string
+         empresaId: number
          usuarioGorjetaId: number
          usuario: IUsuario
          usuarioId: number
@@ -49,4 +52,7 @@ export default interface IVenda{
          dataCancelamento: Date
          pagamentos: IVendaPagamento[]
          produtos: IVendaProduto[]
+         xml: IXml
+         cliente: ICliente
+         empresa: IEmpresa
 }

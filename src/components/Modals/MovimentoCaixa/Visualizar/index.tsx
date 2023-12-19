@@ -88,6 +88,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
        var resultado = calculaEsperado();
        return resultado - obj.valorDinheiroFinal;
     }
+   
     return (
         <BaseModal height={'80%'} width={'80%'} color={color} title={'Visualizar Movimento Caixa'} isOpen={isOpen} setClose={setClose}>
             {loading ? (

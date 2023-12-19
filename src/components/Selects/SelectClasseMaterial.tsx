@@ -34,7 +34,7 @@ export  default function SelectClasseMaterial({width, selected, setSelected}: se
         formas.map((forma) => {
             var x = {
                 value: forma.id.toString(),
-                text: forma.nomeClasse || ''
+                label: forma.nomeClasse || ''
             }
             data.push(x);
         });

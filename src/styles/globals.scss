@@ -33,6 +33,8 @@ ul{
   --info-press: #023c88;
 
   --main:  #039bda;
+  --main-light: rgb(166, 212, 232);
+  --main-light-100: rgb(216, 237, 245);
   --main-focus: #0057c9;
   --main-dark: #070a0b;
 }
@@ -61,6 +63,16 @@ main{
   body {
     background-color: white;
   }
+}
+@media print {
+
+  html, body {
+    height:100vh; 
+    margin: 0 !important; 
+    padding: 0 !important;
+    overflow: hidden;
+  }
+
 }
 
 body,
@@ -102,13 +114,13 @@ button {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--white);
+  background: var(--main-light-100);
   border-radius: 5px;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--gray-100);
+  background: var(--main-light);
 }
 
 html,

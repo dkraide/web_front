@@ -1,0 +1,70 @@
+.content{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    height: 100%;
+    width: 100%;
+}
+.formas li{
+    padding: 5px 10px;
+    list-style-type: none;
+    font-weight: bold;
+    cursor: pointer;
+    border-bottom: solid 1pt var(--main-light);
+    transition: all 0.2s;
+    font-size: 19px;
+    &:hover{
+        background-color: var(--main-light);
+        font-size: 20px;
+    }
+
+}
+.selected{
+    background-color: var(--main-light);
+    font-size: 20px !important;
+}
+.row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.formas{
+    overflow-y: auto;
+    &:-webkit-scrollbar-thumb {
+        background: var(--black) !important;
+        border-radius: 5px;
+    }
+
+}
+.liTotal{
+    display: flex;
+    justify-content: space-between;
+    input{
+        background-color: var(--main-light);
+        padding: 0px 5px;
+        border: none;
+        font-size: 12px;
+        width: 20%;
+        text-align: right;
+        font-weight: bold;
+        transition: all 0.2s;
+        font-size: 19px;
+
+        
+    }
+    &:hover>input{
+        background-color: var(--main-light-100);
+    }
+}
+.formaPagamento{
+    background-color: var(--main-light-100);
+    padding: 5px;
+    margin: 5px;
+    border-radius: 5px;
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
+}
+.totais{
+    height: 60%;
+}

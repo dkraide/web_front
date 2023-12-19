@@ -28,10 +28,6 @@ export default function SideBar({ ...props }) {
         test();
     }, []);
     const { getUser, signOut, updateUser } = useContext(AuthContext);
-    function forceClose() {
-        var menu = document.getElementById("sideBar_krd");
-        menu?.classList.remove(styles.activeMenu);
-    }
     async function updateEmpresa(EmpresaId) {
         if (EmpresaId == user.empresaSelecionada) {
             return;
@@ -46,24 +42,25 @@ export default function SideBar({ ...props }) {
     }
     if (!user) {
         return <>
-            <main  {...props} className={styles.mainOff} onClick={() => forceClose()}>
+            <main  {...props} className={styles.mainOff}>
 
             </main>
         </>
     }
-
     const menuItemStyle = {
         background: 'rgb(5,98,180, 0.35)',
         "&:hover": {
             background: '#fff !important',
         },
     }
+    if(user.isPdv){
+        
+    }
     const textcolor = '#039bda';
     return (
-        <div style={{ display: 'flex', height: '100vh', minHeight: '100% !important' }}>
-            <Sidebar collapsed={collapsed} rootStyles={{
+        <div  style={{ display: 'flex', height: '100vh', minHeight: '100% !important' }}>
+            <Sidebar className={styles.sideBar}  collapsed={collapsed} rootStyles={{
                 backgroundColor: 'rgb(5,98,180)',
-
                 background: 'linear-gradient(180deg, rgba(4,113,190,1) 17%, rgba(3,135,205,1) 52%, rgba(3,155,218,1) 79%, rgba(0,212,255,1) 100%);',
             }}>
 
@@ -85,12 +82,18 @@ export default function SideBar({ ...props }) {
                                 </a>
                             </div>
                         </div>
-                        <div style={{ display: collapsed ? 'none' : 'block', padding: '0px 5px' }} >
+                        {!user.isPdv &&   <div style={{ display: collapsed ? 'none' : 'block', padding: '0px 5px' }} >
                             <SelectEmpresa selected={empresa} setSelected={updateEmpresa} />
-                        </div>
+                        </div>}
                     </div>
-                    <div style={{ flex: 1 }}>
-                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} {...props} label="Produtos">
+                    {user.isPdv ? (
+                        <div style={{ flex: 1 }}>
+                        <SubMenu href={'/pdv'} icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="PDV">
+                        </SubMenu>
+                    </div>
+                    ) : (
+                        <div style={{ flex: 1 }}>
+                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="Produtos">
                             <MenuItem href={'/produto'} style={menuItemStyle}>Produtos</MenuItem>
                             <MenuItem href={'/classeMaterial'} style={menuItemStyle}>Classes</MenuItem>
                             <MenuItem href={'/tributacao'} style={menuItemStyle}>Tributacoes</MenuItem>
@@ -120,6 +123,11 @@ export default function SideBar({ ...props }) {
                             <MenuItem href={'/relatorio/usuario'} style={menuItemStyle}>Por Usuiario</MenuItem>
                             <MenuItem href={'/relatorio/demonstrativo'} style={menuItemStyle}>Demonstrativo</MenuItem>
                         </SubMenu>
+                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="PDV">
+                            <MenuItem href={'/pdv/formaPagamento'} style={menuItemStyle}>Formas de Pagamento</MenuItem>
+                            <MenuItem href={'/pdv/usuario'} style={menuItemStyle}>Usuarios</MenuItem>
+                            <MenuItem href={'/pdv/configuracao'} style={menuItemStyle}>Configuracao</MenuItem>
+                        </SubMenu>
                         <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="Menu Digital">
                             <MenuItem href={'/menudigital/produtos'} style={menuItemStyle}>Produtos</MenuItem>
                             <MenuItem href={'/menudigital/categorias'} style={menuItemStyle}>Categorias</MenuItem>
@@ -129,6 +137,7 @@ export default function SideBar({ ...props }) {
                             <MenuItem href={'/menudigital/empresa'} style={menuItemStyle}>Empresa</MenuItem>
                         </SubMenu>
                     </div>
+                    )}
                     <div>
                         <MenuItem rootStyles={{textAlign: 'center'}}  onClick={() => { signOut() }} style={menuItemStyle}>Sair</MenuItem>
                     </div>
@@ -136,7 +145,7 @@ export default function SideBar({ ...props }) {
 
                 </Menu>
             </Sidebar>
-            <main  {...props} className={styles.main} onClick={() => forceClose()}>
+            <main  {...props} className={styles.main}>
             </main>
         </div>
     )

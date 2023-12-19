@@ -1,5 +1,9 @@
-import axios from "axios";
+import { api } from "@/services/apiClient";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useState } from "react";
 import { toast } from "react-toastify";
+
+
 
 export const fValidateNumer = (value) => {
     return !isNaN(value.replace(',', '.'));
@@ -65,6 +69,12 @@ export const  sendImage = async(obj: any) => {
     return res;
 
 }
+export const  onFocus = (field, select?: boolean) => {
+    document.getElementById(field)?.focus();
+    if(select){
+        (document.getElementById(field) as HTMLInputElement)?.select()
+    }
+}
 
 
 const blobToDataUrl = blob => new Promise((resolve, reject) => {
@@ -73,6 +83,37 @@ const blobToDataUrl = blob => new Promise((resolve, reject) => {
     reader.onerror = reject;
     reader.readAsDataURL(blob);
   });
+
+ export const  isNullOrWhitespace = ( input?: string ) => {
+    return !input || !input.trim();
+  }
   
 export const blobToBase64 = blob => blobToDataUrl(blob).then((text: string) => text.slice(text.indexOf(",") + 1));
+
+
+export const printHTML = (html: any) => {
+    const blob: Blob =  new Blob([html], {type: 'text/html'});
+            const fileURL = URL.createObjectURL(blob);
+            const iframe: HTMLIFrameElement = document.createElement('iframe');
+            iframe.src = fileURL;
+            iframe.setAttribute('hidden', 'true');
+            document.body.appendChild(iframe);
   
+            const printWin: Window = iframe.contentWindow!;
+            console.log(printWin);
+
+            printWin.print();
+            printWin.onafterprint = () => { printWin.close(); document.body.removeChild(iframe); };
+            
+}
+
+export const imprimirNFce = async (vendaId) => {
+    await api.post(`/pdv/imprimir?vendaId=${vendaId}`)
+    .then(({data}: AxiosResponse) => {
+        printHTML(data.html);
+
+    }).catch((err: AxiosError) => {
+        toast.error(`Erro`);
+    })
+
+}

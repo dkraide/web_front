@@ -35,7 +35,7 @@ export  default function SelectTributacao({width, selected, setSelected}: selPro
         formas.map((forma) => {
             var x = {
                 value: forma.id.toString(),
-                text: `${forma.ncm} - ${forma.descricao}` || ''
+                label: `${forma.ncm} - ${forma.descricao}` || ''
             }
             data.push(x);
         });

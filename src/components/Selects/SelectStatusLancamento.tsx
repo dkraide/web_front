@@ -39,7 +39,7 @@ export  default function SelectStatusLancamento({title, width, selected, setSele
         formas.map((forma) => {
             var x = {
                 value: forma.value.toString(),
-                text: forma.nome || ''
+                label: forma.nome || ''
             }
             data.push(x);
         });

@@ -1,3 +1,5 @@
+import IUsuarioCaixa from "./IUsuarioCaixa"
+
 export default interface IUsuario{
     id: string
     nome: string
@@ -6,4 +8,6 @@ export default interface IUsuario{
     telefone?: string
     email?: string
     cpf?: string
+    isPdv: boolean
+    usuarioCaixa?: IUsuarioCaixa
 }

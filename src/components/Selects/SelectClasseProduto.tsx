@@ -33,7 +33,7 @@ export  default function SelectClasseProduto({title, width, selected, setSelecte
         formas.map((forma) => {
             var x = {
                 value: forma.value.toString(),
-                text: forma.nome || ''
+                label: forma.nome || ''
             }
             data.push(x);
         });

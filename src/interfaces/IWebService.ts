@@ -1,0 +1,32 @@
+export default interface IWebService{
+     idWebService: number
+     recepcaoEventoCceCancelamento: number
+     recepcaoEventoEpec: number
+     recepcaoEventoManifestacaoDestinatario: number
+     nfeRecepcao: number
+     nfeRetRecepcao: number
+     nfeInutilizacao: number
+     nfeConsultaProtocolo: number
+     nfeStatusProtocolo: number
+     nfeStatusServico: number
+     nfeConsultaCadastro: number
+     nfeAutorizacao: number
+     nfeRetAutorizacao: number
+     nfeDistribuicaoDFE: number
+     nfeConsultaDest: number
+     nfeDownloadNf: number
+     admCscNfce: number
+     isTLS: number
+     isHomologacao: number
+     timeOut: number
+     diretorioSchemas: string
+     numeracaoNf: number
+     serieNf: number
+     idCsc: string
+     csc: string
+     id: number
+     empresaId: number
+     certSenha: string
+     certificadoArray: any
+     fileName: string
+}

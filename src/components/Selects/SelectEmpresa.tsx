@@ -33,7 +33,7 @@ export  default function SelectEmpresa({width, selected, setSelected}: selProps)
         formas.map((forma) => {
             var x = {
                 value: forma.id.toString(),
-                text: forma.nomeFantasia || ''
+                label: forma.nomeFantasia || ''
             }
             data.push(x);
         });

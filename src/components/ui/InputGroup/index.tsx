@@ -1,3 +1,4 @@
+import { title } from 'process';
 import styles from './styles.module.scss';
 import { InputHTMLAttributes,  forwardRef } from 'react';
 import React from "react";
@@ -23,7 +24,7 @@ const InputGroup = ({title, width, minWidth, invalid, error, name,...rest }: inp
 }
 
 interface inputForm extends InputHTMLAttributes<HTMLInputElement>{
-    title: string
+    title?: string
     width?: string
     minWidth?: string
     invalid?: boolean
@@ -33,16 +34,17 @@ interface inputForm extends InputHTMLAttributes<HTMLInputElement>{
     rules?: any
 
 }
-const InputForm = ({rules, title, width,minWidth, inputName, register, errors, ...rest } : inputForm) => {
+const InputForm = ({rules, title, width,minWidth, inputName, register, errors,onChange,  ...rest } : inputForm) => {
     return (
         <div className={styles["group"]} style={{width: width || '100%', minWidth: minWidth || 'auto'}}>
         <span className={errors[inputName] ? styles["error"] : styles['']}>{errors[inputName] && 'campo invalido'}</span>
-        <input {...register(inputName, rules)} {...rest} />
+        <input {...register(inputName, {...rules, onChange: onChange})} {...rest} />
         <span className={styles["bar"]}></span>
         <label>{title}</label>
         </div>
     );
 };
+
 
 interface inputFormMask extends InputHTMLAttributes<HTMLInputElement>{
     title: string

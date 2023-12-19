@@ -33,7 +33,7 @@ export  default function SelectTipoVendedor({title, width, selected, setSelected
         formas.map((forma) => {
             var x = {
                 value: forma.value.toString(),
-                text: forma.nome || ''
+                label: forma.nome || ''
             }
             data.push(x);
         });
