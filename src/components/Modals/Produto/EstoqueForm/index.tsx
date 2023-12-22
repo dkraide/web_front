@@ -71,6 +71,15 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
         setLoading(false);
     }
 
+    if(ajuste){
+        return <AjusteEstoqueForm isOpen={ajuste} produto={result.produto} user={user} setClose={(v) => {
+            if(v){
+                loadData();
+            }
+            setAjuste(false);
+        } }/>
+    }
+
     return (
         <BaseModal height={'90%'} width={'95%'} color={color} title={'Relatorio de Estoque'} isOpen={isOpen} setClose={setClose}>
             {(loading || !result) ? (
@@ -99,12 +108,6 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
                     </div>
                 </div>
             )}
-            {ajuste && <AjusteEstoqueForm isOpen={ajuste} produto={result.produto} user={user} setClose={(v) => {
-                if(v){
-                    loadData();
-                }
-                setAjuste(false);
-            } }/>}
         </BaseModal>
     )
 }

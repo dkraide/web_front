@@ -53,7 +53,7 @@ export default function Tributacao() {
     const columns = [
         {
             name: '#',
-            cell: ({ id }: ITributacao) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'warning'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }: ITributacao) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
             sortable: true,
             grow: 0
         },

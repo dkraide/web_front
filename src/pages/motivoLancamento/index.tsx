@@ -55,7 +55,7 @@ export default function MotivoLancamento() {
     const columns = [
         {
             name: '#',
-            cell: ({ id }: IMotivoLancamento) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'warning'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }: IMotivoLancamento) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
             sortable: true,
             grow: 0
         },

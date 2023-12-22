@@ -1,6 +1,21 @@
-.dark{
+.dark {
     background-color: var(--main);
-    &:hover{
-        background-color: var(--main-focus);
+    color: var(--white);
+    border-color: var(--main);
+    &:hover {
+        background-color: var(--white);
+        color: var(--main);
+        border-color: var(--main);
+    }
+}
+
+.outline-main {
+    background-color: var(--white);
+    color: var(--main);
+    border-color: var(--main);
+    &:hover {
+        background-color: var(--main);
+        color: var(--white);
+        border-color: var(--main);
     }
 }

@@ -9,6 +9,7 @@ import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Spinner from 'react-bootstrap/Spinner';
 import { fGetNumber, fGetOnlyNumber } from '@/utils/functions';
+import CustomButton from '@/components/ui/Buttons';
 
 
 export default function Home() {
@@ -42,6 +43,7 @@ export default function Home() {
       <div className={styles.containerCenter}>
         <div className={styles.login}>
           <form onSubmit={handleLogin}>
+        <img style={{marginBottom: '0px'}} src={'/krd_logo.png'} width={'500px'} height={'200px'}/>
             <FloatingLabel
               controlId="floatingInput"
               label="Usuario"
@@ -81,7 +83,7 @@ export default function Home() {
                 />
               </FloatingLabel>
             )}
-            <Button variant="primary" type={'submit'}>{loading ? <Spinner animation="border" /> : <>Entrar</>}</Button>
+            <CustomButton typeButton="outline-main" type={'submit'} style={{padding: '10px', height: 'auto'}}>{loading ? <Spinner animation="border" /> : <>Entrar</>}</CustomButton>
           </form>
         </div>
       </div>

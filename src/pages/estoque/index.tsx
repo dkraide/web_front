@@ -109,7 +109,6 @@ export default function Estoque() {
         <div className={styles.container}>
             <h4>Produtos</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Produto</CustomButton>
             <hr/>
             <div className={styles.box}>
             <BoxInfo style={{ marginRight: 10 }} title={'Estoque'} value={_.sumBy(list, x => x.quantidade > 0 ? x.quantidade : 0).toFixed(2)}/>

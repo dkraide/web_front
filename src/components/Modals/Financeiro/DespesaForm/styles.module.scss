@@ -7,8 +7,6 @@
 }
 
 .button {
-    position: absolute;
-    bottom: 0;
     padding: 10px 30px;
     display: flex;
     flex-direction: row;
@@ -18,30 +16,5 @@
     button {
         margin-right: 10px;
 
-    }
-}
-
-.btnCancel {
-    background-color: var(--danger);
-
-    &:hover {
-        background-color: var(--danger-press);
-    }
-
-    &:disabled {
-        background-color: var(--danger-press);
-    }
-
-}
-
-.btnSuccess {
-    background-color: var(--success);
-
-    &:hover {
-        background-color: var(--success-press);
-    }
-
-    &:disabled {
-        background-color: var(--success-press);
     }
 }

@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './styles.module.scss';
 import { useContext, useEffect, useState } from 'react';
-import { faUser, faArrowLeft, faBars, faRightFromBracket, faLeaf, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { faUser, faArrowLeft, faBars, faRightFromBracket, faLeaf, faArrowRight, faChartBar, faChartSimple, faMoneyBill, faCalculator, faPercent, faBox, faCashRegister, faUtensils, faPowerOff } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '@/contexts/AuthContext';
 import IUsuario from '@/interfaces/IUsuario';
 import Link from 'next/link';
@@ -11,12 +11,15 @@ import { toast } from 'react-toastify';
 import SelectEmpresa from '@/components/Selects/SelectEmpresa';
 import { Menu, MenuItem, Sidebar, SubMenu } from 'react-pro-sidebar';
 import CustomButton from '../Buttons';
+import Image from 'next/image';
+import { useWindowSize } from 'rooks';
 
 export default function SideBar({ ...props }) {
 
     const [user, setUser] = useState<IUsuario | undefined>();
     const [empresa, setEmpresa] = useState(0);
     const [collapsed, setCollapsed] = useState(false);
+    const [toggled, setToggled] = useState(false);
     const test = async () => {
         var u = await getUser();
         if (u) {
@@ -27,6 +30,9 @@ export default function SideBar({ ...props }) {
     useEffect(() => {
         test();
     }, []);
+    const { innerWidth } = useWindowSize();
+    const isMobile = innerWidth < 600;
+    console.log(innerWidth);
     const { getUser, signOut, updateUser } = useContext(AuthContext);
     async function updateEmpresa(EmpresaId) {
         if (EmpresaId == user.empresaSelecionada) {
@@ -47,106 +53,125 @@ export default function SideBar({ ...props }) {
             </main>
         </>
     }
-    const menuItemStyle = {
-        background: 'rgb(5,98,180, 0.35)',
-        "&:hover": {
-            background: '#fff !important',
-        },
-    }
-    if(user.isPdv){
-        
-    }
-    const textcolor = '#039bda';
+
+
     return (
-        <div  style={{ display: 'flex', height: '100vh', minHeight: '100% !important' }}>
-            <Sidebar className={styles.sideBar}  collapsed={collapsed} rootStyles={{
-                backgroundColor: 'rgb(5,98,180)',
-                background: 'linear-gradient(180deg, rgba(4,113,190,1) 17%, rgba(3,135,205,1) 52%, rgba(3,155,218,1) 79%, rgba(0,212,255,1) 100%);',
-            }}>
-
-                <Menu rootStyles={{
-                    height: '100%', '& ul': {
+        <div className={"container-scroller"}>
+            <nav className={[styles["navbar"], styles["default-layout-navbar"], styles["col-lg-12"], styles["p-0"], styles["fixed-top"], styles["d-flex"], styles["flex-row"]].join(' ')}>
+                {(collapsed || isMobile) ? <>
+                    <a href={'/dashboard'} className={styles.center} style={{ width: '40px', cursor: 'pointer' }}>
+                        <Image src={'/krd_logo_icon.png'} alt={'krd'} width={35} height={35} />
+                    </a>
+                </> : <>
+                    <a href={'/dashboard'} className={styles.center} style={{ width: '250px', cursor: 'pointer' }}>
+                        <Image src={'/krd_logo.png'} alt={'krd'} width={160} height={60} />
+                    </a>
+                </>}
+                <div style={{ marginRight: 'auto' }}>
+                    <a className={styles["menu-btn"]} onClick={() => { setCollapsed(!collapsed); setToggled(!toggled) }}><FontAwesomeIcon color={'var(--main)'} icon={faBars} /></a>
+                </div>
+                <div style={{ marginRight: 'auto', padding: '5px' }}>
+                    <SelectEmpresa width={'250px'} selected={user.empresaSelecionada} setSelected={(v) => {
+                        updateEmpresa(v);
+                    }} />
+                </div>
+                <div hidden={innerWidth <= 700 } style={{ justifyContent: 'flex-end', marginRight: '10px', display: 'flex', flexDirection: 'row' }}>
+                    <span style={{ marginRight: '10px' }}>Bem Vindo, <br /><b>{user.nome}</b></span>
+                    <a className={styles["menu-btn"]} onClick={signOut}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
+                </div>
+            </nav>
+            <div className={[styles["container-fluid"], styles["page-body-wrapper"]].join(' ')}>
+                <Sidebar
+                    customBreakPoint={"600px"}
+                    className={styles.sideBar}
+                    onBackdropClick={() => setToggled(false)}
+                    toggled={toggled}
+                    collapsed={collapsed && !isMobile}>
+                    <Menu rootStyles={{
+                        background: 'white',
+                        flex: '1',
                         height: '100%',
-                        display: 'flex',
-                        flexDirection: 'column'
-                    }
-                }}>
-                    <div>
-                        <div className={styles.header}>
-                            <div style={{ width: '80%', display: collapsed ? 'none' : 'block', padding: '5px 5px 0px 0px' }}>
-                                <a href={'/dashboard'}><h4  style={{ color: textcolor, fontWeight: 'bold'}}>KRD System</h4></a>
+                        paddingTop: innerWidth < 700 ? '70px' : '0',
+                    }} >
+                        {user.isPdv ? (
+                            <div>
+                                <SubMenu href={'/pdv'} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
+                                </SubMenu>
                             </div>
-                            <div className={styles.openClose}>
-                                <a onClick={() => { setCollapsed(!collapsed) }}>
-                                    <FontAwesomeIcon color={textcolor} icon={!collapsed ? faArrowLeft : faArrowRight} size={'2x'}></FontAwesomeIcon>
-                                </a>
+                        ) : (
+                            <div>
+                                <div
+                                hidden={innerWidth > 700 }
+                                    style={{
+                                        padding: '10px 20px',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        flexWrap: 'wrap',
+                                        justifyContent: 'space-between'
+                                    }}>
+                                    <span>Bem Vindo, <br /><b>{user.nome}</b></span>
+                                    <a className={styles["menu-btn"]} onClick={signOut}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
+                                </div>
+                                <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Produtos"
+                                    rootStyles={{
+                                        ['& > a']: {
+                                            '&:hover': {
+                                                backgroundColor: 'black'
+                                            },
+                                            '.ps-open': {
+                                                fontWeight: 'bold',
+                                            },
+                                        },
+                                    }}>
+                                    <MenuItem href={'/produto'}>Produtos</MenuItem>
+                                    <MenuItem href={'/classeMaterial'}>Classes</MenuItem>
+                                    <MenuItem href={'/tributacao'}>Tributacoes</MenuItem>
+                                    <MenuItem href={'/estoque'}>Estoque</MenuItem>
+                                    <MenuItem href={'/estoqueLancamento'}>Lancamento de Estoque</MenuItem>
+                                </SubMenu>
+                                <SubMenu icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promocoes">
+                                    <MenuItem href={'/promocao/atacado'}> Promocao</MenuItem>
+                                    <MenuItem href={'/promocao/combo'}> Combos</MenuItem>
+                                    <MenuItem href={'/promocao/tabelaPreco'}> Tabela de Preco</MenuItem>
+                                </SubMenu>
+                                <SubMenu icon={<FontAwesomeIcon icon={faCalculator} color={'var(--main)'} />} label="Financeiro">
+                                    <MenuItem href={'/motivoLancamento'}>Motivo de Lancamento</MenuItem>
+                                    <MenuItem href={'/despesa'}>Despesas</MenuItem>
+                                    <MenuItem href={'/entrada'}>Entradas</MenuItem>
+                                </SubMenu>
+                                <SubMenu icon={<FontAwesomeIcon icon={faMoneyBill} color={'var(--main)'} />} label="Vendas">
+                                    <MenuItem href={'/movimentoCaixa'}>Caixas</MenuItem>
+                                    <MenuItem href={'/venda'}>Vendas</MenuItem>
+                                    <MenuItem href={'/arquivosxml'}>Arquivos XML</MenuItem>
+                                </SubMenu>
+                                <SubMenu icon={<FontAwesomeIcon icon={faChartSimple} color={'var(--main)'} />} label="Relatorios">
+                                    <MenuItem href={'/relatorio/classe'}>Por Classe</MenuItem>
+                                    <MenuItem href={'/relatorio/dia'}>Por Dia</MenuItem>
+                                    <MenuItem href={'/relatorio/formaPagamento'}>Por Forma</MenuItem>
+                                    <MenuItem href={'/relatorio/produto'}>Por Produto</MenuItem>
+                                    <MenuItem href={'/relatorio/usuario'}>Por Usuiario</MenuItem>
+                                    <MenuItem href={'/relatorio/demonstrativo'}>Demonstrativo</MenuItem>
+                                </SubMenu>
+                                <SubMenu icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
+                                    <MenuItem href={'/pdv/formaPagamento'}>Formas de Pagamento</MenuItem>
+                                    <MenuItem href={'/pdv/usuario'}>Usuarios</MenuItem>
+                                    <MenuItem href={'/pdv/configuracao'}>Configuracao</MenuItem>
+                                </SubMenu>
+                                <SubMenu icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
+                                    <MenuItem href={'/menudigital/produtos'}>Produtos</MenuItem>
+                                    <MenuItem href={'/menudigital/categorias'}>Categorias</MenuItem>
+                                    <MenuItem href={'/menudigital/promocoes'}>Promocoes</MenuItem>
+                                    <MenuItem href={'/menudigital/combos'}>Combos</MenuItem>
+                                    <MenuItem href={'/menudigital/configuracao'}>Configuracao</MenuItem>
+                                    <MenuItem href={'/menudigital/empresa'}>Empresa</MenuItem>
+                                </SubMenu>
                             </div>
-                        </div>
-                        {!user.isPdv &&   <div style={{ display: collapsed ? 'none' : 'block', padding: '0px 5px' }} >
-                            <SelectEmpresa selected={empresa} setSelected={updateEmpresa} />
-                        </div>}
-                    </div>
-                    {user.isPdv ? (
-                        <div style={{ flex: 1 }}>
-                        <SubMenu href={'/pdv'} icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="PDV">
-                        </SubMenu>
-                    </div>
-                    ) : (
-                        <div style={{ flex: 1 }}>
-                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="Produtos">
-                            <MenuItem href={'/produto'} style={menuItemStyle}>Produtos</MenuItem>
-                            <MenuItem href={'/classeMaterial'} style={menuItemStyle}>Classes</MenuItem>
-                            <MenuItem href={'/tributacao'} style={menuItemStyle}>Tributacoes</MenuItem>
-                            <MenuItem href={'/estoque'} style={menuItemStyle}>Estoque</MenuItem>
-                            <MenuItem href={'/estoqueLancamento'} style={menuItemStyle}>Lancamento de Estoque</MenuItem>
-                        </SubMenu>
-                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="Promocoes">
-                            <MenuItem href={'/promocao/atacado'} style={menuItemStyle}> Promocao</MenuItem>
-                            <MenuItem href={'/promocao/combo'} style={menuItemStyle}> Combos</MenuItem>
-                            <MenuItem href={'/promocao/tabelaPreco'} style={menuItemStyle}> Tabela de Preco</MenuItem>
-                        </SubMenu>
-                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="Financeiro">
-                            <MenuItem href={'/motivoLancamento'} style={menuItemStyle}>Motivo de Lancamento</MenuItem>
-                            <MenuItem href={'/despesa'} style={menuItemStyle}>Despesas</MenuItem>
-                            <MenuItem href={'/entrada'} style={menuItemStyle}>Entradas</MenuItem>
-                        </SubMenu>
-                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="Vendas">
-                            <MenuItem href={'/movimentoCaixa'} style={menuItemStyle}>Caixas</MenuItem>
-                            <MenuItem href={'/venda'} style={menuItemStyle}>Vendas</MenuItem>
-                            <MenuItem href={'/arquivosxml'} style={menuItemStyle}>Arquivos XML</MenuItem>
-                        </SubMenu>
-                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="Relatorios">
-                            <MenuItem href={'/relatorio/classe'} style={menuItemStyle}>Por Classe</MenuItem>
-                            <MenuItem href={'/relatorio/dia'} style={menuItemStyle}>Por Dia</MenuItem>
-                            <MenuItem href={'/relatorio/formaPagamento'} style={menuItemStyle}>Por Forma</MenuItem>
-                            <MenuItem href={'/relatorio/produto'} style={menuItemStyle}>Por Produto</MenuItem>
-                            <MenuItem href={'/relatorio/usuario'} style={menuItemStyle}>Por Usuiario</MenuItem>
-                            <MenuItem href={'/relatorio/demonstrativo'} style={menuItemStyle}>Demonstrativo</MenuItem>
-                        </SubMenu>
-                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="PDV">
-                            <MenuItem href={'/pdv/formaPagamento'} style={menuItemStyle}>Formas de Pagamento</MenuItem>
-                            <MenuItem href={'/pdv/usuario'} style={menuItemStyle}>Usuarios</MenuItem>
-                            <MenuItem href={'/pdv/configuracao'} style={menuItemStyle}>Configuracao</MenuItem>
-                        </SubMenu>
-                        <SubMenu icon={<FontAwesomeIcon icon={faUser} color={textcolor} />} label="Menu Digital">
-                            <MenuItem href={'/menudigital/produtos'} style={menuItemStyle}>Produtos</MenuItem>
-                            <MenuItem href={'/menudigital/categorias'} style={menuItemStyle}>Categorias</MenuItem>
-                            <MenuItem href={'/menudigital/promocoes'} style={menuItemStyle}>Promocoes</MenuItem>
-                            <MenuItem href={'/menudigital/combos'} style={menuItemStyle}>Combos</MenuItem>
-                            <MenuItem href={'/menudigital/configuracao'} style={menuItemStyle}>Configuracao</MenuItem>
-                            <MenuItem href={'/menudigital/empresa'} style={menuItemStyle}>Empresa</MenuItem>
-                        </SubMenu>
-                    </div>
-                    )}
-                    <div>
-                        <MenuItem rootStyles={{textAlign: 'center'}}  onClick={() => { signOut() }} style={menuItemStyle}>Sair</MenuItem>
-                    </div>
-
-
-                </Menu>
-            </Sidebar>
-            <main  {...props} className={styles.main}>
-            </main>
+                        )}
+                    </Menu>
+                </Sidebar>
+                <main  {...props} className={styles['main-panel']}>
+                </main>
+            </div>
         </div>
     )
 }

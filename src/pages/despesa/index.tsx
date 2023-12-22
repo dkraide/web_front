@@ -73,7 +73,7 @@ export default function Despesa() {
         {
             name: '#',
             selector: row => row.id,
-            cell: ({ id }: IDespesa) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'warning'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }: IDespesa) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
             sortable: true,
             width: '10%',
         },

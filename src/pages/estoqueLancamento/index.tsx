@@ -68,7 +68,7 @@ export default function EstoqueLancamento(){
     const columns = [
         {
             name: '#',
-            cell: ({ id }) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'warning'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
             sortable: true,
             grow: 0
         },

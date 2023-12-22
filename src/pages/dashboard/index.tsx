@@ -1,58 +1,52 @@
-import IEmpresa from '@/interfaces/IEmpresa';
 import styles from './styles.module.scss';
-import IVenda from '@/interfaces/IVenda';
 import { useContext, useEffect, useState } from 'react';
 import { api } from '@/services/apiClient';
 import { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import IDespesa from '@/interfaces/IDespesa';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import CustomButton from '@/components/ui/Buttons';
-import { InputGroup } from '@/components/ui/InputGroup';
-import { addDays, format } from 'date-fns';
-import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { format, isToday } from 'date-fns';
+import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, LineChart, Line } from 'recharts';
 import { AuthContext } from '@/contexts/AuthContext';
 import Loading from '@/components/Loading';
 import IVendaProduto from '@/interfaces/IVendaProduto';
 import { Badge } from 'react-bootstrap';
-import { LabelGroup } from '@/components/ui/LabelGroup';
 import { canSSRAuth } from '@/utils/CanSSRAuth';
+import IVenda from '@/interfaces/IVenda';
+import _ from 'lodash';
 
 
 interface resProps {
-  vendaHoje:number
-  vendaMes:number
-  canceladaHoje :number
-  canceladaMes :number
-  faturadaHoje :number
-  faturadaMes :number
+  vendaHoje: number
+  vendaMes: number
+  canceladaHoje: number
+  canceladaMes: number
+  faturadaHoje: number
+  faturadaMes: number
 }
 
 export default function Dashboard() {
 
-  const [obj, setObj] = useState<resProps>()
-  const [produtos ,setProdutos] = useState<IVendaProduto[]>([])
+  const [obj, setObj] = useState<IVenda[]>([])
+  const [produtos, setProdutos] = useState<IVendaProduto[]>([])
   const [despesas, setDespesas] = useState<IDespesa[]>([])
-  const {getUser} = useContext(AuthContext);
+  const { getUser } = useContext(AuthContext);
 
-const loadData = async () => {
+  const loadData = async () => {
     const user = getUser();
-    await api.get(`/Dashboard/Vendas?Empresa=${(await user).empresaSelecionada}`)
-      .then(({ data }: AxiosResponse<resProps>) => {
-        console.log(data);
+    await api.get(`/Dashboard/VendasDetail?Empresa=${(await user).empresaSelecionada}`)
+      .then(({ data }: AxiosResponse<IVenda[]>) => {
         setObj(data);
       }).catch((err: AxiosError) => {
         toast.error(`Erro ao buscar vendas. `);
       })
 
-      await api.get(`/Dashboard/Produtos?Empresa=${(await user).empresaSelecionada}`)
+    await api.get(`/Dashboard/Produtos?Empresa=${(await user).empresaSelecionada}`)
       .then(({ data }: AxiosResponse<IVendaProduto[]>) => {
         setProdutos(data);
       }).catch((err: AxiosError) => {
         toast.error(`Erro ao buscar produtos. `);
       })
-      await api.get(`/Dashboard/Despesa?Empresa=${(await user).empresaSelecionada}`)
+    await api.get(`/Dashboard/Despesa?Empresa=${(await user).empresaSelecionada}`)
       .then(({ data }: AxiosResponse<IDespesa[]>) => {
         setDespesas(data);
       }).catch((err: AxiosError) => {
@@ -61,98 +55,292 @@ const loadData = async () => {
   }
 
   useEffect(() => {
+
     loadData();
-  }, [])
+  }, []);
+
+  function getData() {
+    var orcamento = _.sumBy(obj, p => {
+      if (p.statusVenda && !p.estd) {
+        return p.valorTotal;
+      } else return 0;
+    })
+    var faturado = _.sumBy(obj, p => {
+      if (p.statusVenda && p.estd) {
+        return p.valorTotal;
+      } else return 0;
+    });
+    var list = [];
+
+    list.push({
+      label: 'Orcamento',
+      value: orcamento,
+      fill: "var(--blue)",
+    },
+      {
+        label: 'Faturado',
+        value: faturado,
+        fill: "var(--main)"
+      });
+    getDataDia();
+    return list;
+
+  }
+  function getDataDia() {
+    var res = _.groupBy(obj, v => {
+      var formatted = format(new Date(v.dataVenda), 'dd/MM/yyyy');
+      return formatted;
+    });
+    var list = _.map(res, (collection, key) => {
+      return {
+        key,
+        venda: _.sumBy(collection, (p: IVenda) => p.valorTotal),
+        custo: _.sumBy(collection, (p: IVenda) => p.valorCusto),
+      }
+    });
+    return _.orderBy(list, p => p.key);
+  }
+
+
 
   return (
     <div className={styles.container}>
-      <h3>Vendas</h3>
+      <h4 className={styles["card-title"]}>Vendas</h4>
       {obj ? (
-          <div className={styles.cardInfos}>
-          <CardInfo style={'success'} title={'Vendas'} value1={obj.vendaHoje || 0} value2={obj.vendaMes|| 0} />
-          <CardInfo style={'primary'} title={'Faturadas'} value1={obj.faturadaHoje|| 0} value2={obj.faturadaMes|| 0} />
-          <CardInfo style={'danger'} title={'Canceladas'} value1={obj.canceladaHoje|| 0} value2={obj.canceladaMes|| 0} />
+        <div className={styles.cardInfos}>
+          <CardInfo vendas={obj} style={'success'} title={'Vendas'} />
+          <CardInfo vendas={obj} style={'primary'} title={'Faturadas'} />
+          <CardInfo vendas={obj} style={'danger'} title={'Canceladas'} />
         </div>
-      ) : <Loading/>}
-      <h3>Produtos</h3>
-      <div className={styles.chart}>
-        <ResponsiveContainer height={400}>
-          <BarChart
-            height={300}
-            width={1000}
-            data={produtos}
-            margin={{
-              top: 5,
-              right: 30,
-              left: 20,
-              bottom: 5,
-            }}
-          >
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="produto" />
-            <YAxis />
-            <Tooltip />
-            <Legend />
-            <Bar  dataKey="valor" fill="#8884d8" activeBar={<Rectangle fill="pink" stroke="blue" />} />
-          </BarChart>
-        </ResponsiveContainer>
+      ) : <Loading />}
+      <div className={styles.card} style={{ width: '100%' }}>
+        <h4 className={styles["card-title"]}>Relatorio de Venda por Dia</h4>
+        <div className={styles.chart}>
+          <ResponsiveContainer height={250} width={'100%'}>
+            <LineChart  height={150} data={getDataDia()}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="key"  />
+              <YAxis  />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="venda" name={"Venda (R$)"} stroke="var(--green)" strokeWidth={3} />
+              <Line type="monotone" dataKey="custo" name={"Custo (R$)"} stroke="var(--main)" strokeWidth={3} />
+            </LineChart>
+          </ResponsiveContainer>
+        </div>
       </div>
-      <div style={{width: '50%'}}>
-        <h3>Proximas despesas</h3>
-        {despesas.length == 0 ? <h5>Parece que nao ha despesas proximas =)</h5> : despesas.map((d) => <Despesa key={d.id} descricao={d.motivoLancamento?.nome || d.descricao} statusLancamento={d.statusLancamento} valorTotal={d.valorTotal} dataVencimento={d.dataVencimento}/>)}
-
+     
+      <div style={{ width: '69%', minWidth: '400px' }}>
+        <div className={styles.card} style={{ minHeight: '350px' }}>
+          <h4 className={styles["card-title"]}>Proximas despesas</h4>
+          <table className={"table"}>
+            <thead>
+              <tr>
+                <th>Despesa</th>
+                <th>Valor</th>
+                <th>Venc</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {despesas.length == 0 ? <tr><td>Nenhuma despesa encontrada.</td></tr> : despesas.map((d) => <Despesa key={d.id} descricao={d.motivoLancamento?.nome || d.descricao} statusLancamento={d.statusLancamento} valorTotal={d.valorTotal} dataVencimento={d.dataVencimento} />)}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div style={{ width: '30%', minWidth: '400px' }}>
+        <div className={styles.card} style={{ minHeight: '350px' }}>
+          <h4 className={styles["card-title"]}>Faturamento / Orcamento</h4>
+          <ResponsiveContainer height={200}>
+            <PieChart width={730} height={250}>
+              <Pie isAnimationActive label data={getData()} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={50} fill="#8884d8" />
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div className={styles.card} style={{ width: '100%' }}>
+        <h4 className={styles["card-title"]}>Produtos</h4>
+        <div className={styles.chart}>
+          <ResponsiveContainer height={400} width={'100%'}>
+            <BarChart
+              height={300}
+              width={1000}
+              data={produtos}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="produto" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Bar dataKey="valor" fill="var(--main)" activeBar={<Rectangle fill="white" stroke="white" />} />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
       </div>
 
     </div>
   )
 }
-const CardInfo = ({ title, value1, value2, style }) => {
+const CardInfo = ({ title, style, vendas }) => {
+
+  function getValor(onlyToday) {
+    var total = 0;
+    switch (style) {
+      case 'success':
+        total = _.sumBy(vendas, (p: IVenda) => {
+          if (p.statusVenda) {
+            if (onlyToday) {
+              if (isToday(new Date(p.dataVenda))) {
+                return p.valorTotal;
+              } else {
+                return 0;
+              }
+            }
+            else return p.valorTotal;
+
+          }
+          return 0;
+        });
+        break;
+      case 'primary':
+        total = _.sumBy(vendas, (p: IVenda) => {
+          if (p.statusVenda && p.estd) {
+            if (onlyToday) {
+              if (isToday(new Date(p.dataVenda))) {
+                return p.valorTotal;
+              } else {
+                return 0;
+              }
+            }
+            else return p.valorTotal;
+
+          }
+          return 0;
+        });
+        break;
+      case 'danger':
+        total = _.sumBy(vendas, (p: IVenda) => {
+          if (!p.statusVenda) {
+            if (onlyToday) {
+              if (isToday(new Date(p.dataVenda))) {
+                return p.valorTotal;
+              } else {
+                return 0;
+              }
+            }
+            else return p.valorTotal;
+
+          }
+          return 0;
+        });
+        break;
+    }
+    return total;
+  }
+  function getCount(onlyToday) {
+    var total = 0;
+    switch (style) {
+      case 'success':
+        total = _.sumBy(vendas, (p: IVenda) => {
+          if (p.statusVenda) {
+            if (onlyToday) {
+              if (isToday(new Date(p.dataVenda))) {
+                return 1;
+              } else {
+                return 0;
+              }
+            }
+            else return 1;
+
+          }
+          return 0;
+        });
+        break;
+      case 'primary':
+        total = _.sumBy(vendas, (p: IVenda) => {
+          if (p.statusVenda && p.estd) {
+            if (onlyToday) {
+              if (isToday(new Date(p.dataVenda))) {
+                return 1;
+              } else {
+                return 0;
+              }
+            }
+            else return 1;
+
+          }
+          return 0;
+        });
+        break;
+      case 'danger':
+        total = _.sumBy(vendas, (p: IVenda) => {
+          if (!p.statusVenda) {
+            if (onlyToday) {
+              if (isToday(new Date(p.dataVenda))) {
+                return 1;
+              } else {
+                return 0;
+              }
+            }
+            else return 1;
+
+          }
+          return 0;
+        });
+        break;
+    }
+    return total;
+  }
   return (
-    <div className={[styles.cardInfo].join(' ')}>
+    <div className={[styles.cardInfo, styles[style]].join(' ')}>
       <div className={styles.content}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label className={styles.title}>R${value1.toFixed(2)}</label>
-          <label className={styles.info}>Hoje</label>
+          <h4 className={styles.title}>R${getValor(true).toFixed(2)}</h4>
+          <h2 className={styles.info}>{getCount(true)} Hoje</h2>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <label className={styles.title}>R${value2.toFixed(2)}</label>
-          <label className={styles.info}>Mensal</label>
+          <h4 className={styles.title}>R${getValor(false).toFixed(2)}</h4>
+          <h2 className={styles.info}>{getCount(false)} Mensal</h2>
         </div>
       </div>
-      <div className={[styles.footer, styles[style]].join(' ')}>
-        <label>{title}</label>
-      </div>
+      <span className={styles.info}>{title}</span>
     </div>
   )
 }
 
-const Despesa = ({descricao, statusLancamento, valorTotal, dataVencimento}) => {
+const Despesa = ({ descricao, statusLancamento, valorTotal, dataVencimento }) => {
 
- function getStatus(){
-        if(statusLancamento){
-          return <Badge color={'primary'}>Pago</Badge>
-        }
-        if(new Date < new Date(dataVencimento)){
-          return <Badge color={'success'}>Em Aberto</Badge>
-        }
-        return <Badge color={'danger'}>Vencido</Badge>
- }
- return(
-  <div>
-    <h5>{descricao}</h5>
-    <div style={{display: 'flex', flexDirection:'row', flexWrap: 'wrap', justifyContent: 'space-between'}}>
-      <label>R${valorTotal.toFixed(2)}</label>
-      <label>{format(new Date(dataVencimento), 'dd/MM/yyyy')}</label>
-      <label>{getStatus()}</label>
-    </div>
-    <hr/>
-  </div>
- )
+  function getStatus() {
+    if (statusLancamento) {
+      return <Badge color={'primary'}>Pago</Badge>
+    }
+    if (new Date < new Date(dataVencimento)) {
+      return <Badge color={'success'}>Em Aberto</Badge>
+    }
+    return <Badge color={'danger'}>Vencido</Badge>
+  }
+  return (
+    <tr>
+      <td>{descricao}</td>
+      <td>R$ {valorTotal.toFixed(2)}</td>
+      <td>{format(new Date(dataVencimento), 'dd/MM/yyyy')}</td>
+      <td>{getStatus()}</td>
+    </tr>
+  )
 }
 export const getServerSideProps = canSSRAuth(async (ctx) => {
   return {
-      props: {
+    props: {
 
-      }
+    }
   }
 })

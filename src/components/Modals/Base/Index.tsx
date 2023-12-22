@@ -41,13 +41,18 @@ export default function BaseModal({headerOff, background, color, height, width, 
         aria-labelledby="example-custom-modal-styling-title"
         scrollable={true}
         centered
+        
       >
-        <Modal.Header closeButton hidden={headerOff}>
+        <Modal.Header closeButton hidden={headerOff} style={{
+          backgroundColor: 'var(--gray-100)'
+        }}>
           <Modal.Title id="example-custom-modal-styling-title" >
            {title}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body> 
+        <Modal.Body style={{
+          backgroundColor: 'var(--gray-100)'
+        }}> 
         {children}
         </Modal.Body>
       </Modal>

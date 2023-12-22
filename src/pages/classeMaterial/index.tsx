@@ -53,7 +53,7 @@ export default function ClasseMaterial() {
     const columns = [
         {
             name: '#',
-            cell: ({ id }: IClasseMaterial) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'warning'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }: IClasseMaterial) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
             sortable: true,
             grow: 0
         },

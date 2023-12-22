@@ -1,3 +1,9 @@
+.container{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
 .vendas{
     flex-direction: row;
     flex-wrap: wrap;
@@ -59,14 +65,20 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    justify-content: space-between;
+    width: 100%;
 }
 .cardInfo{
     margin: 5px;
-    width: 24%;
-    min-width: 300px;
-    height: 120px;
+    width: 30%;
+    min-width: 350px;
+    height: 220px;
     border-radius:  5px;
-    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    padding: 40px 20px;
+    span{
+        font-size: 22px;
+        font-weight: bold;
+    }
     
 }
 .content{
@@ -75,7 +87,6 @@
     padding: 10px;
     display: flex;
     justify-content: space-between;
-    background-color: white;
 }
 .footer{
     height: 25%;
@@ -89,21 +100,40 @@
     font-weight: normal;
 }
 .success{
-    background-image: linear-gradient(to  right, #11998e , #38ef7d);
+    background-image: linear-gradient(to  right, #7ecbc5 , #74c192);
 }
 .primary{
-    background-image: linear-gradient(to  right, rgb(34, 55, 130) , #0575E6);
+    background-image: linear-gradient(to  right, rgb(165, 181, 237) , #6a9ed2);
 }
 .danger{
-    background-image: linear-gradient(to  right, rgb(105, 31, 31) , #EB5757);
+    background-image: linear-gradient(to  right, rgb(237, 165, 165) , #d26a6a);
 }
 .title{
     font-size: 25px;
     font-weight: bold;
-    color:  #11998e;
+    color: white;
+    text-shadow: none;
+    font-family: sans-serif;
+    font-size: 1.83rem;
 }
 .info{
     font-size: 15px;
     font-style: italic;
-    color: var(--main);
+    color: var(--white);
+}
+
+.card{
+    margin: 10px 0px;
+    background-color: white;
+    padding: 30px;
+    border-radius: 4px;
+
+}
+.card-title{
+    color: #343a40;
+    margin-bottom: 0.75rem;
+    text-transform: capitalize;
+    font-weight: 500;
+    font-size: 1.125rem;
+    width: 100%;
 }

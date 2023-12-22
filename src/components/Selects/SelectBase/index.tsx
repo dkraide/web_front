@@ -82,8 +82,6 @@ export function SelectBase({id, maxTitleSize, width, datas, selected, title, set
         styles={{
         control: (base) => ({
             ...base,
-            backgroundColor: 'transparent',
-            borderTop: 'none',
             borderRadius: '0',
             borderColor: 'var(--main)',
             top: '-8px',

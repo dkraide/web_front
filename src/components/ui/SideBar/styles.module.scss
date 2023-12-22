@@ -1,32 +1,58 @@
-.openClose{
+.center{
     display: flex;
-    flex-direction: row;
-    justify-content: end;
-    width: 20%;
-    padding: 5px 0px 0px 0px;
-    a{
-        cursor: pointer;
-        transition:  all 0.21s;
+    justify-content: center;
+    align-items: center;
+}
+.menu-btn{
 
-        &:hover{
-            scale: 1.1;
-        }
+    cursor: pointer;
+    font-size: 24px;
+    transition:  all 0.1;
+
+    &:hover{
+        font-size: 25px;
     }
+
 }
-.main{
+.container-fluid{
     width: 100%;
-    padding: 10px;
-    overflow-y: auto;
+    margin-right: auto;
+    margin-left: auto;
+    padding-top: 70px;
 }
-.header{
+.page-body-wrapper{
+    min-height: calc(100vh - 70px);
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: end;
-    border-bottom: solid 1px var(--main);
-    margin: 0px 10px 20px 10px;
+    padding-left: 0;
+    padding-right: 0;
 }
-
+.navbar{
+    display: flex!important;
+    font-weight: 300;
+    background: #fff;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    height: 70px;
+}
+.fixed-bottom, .fixed-top {
+    position: fixed;
+    right: 0;
+    left: 0;
+    z-index: 1030;
+    top: 0;
+}
+.main-panel{
+    transition: width .25s ease,margin .25s ease;
+    width:100%;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    flex-direction: column;
+    background-color: var(--background);
+    padding: 10px;
+    overflow-x: hidden;
+}
 @media print{
     .sideBar{
      display: none;

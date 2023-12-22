@@ -88,6 +88,10 @@ export default function LancamentoEstoqueForm({user, isOpen, id, setClose, color
     }, [produtos])
 
     const onSubmit = async (data: any) =>{
+        if(lancamento.id > 0){
+            setClose();
+            return;
+        }
         setSending(true);
         lancamento.idPedido = data.idPedido || 0;
         lancamento.produtos = produtos;
@@ -103,6 +107,7 @@ export default function LancamentoEstoqueForm({user, isOpen, id, setClose, color
 
         }else{
             lancamento.empresaId = user.empresaSelecionada;
+            lancamento.isProduto = true;
             api.post(`LancamentoEstoque/Create`, lancamento)
             .then(({data}: AxiosResponse) => {
                 toast.success(`Lancamento cadastrado com sucesso!`);
@@ -118,8 +123,8 @@ export default function LancamentoEstoqueForm({user, isOpen, id, setClose, color
         if(sending){
             return;
         }
-           if(lancamento.idLancamentoEstoque > 0){
-               toast.error(`Erro ao excluir item. Lancamento ja importado localmente.`);
+           if(lancamento.id > 0){
+               toast.error(`Erro ao excluir item. Lancamento ja contabilizado no estoque.`);
                return;
            }
 
@@ -183,7 +188,7 @@ export default function LancamentoEstoqueForm({user, isOpen, id, setClose, color
     const columns = [
         {
             name: '#',
-            cell: ({ produtoId }) => lancamento.idLancamentoEstoque > 0 ? <></> : <CustomButton onClick={() => {removeItem(produtoId)}} typeButton={'danger'}><FontAwesomeIcon icon={faTrash}/></CustomButton>,
+            cell: ({ produtoId }) => lancamento.id > 0 ? <></> : <CustomButton onClick={() => {removeItem(produtoId)}} typeButton={'danger'}><FontAwesomeIcon icon={faTrash}/></CustomButton>,
             sortable: true,
             grow: 0,
             width: '10%'
@@ -224,16 +229,16 @@ export default function LancamentoEstoqueForm({user, isOpen, id, setClose, color
                         <InputForm readOnly={true} width={'20%'} title={'Data'} errors={errors} register={register} inputName={'dataLancamento'} defaultValue={format(new Date(lancamento.dataLancamento), 'dd/MM/yyyy')}/>
                         <InputForm readOnly={lancamento.idLancamentoEstoque > 0}  width={'10%'} title={'Nro Ref'} errors={errors} register={register} inputName={'idPedido'} defaultValue={lancamento.idPedido}/>
                         <SelectEntradaSaida width={'20%'} selected={lancamento.isEntrada ? 1 : 0} setSelected={(v) => {
-                            if(lancamento.idLancamentoEstoque > 0){
+                            if(lancamento.id > 0){
                                 return;
                             }
                             setLancamento({...lancamento, isEntrada: v})
                         }}/>
                     </div>
                     <hr/>
-                    {lancamento.idLancamentoEstoque > 0 ? (
+                    {lancamento.id > 0 ? (
                         <div className={styles.box}>
-                            <h3>Esse pedido ja foi importado localmente. Impossivel modifica-lo</h3>
+                            <h3>Lancamento ja contabilizado no estoque. Impossivel modifica-lo</h3>
                         </div>
                     ) : (
                         <div className={styles.box}>

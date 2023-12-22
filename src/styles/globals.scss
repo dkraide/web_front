@@ -1,5 +1,5 @@
 @import '~bootstrap/scss/bootstrap';
-@import 'node_modules/react-bootstrap-toggle/dist/bootstrap2-toggle.css';
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@700&display=swap');
 * {
   margin: 0;
   padding: 0;
@@ -16,27 +16,10 @@ ul{
   --black: #000;
   --dark-900: #101026;
   --dark-700: #1D1D2E;
-
-  --gray-200: #c9c7c7;
-  --gray-100: #e0dede;
-  --red-900: #FF3F4B;
-
-  --success: #3aa06f;
-  --success-press: #225d40;
-  --danger: #bd4747;
-  --danger-press: #502020;
-
-  --warning: #c99200;
-  --warning-press: #987104;
-
-  
-  --info-press: #023c88;
-
-  --main:  #039bda;
-  --main-light: rgb(166, 212, 232);
-  --main-light-100: rgb(216, 237, 245);
-  --main-focus: #0057c9;
-  --main-dark: #070a0b;
+  --main: #fc4f6b;
+  --blue: #ada3ff;
+  --green: #82ca9d;
+  --background: #f2edf3 ;
 }
 
 button {
@@ -75,17 +58,16 @@ main{
 
 }
 
-body,
 input,
 textarea,
 select,
 h3,
 h5,
 h4,
-h1,
-label
-button {
-  font: 400 1rem "Roboto" sans-serif; //1rem = 16px
+h1 {
+  font-family: Ubuntu,sans-serif;
+  text-shadow: none;
+  line-height: 1.2;
 }
 
 
