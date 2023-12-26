@@ -45,7 +45,7 @@ export default function AddItem({ isOpen, setClose }: props) {
             setClose(item);
     }
     return (
-        <BaseModal isOpen={isOpen} setClose={setClose} title={'Adicionar item ao Combo'} height={'50%'} width={'50%'}>
+        <BaseModal isOpen={isOpen} setClose={setClose} title={'Adicionar item ao Combo'} height={'100%'} width={'50%'}>
            <div className={styles.container}>
            <SelectClasseProduto title={'Tipo'} width={'60%'} selected={isProduto} setSelected={(v) => setIsProduto(v)} />
             {isProduto ?

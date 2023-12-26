@@ -32,7 +32,6 @@ export default function SideBar({ ...props }) {
     }, []);
     const { innerWidth } = useWindowSize();
     const isMobile = innerWidth < 600;
-    console.log(innerWidth);
     const { getUser, signOut, updateUser } = useContext(AuthContext);
     async function updateEmpresa(EmpresaId) {
         if (EmpresaId == user.empresaSelecionada) {
@@ -52,6 +51,16 @@ export default function SideBar({ ...props }) {
 
             </main>
         </>
+    }
+    const subMenuStyle = {
+        ['& > a']: {
+            '&:hover': {
+                backgroundColor: 'black'
+            },
+            '.ps-open': {
+                fontWeight: 'bold',
+            },
+        },
     }
 
 
@@ -95,7 +104,7 @@ export default function SideBar({ ...props }) {
                     }} >
                         {user.isPdv ? (
                             <div>
-                                <SubMenu href={'/pdv'} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
+                                <SubMenu rootStyles={subMenuStyle} href={'/pdv'} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
                                 </SubMenu>
                             </div>
                         ) : (
@@ -113,38 +122,29 @@ export default function SideBar({ ...props }) {
                                     <a className={styles["menu-btn"]} onClick={signOut}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
                                 </div>
                                 <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Produtos"
-                                    rootStyles={{
-                                        ['& > a']: {
-                                            '&:hover': {
-                                                backgroundColor: 'black'
-                                            },
-                                            '.ps-open': {
-                                                fontWeight: 'bold',
-                                            },
-                                        },
-                                    }}>
+                                    rootStyles={subMenuStyle}>
                                     <MenuItem href={'/produto'}>Produtos</MenuItem>
                                     <MenuItem href={'/classeMaterial'}>Classes</MenuItem>
                                     <MenuItem href={'/tributacao'}>Tributacoes</MenuItem>
                                     <MenuItem href={'/estoque'}>Estoque</MenuItem>
                                     <MenuItem href={'/estoqueLancamento'}>Lancamento de Estoque</MenuItem>
                                 </SubMenu>
-                                <SubMenu icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promocoes">
+                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promocoes">
                                     <MenuItem href={'/promocao/atacado'}> Promocao</MenuItem>
                                     <MenuItem href={'/promocao/combo'}> Combos</MenuItem>
                                     <MenuItem href={'/promocao/tabelaPreco'}> Tabela de Preco</MenuItem>
                                 </SubMenu>
-                                <SubMenu icon={<FontAwesomeIcon icon={faCalculator} color={'var(--main)'} />} label="Financeiro">
+                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCalculator} color={'var(--main)'} />} label="Financeiro">
                                     <MenuItem href={'/motivoLancamento'}>Motivo de Lancamento</MenuItem>
                                     <MenuItem href={'/despesa'}>Despesas</MenuItem>
                                     <MenuItem href={'/entrada'}>Entradas</MenuItem>
                                 </SubMenu>
-                                <SubMenu icon={<FontAwesomeIcon icon={faMoneyBill} color={'var(--main)'} />} label="Vendas">
+                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faMoneyBill} color={'var(--main)'} />} label="Vendas">
                                     <MenuItem href={'/movimentoCaixa'}>Caixas</MenuItem>
                                     <MenuItem href={'/venda'}>Vendas</MenuItem>
                                     <MenuItem href={'/arquivosxml'}>Arquivos XML</MenuItem>
                                 </SubMenu>
-                                <SubMenu icon={<FontAwesomeIcon icon={faChartSimple} color={'var(--main)'} />} label="Relatorios">
+                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faChartSimple} color={'var(--main)'} />} label="Relatorios">
                                     <MenuItem href={'/relatorio/classe'}>Por Classe</MenuItem>
                                     <MenuItem href={'/relatorio/dia'}>Por Dia</MenuItem>
                                     <MenuItem href={'/relatorio/formaPagamento'}>Por Forma</MenuItem>
@@ -152,12 +152,12 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/relatorio/usuario'}>Por Usuiario</MenuItem>
                                     <MenuItem href={'/relatorio/demonstrativo'}>Demonstrativo</MenuItem>
                                 </SubMenu>
-                                <SubMenu icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
+                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
                                     <MenuItem href={'/pdv/formaPagamento'}>Formas de Pagamento</MenuItem>
                                     <MenuItem href={'/pdv/usuario'}>Usuarios</MenuItem>
                                     <MenuItem href={'/pdv/configuracao'}>Configuracao</MenuItem>
                                 </SubMenu>
-                                <SubMenu icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
+                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
                                     <MenuItem href={'/menudigital/produtos'}>Produtos</MenuItem>
                                     <MenuItem href={'/menudigital/categorias'}>Categorias</MenuItem>
                                     <MenuItem href={'/menudigital/promocoes'}>Promocoes</MenuItem>

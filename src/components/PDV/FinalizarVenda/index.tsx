@@ -324,7 +324,7 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
 
 
     return (
-        <BaseModal color={'#d1ebf5'} width={'60%'} height={'70%'} title={'Finalizar Venda'} isOpen={isOpen} setClose={() => { setClose(undefined) }}>
+        <BaseModal color={'#d1ebf5'} width={'100%'} height={'70%'} title={'Finalizar Venda'} isOpen={isOpen} setClose={() => { setClose(undefined) }}>
             <div className={styles.content}>
                 <div style={{ width: '50%', height: '100%' }}>
                     <div style={{ height: '50%' }}>
@@ -365,7 +365,7 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
                             {pagamentos?.map((forma, index) => <li key={forma.id}>R${forma.valor.toFixed(2)} - {forma.descricao}</li>)}
                         </ul>
                         <div className={styles.row}>
-                            <CustomButton onClick={limpar} typeButton={'danger'}>Limpar</CustomButton>
+                            <CustomButton onClick={limpar} typeButton={'main'}>Limpar</CustomButton>
                         </div>
                     </div>
                     <div className={styles.formaPagamento}>

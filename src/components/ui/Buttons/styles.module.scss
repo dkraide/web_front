@@ -9,6 +9,18 @@
     }
 }
 
+.main{
+    background-color: var(--main);
+    color: var(--white);
+    border-color: var(--white);
+    &:hover {
+        background-color: var(--white);
+        color: var(--main);
+        border-color: var(--main);
+    }
+
+}
+
 .outline-main {
     background-color: var(--white);
     color: var(--main);
@@ -18,4 +30,47 @@
         color: var(--white);
         border-color: var(--main);
     }
+}
+.success{
+    background-color: var(--green);
+    color: var(--white);
+    border-color: var(--white);
+    &:hover {
+        background-color: var(--white);
+        color: var(--green);
+        border-color: var(--green);
+    }
+
+}
+.outline-success{
+    background-color: var(--white);
+    color: var(--main);
+    border-color: var(--main);
+    &:hover {
+        background-color: var(--main);
+        color: var(--white);
+        border-color: var(--main);
+    }
+}
+.warning{
+    background-color: var(--warning);
+    color: var(--white);
+    border-color: var(--white);
+    &:hover {
+        background-color: var(--white);
+        color: var(--warning);
+        border-color: var(--warning);
+    }
+}
+
+.danger{
+    background-color: var(--danger);
+    color: var(--white);
+    border-color: var(--white);
+    &:hover {
+        background-color: var(--white);
+        color: var(--danger);
+        border-color: var(--danger);
+    }
+
 }

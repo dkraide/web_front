@@ -128,7 +128,7 @@ export default function Caixa({ usuarioCaixa, caixa, isOpen, setClose }: cancela
    console.log(caixa);
 
     return (
-        <BaseModal headerOff={!movimentoCaixa?.id} width={'50%'} height={'50%'} title={'Movimento Caixa'} isOpen={isOpen} setClose={
+        <BaseModal headerOff={!movimentoCaixa?.id}  title={'Movimento Caixa'} isOpen={isOpen} setClose={
             () => { setClose(movimentoCaixa)}}>
             <div className={styles.content}>
                 {movimentoCaixa?.id ?

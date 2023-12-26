@@ -284,7 +284,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         }
     }
     return (
-        <BaseModal height={'80%'} width={'80%'} color={color} title={'Cadastro de Produto'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal  color={color} title={'Cadastro de Produto'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading />
             ) : (
@@ -292,7 +292,6 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                     <Tabs
                         defaultActiveKey="produto"
                         id="uncontrolled-tab-example"
-                        className="mb-3"
                         variant={'underline'}
                         justify={false}
                         fill

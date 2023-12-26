@@ -2,7 +2,6 @@ import CustomButton from "@/components/ui/Buttons";
 import styles from "./styles.module.scss";
 import BaseModal from "@/components/Modals/Base/Index";
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa";
-import { InputForm } from "@/components/ui/InputGroup";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import IUsuarioCaixa from "@/interfaces/IUsuarioCaixa";
@@ -12,13 +11,7 @@ import { toast } from "react-toastify";
 import LoadingModal from "@/components/Modals/LoadingModal";
 import { format } from "date-fns";
 import _ from "lodash";
-import IVenda from "@/interfaces/IVenda";
 import CustomTable from "@/components/ui/CustomTable";
-import { Button, Spinner } from "react-bootstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faTrash, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
-import { LabelGroup } from "@/components/ui/LabelGroup";
-import BoxInfo from "@/components/ui/BoxInfo";
 import ISangriaReforco from "@/interfaces/ISangriaReforco";
 import SangriaForm from "./SangriaForm";
 
@@ -102,7 +95,7 @@ export default function Sangrias({usuario, caixa, isOpen, setClose }: cancelarPr
     }
 ]
     return (
-        <BaseModal headerOff={!caixa} width={'50%'} height={'50%'} title={'Sangrias'} isOpen={isOpen} setClose={() => { setClose(false) }}>
+        <BaseModal headerOff={!caixa} width={'100%'} height={'50%'} title={'Sangrias'} isOpen={isOpen} setClose={() => { setClose(false) }}>
             <div className={styles.content}>
                 <CustomButton typeButton={'dark'} onClick={() => {setNovaSangria(true)}}>Nova Sangria</CustomButton>
                 <CustomTable

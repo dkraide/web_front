@@ -15,6 +15,7 @@ import GetValue from '@/components/Modals/GetValue';
 import {  blobToBase64, getURLImagemMenu, sendImage} from '@/utils/functions';
 import IPromocao from '@/interfaces/IPromocao';
 import AtacadoForm from '@/components/Modals/Promocao/AtacadoForm';
+import CustomButton from '@/components/ui/Buttons';
 
 type prodEdit = {
     column: string
@@ -132,16 +133,7 @@ export default function Promocoes() {
             name: 'Visivel',
             selector: (row: IPromocao) => row.visivelMenu,
             cell: (row: IPromocao) => <div>
-                 <Toggle
-                onClick={() => { onToggle(row.id) }}
-                on={<label style={{cursor: 'pointer'}}>Visivel</label>}
-                off={<label style={{cursor: 'pointer'}}>Invisivel</label>}
-                width={100}
-                height={25}
-                onstyle="success"
-                offstyle="danger"
-                active={row.visivelMenu}
-            />
+                <CustomButton onClick={() => {onToggle(row.id)}} typeButton={row.visivelMenu ? 'success' : 'danger'}> {row.visivelMenu ? 'Visivel' : 'Invisivel'}</CustomButton>
             </div>,
         },
     ]

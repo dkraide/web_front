@@ -17,8 +17,11 @@ ul{
   --dark-900: #101026;
   --dark-700: #1D1D2E;
   --main: #fc4f6b;
+  --main-light: #f78396;
   --blue: #ada3ff;
-  --green: #82ca9d;
+  --green: #679f7d;
+  --warning: #edce5f;
+  --danger: #c74949;
   --background: #f2edf3 ;
 }
 
@@ -96,7 +99,7 @@ h1 {
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: var(--main-light-100);
+  background: var(--main);
   border-radius: 5px;
 }
 

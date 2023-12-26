@@ -13,6 +13,8 @@ import { Badge } from 'react-bootstrap';
 import { canSSRAuth } from '@/utils/CanSSRAuth';
 import IVenda from '@/interfaces/IVenda';
 import _ from 'lodash';
+import IVendaPagamento from '@/interfaces/IVendaPagamento';
+import { random_rgba } from '@/utils/functions';
 
 
 interface resProps {
@@ -74,15 +76,14 @@ export default function Dashboard() {
 
     list.push({
       label: 'Orcamento',
-      value: orcamento,
+      value: Number(orcamento.toFixed(2)),
       fill: "var(--blue)",
     },
       {
         label: 'Faturado',
-        value: faturado,
+        value: Number(faturado.toFixed(2)),
         fill: "var(--main)"
       });
-    getDataDia();
     return list;
 
   }
@@ -94,11 +95,30 @@ export default function Dashboard() {
     var list = _.map(res, (collection, key) => {
       return {
         key,
-        venda: _.sumBy(collection, (p: IVenda) => p.valorTotal),
-        custo: _.sumBy(collection, (p: IVenda) => p.valorCusto),
+        venda: Number(_.sumBy(collection, (p: IVenda) => p.statusVenda ? p.valorTotal : 0).toFixed(2)),
+        custo:Number(_.sumBy(collection, (p: IVenda) => p.statusVenda ? p.valorCusto : 0).toFixed(2)),
       }
     });
     return _.orderBy(list, p => p.key);
+  }
+
+  function getDataForma() {
+    var pagamentos = [];
+    obj?.map((p) => {
+      if (p.statusVenda) {
+        pagamentos.push(...p.pagamentos);
+      }
+    });
+    var grouped = _.groupBy(pagamentos, (p: IVendaPagamento) => p.descricao);
+    var list = _.map(grouped, (collection, key) => {
+      return {
+        label: key,
+        value: Number(_.sumBy(collection, (p: IVendaPagamento) => p.valor).toFixed(2)),
+        fill: random_rgba()
+      }
+    });
+    console.log(list);
+    return list;
   }
 
 
@@ -117,11 +137,11 @@ export default function Dashboard() {
         <h4 className={styles["card-title"]}>Relatorio de Venda por Dia</h4>
         <div className={styles.chart}>
           <ResponsiveContainer height={250} width={'100%'}>
-            <LineChart  height={150} data={getDataDia()}
+            <LineChart height={150} data={getDataDia()}
               margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="key"  />
-              <YAxis  />
+              <XAxis dataKey="key" />
+              <YAxis />
               <Tooltip />
               <Legend />
               <Line type="monotone" dataKey="venda" name={"Venda (R$)"} stroke="var(--green)" strokeWidth={3} />
@@ -130,7 +150,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
       </div>
-     
+
       <div style={{ width: '69%', minWidth: '400px' }}>
         <div className={styles.card} style={{ minHeight: '350px' }}>
           <h4 className={styles["card-title"]}>Proximas despesas</h4>
@@ -161,7 +181,19 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
       </div>
-      <div className={styles.card} style={{ width: '100%' }}>
+      <div style={{ width: '30%', minWidth: '400px' }}>
+        <div className={styles.card} style={{ minHeight: '400px' }}>
+          <h4 className={styles["card-title"]}>Pagamentos</h4>
+          <ResponsiveContainer height={400}>
+            <PieChart  height={300}>
+              <Pie isAnimationActive label data={getDataForma()} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={50}  />
+              <Tooltip />
+              <Legend />
+            </PieChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+      <div className={styles.card} style={{ width: '69%' }}>
         <h4 className={styles["card-title"]}>Produtos</h4>
         <div className={styles.chart}>
           <ResponsiveContainer height={400} width={'100%'}>

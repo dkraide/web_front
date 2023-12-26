@@ -17,21 +17,6 @@ export default function BaseModal({headerOff, background, color, height, width, 
     if (!isOpen) {
         return <></>
     }
-    // return (
-    //     <div className={styles.container}  onClick={(e) => {
-    //         // if (e.target == e.currentTarget) {
-    //         //     setClose();
-    //         // }
-    //     }}>
-    //         <div className={styles.content} style={{height: height, width: width, background: background, backgroundColor: color}}> 
-    //             <div hidden={headerOff} className={styles.header}>
-    //                 <h3>{title || 'Janela'}</h3>
-    //                 <AiOutlineClose  className={styles.icon} onClick={() => {setClose()}}/>
-    //             </div>
-    //             {children}
-    //         </div>
-    //     </div>
-    // )
     return(
         <Modal
         size="xl"
@@ -42,6 +27,8 @@ export default function BaseModal({headerOff, background, color, height, width, 
         scrollable={true}
         centered
         
+       
+        
       >
         <Modal.Header closeButton hidden={headerOff} style={{
           backgroundColor: 'var(--gray-100)'
@@ -51,7 +38,8 @@ export default function BaseModal({headerOff, background, color, height, width, 
           </Modal.Title>
         </Modal.Header>
         <Modal.Body style={{
-          backgroundColor: 'var(--gray-100)'
+          backgroundColor: 'var(--gray-100)',
+          height: height || '100vh'
         }}> 
         {children}
         </Modal.Body>

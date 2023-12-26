@@ -57,6 +57,7 @@ export default function ComboForm({ user, isOpen, id, setClose, color }: props) 
         } else {
             item.id = 0;
             item.status = true;
+            item.empresaId = user.empresaSelecionada;
             setItem(item);
             setLoading(false);
         }
@@ -107,6 +108,21 @@ export default function ComboForm({ user, isOpen, id, setClose, color }: props) 
         item.itens.splice(index, 1);
         setItem({ ...item, itens: item.itens });
     }
+    if(addItem){
+        return <AddItem isOpen={addItem} setClose={(v) => {
+            if (v) {
+                if (!item.itens) {
+                    item.itens = [];
+                }
+                v.comboId = item.id;
+                v.idCombo = item.idCombo;
+                v.empresaId = user.empresaSelecionada;
+                item.itens.push(v);
+                setItem({ ...item, itens: item.itens });
+            }
+            setAddItem(false);
+        }} />
+    }
     return (
         <BaseModal height={'80%'} width={'50%'} color={color} title={'Cadastro de Combo'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
@@ -139,18 +155,6 @@ export default function ComboForm({ user, isOpen, id, setClose, color }: props) 
                     </div>
                 </div>
             )}
-            {addItem && <AddItem isOpen={addItem} setClose={(v) => {
-                if (v) {
-                    if (!item.itens) {
-                        item.itens = [];
-                    }
-                    v.comboId = item.id;
-                    v.idCombo = item.idCombo;
-                    item.itens.push(v);
-                    setItem({ ...item, itens: item.itens });
-                }
-                setAddItem(false);
-            }} />}
         </BaseModal>
     )
 }

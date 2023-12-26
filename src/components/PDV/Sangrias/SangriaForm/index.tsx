@@ -67,7 +67,7 @@ export default function SangriaForm({ usuario, caixa, isOpen, setClose }: cancel
     }
 
     return (
-        <BaseModal headerOff={!caixa} width={'50%'} height={'50%'} title={'Cadastro de Sangria'} isOpen={isOpen} setClose={() => { setClose(false) }}>
+        <BaseModal headerOff={!caixa} width={'100%'} height={'100%'} title={'Cadastro de Sangria'} isOpen={isOpen} setClose={() => { setClose(false) }}>
             <div className={styles.content}>
                 <div className={styles.row}>
                     <h5>Sangria</h5>

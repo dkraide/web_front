@@ -11,7 +11,7 @@ import IVenda from "@/interfaces/IVenda";
 import { LabelGroup } from "@/components/ui/LabelGroup";
 import { format } from "date-fns";
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa";
-import { Spinner } from "react-bootstrap";
+import { Spinner, Tab, Tabs } from "react-bootstrap";
 
 interface props {
     isOpen: boolean
@@ -42,7 +42,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                 toast.error(`Erro ao buscar dados. ${err.message}`)
                 setLoading(false);
             })
-            api.get(`/MovimentoCaixa/GetTotais?id=${id}`)
+        api.get(`/MovimentoCaixa/GetTotais?id=${id}`)
             .then(({ data }: AxiosResponse<valorProps[]>) => {
                 setTotais(data);
             })
@@ -51,44 +51,44 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
             })
     }, []);
 
-    function calcularVendas(){
-        if(!totais){
+    function calcularVendas() {
+        if (!totais) {
             return 0;
         }
         var total = 0;
         totais.map(p => {
-            if(p.forma.toUpperCase().includes('DINHEIRO')){
+            if (p.forma.toUpperCase().includes('DINHEIRO')) {
                 total += p.valor
             }
         });
         return total;
     }
-    function calcularSangrias(){
-        if(!obj || !obj.sangrias){
+    function calcularSangrias() {
+        if (!obj || !obj.sangrias) {
             return 0;
         }
         var total = _.sumBy(obj.sangrias, o => o.isSangria ? o.valorMovimento : 0);
         return total;
     }
-    function calculaEntradas(){
-        if(!obj || !obj.sangrias){
+    function calculaEntradas() {
+        if (!obj || !obj.sangrias) {
             return 0;
         }
         var total = _.sumBy(obj.sangrias, o => !o.isSangria ? o.valorMovimento : 0);
         return total;
     }
-    function calculaEsperado(){
+    function calculaEsperado() {
         var sangrias = calcularSangrias();
         var entradas = calculaEntradas();
         var vendas = calcularVendas();
         var resultado = obj.valorDinheiro + vendas + entradas - sangrias;
         return resultado;
     }
-    function calculaDiferenca(){
-       var resultado = calculaEsperado();
-       return resultado - obj.valorDinheiroFinal;
+    function calculaDiferenca() {
+        var resultado = calculaEsperado();
+        return resultado - obj.valorDinheiroFinal;
     }
-   
+
     return (
         <BaseModal height={'80%'} width={'80%'} color={color} title={'Visualizar Movimento Caixa'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
@@ -96,59 +96,162 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
             ) : (
                 <div className={styles.container}>
                     <div className={styles.detail}>
-                        <h4>Movimento</h4>
-                        <LabelGroup width={'10%'} title={'Nro'} value={obj.idMovimentoCaixa}/>
-                        <LabelGroup width={'20%'} title={'Abertura'} value={format(new Date(obj.dataMovimento || new Date()), 'dd/MM/yyyy HH:mm')}/>
-                        <LabelGroup width={'20%'} title={'Usuario'} value={obj.usuario?.nome || obj.idUsuario}/>
-                        <LabelGroup width={'20%'} title={'Status'} value={obj.status ? 'FECHADO' : 'ABERTO'}/>
-                        <LabelGroup width={'20%'} title={'Fechamento'} value={obj.status ? format(new Date(obj.dataFechamento), 'dd/MM/yyyy HH:mm') : '--'}/>
-                        <h4>Totais</h4>
-                        <LabelGroup width={'15%'} title={'Abertura (+)'} value={obj.valorDinheiro.toFixed(2)}/>
-                        <LabelGroup width={'15%'} title={'Vendas (+)'} value={calcularVendas().toFixed(2)}/>
-                        <LabelGroup width={'15%'} title={'Entradas (+)'} value={calculaEntradas().toFixed(2)}/>
-                        <LabelGroup width={'15%'} title={'Sangrias (-)'} value={calcularSangrias().toFixed(2)}/>
-                        <LabelGroup width={'15%'} title={'Informado (=)'} value={obj.status ? obj.valorDinheiroFinal.toFixed(2) : '--'}/>
-                        <LabelGroup width={'10%'} title={'Esperado (=)'} value={obj.status ? calculaEsperado().toFixed(2) : '--'}/>
-                        <LabelGroup width={'10%'} title={'Diferenca (=)'} value={obj.status ? calculaDiferenca().toFixed(2) : '--'}/>
-                        <hr/>
-                    </div>
-                    <div className={styles.totais}>
-                        <h4>Totais</h4>
-                        {!totais ? <div><Spinner/><p><b>Carregando totais...</b></p></div> : <div>
-                            {totais?.map((item, index) => <div key={index} className={styles.item}>
-                            <b style={{width: '50%'}}>{item.forma}</b>
-                            <b style={{width: '25%'}}>{item.qntd}</b>
-                            <b style={{width: '25%'}}>R$ {item.valor.toFixed(2)}</b>
-                        </div>)} 
-                        <div className={styles.item}>
-                            <b style={{width: '50%'}}>TOTAL</b>
-                            <b style={{width: '25%'}}>{_.sumBy(totais, t => t.qntd)}</b>
-                            <b style={{width: '25%'}}>R$ {_.sumBy(totais, t => t.valor).toFixed(2)}</b>
+                        <div style={{width: '45%'}}>
+                            <table className={"table"}>
+                                <thead>
+                                    <tr>
+                                        <th colSpan={2}>Detalhe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Nro</td>
+                                        <td>{obj.idMovimentoCaixa || obj.id}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Abertura</td>
+                                        <td>{format(new Date(obj.dataMovimento || new Date()), 'dd/MM/yyyy HH:mm')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Usuario</td>
+                                        <td>{obj.usuario?.nome || obj.idUsuario}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Status</td>
+                                        <td>{obj.status ? 'FECHADO' : 'ABERTO'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fechamento</td>
+                                        <td>{obj.status ? format(new Date(obj.dataFechamento), 'dd/MM/yyyy HH:mm') : '--'}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                            </div>}
+                        <div style={{width: '45%'}}>
+                            <table className={"table"}>
+                                <thead>
+                                    <tr>
+                                        <th colSpan={2}>Totais</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Abertura (+)</td>
+                                        <td>R$ {obj.valorDinheiro.toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Vendas (+)</td>
+                                        <td>R$ {calcularVendas().toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Entradas (+)</td>
+                                        <td>R$ {calculaEntradas().toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sangrias (-)</td>
+                                        <td>R$ {calcularSangrias().toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Informado (=)</td>
+                                        <td>R$ {obj.status ? obj.valorDinheiroFinal.toFixed(2) : '--'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Esperado (=)</td>
+                                        <td>R$ {obj.status ? calculaEsperado().toFixed(2) : '--'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Diferenca (=)</td>
+                                        <td>R$ {obj.status ? calculaDiferenca().toFixed(2) : '--'}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    <div className={styles.vendas}>
-                        <h4>Vendas</h4>
-                        {obj.vendas?.map((item) => 
-                            <div key={item.id} className={styles.item}>
-                                <LabelGroup width={'20%'} value={item.idVenda} title={'Nro'}/>
-                                <LabelGroup width={'40%'} value={format(new Date(item.dataVenda), 'dd/MM/yyyy HH:mm')} title={'Nro'}/>
-                                <LabelGroup width={'20%'} value={item.valorTotal.toFixed(2)} title={'Valor'}/>
-                                <LabelGroup width={'20%'} value={item.statusVenda ? 'OK' : 'Cancelada'} title={'Status'}/>
-                                <LabelGroup width={'20%'} value={item.estd ? 'FATURADA' : 'ORCAMENTO'} title={'Tipo'}/>
-                                <LabelGroup width={'20%'} value={item.usuario?.nome ||  '--'} title={'Usuario'}/>
-                            </div>)}
-                    </div>
-                    <div className={styles.sangrias}>
-                        <h4>Sangrias</h4>
-                        {obj.sangrias?.map((item) => <div key={item.id} className={styles.item}>
-                        <LabelGroup width={'20%'} value={item.idSangriaReforco} title={'Nro'}/>
-                        <LabelGroup width={'20%'} value={item.isSangria ? 'SANGRIA' : 'ENTRADA'} title={'Tipo'}/>
-                        <LabelGroup width={'60%'} value={format(new Date(item.dataSangria), 'dd/MM/yyyy HH:mm')} title={'Data'}/>
-                        <LabelGroup width={'20%'} value={item.valorMovimento.toFixed(2)} title={'Valor'}/>
-                        <LabelGroup width={'80%'} value={item.motivo} title={'Descricao'}/>
-                      </div>)}
-
+                    <div style={{ width: '100%' }}>
+                        <Tabs
+                            id="controlled-tab-example"
+                            className="mb-3"
+                            justify
+                        >
+                            <Tab eventKey="home" title="Totais">
+                                <div>
+                                    <table className={"table"}>
+                                        <thead>
+                                            <tr>
+                                                <th>Forma de Pagamento</th>
+                                                <th>Qntd</th>
+                                                <th>Valor</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {totais?.map((item, index) =>
+                                                <tr key={index}>
+                                                    <td>{item.forma}</td>
+                                                    <td>{item.qntd}</td>
+                                                    <td>R$ {item.valor.toFixed(2)}</td>
+                                                </tr>)}
+                                            <tr >
+                                                <td><b>TOTAL</b></td>
+                                                <td>{_.sumBy(totais, t => t.qntd)}</td>
+                                                <td>R$ {_.sumBy(totais, t => t.qntd)}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Tab>
+                            <Tab eventKey="profile" title="Vendas">
+                                <div>
+                                    <table className={"table"}>
+                                        <thead>
+                                            <tr>
+                                                <th>Nro</th>
+                                                <th>Usuario</th>
+                                                <th>Data</th>
+                                                <th>Status</th>
+                                                <th>Tipo</th>
+                                                <th>Valor</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {obj.vendas?.map((item) =>
+                                                <tr key={item.id}>
+                                                    <td>{item.id}</td>
+                                                    <td>{item.usuario?.nome || '--'}</td>
+                                                    <td>{format(new Date(item.dataVenda), 'dd/MM/yyyy HH:mm')}</td>
+                                                    <td>{item.statusVenda ? 'OK' : 'Cancelada'}</td>
+                                                    <td>{item.estd ? 'FATURADA' : 'ORCAMENTO'}</td>
+                                                    <td>{item.valorTotal.toFixed(2)}</td>
+                                                </tr>)}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Tab>
+                            <Tab eventKey="contact" title="Sangrias">
+                                <div>
+                                    <table className={"table"}>
+                                        <thead>
+                                            <tr>
+                                                <th>Nro</th>
+                                                <th>Tipo</th>
+                                                <th>Data</th>
+                                                <th>Motivo</th>
+                                                <th>Valor</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {obj.sangrias?.map((item) =>
+                                                <tr key={item.id}>
+                                                    <td>{item.id}</td>
+                                                    <td>{item.isSangria ? 'SANGRIA' : 'ENTRADA'}</td>
+                                                    <td>{format(new Date(item.dataSangria), 'dd/MM/yyyy HH:mm')}</td>
+                                                    <td>{item.motivo}</td>
+                                                    <td>{item.valorMovimento.toFixed(2)}</td>
+                                                </tr>)}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Tab>
+                        </Tabs>
                     </div>
                 </div>
             )}

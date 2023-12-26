@@ -14,6 +14,7 @@ interface selProps {
     width?: string;
     ignore?: number[];
     id?: string
+    empresaId?: number
     onKeyDown?: (e) => void
 }
 
@@ -67,12 +68,12 @@ export  const  SelectProdutoRef = forwardRef<SelectInstance<any>, selProps>(func
     )
   });
 
-export default function SelectProduto({id,ignore, width, selected, setSelected }: selProps) {
+export default function SelectProduto({empresaId, id,ignore, width, selected, setSelected }: selProps) {
     const [formas, setFormas] = useState<IProduto[]>([]);
     const { getUser } = useContext(AuthContext);
     const loadFormas = async () => {
-        const res = await getUser();
-        var ret = await api.get(`/Produto/List?EmpresaId=${res?.empresaSelecionada}&status=true`)
+        const res = empresaId ?  await getUser() : undefined;
+        var ret = await api.get(`/Produto/List?EmpresaId=${empresaId || res?.empresaSelecionada}&status=true`)
             .then(({ data }: AxiosResponse<IProduto[]>) => {
                 setFormas(data);
             })

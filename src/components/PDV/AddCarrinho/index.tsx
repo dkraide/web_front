@@ -3,7 +3,7 @@ import styles from './styles.module.scss';
 import IUsuario from '@/interfaces/IUsuario';
 import { InputForm } from '@/components/ui/InputGroup';
 import { useForm } from 'react-hook-form';
-import { fGetNumber, isNullOrWhitespace, onFocus } from '@/utils/functions';
+import { ACTION, fGetNumber, isNullOrWhitespace, onFocus } from '@/utils/functions';
 import { AxiosError, AxiosResponse } from 'axios';
 import { api } from '@/services/apiClient';
 import { toast } from 'react-toastify';
@@ -19,8 +19,9 @@ type addCarrinhoProps = {
     onFinalizar: () => void
     finalizar: boolean
     onKeyEvent: (e) => void
+    action: ACTION
 }
-export default function AddCarrinho({ onKeyEvent, finalizar, onAddProduto, user, onFinalizar }: addCarrinhoProps) {
+export default function AddCarrinho({action, onKeyEvent, finalizar, onAddProduto, user, onFinalizar }: addCarrinhoProps) {
 
     const [produto, setProduto] = useState<IProduto>()
     const [loading, setLoading] = useState(false);
@@ -32,6 +33,19 @@ export default function AddCarrinho({ onKeyEvent, finalizar, onAddProduto, user,
         //campo codProduto deve ser focado novamente
         onFocus("codProduto")
     }, [finalizar]);
+    useEffect(() => {
+
+        switch(action){
+            case "LIMPAR":
+                limparCampos();
+                break;
+            case '':
+            default:
+                break;
+            
+        }
+
+    }, [action])
     const {
         register,
         getValues,

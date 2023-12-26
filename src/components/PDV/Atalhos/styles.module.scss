@@ -17,6 +17,7 @@
         transition: all 0.1s;
         &:hover{
             background-color: var(--main-light);
+            color: var(--white);
         }
         margin: 0px 5px 5px 0px;
     }

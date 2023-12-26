@@ -10,6 +10,7 @@ import _ from "lodash";
 import IVenda from "@/interfaces/IVenda";
 import { LabelGroup } from "@/components/ui/LabelGroup";
 import { format } from "date-fns";
+import { Tab, Tabs } from "react-bootstrap";
 
 interface props {
     isOpen: boolean
@@ -41,26 +42,100 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                 <Loading />
             ) : (
                 <div className={styles.container}>
-                    <div className={styles.detail}>
-                        <h4>Venda</h4>
-                        <LabelGroup width={'10%'} title={'Nro'} value={obj.idVenda}/>
-                        <LabelGroup width={'10%'} title={'Caixa'} value={obj.idMovimentoCaixa}/>
-                        <LabelGroup width={'20%'} title={'Data'} value={format(new Date(obj.dataVenda), 'dd/MM/yyyy HH:mm')}/>
-                        <LabelGroup width={'20%'} title={'Usuario'} value={obj.usuario?.nome || obj.idUsuario}/>
-                        <LabelGroup width={'20%'} title={'Tipo'} value={obj.estd ? 'FATURADO' : 'ORCAMENTO'}/>
-                        <LabelGroup width={'20%'} title={'Status'} value={obj.statusVenda ? 'OK' : 'CANCELADO'}/>
-                        <LabelGroup width={'20%'} title={'Cancelamento'} value={obj.statusVenda ? '--' : format(new Date(obj.dataCancelamento), 'dd/MM/yyyy HH:mm')}/>
-                        <LabelGroup width={'50%'} title={'Motivo Canc.'} value={obj.statusVenda ? '--' : obj.motivoCancelamento}/>
-                    </div>
-                    <div className={styles.items}>
-                        <h4>Pagamentos</h4>
-                        {obj.pagamentos.map((item) => <div key={item.id} className={styles.item}>{item.descricao} - R$ {item.valor.toFixed(2)}</div>)}
-                    </div>
-                    <div className={styles.items}>
-                        <h4>Produtos</h4>
-                        {obj.produtos.map((item) => <div key={item.id} className={styles.item}>{item.nomeProduto} - {item.quantidade.toFixed(2)} x   R$ {item.valorTotal.toFixed(2)}</div>)}
+                    <Tabs
+                        id="controlled-tab-example"
+                        className="mb-3"
+                        justify
+                    >
+                        <Tab eventKey="home" title="Detalhe">
+                            <div>
+                                <table className={"table"}>
+                                    <thead>
+                                        <tr>
+                                            <th colSpan={2}>Venda</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Nro</td>
+                                            <td>{obj.id}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Caixa</td>
+                                            <td>{obj.movimentoCaixaId || obj.movimentoCaixaId}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Data</td>
+                                            <td>{format(new Date(obj.dataVenda), 'dd/MM/yyyy HH:mm')}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Usuario</td>
+                                            <td>{obj.usuario?.nome || obj.idUsuario}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Tipo</td>
+                                            <td>{obj.estd ? 'FATURADO' : 'ORCAMENTO'}</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Status</td>
+                                            <td>{obj.statusVenda ? 'OK' : 'CANCELADO'}</td>
+                                        </tr>
+                                        <tr hidden={obj.statusVenda}>
+                                            <td>Cancelamento</td>
+                                            <td>{obj.statusVenda ? '--' : format(new Date(obj.dataCancelamento), 'dd/MM/yyyy HH:mm')}</td>
+                                        </tr>
+                                        <tr hidden={obj.statusVenda}>
+                                            <td>Movimento Cancelamento</td>
+                                            <td>{obj.statusVenda ? '--' : obj.motivoCancelamento}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </Tab>
+                        <Tab eventKey="profile" title="Produtos">
+                            <div>
+                                <table className={"table"}>
+                                    <thead>
+                                        <tr>
+                                            <th>Produto</th>
+                                            <th>Qntd</th>
+                                            <th>Valor Un.</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {obj.produtos.map((item) => <tr key={item.id}>
+                                            <td>{item.nomeProduto}</td>
+                                            <td>{item.quantidade.toFixed(2)}</td>
+                                            <td>R$ {item.valorUnitario.toFixed(2)}</td>
+                                            <td>R$ {item.valorTotal.toFixed(2)}</td>
+                                        </tr>)}
 
-                    </div>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </Tab>
+                        <Tab eventKey="contact" title="Pagamentos">
+                            <div>
+                                <table className={"table"}>
+                                    <thead>
+                                        <tr>
+                                            <th>Forma de Pagamento</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {obj.pagamentos.map((item) => <tr key={item.id}>
+                                            <td>{item.descricao}</td>
+                                            <td>R$ {item.valor.toFixed(2)}</td>
+                                        </tr>)}
+
+                                    </tbody>
+                                </table>
+                            </div>
+
+                        </Tab>
+                    </Tabs>
                 </div>
             )}
         </BaseModal>

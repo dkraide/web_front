@@ -129,16 +129,7 @@ export default function ClasseMaterial() {
             name: 'Visivel',
             selector: (row: IProduto) => row.visivelMenu,
             cell: (row: IProduto) => <div>
-                 <Toggle
-                onClick={() => { onToggle(row.id) }}
-                on={<label style={{cursor: 'pointer'}}>Visivel</label>}
-                off={<label style={{cursor: 'pointer'}}>Invisivel</label>}
-                width={100}
-                height={25}
-                onstyle="success"
-                offstyle="danger"
-                active={row.visivelMenu}
-            />
+            <CustomButton onClick={() => {onToggle(row.id)}} typeButton={row.visivelMenu ? 'success' : 'danger'}> {row.visivelMenu ? 'Visivel' : 'Invisivel'}</CustomButton>
             </div>,
         },
     ]

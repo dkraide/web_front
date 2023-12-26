@@ -1,34 +1,38 @@
-.center{
+.center {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.menu-btn{
+
+.menu-btn {
 
     cursor: pointer;
     font-size: 24px;
-    transition:  all 0.1;
+    transition: all 0.1;
 
-    &:hover{
+    &:hover {
         font-size: 25px;
     }
 
 }
-.container-fluid{
+
+.container-fluid {
     width: 100%;
     margin-right: auto;
     margin-left: auto;
     padding-top: 70px;
 }
-.page-body-wrapper{
+
+.page-body-wrapper {
     min-height: calc(100vh - 70px);
     display: flex;
     flex-direction: row;
     padding-left: 0;
     padding-right: 0;
 }
-.navbar{
-    display: flex!important;
+
+.navbar {
+    display: flex !important;
     font-weight: 300;
     background: #fff;
     flex-wrap: wrap;
@@ -36,16 +40,19 @@
     justify-content: space-between;
     height: 70px;
 }
-.fixed-bottom, .fixed-top {
+
+.fixed-bottom,
+.fixed-top {
     position: fixed;
     right: 0;
     left: 0;
     z-index: 1030;
     top: 0;
 }
-.main-panel{
-    transition: width .25s ease,margin .25s ease;
-    width:100%;
+
+.main-panel {
+    transition: width .25s ease, margin .25s ease;
+    width: 100%;
     min-height: calc(100vh - 70px);
     display: flex;
     flex-direction: column;
@@ -53,8 +60,15 @@
     padding: 10px;
     overflow-x: hidden;
 }
-@media print{
-    .sideBar{
-     display: none;
+
+@media print {
+    .sideBar, .navbar {
+        display: none !important;
     }
- }
+    .container-fluid, .main-panel{
+        background-color: #fff !important;
+        padding: 5px !important;
+        margin: 0 !important;
+    }
+    
+}

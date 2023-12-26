@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import styles from './styles.module.scss'
 
 interface props extends  ButtonHTMLAttributes<HTMLButtonElement>{
-    typeButton: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'dark' | 'outline-main',
+    typeButton: 'primary' | 'secondary' | 'success' | 'warning' | 'danger' | 'dark' | 'main' | 'outline-main',
     loading?: boolean
     size?: "sm" | "lg"
 }

@@ -6,7 +6,7 @@ import { api } from '@/services/apiClient';
 import { InputForm } from '@/components/ui/InputGroup';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
-import { fGetNumber } from '@/utils/functions';
+import { ACTION, fGetNumber } from '@/utils/functions';
 import { AxiosError, AxiosResponse } from 'axios';
 import IProduto from '@/interfaces/IProduto';
 import AddCarrinho from '@/components/PDV/AddCarrinho';
@@ -25,6 +25,7 @@ import Vendas from '@/components/PDV/Vendas';
 import Sangrias from '@/components/PDV/Sangrias';
 
 
+
 export default function Pdv() {
 
     const [user, setUser] = useState<IUsuario>()
@@ -36,6 +37,7 @@ export default function Pdv() {
     const [openVenda, setOpenVenda] = useState(false);
     const [openSangria, setOpenSangria] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [onAction, setOnAction] = useState<ACTION>('');
 
     const {
         register,
@@ -48,6 +50,7 @@ export default function Pdv() {
     useEffect(() => {
         loadData();
     }, []);
+
 
 
     async function loadData() {
@@ -142,6 +145,14 @@ export default function Pdv() {
                 setOpenSangria(true);
                 e.preventDefault();
                 break;
+            case "f5":
+                setFinalizar(true);
+                e.preventDefault();
+                break;
+            case "f12":
+                    setOnAction("LIMPAR");
+                    e.preventDefault();
+                    break;
         }
     }
     if (!user) {
@@ -151,7 +162,7 @@ export default function Pdv() {
     return (
         <div className={styles.container}>
             <div style={{ width: '100%', height: '15%' }}>
-                <AddCarrinho onKeyEvent={onKeyEvent} finalizar={finalizar} onFinalizar={() => {
+                <AddCarrinho action={onAction} onKeyEvent={onKeyEvent} finalizar={finalizar} onFinalizar={() => {
                     if (venda?.produtos?.length > 0) {
                         setFinalizar(true)
                     } else {

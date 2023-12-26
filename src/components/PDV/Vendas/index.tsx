@@ -198,7 +198,7 @@ export default function Vendas({ usuario, caixa, isOpen, setClose }: cancelarPro
 
     }
     return (
-        <BaseModal headerOff={!caixa} width={'50%'} height={'50%'} title={'Vendas'} isOpen={isOpen} setClose={() => { setClose(false) }}>
+        <BaseModal headerOff={!caixa} width={'100%'} height={'50%'} title={'Vendas'} isOpen={isOpen} setClose={() => { setClose(false) }}>
             <div className={styles.content}>
                 <CustomTable
                     expandableComponent={vendaDetalhe}

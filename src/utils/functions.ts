@@ -117,3 +117,9 @@ export const imprimirNFce = async (vendaId) => {
     })
 
 }
+export const random_rgba = () => {
+    var o = Math.round, r = Math.random, s = 255;
+    return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) + ',1)';
+}
+
+export type ACTION =  ''| 'FINALIZAR'| 'LIMPAR';
