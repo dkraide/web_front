@@ -15,6 +15,8 @@ import IVenda from '@/interfaces/IVenda';
 import _ from 'lodash';
 import IVendaPagamento from '@/interfaces/IVendaPagamento';
 import { random_rgba } from '@/utils/functions';
+import IDuplicata from '@/interfaces/IDuplicata';
+import PagamentoDuplicata from '@/components/Modals/PagamentoDuplicata';
 
 
 interface resProps {
@@ -31,6 +33,7 @@ export default function Dashboard() {
   const [obj, setObj] = useState<IVenda[]>([])
   const [produtos, setProdutos] = useState<IVendaProduto[]>([])
   const [despesas, setDespesas] = useState<IDespesa[]>([])
+  const [duplicatas, setDuplicatas] = useState<IDuplicata[]>([])
   const { getUser } = useContext(AuthContext);
 
   const loadData = async () => {
@@ -54,6 +57,13 @@ export default function Dashboard() {
       }).catch((err: AxiosError) => {
         toast.error(`Erro ao buscar despesas. `);
       })
+    await api.get(`/Financeiro/GetDuplicatasAberto?EmpresaId=${(await user).empresaSelecionada}`)
+    .then(({data}: AxiosResponse) => {
+         setDuplicatas(data);
+
+    }).catch((err: AxiosError) => {
+
+    });
   }
 
   useEffect(() => {
@@ -117,7 +127,6 @@ export default function Dashboard() {
         fill: random_rgba()
       }
     });
-    console.log(list);
     return list;
   }
 
@@ -218,6 +227,10 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
       </div>
+
+      {duplicatas.length > 0 && <PagamentoDuplicata duplicatas={duplicatas} isOpen={duplicatas.length > 0} setClose={() => {
+         setDuplicatas([])
+      }}/>}
 
     </div>
   )

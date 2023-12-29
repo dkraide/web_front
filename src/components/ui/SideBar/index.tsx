@@ -85,7 +85,7 @@ export default function SideBar({ ...props }) {
                     }} />
                 </div>
                 <div hidden={innerWidth <= 700 } style={{ justifyContent: 'flex-end', marginRight: '10px', display: 'flex', flexDirection: 'row' }}>
-                    <span style={{ marginRight: '10px' }}>Bem Vindo, <br /><b>{user.nome}</b></span>
+                    <span style={{ marginRight: '10px' }}>Bem Vindo, <br /><b><a href={'/me'}>{user.nome}</a></b></span>
                     <a className={styles["menu-btn"]} onClick={signOut}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
                 </div>
             </nav>
@@ -118,7 +118,7 @@ export default function SideBar({ ...props }) {
                                         flexWrap: 'wrap',
                                         justifyContent: 'space-between'
                                     }}>
-                                    <span>Bem Vindo, <br /><b>{user.nome}</b></span>
+                                    <span>Bem Vindo, <br /><b><a href={'/me'}>{user.nome}</a></b></span>
                                     <a className={styles["menu-btn"]} onClick={signOut}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
                                 </div>
                                 <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Produtos"

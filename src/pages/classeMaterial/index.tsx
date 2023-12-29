@@ -80,6 +80,7 @@ export default function ClasseMaterial() {
             <h4>Classes de Materiais</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
             <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Nova Classe</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => {window.location.href = '/classeMaterial/franquia'}} style={{marginLeft: '10px'}} >Franquia</CustomButton>
             <hr/>
             <CustomTable
                 columns={columns}

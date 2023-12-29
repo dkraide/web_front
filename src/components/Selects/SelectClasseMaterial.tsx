@@ -11,14 +11,15 @@ interface selProps{
     selected: number;
     setSelected: (value: any) => void;
     width?: string;
+    empresaId?: number
 }
 
-export  default function SelectClasseMaterial({width, selected, setSelected}: selProps){
+export  default function SelectClasseMaterial({empresaId, width, selected, setSelected}: selProps){
     const [formas, setFormas] = useState<IClasseMaterial[]>([]);
     const {getUser} = useContext(AuthContext);
     const loadFormas = async () => {
            const res =  await getUser();
-           api.get(`/ClasseMaterial/List?empresaId=${res?.empresaSelecionada}`)
+           api.get(`/ClasseMaterial/List?EmpresaId=${empresaId || res?.empresaSelecionada}`)
            .then(({data}: AxiosResponse) => {
                    setFormas(data);
            })

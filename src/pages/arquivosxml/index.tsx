@@ -17,6 +17,7 @@ import CustomButton from "@/components/ui/Buttons"
 import { saveAs } from 'file-saver';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faDownload } from "@fortawesome/free-solid-svg-icons"
+import LoadingModal from "@/components/Modals/LoadingModal"
 interface searchProps {
     dateIn: string
     dateFim: string
@@ -35,11 +36,11 @@ export default function ArquivosXml() {
     const [arquivos, setArquivos] = useState<xmlProps[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState<searchProps>()
-    const [showVenda, setShowVenda] = useState(0)
     const [showMovimento, setShowMovimento] = useState(0)
     const [user, setUser] = useState<IUsuario>()
     const { getUser } = useContext(AuthContext)
     const [selected, setSelected] = useState([]);
+    const [onDownload, setOnDownload] = useState(false);
 
     useEffect(() => {
         if (!search) {
@@ -60,7 +61,6 @@ export default function ArquivosXml() {
         }
         await api.get(`/NFCECFEXml/Get?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}`)
             .then(({ data }: AxiosResponse<xmlProps[]>) => {
-                console.log(data);
                 setArquivos(data);
             }).catch((err: AxiosError) => {
                 toast.error(`Erro ao buscar vendas. ${err.response?.data || err.message}`);
@@ -78,7 +78,7 @@ export default function ArquivosXml() {
         },
         {
             name: 'Download',
-            cell: ({ venda, xml }: xmlProps) => <CustomButton typeButton={'dark'} onClick={() => {downloadUnico(xml.path, venda.nnf)}}><FontAwesomeIcon icon={faDownload} color={'white'}/></CustomButton>,
+            cell: ({ venda, xml }: xmlProps) => <CustomButton typeButton={'dark'} onClick={() => {downloadUnico(xml.id, venda.nnf)}}><FontAwesomeIcon icon={faDownload} color={'white'}/></CustomButton>,
             selector: row => row.venda.nnf,
             sortable: true,
             grow: 0,
@@ -106,7 +106,6 @@ export default function ArquivosXml() {
     ]
 
     function onSelectChange(data) {
-        console.log(data.selectedRows)
         setSelected(data.selectedRows);
     }
     async function downloadXml(all?: boolean) {
@@ -116,7 +115,7 @@ export default function ArquivosXml() {
                 return;
             }
             var files = [];
-            arquivos.map(p => files.push(p.xml.path));
+            arquivos.map(p => files.push(p.xml.id));
             download(files);
             return;
         } else {
@@ -126,31 +125,35 @@ export default function ArquivosXml() {
             }
             var files = [];
             selected.map(p => {
-                files.push(p.xml.path);
+                files.push(p.xml.id);
             });
             download(files);
         }
 
     }
-    async function download(files: string[]) {
-        await api.post(`/NFCECFEXML/DownloadFiles?empresaId=${user.empresaSelecionada}`, files, { responseType: 'blob' })
+    async function download(ids: number[]) {
+        setOnDownload(true);
+        await api.post(`/NFCECFEXML/DownloadFiles?empresaId=${user.empresaSelecionada}`, ids, { responseType: 'blob' })
             .then(({ data }: AxiosResponse) => {
                 toast.success(`Sucesso.`);
                 saveAs(data, "arquivos.zip");
             }).catch((err: AxiosError) => {
                 toast.error(`erro. ${err.response?.data}  - ${err.message}`)
             });
+        setOnDownload(false);
     }
-    async function downloadUnico(path: string, nnf: number) {
-        await api.post(`/NFCECFEXML/DownloadUnico?empresaId=${user.empresaSelecionada}&Path=${path}`, undefined, {responseType: 'blob'})
+    async function downloadUnico(id: number, nnf: number) {
+        setOnDownload(true);
+        await api.post(`/NFCECFEXML/DownloadUnico?empresaId=${user.empresaSelecionada}&id=${id}`, undefined, {responseType: 'blob'})
             .then(({ data }: AxiosResponse) => {
                 toast.success(`Sucesso.`);
                 saveAs(data, `${nnf}.xml`);
             }).catch((err: AxiosError) => {
-                toast.error(`erro. ${err.response?.data}  - ${err.message}`)
+                toast.error(`erro. ${err.response?.data || 'Info: '}  - ${err.message}`)
             });
+        setOnDownload(false);
     }
-
+    
     return (
         <div className={styles.container}>
             <h4>Arquivos XML de Vendas</h4>
@@ -170,6 +173,7 @@ export default function ArquivosXml() {
                 data={arquivos}
                 loading={loading}
             />
+            {onDownload && <LoadingModal isOpen={onDownload} setClose={() => {}} title={'Baixando arquivos... Esse processo pode ser demorado, aguarde.'}/>}
             {showMovimento > 0 && <Visualizar id={showMovimento} isOpen={showMovimento > 0} user={user} setClose={() => { setShowMovimento(0) }} />}
         </div>
     )
