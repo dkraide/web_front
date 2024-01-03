@@ -160,7 +160,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{ width: '69%', minWidth: '400px' }}>
+      <div style={{ width: '69%', minWidth: '350px' }}>
         <div className={styles.card} style={{ minHeight: '350px' }}>
           <h4 className={styles["card-title"]}>Proximas despesas</h4>
           <table className={"table"}>
@@ -178,7 +178,7 @@ export default function Dashboard() {
           </table>
         </div>
       </div>
-      <div style={{ width: '30%', minWidth: '400px' }}>
+      <div style={{ width: '30%', minWidth: '350px' }}>
         <div className={styles.card} style={{ minHeight: '350px' }}>
           <h4 className={styles["card-title"]}>Faturamento / Orcamento</h4>
           <ResponsiveContainer height={200}>
@@ -190,7 +190,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
       </div>
-      <div style={{ width: '30%', minWidth: '400px' }}>
+      <div style={{ width: '30%', minWidth: '350px' }}>
         <div className={styles.card} style={{ minHeight: '400px' }}>
           <h4 className={styles["card-title"]}>Pagamentos</h4>
           <ResponsiveContainer height={400}>

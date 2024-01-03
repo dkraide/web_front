@@ -65,7 +65,7 @@ export function SelectBase({id, maxTitleSize, width, datas, selected, title, set
         return undefined;
 
     }
-    return <div style={{width: width || '100%'}}>
+    return <div style={{width: width || '100%', minWidth: '150px'}}>
         <label className={styles.title}>{title}</label>
          <Select
         id={id}

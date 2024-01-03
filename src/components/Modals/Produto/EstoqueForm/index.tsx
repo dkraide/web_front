@@ -27,7 +27,6 @@ interface props {
 }
 interface resultProps {
     produto?: IProduto
-    vendas: IVendaProduto[]
     lancamentos: ILancamentoEstoqueProduto[]
 }
 interface searchProps {
@@ -63,7 +62,6 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
         api.get(`/Estoque/Select?ProdutoId=${id}&dataIn=${search?.dateIn || format(startOfMonth(new Date()), 'yyyy-MM-dd')}&dataFim=${search?.dateFim || format(endOfMonth(new Date()), 'yyyy-MM-dd')}`)
             .then(({ data }: AxiosResponse<resultProps>) => {
                 setResult(data);
-                console.log(data);
             })
             .catch((err) => {
                 toast.error(`Erro ao buscar dados. ${err.message}`)
@@ -99,11 +97,11 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
                     <div className={styles.info}>
                         <div style={{ width: '49%' }}>
                             <h3>Entradas</h3>
-                            <Entradas vendas={undefined} lancamentos={result.lancamentos} />
+                            <Entradas  lancamentos={result.lancamentos} />
                         </div>
                         <div style={{ width: '50%' }}>
                             <h3>Saidas</h3>
-                            <Saidas vendas={result.vendas} lancamentos={result.lancamentos} />
+                            <Saidas lancamentos={result.lancamentos} />
                         </div>
                     </div>
                 </div>
@@ -113,19 +111,11 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
 }
 
 
-const Saidas = ({ vendas, lancamentos }: resultProps) => {
+const Saidas = ({  lancamentos }: resultProps) => {
 
     function getSaidas() {
         var list = [];
-        vendas.map((item) => {
-            list.push({
-                tipo: 'Venda',
-                ref: item.idVenda,
-                data: item.venda.dataVenda,
-                qntd: item.quantidade,
-                custo: item.valorCompra * item.quantidade
-            });
-        })
+       
         lancamentos.map((lancamento) => {
             if (!lancamento.isEntrada) {
                 list.push({
