@@ -12,6 +12,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import IUsuario from '@/interfaces/IUsuario';
 import IProduto from '@/interfaces/IProduto';
 import ProdutoForm from '@/components/Modals/Produto';
+import AjusteEmMassa from '@/components/Modals/Produto/AjusteEmMassa';
 
 
 export default function ClasseMaterial() {
@@ -20,6 +21,7 @@ export default function ClasseMaterial() {
     const { getUser } = useContext(AuthContext)
     const [search, setSearch] = useState('')
     const [edit, setEdit] = useState(-1);
+    const [ajuste, setAjuste] = useState(false);
     const [user, setUser] = useState<IUsuario>()
 
     const loadData = async () => {
@@ -104,6 +106,7 @@ export default function ClasseMaterial() {
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
             <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Produto</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => {window.location.href = '/produto/franquia'}} style={{marginLeft: '10px'}} >Franquia</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => {setAjuste(true)}}  style={{marginLeft: '10px'}}>Ajuste Massa</CustomButton>
             <hr/>
             <CustomTable
                 columns={columns}
@@ -117,6 +120,12 @@ export default function ClasseMaterial() {
                 }
                 setEdit(-1);
             }} />}
+            {ajuste && <AjusteEmMassa isOpen={ajuste} setClose={(v) => {
+                if(v){
+                    loadData();
+                }
+                setAjuste(false);
+            }}/>}
 
         </div>
     )

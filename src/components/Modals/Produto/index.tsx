@@ -92,6 +92,9 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         obj.valorCompra = fGetNumber(data.valorCompra);
         obj.quantidadeMinima = fGetNumber(data.quantidadeMinima);
         obj.cod = data.cod;
+        obj.codigoFornecedor= data.codigoFornecedor;
+        obj.multiplicadorFornecedor = fGetNumber(data.multiplicadorFornecedor);
+        
         if (obj.id > 0) {
             api.put(`Produto/UpdateProduct`, obj)
                 .then(({ data }: AxiosResponse) => {
@@ -306,6 +309,10 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                                 <InputForm defaultValue={obj.valor} width={'15%'} title={'Venda (R$)'} errors={errors} inputName={"valor"} register={register} />
                                 <InputForm defaultValue={obj.quantidadeMinima} width={'15%'} title={'Estoque Min.'} errors={errors} inputName={"quantidadeMinima"} register={register} />
                                 <InputForm defaultValue={obj.quantidade} width={'15%'} title={'Estoque Atual'} errors={errors} inputName={"quantidade"} register={register} />
+                                <div style={{width: '100%', display: 'flex'}}>
+                                <InputForm defaultValue={obj.codigoFornecedor} width={'15%'} title={'Cod. Fornecedor'} errors={errors} inputName={"codigoFornecedor"} register={register} />
+                                <InputForm defaultValue={obj.multiplicadorFornecedor} width={'15%'} title={'Multiplicador'} errors={errors} inputName={"multiplicadorFornecedor"} register={register} />
+                                </div>
                                 <SelectClasseMaterial width={'49%'} selected={obj.classeMaterialId} setSelected={(v) => { setObj({ ...obj, classeMaterialId: v.id, idClasseMaterial: v.idClasseMaterial }) }} />
                                 <SelectTributacao width={'49%'} selected={obj.tributacaoId} setSelected={(v) => { setObj({ ...obj, tributacaoId: v.id, idTributacao: v.idTributacao }) }} />
                                 <div className={styles.codBarras}>
@@ -317,9 +324,9 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                                             aria-describedby="basic-addon2"
                                             {...register('codigoBarras')}
                                         />
-                                        <Button variant="dark" id="button-addon2" onClick={addCodigo}>
+                                        <CustomButton style={{zIndex: 0,}} typeButton="dark" id="button-addon2" onClick={addCodigo}>
                                             Adicionar
-                                        </Button>
+                                        </CustomButton>
                                     </InputGroup>
                                     <div className={styles.codigos}>
                                         {(obj.codBarras && obj.codBarras.length > 0) && (

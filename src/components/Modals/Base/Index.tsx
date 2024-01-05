@@ -22,7 +22,7 @@ export default function BaseModal({headerOff, background, color, height, width, 
         size="xl"
         show={isOpen}
         onHide={() => setClose()}
-        dialogClassName="modal-90w modal-90h"
+        dialogClassName="modal-90w"
         aria-labelledby="example-custom-modal-styling-title"
         scrollable={true}
         centered

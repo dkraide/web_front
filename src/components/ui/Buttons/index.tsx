@@ -9,7 +9,7 @@ interface props extends  ButtonHTMLAttributes<HTMLButtonElement>{
     size?: "sm" | "lg"
 }
 
-export default function CustomButton  ({size, loading, typeButton,children, onClick, ...rest}: props){
+export default function CustomButton ({size, loading, typeButton,children, onClick, ...rest}: props){
 
     if(typeButton == 'outline-main'){
         return <Button size={size}  onClick={onClick} disabled={loading} {...rest} className={styles[typeButton]}>

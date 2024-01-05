@@ -15,6 +15,8 @@ import SelectClasseProduto from "@/components/Selects/SelectClasseProduto";
 import SelectProduto from "@/components/Selects/SelectProduto";
 import SelectClasseMaterial from "@/components/Selects/SelectClasseMaterial";
 import { fGetNumber } from "@/utils/functions";
+import { format } from "date-fns";
+import SelectDiaSemana from "@/components/Selects/SelectDiaSemana";
 
 
 interface props {
@@ -56,6 +58,8 @@ export default function AtacadoForm({user, isOpen, id, setClose, color }: props)
         }else{
             item.id = 0;
             item.status = true;
+            item.diaSemana = 0;
+            item.dataFinal = new Date('2800-01-01');
             setItem(item);
             setLoading(false);
         }
@@ -104,6 +108,8 @@ export default function AtacadoForm({user, isOpen, id, setClose, color }: props)
                     <SelectClasseMaterial selected={item.classeMaterialId || 0} setSelected={(v) => {
                         setItem({...item, produtoId: 0, idProduto: 0, classeMaterialId: v.id, idClasseMaterial: v.idClasseMaterial})
                     }}/>}
+                    <InputForm type={'date'} defaultValue={format(new Date(item.dataFinal), 'yyyy-MM-dd')} width={'50%'} title={'Data Final'}  errors={errors} inputName={"dataFinal"} register={register} />
+                    <SelectDiaSemana title={'Dia da Semana'} width={'50%'} selected={item.diaSemana} setSelected={(v) => setItem({...item, diaSemana: v})}/>
                     <InputForm defaultValue={item.quantidade} width={'50%'} title={'Quantidade'}  errors={errors} inputName={"quantidade"} register={register} />
                     <InputForm defaultValue={item.valorFinal} width={'50%'} title={'Valor Final'}  errors={errors} inputName={"valorFinal"} register={register} />
                     <div className={styles.button}>
