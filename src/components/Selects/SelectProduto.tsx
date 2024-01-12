@@ -72,8 +72,14 @@ export default function SelectProduto({empresaId, id,ignore, width, selected, se
     const [formas, setFormas] = useState<IProduto[]>([]);
     const { getUser } = useContext(AuthContext);
     const loadFormas = async () => {
-        const res = empresaId ?  await getUser() : undefined;
-        var ret = await api.get(`/Produto/List?EmpresaId=${empresaId || res?.empresaSelecionada}&status=true`)
+        var res = 0;
+        if(empresaId){
+            res =  empresaId;
+        }else{
+            var user  = await getUser();
+            res = user.empresaSelecionada;
+        }
+        var ret = await api.get(`/Produto/List?EmpresaId=${res}&status=true`)
             .then(({ data }: AxiosResponse<IProduto[]>) => {
                 setFormas(data);
             })

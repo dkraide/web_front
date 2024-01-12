@@ -25,11 +25,17 @@ interface valorProps {
     qntd: number
     valor: number
 }
+type prodProps = {
+    nome: string
+    qntd: number
+    valor: number
+}
 export default function Visualizar({ user, isOpen, id, setClose, color }: props) {
 
 
     const [obj, setObj] = useState<IMovimentoCaixa>({} as IMovimentoCaixa)
     const [totais, setTotais] = useState<valorProps[]>()
+    const [produtos, setProdutos] = useState<prodProps[]>([])
     const [loading, setLoading] = useState<boolean>(true)
 
     useEffect(() => {
@@ -45,6 +51,13 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
         api.get(`/MovimentoCaixa/GetTotais?id=${id}`)
             .then(({ data }: AxiosResponse<valorProps[]>) => {
                 setTotais(data);
+            })
+            .catch((err) => {
+                toast.error(`Erro ao buscar totais. ${err.message}`)
+            })
+            api.get(`/MovimentoCaixa/Produtos?MovimentoCaixaId=${id}`)
+            .then(({ data }: AxiosResponse<prodProps[]>) => {
+                setProdutos(data);
             })
             .catch((err) => {
                 toast.error(`Erro ao buscar totais. ${err.message}`)
@@ -221,6 +234,27 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                                                     <td>{item.statusVenda ? 'OK' : 'Cancelada'}</td>
                                                     <td>{item.estd ? 'FATURADA' : 'ORCAMENTO'}</td>
                                                     <td>{item.valorTotal.toFixed(2)}</td>
+                                                </tr>)}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Tab>
+                            <Tab eventKey="produtos" title="Produtos">
+                                <div>
+                                    <table className={"table"}>
+                                        <thead>
+                                            <tr>
+                                                <th style={{width: '60%'}}>Produto</th>
+                                                <th style={{width: '20%'}}>Quantidade</th>
+                                                <th style={{width: '20%'}}>Valor</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {produtos?.map((item, index) =>
+                                                <tr key={index}>
+                                                    <td>{item.nome}</td>
+                                                    <td>{item.qntd}</td>
+                                                    <td>R${item.valor.toFixed(2)}</td>
                                                 </tr>)}
                                         </tbody>
                                     </table>
