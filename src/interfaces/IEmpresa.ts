@@ -30,4 +30,5 @@ export default interface IEmpresa{
          valorMensal: number
          formaPagamento: string
          isMatriz: boolean
+         usuarioContador: string
 }

@@ -68,9 +68,10 @@ export function AuthProvider({children}: AuthProviderProps){
              password,
              empresaId: empresa
           });
-          const {token,  nome,empresaId, empresas, caixa} =  response.data;
+          const {token,  nome,empresaId, empresas, caixa, isContador} =  response.data;
           var user = {
                nome,
+               isContador,
                empresaSelecionada: empresaId,
                isPdv,
                usuarioCaixa: caixa,

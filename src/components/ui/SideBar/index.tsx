@@ -76,11 +76,11 @@ export default function SideBar({ ...props }) {
                         <Image src={'/krd_logo.png'} alt={'krd'} width={160} height={60} />
                     </a>
                 </>}
-                <div style={{ marginRight: 'auto' }}>
+                <div hidden={user?.isContador}>
                     <a className={styles["menu-btn"]} onClick={() => { setCollapsed(!collapsed); setToggled(!toggled) }}><FontAwesomeIcon color={'var(--main)'} icon={faBars} /></a>
                 </div>
-                <div style={{ marginRight: 'auto', padding: '5px' }}>
-                    <SelectEmpresa width={'250px'} selected={user.empresaSelecionada} setSelected={(v) => {
+                <div style={{marginLeft: 'auto',  marginRight: 'auto', padding: '5px' }}>
+                    <SelectEmpresa isContador={user.isContador} width={'250px'} selected={user.empresaSelecionada} setSelected={(v) => {
                         updateEmpresa(v);
                     }} />
                 </div>
@@ -91,6 +91,7 @@ export default function SideBar({ ...props }) {
             </nav>
             <div className={[styles["container-fluid"], styles["page-body-wrapper"]].join(' ')}>
                 <Sidebar
+                    hidden={user?.isContador}
                     customBreakPoint={"600px"}
                     className={styles.sideBar}
                     onBackdropClick={() => setToggled(false)}

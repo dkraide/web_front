@@ -75,6 +75,10 @@ export default function LancamentoEstoqueForm({user, isOpen, id, setClose, color
             return;
          }
          setValue('custoUnitario', prod.valorCompra.toFixed(2));
+         if(prod.multiplicadorFornecedor <= 0){
+            prod.multiplicadorFornecedor = 1;
+         }
+         setValue('multiplicador', prod.multiplicadorFornecedor.toString())
     }, [prod]);
 
     useEffect(() => {
@@ -163,6 +167,12 @@ export default function LancamentoEstoqueForm({user, isOpen, id, setClose, color
             toast.error(`Produto ja adicionado ao lancamento`);
             return;
         }
+        var multiplicador = fGetNumber(getValues('multiplicador'));
+
+        if(multiplicador == 0){
+            multiplicador = 1;
+        };
+        qntd = qntd * multiplicador;
         var custo = fGetNumber(getValues('custoUnitario'));
         var obj = {
             id: 0,
@@ -244,8 +254,9 @@ export default function LancamentoEstoqueForm({user, isOpen, id, setClose, color
                         <div className={styles.box}>
                         <h3>Adicionar Itens</h3>
                         <SelectProduto ignore={ignore} width={'50%'}  selected={prod?.id || 0} setSelected={setProd}/>
-                        <InputForm width={'20%'} errors={errors} register={register} inputName={'quantidade'} title={'Qntd'}/>
-                        <InputForm width={'20%'} errors={errors} register={register} inputName={'custoUnitario'} title={'Custo Un.'}/>
+                        <InputForm width={'15%'} errors={errors} register={register} inputName={'quantidade'} title={'Qntd'}/>
+                        <InputForm width={'15%'} errors={errors} register={register} inputName={'multiplicador'} title={'Multiplicador'}/>
+                        <InputForm width={'15%'} errors={errors} register={register} inputName={'custoUnitario'} title={'Custo Un.'}/>
                         <CustomButton onClick={addItem} typeButton={'dark'} style={{height: 'fit-content', marginTop: '15px'}}>Adicionar</CustomButton>
                     </div>)}
                     <hr/>

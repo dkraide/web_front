@@ -12,12 +12,13 @@ interface selProps{
     selected: number;
     setSelected: (value: any) => void;
     width?: string;
+    isContador?: boolean
 }
 
-export  default function SelectEmpresa({width, selected, setSelected}: selProps){
+export  default function SelectEmpresa({isContador, width, selected, setSelected}: selProps){
     const [formas, setFormas] = useState<IEmpresa[]>([]);
     const loadFormas = async () => {
-           api.get(`/Empresa/Getempresas`)
+           api.get(`/Empresa/Getempresas?isContador=${isContador || false}`)
            .then(({data}: AxiosResponse) => {
                    setFormas(data);
            })

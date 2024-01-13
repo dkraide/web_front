@@ -10,4 +10,5 @@ export default interface IUsuario{
     cpf?: string
     isPdv: boolean
     usuarioCaixa?: IUsuarioCaixa
+    isContador: boolean
 }
