@@ -10,6 +10,8 @@ import BaseModal from "../../Base/Index";
 import _ from "lodash";
 import SelectClasseMaterial from "@/components/Selects/SelectClasseMaterial";
 import SelectCampoProduto from "@/components/Selects/SelectCampoProduto";
+import SelectSimNao from "@/components/Selects/SelectSimNao";
+import SelectStatus from "@/components/Selects/SelectStatus";
 
 
 interface props {
@@ -24,6 +26,7 @@ export default function AjusteEmMassa({empresaId, isOpen,  setClose, color }: pr
     const [sending, setSending] = useState(false);
     const [classeId, setClasseId] = useState(0)
     const [campo, setCampo] = useState<any>();
+    const [status, setStatus] = useState(true);
 
     const {
         register,
@@ -35,9 +38,22 @@ export default function AjusteEmMassa({empresaId, isOpen,  setClose, color }: pr
 
 
         const onSubmit = async (data: any) =>{
+            if(classeId <= 0){
+                toast.error(`Selecione uma classe de material`);
+                return;
+            }
+            if(!campo || campo.nome?.length == 0){
+                toast.error(`Selecione um campo`);
+                return;
+            }
             setSending(true);
-             var field = campo.nome.replaceAll(' ', '').toUpperCase()
-            api.put(`/Produto/AjusteMassa?ClasseMaterialId=${classeId}&Campo=${field}&Valor=${data.ajuste}`)
+             var field = campo.nome.replaceAll(' ', '').toUpperCase();
+            
+            var value = data.ajuste;
+            if(field == "STATUS"){
+                value = status.toString();
+            }
+            api.put(`/Produto/AjusteMassa?ClasseMaterialId=${classeId}&Campo=${field}&Valor=${value}`)
             .then(({data}: AxiosResponse) => {
                 toast.success(`${data} ajustados com sucesso!`);
                 setClose(true);
@@ -55,7 +71,11 @@ export default function AjusteEmMassa({empresaId, isOpen,  setClose, color }: pr
             <div className={styles.container}>
                 <SelectClasseMaterial empresaId={empresaId} selected={(classeId || 0)} setSelected={(v) => {setClasseId(v.id)}}/>
                 <SelectCampoProduto selected={campo?.value} setSelected={setCampo}/>
+                {campo?.nome?.toUpperCase() == "STATUS" ? <>
+                <SelectStatus title={'Campo'} selected={status} setSelected={setStatus} />
+                </> : <>
                 <InputForm placeholder={'Ajuste'}  width={'75%'} title={'Informe o Ajuste'} errors={errors} inputName={"ajuste"} register={register} />
+                </>}
                     <div className={styles.button}>
                         <CustomButton onClick={() => { setClose(); } } typeButton={"secondary"}>Cancelar</CustomButton>
                         <CustomButton typeButton={'dark'} loading={sending} onClick={() => {handleSubmit(onSubmit)()}}>Confirmar</CustomButton>

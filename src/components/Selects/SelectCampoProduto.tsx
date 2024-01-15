@@ -25,6 +25,12 @@ export  default function SelectCampoProduto({title, width, selected, setSelected
            }, {
             value: 2,
             nome: 'Quantidade Minima'
+           }, {
+            value: 3,
+            nome: 'Multiplicador'
+           }, {
+            value: 4,
+            nome: 'Status'
            }];
            setFormas(res);
     }

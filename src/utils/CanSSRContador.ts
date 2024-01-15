@@ -5,7 +5,7 @@ import IUsuario from '@/interfaces/IUsuario';
 
 //funcao para paginas que so logados podem teer acesso
 
-export function canSSRAuth<P>(fn: GetServerSideProps<P>){
+export function CanSSRContador<P>(fn: GetServerSideProps<P>){
    
 
 
@@ -33,10 +33,10 @@ export function canSSRAuth<P>(fn: GetServerSideProps<P>){
                 }
             }
         }
-        if(u.isContador){
+        if(!u.isContador){
             return{
                 redirect:{
-                    destination: '/contador',
+                    destination: '/dashboard',
                     permanent: false
                 }
             }

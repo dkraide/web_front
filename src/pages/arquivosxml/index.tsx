@@ -44,22 +44,22 @@ export default function ArquivosXml() {
 
     useEffect(() => {
         if (!search) {
-            setSearch({ dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') });
+            var s = { dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') };
+            setSearch(s);
+            loadData(s);
         }
-        loadData();
     }, [])
 
-    const loadData = async () => {
-        if (!search) {
-            return;
-        }
+    const loadData = async (s?: searchProps) => {
+        console.log('asdasd');
+
         var u: any;
         if (!user) {
             var res = await getUser();
             setUser(res);
             u = res;
         }
-        await api.get(`/NFCECFEXml/Get?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}`)
+        await api.get(`/NFCECFEXml/Get?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${s.dateIn || search.dateIn}&dataFim=${s.dateFim || search.dateFim}`)
             .then(({ data }: AxiosResponse<xmlProps[]>) => {
                 setArquivos(data);
             }).catch((err: AxiosError) => {
@@ -160,7 +160,7 @@ export default function ArquivosXml() {
             <div className={styles.boxSearch}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />
-                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
+                <CustomButton onClick={() => {loadData()}} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
             <hr />
             <CustomButton typeButton={'dark'} onClick={() => { downloadXml(false) }}>Download Selecionados</CustomButton>

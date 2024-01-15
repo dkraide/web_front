@@ -1,0 +1,36 @@
+.card{
+    margin: 10px 0px;
+    background-color: white;
+    padding: 30px;
+    border-radius: 4px;
+
+}
+.w50{
+    width: 50%;
+}
+.w30{
+    width: 30%;
+}
+.middle{
+    margin-left: auto;
+    margin-right: auto;
+}
+.row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.spaceBetween{
+    justify-content: space-between;
+}
+.spaceAround{
+    justify-content: space-around;
+}
+.cardInfo{
+    color: var(--main);
+    span{
+        color: black;
+        font-weight: 400;
+        font-style: italic;
+    }
+}
