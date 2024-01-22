@@ -1,0 +1,13 @@
+.info{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    button{
+        height: fit-content;
+        margin-top: 15px;
+    }
+}
+.tables{
+    min-height: 600px;
+}

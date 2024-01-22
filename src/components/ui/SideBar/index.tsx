@@ -1,10 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './styles.module.scss';
 import { useContext, useEffect, useState } from 'react';
-import { faUser, faArrowLeft, faBars, faRightFromBracket, faLeaf, faArrowRight, faChartBar, faChartSimple, faMoneyBill, faCalculator, faPercent, faBox, faCashRegister, faUtensils, faPowerOff } from '@fortawesome/free-solid-svg-icons';
+import {  faBars,  faChartSimple, faMoneyBill, faCalculator, faPercent, faBox, faCashRegister, faUtensils, faPowerOff } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '@/contexts/AuthContext';
 import IUsuario from '@/interfaces/IUsuario';
-import Link from 'next/link';
 import { api } from '@/services/apiClient';
 import { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
@@ -13,6 +12,7 @@ import { Menu, MenuItem, Sidebar, SubMenu } from 'react-pro-sidebar';
 import CustomButton from '../Buttons';
 import Image from 'next/image';
 import { useWindowSize } from 'rooks';
+import { Badge } from 'react-bootstrap';
 
 export default function SideBar({ ...props }) {
 
@@ -61,6 +61,10 @@ export default function SideBar({ ...props }) {
                 fontWeight: 'bold',
             },
         },
+    }
+
+    function bgNew(){
+        return <Badge bg="success" style={{fontSize: '9px'}}>NOVO</Badge>
     }
 
 
@@ -129,6 +133,7 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/tributacao'}>Tributacoes</MenuItem>
                                     <MenuItem href={'/estoque'}>Estoque</MenuItem>
                                     <MenuItem href={'/estoqueLancamento'}>Lancamento de Estoque</MenuItem>
+                                    <MenuItem href={'/estoque/conferenciaEstoque'}>Conferência {bgNew()} </MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promocoes">
                                     <MenuItem href={'/promocao/atacado'}> Promocao</MenuItem>
@@ -152,6 +157,7 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/relatorio/produto'}>Por Produto</MenuItem>
                                     <MenuItem href={'/relatorio/usuario'}>Por Usuiario</MenuItem>
                                     <MenuItem href={'/relatorio/demonstrativo'}>Demonstrativo</MenuItem>
+                                    <MenuItem href={'/relatorio/vendacusto'}>Venda/Custo {bgNew()} </MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
                                     <MenuItem href={'/pdv/formaPagamento'}>Formas de Pagamento</MenuItem>

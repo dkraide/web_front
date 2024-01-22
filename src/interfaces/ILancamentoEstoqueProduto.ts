@@ -18,4 +18,5 @@ export default interface ILancamentoEstoqueProduto{
      isEntrada: boolean
      empresaId: number
      materiaPrimaId: number
+     observacao: string
 }

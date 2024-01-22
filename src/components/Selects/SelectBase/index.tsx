@@ -1,7 +1,5 @@
 import { HtmlHTMLAttributes, forwardRef, useEffect, useRef, useState } from 'react';
 import styles from './styles.module.scss';
-import { BiChevronDown } from 'react-icons/bi';
-import { AiOutlineSearch } from 'react-icons/ai';
 import _ from 'lodash';
 import Select, { SelectInstance } from 'react-select';
 

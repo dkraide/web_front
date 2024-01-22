@@ -1,6 +1,4 @@
-import { HTMLAttributes, ReactNode, } from "react";
-import styles from './styles.module.scss';
-import { AiOutlineClose } from "react-icons/ai";
+import { HTMLAttributes} from "react";
 import { Modal } from "react-bootstrap";
 
 export interface baseModalProps extends HTMLAttributes<HTMLDivElement> {

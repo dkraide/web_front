@@ -10,14 +10,15 @@ import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import IProduto from "@/interfaces/IProduto";
 import ILancamentoEstoqueProduto from "@/interfaces/ILancamentoEstoqueProduto";
-import { endOfMonth, format, startOfMonth } from "date-fns";
+import { addDays, addMinutes, endOfMonth, format, startOfMonth } from "date-fns";
 import CustomTable from "@/components/ui/CustomTable";
 import AjusteEstoqueForm from "../AjusteEstoqueForm";
+import IConferenciaEstoque from "@/interfaces/IConferenciaEstoque";
 
 
 interface props {
     isOpen: boolean
-    id: number
+    conferencia: IConferenciaEstoque
     setClose: (res?: boolean) => void
     color?: string
     user: IUsuario
@@ -26,27 +27,17 @@ interface resultProps {
     produto?: IProduto
     lancamentos: ILancamentoEstoqueProduto[]
 }
-interface searchProps {
-    dateIn: string
-    dateFim: string
-}
-export default function EstoqueForm({ user, isOpen, id, setClose, color }: props) {
+export default function DetalheConferenciaForm({ user, isOpen, conferencia, setClose, color }: props) {
 
     const [result, setResult] = useState<resultProps>()
     const [loading, setLoading] = useState<boolean>(true)
-    const [search, setSearch] = useState<searchProps>()
     const [ajuste, setAjuste] = useState(false);
     useEffect(() => {
-        if (!search) {
-            setSearch({ dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') });
-        }
-        setTimeout(() => {
-            loadData();
-        }, 1000);
+         loadData();
     }, []);
 
     const loadData = async () => {
-        api.get(`/Estoque/Select?ProdutoId=${id}&dataIn=${search?.dateIn || format(startOfMonth(new Date()), 'yyyy-MM-dd')}&dataFim=${search?.dateFim || format(endOfMonth(new Date()), 'yyyy-MM-dd')}`)
+        api.get(`/Estoque/Select?ProdutoId=${conferencia.produtoId}&dataIn=${format((addMinutes(new Date(conferencia.dataConferencia), 1)), 'yyyy-MM-dd HH:mm')}&dataFim=${format(addDays(new Date(), 1), 'yyyy-MM-dd')}`)
             .then(({ data }: AxiosResponse<resultProps>) => {
                 setResult(data);
             })
@@ -64,31 +55,68 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
             setAjuste(false);
         } }/>
     }
+    function getTotal(isEntrada, isQntd){
+        var valor = 0;
+        result.lancamentos.map((lancamento) => {
+                    if(lancamento.isEntrada == isEntrada){
+                        valor += isQntd ? 1 : lancamento.custoUnitario * lancamento.quantidade
+                    }
+        })
+        return valor;
+    }
 
     return (
-        <BaseModal height={'90%'} width={'95%'} color={color} title={'Relatorio de Estoque'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'90vh'} width={'100vw'} color={color} title={'Relatorio de Estoque'} isOpen={isOpen} setClose={setClose}>
             {(loading || !result) ? (
                 <Loading />
             ) : (
                 <div className={styles.container}>
                     <div className={styles.info}>
-                        <InputGroup width={'20%'} title={'Cod'} value={result.produto.cod} />
-                        <InputGroup width={'80%'} title={'Cod'} value={result.produto.nome} />
+                        <InputGroup width={'10%'} title={'Cod'} value={result.produto.cod} />
+                        <InputGroup width={'50%'} title={'Produto'} value={result.produto.nome} />
+                        <InputGroup width={'10%'} title={'Estoque Atual'} value={result.produto.quantidade} />
+                        <InputGroup width={'20%'} title={'Conferencia'} value={format(new Date(conferencia.dataConferencia), 'dd/MM/yyyy HH:mm')} />
+                        <InputGroup width={'10%'} title={'Est. Informado'} value={conferencia.quantidadeInformada} />
                     </div>
                     <div className={styles.info}>
-                        <CustomButton onClick={() => { setAjuste(true) }} typeButton={'dark'}>Ajuste Rapido</CustomButton>
-                        <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
-                        <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />
-                        <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
-                    </div>
-                    <div className={styles.info}>
-                        <div style={{ width: '49%' }}>
+                        <div style={{ width: '49%', height: '100%' }}>
                             <h3>Entradas</h3>
                             <Entradas  lancamentos={result.lancamentos} />
+                            <table className={"table"}>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                               Totais
+                                        </td>
+                                        <td style={{textAlign: 'end'}}> 
+                                            <b>{getTotal(true, true).toFixed(2)}</b>
+                                        </td>
+                                        <td style={{textAlign: 'end'}}>
+                                            <b>R$ {getTotal(true, false).toFixed(2)}</b>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
-                        <div style={{ width: '50%' }}>
+                        <div style={{ width: '50%', height: '100%' }}>
                             <h3>Saidas</h3>
                             <Saidas lancamentos={result.lancamentos} />
+                            <table className={"table"} style={{marginTop: 'auto'}}>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                               Totais
+                                        </td>
+                                        <td style={{textAlign: 'end'}}> 
+                                            <b>{getTotal(false, true).toFixed(2)}</b>
+                                        </td>
+                                        <td style={{textAlign: 'end'}}>
+                                            <b>R$ {getTotal(false, false).toFixed(2)}</b>
+                                        </td>
+                                    </tr>
+                                </tbody>
+
+                            </table>
                         </div>
                     </div>
                 </div>
@@ -102,7 +130,6 @@ const Saidas = ({  lancamentos }: resultProps) => {
 
     function getSaidas() {
         var list = [];
-       
         lancamentos.map((lancamento) => {
             if (!lancamento.isEntrada) {
                 list.push({

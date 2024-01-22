@@ -116,3 +116,23 @@ body {
 #__next {
   height: 100% !important;
 }
+
+.krd-card{
+  margin: 10px 0px;
+  background-color: white;
+  padding: 30px;
+  border-radius: 4px;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+
+}
+.krd-card-title{
+  color: #343a40;
+  margin-bottom: 0.75rem;
+  text-transform: capitalize;
+  font-weight: 500;
+  font-size: 1.125rem;
+  width: 100%;
+  text-align: center;
+}
