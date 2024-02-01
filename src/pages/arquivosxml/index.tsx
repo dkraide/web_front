@@ -59,7 +59,7 @@ export default function ArquivosXml() {
             setUser(res);
             u = res;
         }
-        await api.get(`/NFCECFEXml/Get?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${s.dateIn || search.dateIn}&dataFim=${s.dateFim || search.dateFim}`)
+        await api.get(`/NFCECFEXml/Get?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${s?.dateIn || search.dateIn}&dataFim=${s?.dateFim || search.dateFim}`)
             .then(({ data }: AxiosResponse<xmlProps[]>) => {
                 setArquivos(data);
             }).catch((err: AxiosError) => {
