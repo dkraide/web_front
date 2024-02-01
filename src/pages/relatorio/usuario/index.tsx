@@ -123,7 +123,7 @@ export default function RelatorioUsuario() {
             <h4>Relatorio por Usuario</h4>
             <div className={styles.box}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
-                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />
+                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
                 <SelectTipoVendedor width={'35%'} selected={usuarioGorjeta} setSelected={setUsuarioGorjeta}/>
                 <CustomButton style={{marginLeft: 10, marginTop: 10, height: '50px'}} onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>

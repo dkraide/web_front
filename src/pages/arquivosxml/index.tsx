@@ -71,35 +71,35 @@ export default function ArquivosXml() {
     const columns = [
         {
             name: 'Venda',
-            cell: ({ venda }: xmlProps) => <a href='#' onClick={() => { setShowMovimento(venda.id) }}>{venda.idVenda}</a>,
-            selector: row => row.venda.idVenda,
+            cell: ({ venda }: xmlProps) => <a href='#' onClick={() => { setShowMovimento(venda?.id) }}>{venda?.idVenda || 0}</a>,
+            selector: row => row.venda?.idVenda || 0,
             sortable: true,
             grow: 0,
         },
         {
             name: 'Download',
-            cell: ({ venda, xml }: xmlProps) => <CustomButton typeButton={'dark'} onClick={() => {downloadUnico(xml.id, venda.nnf)}}><FontAwesomeIcon icon={faDownload} color={'white'}/></CustomButton>,
-            selector: row => row.venda.nnf,
+            cell: ({ venda, xml }: xmlProps) => <CustomButton typeButton={'dark'} onClick={() => {downloadUnico(xml.id, venda?.nnf || 0)}}><FontAwesomeIcon icon={faDownload} color={'white'}/></CustomButton>,
+            selector: row => row.venda?.nnf || '--',
             sortable: true,
             grow: 0,
         },
         {
             name: 'Nnf',
-            selector: row => row.venda.nnf,
+            selector: row => row.venda?.nnf  || 0,
             sortable: true,
             grow: 0,
         },
         {
             name: 'Data',
-            selector: row => row.venda.dataVenda,
-            cell: row => format(new Date(row.venda.dataVenda), 'dd/MM/yyyy HH:mm'),
+            selector: row => row.venda?.dataVenda  || 0,
+            cell: row => format(new Date(row.venda?.dataVenda || new Date().toString()), 'dd/MM/yyyy HH:mm'),
             sortable: true,
             grow: 1
         },
         {
             name: 'Valor',
-            selector: row => row.venda.valorTotal,
-            cell: row => `R$ ${row.venda.valorTotal.toFixed(2)}`,
+            selector: row => row.venda?.valorTotal || 0,
+            cell: row => `R$ ${(row.venda?.valorTotal || 0).toFixed(2)}`,
             sortable: true,
             grow: 0
         },
@@ -159,7 +159,7 @@ export default function ArquivosXml() {
             <h4>Arquivos XML de Vendas</h4>
             <div className={styles.boxSearch}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
-                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />
+                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
                 <CustomButton onClick={() => {loadData()}} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
             <hr />

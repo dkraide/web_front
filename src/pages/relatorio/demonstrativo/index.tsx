@@ -216,7 +216,7 @@ export default function Demonstrativo() {
             <div className={styles.box}>
                 <SelectSimNao title={'Despesa em Aberta'} width={'20%'} selected={search?.incluiEmHaver} setSelected={(v) => {setSearch({...search, incluiEmHaver: v})}}/>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
-                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />
+                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
                 <SelectSimNao title={'Calcula Custo Produto'} width={'20%'} selected={search?.calculaCusto} setSelected={(v) => {setSearch({...search, calculaCusto: v})}}/>
                 <div style={{width: '100%'}}>
                     <CustomButton onClick={() => {loadData()}} typeButton={'dark'}>Pesquisar</CustomButton>

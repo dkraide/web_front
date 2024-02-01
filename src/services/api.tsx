@@ -9,7 +9,7 @@ export function setupAPIClient(ctx = undefined) {
     const api = axios.create({
         //    baseURL: 'https://api.krdsystem.com/api',
         baseURL: 'https://backendpdv.azurewebsites.net/api',
-        //   baseURL: 'https://localhost:3334/api',
+  //         baseURL: 'https://localhost:3334/api',
         headers: {
             Authorization: `Bearer ${cookies['@web_front.token']}`,
         }

@@ -161,7 +161,7 @@ export default function Contador() {
 
             <div className={[styles.card, styles.w50, styles.middle, styles.row, styles.spaceBetween].join(' ')}>
                 <InputGroup minWidth={'200px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
-                <InputGroup minWidth={'200px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />
+                <InputGroup minWidth={'200px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
                 {/* <SelectSimNao title={'Inclui Canc.'} width={'20%'} selected={search?.includeCancelamento || false} setSelected={(v) => {setSearch({...search, includeCancelamento: v})}} /> */}
                 <CustomButton style={{ height: '50px' }} onClick={() => {loadData()}} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
