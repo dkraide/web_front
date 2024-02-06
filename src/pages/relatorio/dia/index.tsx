@@ -1,6 +1,6 @@
 import IVenda from "@/interfaces/IVenda"
 import { useEffect, useState, useContext } from "react"
-import { startOfMonth, endOfMonth, format } from 'date-fns'
+import { startOfMonth, endOfMonth, format, addHours } from 'date-fns'
 import { api } from "@/services/apiClient"
 import { AxiosError, AxiosResponse } from "axios"
 import { toast } from "react-toastify"
@@ -9,7 +9,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { fGetNumber, nameof } from "@/utils/functions"
+import { fGetNumber, fgetDate, nameof } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
@@ -70,6 +70,7 @@ export default function RelatorioDia() {
         await api.get(url)
             .then(({ data }: AxiosResponse<relatorioProps[]>) => {
                 setResult(data);
+                console.log(data);
             }).catch((err: AxiosError) => {
                 toast.error(`Erro ao buscar relatorio. ${err.response?.data || err.message}`);
             });
@@ -90,12 +91,13 @@ export default function RelatorioDia() {
             { label: "Custo", key: "custo" }
         ]
     }
+  
 
     const columns = [
         {
             name: 'Dia',
             selector: row => row.dia,
-            cell: row => format(new Date(row.dia), 'dd/MM/yyyy'),
+            cell: row => format(fgetDate(row.dia), 'dd/MM/yyyy'),
             sortable: true,
         },
         {

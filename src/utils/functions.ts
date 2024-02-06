@@ -1,5 +1,6 @@
 import { api } from "@/services/apiClient";
 import axios, { AxiosError, AxiosResponse } from "axios";
+import { addHours } from "date-fns";
 import { useState } from "react";
 import { toast } from "react-toastify";
 
@@ -147,3 +148,12 @@ export const fGetDate = (date: string) => {
 }
 
 export type ACTION = '' | 'FINALIZAR' | 'LIMPAR';
+
+export  const fgetDate = (date: string) =>{
+    if(!date || date == ''){
+        return new Date();
+    }
+    var r = new Date(date);
+    r = addHours(r, 3);
+    return r;
+}

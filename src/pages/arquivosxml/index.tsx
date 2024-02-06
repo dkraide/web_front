@@ -51,13 +51,14 @@ export default function ArquivosXml() {
     }, [])
 
     const loadData = async (s?: searchProps) => {
-        console.log('asdasd');
-
         var u: any;
         if (!user) {
             var res = await getUser();
             setUser(res);
             u = res;
+        }
+        if(!loading){
+            setLoading(true);
         }
         await api.get(`/NFCECFEXml/Get?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${s?.dateIn || search.dateIn}&dataFim=${s?.dateFim || search.dateFim}`)
             .then(({ data }: AxiosResponse<xmlProps[]>) => {
