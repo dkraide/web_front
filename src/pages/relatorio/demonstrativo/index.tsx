@@ -186,21 +186,21 @@ export default function Demonstrativo() {
             name: 'Descricao',
             selector: row => row.descricao,
             sortable: true,
-            width: '60%',
+            width: '40%',
         },
         {
             name: 'Entrada',
             selector: row => row.entrada,
-            cell: row => row.entrada == 0 ? '' : `R$ ${row.entrada.toFixed(2)}`,
+            cell: row => row.entrada == 0 ? <b></b> :<b className={styles.s}>R$ {row.entrada.toFixed(2)}</b>,
             sortable: true,
-            width: '10%',
+            width: '20%',
         },
         {
             name: 'Saida',
             selector: row => row.saida,
-            cell: row => row.saida == 0 ? '' : `R$ ${row.saida.toFixed(2)}`,
+            cell: row => row.saida == 0 ? <b></b> :<b className={styles.d}>R$ {row.saida.toFixed(2)}</b>,
             sortable: true,
-            width: '10%',
+            width: '20%',
         },
     ]
     const headers = [
@@ -233,7 +233,7 @@ export default function Demonstrativo() {
                 <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getData()} headers={headers} filename={"demonstrativo.csv"}>
                     Download Planilha
                 </CSVLink></CustomButton>
-                <div style={{ width: '70%' }}>
+                <div style={{ width: '85%' }}>
                     <CustomTable
                         columns={columns}
                         pagination={false}
