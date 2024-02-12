@@ -88,28 +88,28 @@ export default function ConferenciaEstoque() {
             name: 'Produto',
             selector: (row: IConferenciaEstoque) => row.produto?.nome || '--',
             sortable: true,
-            width: '45%'
+            width: '30%'
         },
         {
             name: 'Data',
             selector: (row) => row.dataConferencia,
-            cell: (row: IConferenciaEstoque) => <>{format(new Date(row.dataConferencia), 'dd/MM/yyyy HH:mm')}</>,
+            cell: (row: IConferenciaEstoque) => <>{format(new Date(row.dataConferencia), 'dd/MM/yy HH:mm')}</>,
             sortable: true,
-            width: '10%'
+            width: '15%'
         },
         {
-            name: 'Quantidade Informada',
+            name: 'Qte Inf.',
             selector: (row: IConferenciaEstoque) => row['quantidadeInformada'],
             cell: (row: IConferenciaEstoque) => row.quantidadeInformada.toFixed(2),
             sortable: true,
-            width: '10%'
+            width: '15%'
         },
         {
-            name: 'Quantidade Esperada',
+            name: 'Qte Esp.',
             selector: (row: IConferenciaEstoque) => row.quantidadeReal,
             cell: (row: IConferenciaEstoque) => row.quantidadeReal.toFixed(2),
             sortable: true,
-            width: '10%'
+            width: '15%'
         },
         {
             name: 'Diferenca',

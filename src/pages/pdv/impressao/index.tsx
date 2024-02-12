@@ -67,6 +67,11 @@ export default function Impressao() {
                 </tr>
             </thead>
             <tbody>
+                <tr className={styles.top}>
+                    <td>PRODUTO|R$ VLR UN</td>
+                    <td>QNTD</td>
+                    <td>R$ TOTAL</td>
+                </tr>
                 {nota.produtos.map((produto) => {
                     return (
                         <>
