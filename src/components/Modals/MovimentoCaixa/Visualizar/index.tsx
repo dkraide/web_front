@@ -99,7 +99,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
     }
     function calculaDiferenca() {
         var resultado = calculaEsperado();
-        return resultado - obj.valorDinheiroFinal;
+        return obj.valorDinheiroFinal - resultado ;
     }
 
     return (
