@@ -49,4 +49,5 @@ export default interface IProduto{
          visivelMenu: boolean
          promocoes: IPromocao[]
          descricao: string
+         isConferencia: boolean
 }

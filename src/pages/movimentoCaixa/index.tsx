@@ -1,4 +1,3 @@
-import IVenda from "@/interfaces/IVenda"
 import { useEffect, useState, useContext } from "react"
 import {startOfMonth, endOfMonth, format} from 'date-fns'
 import { api } from "@/services/apiClient"
@@ -9,8 +8,6 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { fGetNumber } from "@/utils/functions"
-import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
 import CustomButton from "@/components/ui/Buttons"
@@ -68,31 +65,47 @@ export default function MovimentoCaixa(){
             cell: ({idMovimentoCaixa, id }: IMovimentoCaixa) => <a style={{textDecorationLine: 'underline', color: 'var(--main)'}} href='#' onClick={() => {setShowMovimento(id)}}>{idMovimentoCaixa}</a>,
             selector: row => row.idMovimentoCaixa,
             sortable: true,
-            grow: 0,
+            width: '10%'
         },
         {
             name: 'Usuario',
             selector: row => row.usuario?.nome || '--',
             sortable: true,
-            grow: 0
+            width: '10%'
         },
         {
             name: 'Status',
             selector: row => row['status'] ? 'FECHADO': 'ABERTO',
             sortable: true,
-            grow: 0
+            width: '10%'
         },
         {
             name: 'Abertura',
             cell: ({dataMovimento }: IMovimentoCaixa) => <p>{format(new Date(dataMovimento.toString()), 'dd/MM/yyyy HH:mm')}</p>,
             selector: row => row.dataMovimento,
             sortable: true,
+            width: '20%'
         },
         {
             name: 'Fechamento',
             cell: ({dataFechamento }: IMovimentoCaixa) => <p>{format(new Date(dataFechamento.toString()), 'dd/MM/yyyy HH:mm')}</p>,
             selector: row => row.dataFechamento,
             sortable: true,
+            width: '20%'
+        },
+        {
+            name: 'R$ Abertura',
+            cell: ({valorDinheiro }: IMovimentoCaixa) => <p>R$ {valorDinheiro.toFixed(2)}</p>,
+            selector: (row: IMovimentoCaixa) => row.valorDinheiro,
+            sortable: true,
+            width: '15%'
+        },
+        {
+            name: 'R$ Fechamento',
+            cell: ({valorDinheiroFinal }: IMovimentoCaixa) =>  <p>R$ {valorDinheiroFinal.toFixed(2)}</p>,
+            selector: (row: IMovimentoCaixa) => row.valorDinheiroFinal,
+            sortable: true,
+            width: '15%'
         },
       
     ]

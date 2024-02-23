@@ -21,6 +21,7 @@ export default function CustomTable({expandableComponent, expandableIcon, pagina
             cells:{
                 style:{
                     fontWeight: 'bold',
+                    fontSize: '12px'
                 }
             },
             rows:{
