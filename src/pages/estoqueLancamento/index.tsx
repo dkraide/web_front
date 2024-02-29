@@ -106,7 +106,8 @@ export default function EstoqueLancamento(){
             <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()}  onChange={(v) => {setSearch({...search, dateFim: v.target.value})}}  title={'Final'} width={'20%'}/>
             <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
         </div>
-        <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Lancamento</CustomButton>
+        <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} style={{marginRight: 10}} >Novo Lancamento</CustomButton>
+        <CustomButton typeButton={'dark'} onClick={() => {document.location.href = `/estoqueLancamento/xml`}} >Carregar de XML</CustomButton>
         <hr/>
         <CustomTable
             columns={columns}

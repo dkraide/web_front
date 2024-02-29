@@ -9,14 +9,14 @@ interface props extends  ButtonHTMLAttributes<HTMLButtonElement>{
     size?: "sm" | "lg"
 }
 
-export default function CustomButton ({size, loading, typeButton,children, onClick, ...rest}: props){
+export default function CustomButton ({size, loading, typeButton,children, onClick,className, ...rest}: props){
 
     if(typeButton == 'outline-main'){
         return <Button size={size}  onClick={onClick} disabled={loading} {...rest} className={styles[typeButton]}>
     {loading ? <Loading/> : children}
    </Button>
     }
-   return <Button size={size} variant={typeButton} onClick={onClick} disabled={loading} {...rest} className={styles[typeButton]}>
+   return <Button size={size} variant={typeButton} onClick={onClick} disabled={loading} {...rest} className={[styles[typeButton],className ].join(' ')}>
     {loading ? <Loading/> : children}
    </Button>
 }

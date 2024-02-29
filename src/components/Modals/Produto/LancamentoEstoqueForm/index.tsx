@@ -19,7 +19,7 @@ import SelectProduto from "@/components/Selects/SelectProduto";
 import IProduto from "@/interfaces/IProduto";
 import { format } from "date-fns";
 import SelectEntradaSaida from "@/components/Selects/SelectEntradaSaida";
-import { fGetNumber } from "@/utils/functions";
+import { fGetNumber, fgetDate } from "@/utils/functions";
 import ILancamentoEstoqueProduto from "@/interfaces/ILancamentoEstoqueProduto";
 import _ from "lodash";
 
@@ -236,7 +236,7 @@ export default function LancamentoEstoqueForm({user, isOpen, id, setClose, color
                     <div className={styles.box}>
                         <InputForm readOnly={true} width={'10%'} title={'Online'} errors={errors} register={register} inputName={'id'} defaultValue={lancamento.id}/>
                         <InputForm readOnly={true} width={'10%'} title={'Local'} errors={errors} register={register} inputName={'idLancamentoEstoque'} defaultValue={lancamento.idLancamentoEstoque}/>
-                        <InputForm readOnly={true} width={'20%'} title={'Data'} errors={errors} register={register} inputName={'dataLancamento'} defaultValue={format(new Date(lancamento.dataLancamento), 'dd/MM/yyyy')}/>
+                        <InputForm readOnly={true} width={'20%'} title={'Data'} errors={errors} register={register} inputName={'dataLancamento'} defaultValue={format(fgetDate(lancamento?.dataLancamento.toString()), 'dd/MM/yyyy')}/>
                         <InputForm readOnly={lancamento.idLancamentoEstoque > 0}  width={'10%'} title={'Nro Ref'} errors={errors} register={register} inputName={'idPedido'} defaultValue={lancamento.idPedido}/>
                         <SelectEntradaSaida width={'20%'} selected={lancamento.isEntrada ? 1 : 0} setSelected={(v) => {
                             if(lancamento.id > 0){

@@ -120,7 +120,6 @@ export default function SelectProduto({includeInativos, empresaId, id,ignore, wi
         var index = _.findIndex(formas, p => p.id == value);
         if (index >= 0) {
             setSelected(formas[index]);
-            console.log(formas[index]);
         }
     }
     return (
