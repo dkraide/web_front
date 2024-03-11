@@ -31,6 +31,9 @@ export  default function SelectCampoProduto({title, width, selected, setSelected
            }, {
             value: 4,
             nome: 'Status'
+           },{
+            value: 5,
+            nome: 'Conferencia'
            }];
            setFormas(res);
     }
