@@ -48,7 +48,8 @@ export  const  SelectBaseRef = forwardRef<SelectInstance<dataProps>, selectProps
     noOptionsMessage={(v) => <label>Nenhum item Encontrado</label>} 
     options={datas} 
     onChange={(e) => {setSelected(e.value);
-    }} />
+    }}
+     />
     </div>
   });
 export function SelectBase({id, maxTitleSize, width, datas, selected, title, setSelected, ...rest }: selectProps) {

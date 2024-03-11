@@ -55,17 +55,24 @@ export  const  SelectProdutoRef = forwardRef<SelectInstance<any>, selProps>(func
             }
             data.push(x);
         });
+        console.log('recarregou');
         return data;
     }
     function setSelectedProd(value: any) {
         var index = _.findIndex(formas, p => p.id == value);
         if (index >= 0) {
             setSelected(formas[index]);
-            console.log(formas[index]);
         }
     }
+    function getFirst(){
+       if(formas.length > 0){
+         return formas[0].id.toString();
+       }else{
+         return "";
+       }
+    }
     return (
-        <SelectBaseRef onKeyDown={onKeyDown} ref={ref} id={id} width={width} datas={getData()} selected={selected.toString()} title={'Produto'} setSelected={setSelectedProd} />
+        <SelectBaseRef onKeyDown={onKeyDown} ref={ref} id={id} width={width} datas={getData()} selected={selected?.toString() || getFirst()} title={'Produto'} setSelected={setSelectedProd} />
     )
   });
 

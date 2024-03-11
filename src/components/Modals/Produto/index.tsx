@@ -312,7 +312,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                                 <InputForm defaultValue={obj.quantidadeMinima} width={'15%'} title={'Estoque Min.'} errors={errors} inputName={"quantidadeMinima"} register={register} />
                                 <InputForm defaultValue={obj.quantidade} width={'15%'} title={'Estoque Atual'} errors={errors} inputName={"quantidade"} register={register} />
                                 <div style={{width: '100%', display: 'flex'}}>
-                                <SelectSimNao width={'15%'} selected={obj.isConferencia} setSelected={(v) => { setObj({ ...obj, isConferencia: v }) }} />
+                                <SelectSimNao title={'Conferencia'} width={'15%'} selected={obj.isConferencia} setSelected={(v) => { setObj({ ...obj, isConferencia: v }) }} />
                                 <InputForm defaultValue={obj.codigoFornecedor} width={'15%'} title={'Cod. Fornecedor'} errors={errors} inputName={"codigoFornecedor"} register={register} />
                                 <InputForm defaultValue={obj.multiplicadorFornecedor} width={'15%'} title={'Multiplicador'} errors={errors} inputName={"multiplicadorFornecedor"} register={register} />
                                 </div>
