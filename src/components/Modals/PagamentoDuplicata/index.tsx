@@ -63,6 +63,7 @@ export default function PagamentoDuplicata({ isOpen, duplicatas, setClose }: can
             {(!!pix && pix.status == 'CONCLUIDA') ? <>
             <h5>Obrigado pelo pagamento =)</h5>
             </> : <>
+               
                 <div className={styles.content}>
                     <div style={{ width: '60%' }}>
                         <h5>Pagamentos</h5>
@@ -76,11 +77,11 @@ export default function PagamentoDuplicata({ isOpen, duplicatas, setClose }: can
                                 </tr>
                             </thead>
                             <tbody>
-                                {duplicatas.map((duplicata) => <tr>
-                                    <td>{duplicata.id}</td>
-                                    <td>{duplicata.empresa.nomeFantasia}</td>
-                                    <td>{format(new Date(duplicata.dataVencimento), 'dd/MM/yyyy')}</td>
-                                    <td>R$ {duplicata.valor.toFixed(2)}</td>
+                                {duplicatas?.map((duplicata) => <tr>
+                                    <td>{duplicata?.id}</td>
+                                    <td>{duplicata?.empresa.nomeFantasia}</td>
+                                    <td>{format(new Date(duplicata?.dataVencimento), 'dd/MM/yyyy')}</td>
+                                    <td>R$ {duplicata?.valor?.toFixed(2)}</td>
                                 </tr>)}
                             </tbody>
                         </table>
@@ -105,7 +106,7 @@ export default function PagamentoDuplicata({ isOpen, duplicatas, setClose }: can
                         <div style={{ width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
                             {!!pix && <>
                                 <h5>Pague agora via PIX!</h5>
-                                <QRCode value={pix.pixCopiaECola} />
+                                <QRCode value={pix?.pixCopiaECola || ''} />
                             </>}
                         </div>
                     </div>
