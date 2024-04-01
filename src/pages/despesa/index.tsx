@@ -171,7 +171,7 @@ export default function Despesa() {
 
             </div>
             <hr />
-            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorioDia.csv"}>
+            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorio_despesa.csv"}>
                 Download Planilha
             </CSVLink></CustomButton>
             <hr />

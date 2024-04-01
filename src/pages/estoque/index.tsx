@@ -139,7 +139,7 @@ export default function Estoque() {
             <BoxInfo style={{ marginRight: 10 }} title={'Compra'} value={`R$ ${_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valorCompra : 0).toFixed(2)}`}/>
             </div>
             <hr/>
-            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorioDia.csv"}>
+            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorio_estoque.csv"}>
                 Download Planilha
             </CSVLink></CustomButton>
             <hr />
