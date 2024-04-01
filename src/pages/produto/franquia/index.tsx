@@ -10,7 +10,7 @@ import IUsuario from '@/interfaces/IUsuario';
 import IProduto from '@/interfaces/IProduto';
 import Loading from '@/components/Loading';
 import IEmpresa from '@/interfaces/IEmpresa';
-import _, { padEnd } from 'lodash';
+import _ from 'lodash';
 import SelectProdutoModal from '@/components/Modals/Produto/SelectProdutoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';

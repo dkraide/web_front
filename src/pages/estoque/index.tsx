@@ -15,6 +15,7 @@ import ProdutoForm from '@/components/Modals/Produto';
 import EstoqueForm from '@/components/Modals/Produto/EstoqueForm';
 import BoxInfo from '@/components/ui/BoxInfo';
 import _ from 'lodash';
+import { CSVLink } from "react-csv";
 
 
 export default function Estoque() {
@@ -44,6 +45,28 @@ export default function Estoque() {
     useEffect(() => {
         loadData();
     }, [])
+
+    function getHeaders() {
+        [
+            { label: "Cod", key: "cod" },
+            { label: "Descricao", key: "nome" },
+            { label: "Quantidade", key: "quantidade" },
+            { label: "Compra", key: "compra" },
+            { label: "Venda", key: "venda" }
+        ]
+    }
+    function getDataCsv(){
+        var res = getFiltered().map((p) =>{
+            return  {
+               cod: p.cod,
+               descricao: p.nome,
+               quantidade: p.quantidade,
+               compra: p.valorCompra * (p.quantidade > 0 ? p.quantidade : 0),
+               venda: p.valor * (p.quantidade > 0 ? p.quantidade : 0),
+            }
+        });
+        return res;
+    }
 
     function getFiltered() {
         var res = list.filter(p => {
@@ -116,6 +139,10 @@ export default function Estoque() {
             <BoxInfo style={{ marginRight: 10 }} title={'Compra'} value={`R$ ${_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valorCompra : 0).toFixed(2)}`}/>
             </div>
             <hr/>
+            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorioDia.csv"}>
+                Download Planilha
+            </CSVLink></CustomButton>
+            <hr />
             <CustomTable
                 columns={columns}
                 data={getFiltered()}
