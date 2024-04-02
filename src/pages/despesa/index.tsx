@@ -74,7 +74,7 @@ export default function Despesa() {
     function getDataCsv() {
         var res = getFiltered().map((p) => {
             return {
-                descricao: p.descricao,
+                descricao:(p.motivoLancamento?.nome || p.descricao).toString(),
                 dataVencimento: format(new Date(p.dataVencimento), 'dd/MM/yyyy'),
                 valorTotal: p.valorTotal.toFixed(2),
                 statusLancamento: p.statusLancamento ? 'PAGO' : new Date(p.dataVencimento) < new Date() ? 'VENCIDO' : 'EM ABERTO'
