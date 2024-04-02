@@ -61,8 +61,8 @@ export default function Estoque() {
                cod: p.cod,
                descricao: p.nome,
                quantidade: p.quantidade,
-               compra: p.valorCompra * (p.quantidade > 0 ? p.quantidade : 0),
-               venda: p.valor * (p.quantidade > 0 ? p.quantidade : 0),
+               compra: (p.valorCompra * (p.quantidade > 0 ? p.quantidade : 0)).toFixed(2),
+               venda: (p.valor * (p.quantidade > 0 ? p.quantidade : 0)).toFixed(2),
             }
         });
         return res;
