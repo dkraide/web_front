@@ -48,7 +48,12 @@ export default function VendaCusto() {
             loadData();
         }, 1000);
     }, [])
-
+    function getHeaders() {
+        [
+            { label: "Mes", key: "data" },
+            { label: "Valor", key: "valor" },
+        ]
+    }
     const loadData = async () => {
 
         var u: any;
@@ -92,7 +97,7 @@ export default function VendaCusto() {
             valor = _.sumBy(result.despesas, p => p.valor)
 
         }
-        if(!prefix){
+        if (!prefix) {
             return valor;
         }
         return `${prefix} ${valor.toFixed(2)}`
@@ -123,7 +128,7 @@ export default function VendaCusto() {
         })
         return array;
     }
-    function chartVendaDespesa(){
+    function chartVendaDespesa() {
 
         var despesa = Number(getValue("despesa", undefined))
         var venda = Number(getValue("venda", undefined))
@@ -140,7 +145,7 @@ export default function VendaCusto() {
         })
         return res;
     }
-    function chartMesLucro(){
+    function chartMesLucro() {
         var com = 0;
         var sem = 0;
         var d1 = fGetDate(search.dateIn);
@@ -156,12 +161,12 @@ export default function VendaCusto() {
             if (i >= 0) {
                 despesa = result.despesas[i].valor;
             }
-            if((venda - despesa) > 0){
-                 com++;
-            }else{
+            if ((venda - despesa) > 0) {
+                com++;
+            } else {
                 sem++;
             }
-            
+
         })
 
         var res = [];
@@ -176,7 +181,7 @@ export default function VendaCusto() {
             fill: 'var(--main)',
         })
         return res;
-        
+
     }
     return (
         <div className={styles.container}>
@@ -186,6 +191,10 @@ export default function VendaCusto() {
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
                 <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
+            <hr />
+            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={result?.vendas || []} headers={getHeaders()} filename={"relatorioMes.csv"}>
+                Download Planilha
+            </CSVLink></CustomButton>
             <hr />
             {loading ? <Spinner /> : <div>
                 <div className={styles.box}>
@@ -226,7 +235,7 @@ export default function VendaCusto() {
                                     fill="#8884d8"
                                     label
                                 />
-                                <Tooltip  />
+                                <Tooltip />
                             </PieChart>
                         </div>
                     </div>

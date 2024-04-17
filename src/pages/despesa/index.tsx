@@ -8,7 +8,7 @@ import CustomTable from '@/components/ui/CustomTable';
 import { toast } from 'react-toastify';
 import CustomButton from '@/components/ui/Buttons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import IUsuario from '@/interfaces/IUsuario';
 import IDespesa from '@/interfaces/IDespesa';
 import { endOfMonth, format, startOfMonth } from 'date-fns';
@@ -18,6 +18,7 @@ import BoxInfo from '@/components/ui/BoxInfo';
 import _ from 'lodash';
 import SelectStatusLancamento from '@/components/Selects/SelectStatusLancamento';
 import { CSVLink } from "react-csv";
+import Confirm from '@/components/Modals/Confirm';
 
 interface searchProps {
     dateIn: string
@@ -33,6 +34,7 @@ export default function Despesa() {
     const [search, setSearch] = useState<searchProps>()
     const [edit, setEdit] = useState(-1);
     const [user, setUser] = useState<IUsuario>()
+    const [deletar, setDeletar] = useState(0);
 
     const loadData = async () => {
         var u: any;
@@ -91,11 +93,28 @@ export default function Despesa() {
         return res;
     }
 
+    async function remover(){
+        setLoading(true);
+        await api.delete(`/Despesa/Delete?Id=${deletar}`)
+        .then((data) => {
+            loadData();
+        })
+        .catch((err) => {
+            toast.error(`Erro ao tentar remover despesa.`);
+
+        });
+        setLoading(false);
+    }
+
     const columns = [
         {
             name: '#',
             selector: row => row.id,
-            cell: ({ id }: IDespesa) => <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>,
+            cell: ({ id }: IDespesa) =>
+                <>
+                 <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>
+                 <CustomButton onClick={() => { setDeletar(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faTrash} /></CustomButton>
+                </>,
             sortable: true,
             width: '10%',
         },
@@ -187,6 +206,13 @@ export default function Despesa() {
                 }
                 setEdit(-1);
             }} />}
+             {(deletar >= 0) && <Confirm  message={`Tem certeza que deseja deletar essa despesa?`} isOpen={deletar > 0}  setClose={(v) => {
+                if (v) {
+                    remover();
+                }
+                setDeletar(0);
+            }} />}
+
 
         </div>
     )
