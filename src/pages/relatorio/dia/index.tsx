@@ -123,6 +123,18 @@ export default function RelatorioDia() {
             cell: (row) => `R$ ${row.custo.toFixed(2)}`,
             sortable: true,
         },
+        {
+            name: 'Lucro (R$)',
+            selector: row => row.venda - row.custo,
+            cell: (row) => `R$ ${(row.venda - row.custo).toFixed(2)}`,
+            sortable: true,
+        },
+        {
+            name: 'Lucro (%)',
+            selector: row => row.venda - row.custo,
+            cell: (row) => `${(((row.venda - row.custo) / row.venda) * 100).toFixed(2)} %`,
+            sortable: true,
+        },
 
     ]
 

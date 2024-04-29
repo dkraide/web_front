@@ -56,6 +56,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
             api.get(`/Produto/Select?id=${id}`)
                 .then(({ data }: AxiosResponse<IProduto>) => {
                     setObj(data);
+                    console.log(data);
                     setLoading(false);
                 })
                 .catch((err) => {

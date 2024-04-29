@@ -1,6 +1,4 @@
 import Loading from "@/components/Loading";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ReactNode } from "react";
 import DataTable, { TableColumn } from "react-data-table-component";
 
@@ -38,6 +36,8 @@ export default function CustomTable({expandableComponent, expandableIcon, pagina
            noDataComponent={'Sem itens para serem exibidos.'}
            selectableRows={selectable}
            expandableRows={!!expandableIcon}
+           paginationPerPage={5}
+           paginationRowsPerPageOptions={[5,10,15,20,25,35,50]}
            expandableIcon={{collapsed: expandableIcon, expanded: expandableIcon}}
            onSelectedRowsChange={handleChangeSelected}
            expandableRowsComponent={expandableComponent}
