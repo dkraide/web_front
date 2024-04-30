@@ -1,3 +1,5 @@
+import IProdutoImagem from "./IProdutoImagem"
+
 export default interface IClasseMaterial{
      id: number
      localCriacao: string
@@ -5,8 +7,9 @@ export default interface IClasseMaterial{
      localPath: string
      posicao: number
      visivelMenu: boolean
-     iDClasseMaterial: number
+     idClasseMaterial: number
      nomeClasse: string
      empresaId: number
      status: boolean
+     imagem?: IProdutoImagem
 }

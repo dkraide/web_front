@@ -38,7 +38,7 @@ export default function Promocoes() {
             u = res;
         }
         await api
-            .get(`/Promocao/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
+            .get(`/Promocao/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&imagem=true`)
             .then(({ data }: AxiosResponse) => {
                 setList(data);
             }).catch((err: AxiosError) => {
@@ -81,26 +81,28 @@ export default function Promocoes() {
             });
     }
 
-    function setImage(id: number, empresa: number){
+    function setImage(p: IPromocao){
         var input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
         input.click();
         input.onchange = async (e: Event) => {
+
+            setLoading(true);
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
            var imagemstring = await blobToBase64(files[0])
             var obj = {
                 imagemString: imagemstring,
-                idpromocao: id,
-                empresaid: empresa
+                idpromocao: p.idPromocao,
+                promocaoId: p.id,
+                empresaid: p.empresaId
             };
             var res = await sendImage(obj);
             if(res){
-                setTimeout(() => {
                 loadData();
-                }, 1000);
             }
+            setLoading(false);
         }
     }
  
@@ -108,7 +110,7 @@ export default function Promocoes() {
         {
             name: '#',
             selector: (row: IProduto) => row.id,
-            cell: ({ id, empresaId }: IProduto) => <PictureBox onClick={() => {setImage(id, empresaId)}} url={getURLImagemMenu(id, `${empresaId}promo`)} size={'100px'} />,
+            cell: (p: IPromocao) => <PictureBox onClick={() => {setImage(p)}} url={p?.imagem?.localOnline} size={'100px'} />,
         },
         {
             name: 'Nome',

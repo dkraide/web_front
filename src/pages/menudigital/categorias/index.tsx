@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 import IUsuario from '@/interfaces/IUsuario';
 import IProduto from '@/interfaces/IProduto';
 import PictureBox from '@/components/ui/PictureBox';
-import Toggle from 'react-bootstrap-toggle';
 import _ from 'lodash';
 import GetValue from '@/components/Modals/GetValue';
 import {  blobToBase64, getURLImagemMenu, sendImage} from '@/utils/functions';
@@ -37,7 +36,7 @@ export default function Categorias() {
             u = res;
         }
         await api
-            .get(`/ClasseMaterial/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
+            .get(`/ClasseMaterial/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&imagem=true`)
             .then(({ data }: AxiosResponse) => {
                 setList(data);
             }).catch((err: AxiosError) => {
@@ -79,7 +78,7 @@ export default function Categorias() {
             });
     }
 
-    function setImage(id: number, empresa: number){
+    function setImage(c: IClasseMaterial){
         var input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
@@ -90,14 +89,15 @@ export default function Categorias() {
            var imagemstring = await blobToBase64(files[0])
             var obj = {
                 imagemString: imagemstring,
-                idClasseMaterial: id,
-                empresaid: empresa
+                idClasseMaterial: c.idClasseMaterial,
+                classeMaterialId: c.id,
+                empresaid: c.empresaId
             };
             var res = await sendImage(obj);
             if(res){
                 setTimeout(() => {
                 loadData();
-                }, 1000);
+                }, 500);
             }
         }
     }
@@ -106,7 +106,7 @@ export default function Categorias() {
         {
             name: '#',
             selector: (row: IClasseMaterial) => row.id,
-            cell: ({ id, empresaId }: IClasseMaterial) => <PictureBox onClick={() => {setImage(id, empresaId)}} url={getURLImagemMenu(id, `${empresaId}c`)} size={'100px'} />,
+            cell: (c: IClasseMaterial) => <PictureBox onClick={() => {setImage(c)}} url={c?.imagem?.localOnline} size={'100px'} />,
         },
         {
             name: 'Nome',

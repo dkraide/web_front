@@ -3,6 +3,7 @@ import ICodBarras from "./ICodBarras"
 import IFornecedor from "./IFornecedor"
 import IGrupoAdicional from "./IGrupoAdicional"
 import IMateriaPrima from "./IMateriaPrima"
+import IProdutoImagem from "./IProdutoImagem"
 import IProdutoMateriaPrima from "./IProdutoMateriaPrima"
 import IPromocao from "./IPromocao"
 import ITamanho from "./ITamanho"
@@ -50,4 +51,5 @@ export default interface IProduto{
          promocoes: IPromocao[]
          descricao: string
          isConferencia: boolean
+         imagem?: IProdutoImagem
 }

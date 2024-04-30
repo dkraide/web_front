@@ -57,7 +57,7 @@ export const formatNumber = (n: number, money: boolean) => {
 }
 
 export const sendImage = async (obj: any) => {
-    var res = await axios.post(`https://krd.emartim.com.br/api/Cardapio/SendImageMenuDigital`, obj)
+    var res = api.post(`/ProdutoImagem/SendImage`, obj)
         .then(({ data }) => {
             toast.success(`Imagem enviada com sucesso!`);
             return true;
@@ -91,7 +91,17 @@ export const isNullOrWhitespace = (input?: string) => {
 
 export const blobToBase64 = blob => blobToDataUrl(blob).then((text: string) => text.slice(text.indexOf(",") + 1));
 
-
+function getBase64(file) {
+    var reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function () {
+      console.log(reader.result);
+    };
+    reader.onerror = function (error) {
+      console.log('Error: ', error);
+    };
+ }
+ 
 export const printHTML = (html: any) => {
     const blob: Blob = new Blob([html], { type: 'text/html' });
     const fileURL = URL.createObjectURL(blob);

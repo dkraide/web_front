@@ -39,7 +39,7 @@ export default function ClasseMaterial() {
             u = res;
         }
         await api
-            .get(`/Produto/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
+            .get(`/Produto/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&imagem=true`)
             .then(({ data }: AxiosResponse) => {
                 setList(data);
             }).catch((err: AxiosError) => {
@@ -81,7 +81,7 @@ export default function ClasseMaterial() {
             });
     }
 
-    function setImage(id: number, empresa: number){
+    function setImage(p: IProduto){
         var input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
@@ -92,14 +92,15 @@ export default function ClasseMaterial() {
            var imagemstring = await blobToBase64(files[0])
             var obj = {
                 imagemString: imagemstring,
-                idproduto: id,
-                empresaid: empresa
+                idproduto:p.idProduto,
+                produtoId: p.id,
+                empresaid: p.empresaId
             };
             var res = await sendImage(obj);
             if(res){
                 setTimeout(() => {
                 loadData();
-                }, 1000);
+                }, 500);
             }
         }
     }
@@ -108,7 +109,7 @@ export default function ClasseMaterial() {
         {
             name: '#',
             selector: (row: IProduto) => row.id,
-            cell: ({ id, empresaId }: IProduto) => <PictureBox onClick={() => {setImage(id, empresaId)}} url={getURLImagemMenu(id, empresaId)} size={'100px'} />,
+            cell: (p: IProduto) => <PictureBox onClick={() => {setImage(p)}} url={p?.imagem?.localOnline} size={'100px'} />,
         },
         {
             name: 'Nome',

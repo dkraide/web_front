@@ -1,5 +1,6 @@
 import IClasseMaterial from "./IClasseMaterial"
 import IProduto from "./IProduto"
+import IProdutoImagem from "./IProdutoImagem"
 
 export default interface IPromocao{
          idPromocao: number
@@ -21,4 +22,5 @@ export default interface IPromocao{
          posicao: number
          visivelMenu: boolean
          diaSemana: number
+         imagem?: IProdutoImagem
 }

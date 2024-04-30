@@ -1,3 +1,5 @@
+import IProdutoImagem from "./IProdutoImagem"
+
 export default interface IMenuDigitalConfiguracao{
     id: number
     empresaId: number
@@ -12,6 +14,7 @@ export default interface IMenuDigitalConfiguracao{
     limiteKm: number
     entrega: boolean
     horarios: IMenuDigitalHorario[]
+    imagem: IProdutoImagem
 }
 
 interface IMenuDigitalHorario{

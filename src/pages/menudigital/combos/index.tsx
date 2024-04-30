@@ -39,7 +39,7 @@ export default function Promocoes() {
             u = res;
         }
         await api
-            .get(`/Combo/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
+            .get(`/Combo/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&imagem=true`)
             .then(({ data }: AxiosResponse) => {
                 setList(data);
             }).catch((err: AxiosError) => {
@@ -82,7 +82,7 @@ export default function Promocoes() {
             });
     }
 
-    function setImage(id: number, empresa: number){
+    function setImage(c: ICombo){
         var input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
@@ -93,8 +93,9 @@ export default function Promocoes() {
            var imagemstring = await blobToBase64(files[0])
             var obj = {
                 imagemString: imagemstring,
-                idCombo: id,
-                empresaid: empresa
+                idCombo: c.idCombo,
+                comboId: c.id,
+                empresaid: c.empresaId
             };
             var res = await sendImage(obj);
             if(res){
@@ -109,7 +110,7 @@ export default function Promocoes() {
         {
             name: '#',
             selector: (row: ICombo) => row.id,
-            cell: ({ id, empresaId }: ICombo) => <PictureBox onClick={() => {setImage(id, empresaId)}} url={getURLImagemMenu(id, `${empresaId}combo`)} size={'100px'} />,
+            cell: (c: ICombo) => <PictureBox onClick={() => {setImage(c)}} url={c?.imagem?.localOnline} size={'100px'} />,
         },
         {
             name: 'Codigo',

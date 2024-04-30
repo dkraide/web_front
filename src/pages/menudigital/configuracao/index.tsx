@@ -151,7 +151,7 @@ export default function Configuracao() {
         <>
             <h3>Imagem Principal do Menu</h3>
             <hr/>
-            <PictureBox width={'700px'} height={'200px'}  onClick={() => {setImage()}} url={getURLImagemMenu(undefined, `${objeto.empresaId}folder`)} size={undefined} />
+            <PictureBox width={'700px'} height={'200px'}  onClick={() => {setImage()}} url={objeto?.imagem?.localOnline} size={undefined} />
             <h3>Configuracao</h3>
             <div className={styles.container}>
                 <SelectSimNao title={'Entrega'} width={'25%'} selected={objeto.entrega} setSelected={(v) => { setObjeto({ ...objeto, entrega: v }) }} />

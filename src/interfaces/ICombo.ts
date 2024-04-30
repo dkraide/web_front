@@ -1,4 +1,5 @@
 import IComboItem from "./IComboItem"
+import IProdutoImagem from "./IProdutoImagem"
 
 export default interface ICombo{
 idCombo: number
@@ -13,4 +14,5 @@ localPath: string
 itens: IComboItem[]
 empresaId: number
 id: number
+imagem?: IProdutoImagem
 }
