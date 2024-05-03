@@ -19,6 +19,7 @@ import _ from 'lodash';
 import SelectStatusLancamento from '@/components/Selects/SelectStatusLancamento';
 import { CSVLink } from "react-csv";
 import Confirm from '@/components/Modals/Confirm';
+import DespesaFormaForm from '@/components/Modals/Financeiro/DespesaFormaForm';
 
 interface searchProps {
     dateIn: string
@@ -33,6 +34,7 @@ export default function Despesa() {
     const { getUser } = useContext(AuthContext)
     const [search, setSearch] = useState<searchProps>()
     const [edit, setEdit] = useState(-1);
+    const [despesaForma, setDespesaForma] = useState(0);
     const [user, setUser] = useState<IUsuario>()
     const [deletar, setDeletar] = useState(0);
 
@@ -193,6 +195,9 @@ export default function Despesa() {
             <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorio_despesa.csv"}>
                 Download Planilha
             </CSVLink></CustomButton>
+            <CustomButton style={{ marginBottom: 10, marginLeft: 5 }} typeButton={'dark'} onClick={() => {setDespesaForma(1)}}>
+                Gerar Despesa por Forma
+            </CustomButton>
             <hr />
             <CustomTable
                 columns={columns}
@@ -211,6 +216,12 @@ export default function Despesa() {
                     remover();
                 }
                 setDeletar(0);
+            }} />}
+            {(despesaForma > 0) && <DespesaFormaForm user={user} isOpen={despesaForma > 0}  setClose={(v) => {
+                if (v) {
+                    loadData();
+                }
+                setDespesaForma(0);
             }} />}
 
 
