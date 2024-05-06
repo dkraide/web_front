@@ -1,3 +1,6 @@
+.container{
+    padding: 10px;
+}
 .box{
     display: flex;
     flex-direction: row;
@@ -13,4 +16,56 @@
     background-color: var(--danger);
     color: var(--white);
     padding: 5px;
+}
+
+.success{
+    background-color: var(--green);
+    td{
+        background-color: transparent;
+        color: white;
+        font-size: 12px;
+
+    }
+}
+.fixa{
+    background-color: #7b4242;
+   
+    td{
+        background-color: transparent;
+        color: white;
+        font-size: 12px;
+
+    }
+}
+.variavel{
+    background-color: #c74949;
+    td{
+        background-color: transparent;
+        color: white;
+        font-size: 12px;
+
+    }
+}
+.taxa{
+    background-color: #d86868;
+    td{
+        background-color: transparent;
+        color: white;
+        font-size: 12px;
+
+    }
+}
+.outro{
+    background-color: #e98080;
+    td{
+        background-color: transparent;
+        color: white;
+        font-size: 12px;
+
+    }
+}
+.geral{
+    td{
+        font-size: 12px;
+    }
 }

@@ -18,6 +18,7 @@ import { format } from "date-fns";
 import SelectSimNao from "@/components/Selects/SelectSimNao";
 import SelectMotivoLancamento from "@/components/Selects/SelectMotivoLancamento";
 import { fGetNumber } from "@/utils/functions";
+import SelectTipoDespesa from "@/components/Selects/SelectTipoDespesa";
 
 
 interface props {
@@ -56,6 +57,8 @@ export default function DespesaForm({ user, isOpen, id, setClose, color }: props
             objeto.id = 0;
             objeto.dataLancamento = new Date();
             objeto.dataVencimento = endOfMonth(new Date());
+            objeto.dataCompetencia = endOfMonth(new Date());
+            objeto.tipoDespesa = 'DESPESA FIXA';
             setObjeto(objeto);
             setLoading(false);
         }
@@ -72,6 +75,7 @@ export default function DespesaForm({ user, isOpen, id, setClose, color }: props
         objeto.dataVencimento = new Date(data.dataVencimento);
         objeto.dataPagamento = new Date(data.dataPagamento || new Date());
         objeto.pedidoReferencia = data.pedidoReferencia;
+        objeto.dataCompetencia = new Date(data.dataCompetencia);
         if(objeto.desconto > objeto.valorSubTotal + objeto.acrescimo){
             toast.error(`Desconto excessivo`);
             return;
@@ -134,6 +138,10 @@ export default function DespesaForm({ user, isOpen, id, setClose, color }: props
                     <SelectSimNao width={'20%'} title={'Pago'} selected={objeto.statusLancamento} setSelected={(v) => { setObjeto({ ...objeto, statusLancamento: v }) }} />
                     {objeto.statusLancamento ? <InputForm type={'date'} defaultValue={format(new Date(objeto.dataPagamento || new Date()), 'yyyy-MM-dd')} width={'15%'} title={'Pagamento'} errors={errors} inputName={"dataPagamento"} register={register} /> :
                         <div style={{ width: '15%' }}></div>}
+                    <SelectTipoDespesa width={'70%'} selected={objeto.tipoDespesa} setSelected={(v) => {
+                        setObjeto({ ...objeto, tipoDespesa: v })
+                    }} />
+                      <InputForm type={'date'} defaultValue={format(new Date(objeto.dataCompetencia || new Date()), 'yyyy-MM-dd')} width={'30%'} title={'Competencia'} errors={errors} inputName={"dataCompetencia"} register={register} />
                     <SelectMotivoLancamento selected={objeto.motivoLancamentoId} setSelected={(v) => {
                         setObjeto({ ...objeto, motivoLancamento: v, motivoLancamentoId: v.id })
                     }} />

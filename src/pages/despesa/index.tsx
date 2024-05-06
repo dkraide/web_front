@@ -124,14 +124,20 @@ export default function Despesa() {
             name: 'Local',
             selector: row => row['idDespesa'] > 0 ? 'SIM' : 'NAO',
             sortable: true,
-            width: '10%',
+            width: '5%',
+        },
+        {
+            name: 'Tipo',
+            selector: row => row['tipoDespesa'],
+            sortable: true,
+            width: '15%',
         },
         {
             name: 'Descricao',
             selector: (row: IDespesa) => row.descricao,
             cell: (row: IDespesa) => (row.motivoLancamento?.nome || row.descricao).toString(),
             sortable: true,
-            width: '40%',
+            width: '30%',
         },
         {
             name: 'Lancamento',

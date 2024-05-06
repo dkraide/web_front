@@ -22,4 +22,6 @@ export default interface IDespesa{
      motivoLancamentoId: number
      empresaId: number
      empresa: IEmpresa
+     tipoDespesa?: string
+     dataCompetencia?: Date
 }

@@ -21,6 +21,9 @@ export  default function SelectMotivoLancamento({width, selected, setSelected}: 
            api.get(`/MotivoLancamento/List?empresaId=${res?.empresaSelecionada}`)
            .then(({data}: AxiosResponse) => {
                    setFormas(data);
+                   if((!selected || selected == 0) && data.length > 0){
+                       setSelected(data[0])
+                   }
            })
            .catch((err: AxiosError) => {
                toast.error(`Erro ao buscar Grupo de Material ${err.message}`)

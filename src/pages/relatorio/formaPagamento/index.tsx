@@ -22,7 +22,7 @@ interface searchProps {
 interface relatorioProps {
     forma: string
     quantidade: number
-    venda: number,
+    venda: number
     custo: number
 }
 

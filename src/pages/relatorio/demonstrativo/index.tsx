@@ -24,10 +24,9 @@ interface searchProps {
     calculaCusto: boolean
 }
 interface relatorioProps {
-    dia: string
+    forma: string
     quantidade: number
-    venda: number,
-    faturado: number
+    venda: number
     custo: number
 }
 interface dataProps {
@@ -84,7 +83,7 @@ export default function Demonstrativo() {
     const loadVendasDia = async (dataIn?: string, dataFim?: string) => {
         var u = await getUsuario();
         await api
-            .get(`/Relatorio/Dia?empresaId=${u.empresaSelecionada}&dataIn=${dataIn || search.dateIn}&dataFim=${dataFim || search.dateFim}`)
+            .get(`/Relatorio/FormaPagamento?empresaId=${u.empresaSelecionada}&dataIn=${dataIn || search.dateIn}&dataFim=${dataFim || search.dateFim}`)
             .then(({ data }: AxiosResponse) => {
                 setVendas(data);
             }).catch((err: AxiosError) => {
@@ -92,134 +91,40 @@ export default function Demonstrativo() {
             });
     }
 
-    function getData() {
-        var spl = search.dateIn.split('-')
-        var dataIn = new Date(Number(spl[0]), Number(spl[1]) - 1, Number(spl[2]));
-        console.log(search.dateIn);
-        console.log(dataIn);
-        var dataFim = new Date(search.dateFim);
-        var data = [] as dataProps[];
-        while (dataIn <= dataFim) {
-            var nextDay = addDays(dataIn, 1);
-            var des = _.filter(despesas, (d: IDespesa) => {
-                var dia = new Date(d.dataVencimento);
-                if (dia >= dataIn && dia < nextDay) {
-                    return d;
-                }
-            });
-            var ven = _.filter(vendas, d => {
-                var dia = new Date(d.dia);
-                if (dia >= dataIn && dia < nextDay) {
-                    return d;
-                }
-            });
-            if (des.length == 0 && ven.length == 0) {
-                dataIn = nextDay;
-                continue;
-            }
-            data.push({
-                dia: format(dataIn, 'dd/MM/yyyy'),
-                descricao: '',
-                entrada: 0,
-                saida: 0
-            });
-            if (des && des.length > 0) {
-                des.map((d: IDespesa) => {
-                    data.push({
-                        dia: undefined,
-                        descricao: (d.motivoLancamento?.nome || d.descricao) + ` ${d.statusLancamento ? '' : '***ABERTO'}`,
-                        entrada: 0,
-                        saida: d.valorTotal
-                    });
-                })
-            }
-            if (ven && ven.length > 0) {
-                ven.map((d: relatorioProps) => {
-                    data.push({
-                        dia: undefined,
-                        descricao: 'VENDAS',
-                        entrada: d.venda,
-                        saida: 0
-                    });
-                    if(search.calculaCusto){
-                        data.push({
-                            dia: undefined,
-                            descricao: 'CUSTO VENDA',
-                            entrada: 0,
-                            saida: d.custo
-                        });
-                    }
-                })
-            }
-            dataIn = nextDay;
-        }
-        return data;
+    function getEntradas() {
+        var v = _.sumBy(vendas, p => p.venda);
+        return v;
     }
-
-    function getEntradas(){
-          var v = _.sumBy(vendas, p => p.venda);
-          return v;
-    }
-    function getSaidas(){
+    function getSaidas() {
 
         var des = _.sumBy(despesas, x => x.valorTotal);
         var custoProduto = 0;
-        if(search?.calculaCusto){
+        if (search?.calculaCusto) {
             custoProduto = _.sumBy(vendas, p => p.custo);
         }
         return des + custoProduto;
     }
-    function getTotal(){
-         var e = getEntradas();
-         var s = getSaidas();
-         return e-s;
+    function getTotal() {
+        var e = getEntradas();
+        var s = getSaidas();
+        return e - s;
     }
 
-    const columns = [
-        {
-            name: 'Dia',
-            selector: row => row.dia,
-            sortable: true,
-            width: '20%',
-        },
-        {
-            name: 'Descricao',
-            selector: row => row.descricao,
-            sortable: true,
-            width: '40%',
-        },
-        {
-            name: 'Entrada',
-            selector: row => row.entrada,
-            cell: row => row.entrada == 0 ? <b></b> :<b className={styles.s}>R$ {row.entrada.toFixed(2)}</b>,
-            sortable: true,
-            width: '20%',
-        },
-        {
-            name: 'Saida',
-            selector: row => row.saida,
-            cell: row => row.saida == 0 ? <b></b> :<b className={styles.d}>R$ {row.saida.toFixed(2)}</b>,
-            sortable: true,
-            width: '20%',
-        },
-    ]
-    const headers = [
-        { label: "Dia", key: "dia" },
-        { label: "Descricao", key: "descricao" },
-        { label: "Entrada", key: "entrada" },
-        { label: "Saida", key: "saida" }
-    ]
-
+    function getPorcentagem(valor: number){
+        var x = getEntradas();
+        var porcentagem =  (valor / x ) * 100;
+        return `${porcentagem.toFixed(2)}%`
+    }
     return (
         <div className={styles.container}>
             <h4>Demonstrativo de Resultado</h4>
             <div className={styles.box}>
-                <SelectSimNao title={'Despesa em Aberta'} width={'20%'} selected={search?.incluiEmHaver} setSelected={(v) => {setSearch({...search, incluiEmHaver: v})}}/>
+                <SelectSimNao title={'Despesa em Aberta'} width={'20%'} selected={search?.incluiEmHaver} setSelected={(v) => { setSearch({ ...search, incluiEmHaver: v }) }} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                <SelectSimNao title={'Calcula Custo Produto'} width={'20%'} selected={search?.calculaCusto} setSelected={(v) => {setSearch({...search, calculaCusto: v})}}/>
-                <div style={{width: '100%'}}>
-                    <CustomButton onClick={() => {loadData()}} typeButton={'dark'}>Pesquisar</CustomButton>
+                <SelectSimNao title={'Calcula Custo Produto'} width={'20%'} selected={search?.calculaCusto} setSelected={(v) => { setSearch({ ...search, calculaCusto: v }) }} />
+                <div style={{ width: '100%' }}>
+                    <CustomButton onClick={() => { loadData() }} typeButton={'dark'}>Pesquisar</CustomButton>
                 </div>
             </div>
             <hr />
@@ -229,17 +134,146 @@ export default function Demonstrativo() {
                     <BoxInfo style={{ marginRight: 10 }} title={'Saidas'} value={`R$ ${getSaidas().toFixed(2)}`} />
                     <BoxInfo style={{ marginRight: 10 }} title={'Resultado'} value={`R$ ${getTotal().toFixed(2)}`} />
                 </div>
-
-                <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getData()} headers={headers} filename={"demonstrativo.csv"}>
-                    Download Planilha
-                </CSVLink></CustomButton>
                 <div style={{ width: '85%' }}>
-                    <CustomTable
-                        columns={columns}
-                        pagination={false}
-                        data={getData()}
-                        loading={loading}
-                    />
+                    <table className={"table"}>
+                        <thead>
+                            <tr>
+                                <th style={{ width: '60%' }}>
+                                    Razão
+                                </th>
+                                <th style={{ width: '15%' }}>
+                                    Entrada
+                                </th>
+                                <th style={{ width: '15%' }}>
+                                    Saida
+                                </th>
+                                <th style={{ width: '10%' }}>
+                                    % Fat
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr className={styles.success}>
+                                <td colSpan={4}><b>ENTRADAS</b></td>
+                            </tr>
+                            {vendas.map((venda) => {
+                                return (
+                                    <tr className={styles.success}>
+                                        <td>{venda.forma}</td>
+                                        <td >R$ {venda.venda.toFixed(2)}</td>
+                                        <td></td>
+                                        <td>{getPorcentagem(venda.venda)}</td>
+                                    </tr>
+                                )
+                            })}
+                           
+
+                            <tr className={styles.fixa}>
+                                <td colSpan={4}><b>DESPESAS FIXAS</b></td>
+                            </tr>
+                            {despesas.map((despesa) => {
+                                if (despesa.tipoDespesa == 'DESPESA FIXA') {
+                                    return (
+                                        <tr className={styles.fixa}>
+                                            <td>{despesa.motivoLancamento?.nome || despesa.descricao}</td>
+                                            <td></td>
+                                            <td>R$ {despesa.valorTotal.toFixed(2)}</td>
+                                            <td>{getPorcentagem(despesa.valorTotal)}</td>
+                                        </tr>
+                                    )
+                                }
+                                return <></>
+                            })}
+                           
+                            <tr className={styles.variavel}>
+                                <td colSpan={4}><b>DESPESAS VARIAVEIS</b></td>
+                            </tr>
+                            {despesas.map((despesa) => {
+                                if (despesa.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL') {
+                                    return (
+                                        <tr className={styles.variavel}>
+                                            <td>{despesa.motivoLancamento?.nome || despesa.descricao}</td>
+                                            <td></td>
+                                            <td>R$ {despesa.valorTotal.toFixed(2)}</td>
+                                            <td>{getPorcentagem(despesa.valorTotal)}</td>
+                                        </tr>
+                                    )
+                                }
+                                return <></>
+                            })}
+                           
+                            <tr className={styles.taxa}>
+                                <td colSpan={4}><b>TAXAS E TRIBUTOS</b></td>
+                            </tr>
+                            {despesas.map((despesa) => {
+                                if (despesa.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS') {
+                                    return (
+                                        <tr className={styles.taxa}>
+                                            <td>{despesa.motivoLancamento?.nome || despesa.descricao}</td>
+                                            <td></td>
+                                            <td>R$ {despesa.valorTotal.toFixed(2)}</td>
+                                            <td>{getPorcentagem(despesa.valorTotal)}</td>
+                                        </tr>
+                                    )
+                                }
+                                return <></>
+                            })}
+                            <tr className={styles.outro}>
+                                <td colSpan={4}><b>OUTRAS DESPESAS</b></td>
+                            </tr>
+                            {despesas.map((despesa) => {
+                                if (despesa.tipoDespesa.toUpperCase() == 'OUTROS') {
+                                    return (
+                                        <tr className={styles.outro}>
+                                            <td>{despesa.motivoLancamento?.nome || despesa.descricao}</td>
+                                            <td></td>
+                                            <td>R$ {despesa.valorTotal.toFixed(2)}</td>
+                                            <td>{getPorcentagem(despesa.valorTotal)}</td>
+                                        </tr>
+                                    )
+                                }
+                                return <></>
+                            })}
+                             <tr className={styles.geral}>
+                                <td><b>ENTRADAS</b></td>
+                                <td>R$ {_.sumBy(vendas, v => v.venda).toFixed(2)}</td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                             <tr className={styles.geral}>
+                                <td><b>DESPESAS FIXAS</b></td>
+                                <td></td>
+                                <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA FIXA' ? v.valorTotal : 0).toFixed(2)}</td>
+                                <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA FIXA' ? v.valorTotal : 0) || 0)}</td>
+                            </tr>
+                             <tr className={styles.geral}>
+                                <td><b>DESPESAS VARIAVEIS</b></td>
+                                <td></td>
+                                <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL' ? v.valorTotal : 0).toFixed(2)}</td>
+                                <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL' ? v.valorTotal : 0) || 0)}</td>
+                            </tr>
+                            <tr className={styles.geral}>
+                                <td><b>TAXAS E TRIBUTOS</b></td>
+                                <td></td>
+                                <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS' ? v.valorTotal : 0).toFixed(2)}</td>
+                                <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS' ? v.valorTotal : 0) || 0)}</td>
+                            </tr>
+                            <tr className={styles.geral}>
+                                <td><b>OUTRAS DESPESAS</b></td>
+                                <td></td>
+                                <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0).toFixed(2)}</td>
+                                <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0) || 0)}</td>
+                            </tr>
+                            <tr className={styles.geral}>
+                                <td><b>RESULTADO</b></td>
+                                <td> R$ {getEntradas().toFixed(2)}</td>
+                                <td> R$ {getSaidas().toFixed(2)}</td>
+                                <td>{getPorcentagem(_.sumBy(despesas, v =>  v.valorTotal) || 0)}</td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
                 </div>
             </div>}
         </div>
