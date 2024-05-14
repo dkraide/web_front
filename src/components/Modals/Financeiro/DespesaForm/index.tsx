@@ -141,7 +141,7 @@ export default function DespesaForm({ user, isOpen, id, setClose, color }: props
                     <SelectTipoDespesa width={'70%'} selected={objeto.tipoDespesa} setSelected={(v) => {
                         setObjeto({ ...objeto, tipoDespesa: v })
                     }} />
-                      <InputForm type={'date'} defaultValue={format(new Date(objeto.dataCompetencia || new Date()), 'yyyy-MM-dd')} width={'30%'} title={'Competencia'} errors={errors} inputName={"dataCompetencia"} register={register} />
+                    <InputForm type={'date'} defaultValue={format(new Date(objeto.dataCompetencia || new Date()), 'yyyy-MM-dd')} width={'30%'} title={'Competencia'} errors={errors} inputName={"dataCompetencia"} register={register} />
                     <SelectMotivoLancamento selected={objeto.motivoLancamentoId} setSelected={(v) => {
                         setObjeto({ ...objeto, motivoLancamento: v, motivoLancamentoId: v.id })
                     }} />

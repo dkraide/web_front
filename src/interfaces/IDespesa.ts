@@ -23,5 +23,5 @@ export default interface IDespesa{
      empresaId: number
      empresa: IEmpresa
      tipoDespesa?: string
-     dataCompetencia?: Date
+     dataCompetencia: Date
 }
