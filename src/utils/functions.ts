@@ -1,8 +1,9 @@
 import { api } from "@/services/apiClient";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { addHours } from "date-fns";
-import { useState } from "react";
+import FileSaver from "file-saver";
 import { toast } from "react-toastify";
+import XLSX from 'sheetjs-style';
 
 
 
@@ -167,3 +168,26 @@ export  const fgetDate = (date: string) =>{
     r = addHours(r, 3);
     return r;
 }
+
+type ColumnData = {
+    label: string
+    key: string
+}
+
+export const ExportToExcel = (columns: ColumnData[], data: any[], fileName: string) => {
+    var formattedArray = data.map((p) => {
+        var object = {};
+        columns.map((c) => {
+            object[c.label] = p[c.key];
+        });
+        return object;
+    });
+   const fileType =
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const ws = XLSX.utils.json_to_sheet(formattedArray);
+    const wb = {Sheets: {'data': ws}, SheetNames: ['data']};
+    const excelBuffer = XLSX.write(wb, {bookType: 'xlsx', type:'array'});
+    const d = new Blob([excelBuffer], {type: fileType});
+    FileSaver.saveAs(d, fileName + ".xlsx" );
+}
+

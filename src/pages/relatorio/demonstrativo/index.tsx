@@ -16,6 +16,7 @@ import CustomTable from '@/components/ui/CustomTable'
 import { Spinner } from 'react-bootstrap'
 import BoxInfo from '@/components/ui/BoxInfo'
 import SelectSimNao from '@/components/Selects/SelectSimNao'
+import { ExportToExcel } from '@/utils/functions'
 
 interface searchProps {
     dateIn: string
@@ -110,9 +111,134 @@ export default function Demonstrativo() {
         return e - s;
     }
 
-    function getPorcentagem(valor: number){
+    function getData() {
+        var res = [];
+        res.push({
+            razao: 'ENTRADAS',
+            entrada: '',
+            saida: '',
+            fat: ''
+        });
+        vendas.map((venda) => {
+            res.push({
+                razao: venda.forma,
+                entrada: venda.venda.toFixed(2),
+                saida: '',
+                fat: getPorcentagem(venda.venda)
+            });
+        });
+        res.push({
+            razao: 'DESPESA FIXA',
+            entrada: '',
+            saida: '',
+            fat: ''
+        });
+        despesas.map((despesa) => {
+            if (despesa.tipoDespesa == 'DESPESA FIXA') {
+                res.push({
+                    razao: despesa.descricao || despesa.motivoLancamento?.nome || 'N/D',
+                    entrada: '',
+                    saida: despesa.valorTotal.toFixed(2),
+                    fat: getPorcentagem(despesa.valorTotal)
+                });
+            }
+        })
+        res.push({
+            razao: 'DESPESA VARIAVEL',
+            entrada: '',
+            saida: '',
+            fat: ''
+        });
+        despesas.map((despesa) => {
+            if (despesa.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL') {
+                res.push({
+                    razao: despesa.descricao || despesa.motivoLancamento?.nome || 'N/D',
+                    entrada: '',
+                    saida: despesa.valorTotal.toFixed(2),
+                    fat: getPorcentagem(despesa.valorTotal)
+                });
+            }
+        });
+        res.push({
+            razao: 'TAXAS E TRIBUTOS',
+            entrada: '',
+            saida: '',
+            fat: ''
+        });
+        despesas.map((despesa) => {
+            if (despesa.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS') {
+                res.push({
+                    razao: despesa.descricao || despesa.motivoLancamento?.nome || 'N/D',
+                    entrada: '',
+                    saida: despesa.valorTotal.toFixed(2),
+                    fat: getPorcentagem(despesa.valorTotal)
+                });
+            }
+        })
+        res.push({
+            razao: 'OUTROS',
+            entrada: '',
+            saida: '',
+            fat: ''
+        });
+        despesas.map((despesa) => {
+            if (despesa.tipoDespesa.toUpperCase() == 'OUTROS') {
+                res.push({
+                    razao: despesa.descricao || despesa.motivoLancamento?.nome || 'N/D',
+                    entrada: '',
+                    saida: despesa.valorTotal.toFixed(2),
+                    fat: getPorcentagem(despesa.valorTotal)
+                });
+            }
+        })
+        res.push({
+            razao: 'ENTRADAS',
+            entrada: _.sumBy(vendas, v => v.venda).toFixed(2),
+            saida: '',
+            fat: ''
+        });
+        res.push({
+            razao: 'DESPESA FIXA',
+            entrada: '',
+            saida: _.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA FIXA' ? v.valorTotal : 0).toFixed(2),
+            fat: getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA FIXA' ? v.valorTotal : 0) || 0)
+        });
+        res.push({
+            razao: 'DESPESA VARIAVEL',
+            entrada: '',
+            saida: _.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL' ? v.valorTotal : 0).toFixed(2),
+            fat: getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL' ? v.valorTotal : 0) || 0)
+        });
+        res.push({
+            razao: 'TAXAS E TRIBUTOS',
+            entrada: '',
+            saida: _.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS' ? v.valorTotal : 0).toFixed(2),
+            fat: getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS' ? v.valorTotal : 0) || 0)
+        });
+        res.push({
+            razao: 'OUTROS',
+            entrada: '',
+            saida: _.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0).toFixed(2),
+            fat: getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0) || 0)
+        });
+        res.push({
+            razao: 'RESULTADO',
+            entrada: getEntradas().toFixed(2),
+            saida: getSaidas().toFixed(2),
+            fat: getPorcentagem(_.sumBy(despesas, v => v.valorTotal) || 0)
+        });
+        return res;
+    }
+    const headers = [
+        { label: "Razão", key: "razao" },
+        { label: "Entradas", key: "entrada" },
+        { label: "Saidas", key: "saida" },
+        { label: "% Fat", key: "fat" },
+    ]
+
+    function getPorcentagem(valor: number) {
         var x = getEntradas();
-        var porcentagem =  (valor / x ) * 100;
+        var porcentagem = (valor / x) * 100;
         return `${porcentagem.toFixed(2)}%`
     }
     return (
@@ -125,6 +251,9 @@ export default function Demonstrativo() {
                 <SelectSimNao title={'Calcula Custo Produto'} width={'20%'} selected={search?.calculaCusto} setSelected={(v) => { setSearch({ ...search, calculaCusto: v }) }} />
                 <div style={{ width: '100%' }}>
                     <CustomButton onClick={() => { loadData() }} typeButton={'dark'}>Pesquisar</CustomButton>
+                    <CustomButton onClick={(v) => {
+                        ExportToExcel(headers, getData(), "demonstrativo");
+                    }} style={{ marginRight: 10 }} typeButton={'dark'}>Excel</CustomButton>
                 </div>
             </div>
             <hr />
@@ -166,7 +295,7 @@ export default function Demonstrativo() {
                                     </tr>
                                 )
                             })}
-                           
+
 
                             <tr className={styles.fixa}>
                                 <td colSpan={4}><b>DESPESAS FIXAS</b></td>
@@ -175,7 +304,7 @@ export default function Demonstrativo() {
                                 if (despesa.tipoDespesa == 'DESPESA FIXA') {
                                     return (
                                         <tr className={styles.fixa}>
-                                            <td>{despesa.motivoLancamento?.nome || despesa.descricao}</td>
+                                            <td>{despesa.descricao || despesa.motivoLancamento?.nome || 'N/D'}</td>
                                             <td></td>
                                             <td>R$ {despesa.valorTotal.toFixed(2)}</td>
                                             <td>{getPorcentagem(despesa.valorTotal)}</td>
@@ -184,7 +313,7 @@ export default function Demonstrativo() {
                                 }
                                 return <></>
                             })}
-                           
+
                             <tr className={styles.variavel}>
                                 <td colSpan={4}><b>DESPESAS VARIAVEIS</b></td>
                             </tr>
@@ -192,7 +321,7 @@ export default function Demonstrativo() {
                                 if (despesa.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL') {
                                     return (
                                         <tr className={styles.variavel}>
-                                            <td>{despesa.motivoLancamento?.nome || despesa.descricao}</td>
+                                            <td>{despesa.descricao || despesa.motivoLancamento?.nome || 'N/D'}</td>
                                             <td></td>
                                             <td>R$ {despesa.valorTotal.toFixed(2)}</td>
                                             <td>{getPorcentagem(despesa.valorTotal)}</td>
@@ -201,7 +330,7 @@ export default function Demonstrativo() {
                                 }
                                 return <></>
                             })}
-                           
+
                             <tr className={styles.taxa}>
                                 <td colSpan={4}><b>TAXAS E TRIBUTOS</b></td>
                             </tr>
@@ -209,7 +338,7 @@ export default function Demonstrativo() {
                                 if (despesa.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS') {
                                     return (
                                         <tr className={styles.taxa}>
-                                            <td>{despesa.motivoLancamento?.nome || despesa.descricao}</td>
+                                            <td>{despesa.descricao || despesa.motivoLancamento?.nome || 'N/D'}</td>
                                             <td></td>
                                             <td>R$ {despesa.valorTotal.toFixed(2)}</td>
                                             <td>{getPorcentagem(despesa.valorTotal)}</td>
@@ -225,7 +354,7 @@ export default function Demonstrativo() {
                                 if (despesa.tipoDespesa.toUpperCase() == 'OUTROS') {
                                     return (
                                         <tr className={styles.outro}>
-                                            <td>{despesa.motivoLancamento?.nome || despesa.descricao}</td>
+                                           <td>{despesa.descricao ||  despesa.motivoLancamento?.nome || 'N/D'}</td>
                                             <td></td>
                                             <td>R$ {despesa.valorTotal.toFixed(2)}</td>
                                             <td>{getPorcentagem(despesa.valorTotal)}</td>
@@ -234,19 +363,19 @@ export default function Demonstrativo() {
                                 }
                                 return <></>
                             })}
-                             <tr className={styles.geral}>
+                            <tr className={styles.geral}>
                                 <td><b>ENTRADAS</b></td>
                                 <td>R$ {_.sumBy(vendas, v => v.venda).toFixed(2)}</td>
                                 <td></td>
                                 <td></td>
                             </tr>
-                             <tr className={styles.geral}>
+                            <tr className={styles.geral}>
                                 <td><b>DESPESAS FIXAS</b></td>
                                 <td></td>
                                 <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA FIXA' ? v.valorTotal : 0).toFixed(2)}</td>
                                 <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA FIXA' ? v.valorTotal : 0) || 0)}</td>
                             </tr>
-                             <tr className={styles.geral}>
+                            <tr className={styles.geral}>
                                 <td><b>DESPESAS VARIAVEIS</b></td>
                                 <td></td>
                                 <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL' ? v.valorTotal : 0).toFixed(2)}</td>
@@ -268,7 +397,7 @@ export default function Demonstrativo() {
                                 <td><b>RESULTADO</b></td>
                                 <td> R$ {getEntradas().toFixed(2)}</td>
                                 <td> R$ {getSaidas().toFixed(2)}</td>
-                                <td>{getPorcentagem(_.sumBy(despesas, v =>  v.valorTotal) || 0)}</td>
+                                <td>{getPorcentagem(_.sumBy(despesas, v => v.valorTotal) || 0)}</td>
                             </tr>
                         </tbody>
 
