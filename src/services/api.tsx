@@ -7,7 +7,8 @@ export function setupAPIClient(ctx = undefined) {
     let cookies = parseCookies(ctx);
 
     const api = axios.create({
-        baseURL: 'https://backendpdv.azurewebsites.net/api',
+       // baseURL: 'https://backendpdv.azurewebsites.net/api',
+       baseURL: `https://pdv.krdsys.tech/api`,
          //baseURL: 'https://localhost:3334/api',
         headers: {
             Authorization: `Bearer ${cookies['@web_front.token']}`,

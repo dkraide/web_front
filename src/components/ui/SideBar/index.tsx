@@ -47,7 +47,7 @@ export default function SideBar({ ...props }) {
     }
     if (!user) {
         return <>
-            <main  {...props} className={styles.mainOff}>
+            <main  {...props}>
 
             </main>
         </>
