@@ -19,7 +19,7 @@
   flex-direction: row;
   flex-wrap: wrap;
   padding: 10px;
-  justify-content: space-around;
+ 
 }
 
 .title{
@@ -37,20 +37,24 @@
   max-width: 20%;
   min-width: 300px;
   height: 300px;
+  margin-bottom: 5px;
 }
 .card100{
   border-radius: 10px;
   background-color: var(--white);
+  min-height: 500px;
   padding: 10px;
   max-width: 100%;
   min-width: 300px;
-  height: 300px;
+  margin-bottom: 5px;
 }
 .video{
   min-width: 350px !important;
   width: 48% !important;
   height: 500px;
   margin-bottom: 10px;
+  margin-right: 10px;
+
 }
 .prices{
   width: 48% !important;

@@ -27,7 +27,11 @@ export default function Home() {
               <label className={styles.title}>O sistema mais <b>SIMPLES</b> e <b>COMPLETO</b> para o seu negócio!</label>
             </div>
             <div className={[styles.video].join(' ')}>
-              <iframe width="100%" height="100%" src="https://www.youtube.com/embed/m3_vaq4iBJ0?si=1gZRmUD614npJ6nr" title="YouTube video player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+              <iframe width="100%" height="100%" 
+              src="https://www.youtube.com/embed/m3_vaq4iBJ0?si=1gZRmUD614npJ6nr" 
+              title="YouTube video player" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+              ></iframe>
             </div>
             <div className={styles.prices}>
               <div className={styles.card100}>
