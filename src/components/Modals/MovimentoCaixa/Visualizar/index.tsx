@@ -206,7 +206,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                                             <tr >
                                                 <td><b>TOTAL</b></td>
                                                 <td>{_.sumBy(totais, t => t.qntd)}</td>
-                                                <td>R$ {_.sumBy(totais, t => t.qntd)}</td>
+                                                <td>R$ {_.sumBy(totais, t => t.valor)}</td>
                                             </tr>
                                         </tbody>
                                     </table>

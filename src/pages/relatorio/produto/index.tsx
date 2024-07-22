@@ -9,7 +9,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { fGetNumber, nameof } from "@/utils/functions"
+import { ExportToExcel, fGetNumber, nameof } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
@@ -81,7 +81,7 @@ export default function RelatorioProduto() {
         return `${prefix} ${_.sumBy(result, field).toFixed(2)}`
     }
     function getHeaders() {
-        [
+        return [
             { label: "Produto", key: "produto" },
             { label: "Quantidade", key: "quantidade" },
             { label: "Venda", key: "venda" },
@@ -131,10 +131,9 @@ export default function RelatorioProduto() {
                     <BoxInfo style={{ marginRight: 10 }} title={'Venda'} value={getValue('venda', 'R$')} />
                     <BoxInfo style={{ marginRight: 10 }} title={'Custo'} value={getValue('custo', 'R$')} />
                 </div>
-
-                <CustomButton style={{marginBottom: 10}} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={result} headers={getHeaders()} filename={"relatorioProduto.csv"}>
-                    Download Planilha
-                </CSVLink></CustomButton>
+                <CustomButton onClick={(v) => {
+                    ExportToExcel(getHeaders(), result, "relatorio_produto");
+                }} style={{ marginRight: 10 }} typeButton={'dark'}>Excel</CustomButton>
                 <CustomTable
                     columns={columns}
                     data={result}
