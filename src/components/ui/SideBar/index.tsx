@@ -158,7 +158,8 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/relatorio/usuario'}>Por Usuiario</MenuItem>
                                     <MenuItem href={'/relatorio/demonstrativo'}>Demonstrativo</MenuItem>
                                     <MenuItem href={'/relatorio/vendacusto'}>Venda/Custo </MenuItem>
-                                    <MenuItem href={'/relatorio/FechamentoCaixa'}>Fechamento {bgNew()} </MenuItem>
+                                    <MenuItem href={'/relatorio/FechamentoCaixa'}>Fechamento</MenuItem>
+                                    <MenuItem href={'/relatorio/estoque'}>Estoque {bgNew()} </MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
                                     <MenuItem href={'/pdv/formaPagamento'}>Formas de Pagamento</MenuItem>

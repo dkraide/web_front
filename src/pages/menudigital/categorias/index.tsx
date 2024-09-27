@@ -11,7 +11,7 @@ import IProduto from '@/interfaces/IProduto';
 import PictureBox from '@/components/ui/PictureBox';
 import _ from 'lodash';
 import GetValue from '@/components/Modals/GetValue';
-import {  blobToBase64, getURLImagemMenu, sendImage} from '@/utils/functions';
+import { blobToBase64, getURLImagemMenu, sendImage } from '@/utils/functions';
 import IClasseMaterial from '@/interfaces/IClasseMaterial';
 import CustomButton from '@/components/ui/Buttons';
 
@@ -55,8 +55,8 @@ export default function Categorias() {
         return res;
     }
     async function onToggle(id) {
-        var res = await onConfirm('', id, 'VISIVELMENU');
-        if(!res){
+        var res = await onConfirm('true', id, 'VISIVELMENU');
+        if (!res) {
             return;
         }
         var index = _.findIndex(list, p => p.id == id);
@@ -78,7 +78,7 @@ export default function Categorias() {
             });
     }
 
-    function setImage(c: IClasseMaterial){
+    function setImage(c: IClasseMaterial) {
         var input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
@@ -86,27 +86,29 @@ export default function Categorias() {
         input.onchange = async (e: Event) => {
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
-           var imagemstring = await blobToBase64(files[0])
-            var obj = {
-                imagemString: imagemstring,
-                idClasseMaterial: c.idClasseMaterial,
-                classeMaterialId: c.id,
-                empresaid: c.empresaId
-            };
-            var res = await sendImage(obj);
-            if(res){
-                setTimeout(() => {
-                loadData();
-                }, 500);
+            setLoading(true);
+            var str = await sendImage(files);
+            if (str) {
+                c.localPath = str;
+                await api.put(`/ClasseMaterial/Update`, c).then(({ data }) => {
+                    toast.success('Classe de Material atualizado com sucessso!');
+                    loadData();
+                }).catch((err) => {
+                    toast.error(`Erro ao atualizar o Classe de Material`);
+
+                });
+            } else {
+                toast.error(`Erro ao enviar imagem`);
             }
+            setLoading(false);
         }
     }
- 
+
     const columns = [
         {
             name: '#',
             selector: (row: IClasseMaterial) => row.id,
-            cell: (c: IClasseMaterial) => <PictureBox onClick={() => {setImage(c)}} url={c?.imagem?.localOnline} size={'100px'} />,
+            cell: (c: IClasseMaterial) => <PictureBox onClick={() => { setImage(c) }} url={c.localPath} size={'100px'} />,
         },
         {
             name: 'Nome',
@@ -122,7 +124,7 @@ export default function Categorias() {
             name: 'Visivel',
             selector: (row: IProduto) => row.visivelMenu,
             cell: (row: IProduto) => <div>
-                 <CustomButton onClick={() => {onToggle(row.id)}} typeButton={row.visivelMenu ? 'success' : 'danger'}> {row.visivelMenu ? 'Visivel' : 'Invisivel'}</CustomButton>
+                <CustomButton onClick={() => { onToggle(row.id) }} typeButton={row.visivelMenu ? 'success' : 'danger'}> {row.visivelMenu ? 'Visivel' : 'Invisivel'}</CustomButton>
             </div>,
         },
     ]

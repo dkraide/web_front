@@ -23,7 +23,7 @@ type prodEdit = {
     defaultValue: string
     id: number
 }
-export default function ClasseMaterial() {
+export default function Produtos() {
     const [loading, setLoading] = useState(true)
     const [list, setList] = useState<IProduto[]>([])
     const { getUser } = useContext(AuthContext)
@@ -58,7 +58,7 @@ export default function ClasseMaterial() {
         return res;
     }
     async function onToggle(id) {
-        var res = await onConfirm('', id, 'VISIVELMENU');
+        var res = await onConfirm('true', id, 'VISIVELMENU');
         if(!res){
             return;
         }
@@ -82,26 +82,31 @@ export default function ClasseMaterial() {
     }
 
     function setImage(p: IProduto){
+        console.log('caralho');
         var input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
         input.click();
         input.onchange = async (e: Event) => {
+            setTimeout(() => {
+            }, 500)
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
-           var imagemstring = await blobToBase64(files[0])
-            var obj = {
-                imagemString: imagemstring,
-                idproduto:p.idProduto,
-                produtoId: p.id,
-                empresaid: p.empresaId
-            };
-            var res = await sendImage(obj);
-            if(res){
-                setTimeout(() => {
-                loadData();
-                }, 500);
+            setLoading(true);
+            var str = await sendImage(files);
+            if(str){
+                p.localPath = str;
+                await api.put(`/Produto/UpdateProduct`, p).then(({data}) => {
+                    toast.success('Produto atualizado com sucessso!');
+                    loadData();
+                }).catch((err) => {
+                    toast.error(`Erro ao atualizar o produto`);
+
+                });
+            }else{
+                toast.error(`Erro ao enviar imagem`);
             }
+            setLoading(false);
         }
     }
  
@@ -109,7 +114,7 @@ export default function ClasseMaterial() {
         {
             name: '#',
             selector: (row: IProduto) => row.id,
-            cell: (p: IProduto) => <PictureBox onClick={() => {setImage(p)}} url={p?.imagem?.localOnline} size={'100px'} />,
+            cell: (p: IProduto) => <PictureBox onClick={() => {setImage(p)}} url={p.localPath} size={'100px'} />,
         },
         {
             name: 'Nome',

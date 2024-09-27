@@ -97,7 +97,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         obj.cod = data.cod;
         obj.codigoFornecedor= data.codigoFornecedor;
         obj.multiplicadorFornecedor = fGetNumber(data.multiplicadorFornecedor);
-        
+        obj.descricao = data.descricao;
         if (obj.id > 0) {
             api.put(`Produto/UpdateProduct`, obj)
                 .then(({ data }: AxiosResponse) => {
@@ -307,6 +307,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                                 <InputForm defaultValue={obj.cod} width={'10%'} title={'Cod'} errors={errors} inputName={"cod"} register={register} />
                                 <InputForm placeholder={'Nome do Produto'} defaultValue={obj.nome} width={'75%'} title={'Nome'} errors={errors} inputName={"nome"} register={register} />
                                 <SelectStatus width={'15%'} selected={obj.status} setSelected={(v) => { setObj({ ...obj, status: v }) }} />
+                                <InputForm placeholder={'Descricao'} defaultValue={obj.descricao} width={'100%'} title={'Descrição'} errors={errors} inputName={"descricao"} register={register} />
                                 <InputForm defaultValue={obj.unidadeCompra} maxLength={3} width={'15%'} title={'UN Medida'} errors={errors} inputName={"unidadeCompra"} register={register} />
                                 <InputForm defaultValue={obj.valorCompra} width={'15%'} title={'Custo (R$)'} errors={errors} inputName={"valorCompra"} register={register} />
                                 <InputForm defaultValue={obj.valor} width={'15%'} title={'Venda (R$)'} errors={errors} inputName={"valor"} register={register} />

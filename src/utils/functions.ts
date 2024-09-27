@@ -57,19 +57,20 @@ export const formatNumber = (n: number, money: boolean) => {
     return `${money ? 'R$' : ''} ${n.toFixed(2)} ${money ? '' : '%'}`
 }
 
-export const sendImage = async (obj: any) => {
-    var res = api.post(`/ProdutoImagem/SendImage`, obj)
-        .then(({ data }) => {
-            toast.success(`Imagem enviada com sucesso!`);
-            return true;
-
-        }).catch((err) => {
-            toast.error(`Erro ao enviar imagem. ${err.response?.data || err.message}`);
-            return false;
+export const sendImage = async (files: any): Promise<string|undefined> => {
+   
+    var formData = new FormData();
+    formData.append('image', files[0], files[0].name)
+    setTimeout(() => {
+    }, 500)
+    return axios.post(`https://krdpic.krdsys.tech/pic/upload`, formData, { headers: { "Content-Type": 'multipart/form-data' } })
+        .then(({ data }: AxiosResponse) => {
+            console.log(data);
+            return data.path;
+        }).catch((err: AxiosError) => {
+            console.log(err);
+            return undefined;
         });
-
-    return res;
-
 }
 export const onFocus = (field, select?: boolean) => {
     document.getElementById(field)?.focus();
@@ -96,13 +97,13 @@ function getBase64(file) {
     var reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = function () {
-      console.log(reader.result);
+        console.log(reader.result);
     };
     reader.onerror = function (error) {
-      console.log('Error: ', error);
+        console.log('Error: ', error);
     };
- }
- 
+}
+
 export const printHTML = (html: any) => {
     const blob: Blob = new Blob([html], { type: 'text/html' });
     const fileURL = URL.createObjectURL(blob);
@@ -160,8 +161,8 @@ export const fGetDate = (date: string) => {
 
 export type ACTION = '' | 'FINALIZAR' | 'LIMPAR';
 
-export  const fgetDate = (date: string) =>{
-    if(!date || date == ''){
+export const fgetDate = (date: string) => {
+    if (!date || date == '') {
         return new Date();
     }
     var r = new Date(date);
@@ -182,12 +183,12 @@ export const ExportToExcel = (columns: ColumnData[], data: any[], fileName: stri
         });
         return object;
     });
-   const fileType =
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
+    const fileType =
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8";
     const ws = XLSX.utils.json_to_sheet(formattedArray);
-    const wb = {Sheets: {'data': ws}, SheetNames: ['data']};
-    const excelBuffer = XLSX.write(wb, {bookType: 'xlsx', type:'array'});
-    const d = new Blob([excelBuffer], {type: fileType});
-    FileSaver.saveAs(d, fileName + ".xlsx" );
+    const wb = { Sheets: { 'data': ws }, SheetNames: ['data'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const d = new Blob([excelBuffer], { type: fileType });
+    FileSaver.saveAs(d, fileName + ".xlsx");
 }
 

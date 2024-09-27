@@ -12,8 +12,6 @@ interface props extends  ButtonHTMLAttributes<HTMLButtonElement>{
 
 export default function CustomButton ({size, loading, typeButton,children, onClick,className, style, ...rest}: props){
 
-   
-
     if(typeButton == 'outline-main'){
         return <Button size={size}  onClick={onClick} disabled={loading} {...rest} style={Object.assign(style || {}, { minWidth:isMobile ? '50%' : 'none'})} className={styles[typeButton]}>
     {loading ? <Loading/> : children}

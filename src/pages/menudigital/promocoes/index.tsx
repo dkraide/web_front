@@ -58,7 +58,7 @@ export default function Promocoes() {
     }
 
     async function onToggle(id) {
-        var res = await onConfirm('', id, 'VISIVELMENU');
+        var res = await onConfirm('true', id, 'VISIVELMENU');
         if(!res){
             return;
         }
@@ -87,20 +87,21 @@ export default function Promocoes() {
         input.accept = 'image/png, image/jpeg';
         input.click();
         input.onchange = async (e: Event) => {
-
-            setLoading(true);
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
-           var imagemstring = await blobToBase64(files[0])
-            var obj = {
-                imagemString: imagemstring,
-                idpromocao: p.idPromocao,
-                promocaoId: p.id,
-                empresaid: p.empresaId
-            };
-            var res = await sendImage(obj);
-            if(res){
-                loadData();
+            setLoading(true);
+            var str = await sendImage(files);
+            if(str){
+                p.localPath = str;
+                await api.put(`/Promocao/UpdatePromocao`, p).then(({data}) => {
+                    toast.success('Promocao atualizado com sucessso!');
+                    loadData();
+                }).catch((err) => {
+                    toast.error(`Erro ao atualizar o Promocao`);
+
+                });
+            }else{
+                toast.error(`Erro ao enviar imagem`);
             }
             setLoading(false);
         }
@@ -110,7 +111,7 @@ export default function Promocoes() {
         {
             name: '#',
             selector: (row: IProduto) => row.id,
-            cell: (p: IPromocao) => <PictureBox onClick={() => {setImage(p)}} url={p?.imagem?.localOnline} size={'100px'} />,
+            cell: (p: IPromocao) => <PictureBox onClick={() => {setImage(p)}} url={p.localPath} size={'100px'} />,
         },
         {
             name: 'Nome',

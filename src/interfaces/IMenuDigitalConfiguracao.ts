@@ -14,7 +14,11 @@ export default interface IMenuDigitalConfiguracao{
     limiteKm: number
     entrega: boolean
     horarios: IMenuDigitalHorario[]
-    imagem: IProdutoImagem
+    localPath: string
+    logoPath: string
+    instagram: string
+    facebook: string
+    tempoEspera?: string
 }
 
 interface IMenuDigitalHorario{

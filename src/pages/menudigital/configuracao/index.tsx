@@ -16,6 +16,7 @@ import { Spinner } from 'react-bootstrap'
 import IMenuDigitalConfiguracao from '@/interfaces/IMenuDigitalConfiguracao'
 import SelectSimNao from '@/components/Selects/SelectSimNao'
 import PictureBox from '@/components/ui/PictureBox'
+import { SelectBase } from '@/components/Selects/SelectBase'
 
 
 export default function Configuracao() {
@@ -58,51 +59,50 @@ export default function Configuracao() {
         setSending(true);
         console.log(data);
         var horario = "";
-        if(objeto.todoDia){
+        if (objeto.todoDia) {
             horario += `${data.iniciot}#${data.fimt};`
-        }else{
+        } else {
             var horario = "";
-            if(data.iniciodom && data.fimdom){
+            if (data.iniciodom && data.fimdom) {
                 horario += `${data.iniciodom}#${data.fimdom};`
-            }else{
-                 horario += `@;`
+            } else {
+                horario += `@;`
             }
-            if(data.inicioseg && data.fimseg){
+            if (data.inicioseg && data.fimseg) {
                 horario += `${data.inicioseg}#${data.fimseg};`
-            }else{
-                 horario += `@;`
+            } else {
+                horario += `@;`
             }
-            if(data.inicioter && data.fimter){
+            if (data.inicioter && data.fimter) {
                 horario += `${data.inicioter}#${data.fimter};`
-            }else{
-                 horario += `@;`
+            } else {
+                horario += `@;`
             }
-            if(data.inicioqua && data.fimqua){
+            if (data.inicioqua && data.fimqua) {
                 horario += `${data.inicioqua}#${data.fimqua};`
-            }else{
-                 horario += `@;`
+            } else {
+                horario += `@;`
             }
-            if(data.inicioqui && data.fimqui){
+            if (data.inicioqui && data.fimqui) {
                 horario += `${data.inicioqua}#${data.fimqua};`
-            }else{
-                 horario += `@;`
+            } else {
+                horario += `@;`
             }
-            if(data.iniciosex && data.fimsex){
+            if (data.iniciosex && data.fimsex) {
                 horario += `${data.iniciosex}#${data.fimsex};`
-            }else{
-                 horario += `@;`
+            } else {
+                horario += `@;`
             }
-            if(data.iniciosab && data.fimsab){
+            if (data.iniciosab && data.fimsab) {
                 horario += `${data.iniciosab}#${data.fimsab};`
-            }else{
-                 horario += `@;`
+            } else {
+                horario += `@;`
             }
         }
         objeto.horario = horario;
         objeto.valorInicial = fGetNumber(data.valorInicial);
         objeto.valorPorKm = fGetNumber(data.valorPorKm);
         objeto.limiteKm = fGetNumber(data.limiteKm);
-        console.log(data);
         api.put(`MenuDigital/Configuracao`, objeto)
             .then(({ data }: AxiosResponse) => {
                 toast.success(`grupo atualizado com sucesso!`);
@@ -115,17 +115,17 @@ export default function Configuracao() {
         return <Spinner size={'sm'} />
     }
 
-    function changeDiaEspecifico(index: number, checked: boolean){
-        if(checked){
+    function changeDiaEspecifico(index: number, checked: boolean) {
+        if (checked) {
             objeto.horarios[index].abertura = '10:00';
             objeto.horarios[index].fechamento = '20:00';
-        }else{
+        } else {
             objeto.horarios[index].abertura = 'FECHADO';
             objeto.horarios[index].fechamento = 'FECHADO';
         }
-        setObjeto({...objeto, horarios: objeto.horarios});
+        setObjeto({ ...objeto, horarios: objeto.horarios });
     }
-    function setImage(){
+    function setImage(isPerfil) {
         var input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
@@ -133,34 +133,55 @@ export default function Configuracao() {
         input.onchange = async (e: Event) => {
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
-           var imagemstring = await blobToBase64(files[0])
-            var obj = {
-                imagemString: imagemstring,
-                idProduto: -1,
-                empresaid: objeto.empresaId
-            };
-            var res = await sendImage(obj);
-            if(res){
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
+            setLoading(true);
+            var str = await sendImage(files);
+            if (str) {
+                if(isPerfil){
+                    setObjeto({...objeto, logoPath: str})
+                }else{
+                    setObjeto({...objeto, localPath: str})
+                }
+                handleSubmit(onSubmit)();
+            } else {
+                toast.error(`Erro ao enviar imagem`);
             }
+            setLoading(false);
         }
     }
+
+    const tempoEspera = () => {
+        return [
+            {label: '10Min - 30Min', value: '10Min - 30Min'},
+            {label: '30Min - 45Min', value: '30Min - 45Min'},
+            {label: '45Min - 1Hr', value: '45Min - 1Hr'},
+            {label: '1Hr - 1Hr 15Min', value: '1Hr - 1Hr 15Min'},
+            {label: '+ de 1Hr e 15Min', value: '+ de 1Hr e 15Min'},
+        ]
+    }
     return (
-        <>
-            <h3>Imagem Principal do Menu</h3>
-            <hr/>
-            <PictureBox width={'700px'} height={'200px'}  onClick={() => {setImage()}} url={objeto?.imagem?.localOnline} size={undefined} />
+        <div className={styles.content}>
+            <h3>Imagens Principal do Menu</h3>
+            <hr />
+            <div className={styles.container}>
+                <PictureBox width={'200px'} height={'200px'} onClick={() => { setImage(true) }} url={objeto.logoPath} size={undefined} />
+                <PictureBox width={'700px'} height={'200px'} onClick={() => { setImage(false) }} url={objeto.localPath} size={undefined} />
+            </div>
             <h3>Configuracao</h3>
             <div className={styles.container}>
-                <SelectSimNao title={'Entrega'} width={'25%'} selected={objeto.entrega} setSelected={(v) => { setObjeto({ ...objeto, entrega: v }) }} />
-                <SelectSimNao title={'Valor Fixo'} width={'25%'} selected={objeto.isValorFixo} setSelected={(v) => { setObjeto({ ...objeto, isValorFixo: v }) }} />
+                <SelectSimNao title={'Entrega'} width={'15%'} selected={objeto.entrega} setSelected={(v) => { setObjeto({ ...objeto, entrega: v }) }} />
+                <SelectBase datas={tempoEspera()} title={'Valor Fixo'} width={'15%'} selected={objeto.tempoEspera} setSelected={(v) => { setObjeto({ ...objeto, tempoEspera: v }) }} />
+                <SelectSimNao title={'Valor Fixo'} width={'15%'} selected={objeto.isValorFixo} setSelected={(v) => { setObjeto({ ...objeto, isValorFixo: v }) }} />
                 <InputForm defaultValue={objeto.valorInicial} width={'15%'} title={'Valor Inicial'} errors={errors} inputName={"valorInicial"} register={register} />
                 <InputForm defaultValue={objeto.valorPorKm} width={'15%'} title={'Valor por KM '} errors={errors} inputName={"valorPorKm"} register={register} />
                 <InputForm defaultValue={objeto.limiteKm} width={'15%'} title={'Limite KM'} errors={errors} inputName={"limiteKm"} register={register} />
             </div>
-            <hr/>
+            <hr />
+            <h3>Redes Sociais</h3>
+            <div className={styles.container}>
+                <InputForm defaultValue={objeto.facebook} width={'50%'} title={'Facebook'} errors={errors} inputName={"facebook"} register={register} />
+                <InputForm defaultValue={objeto.instagram} width={'50%'} title={'Instagram'} errors={errors} inputName={"instagram"} register={register} />
+            </div>
+            <hr />
             <h3>Horarios</h3>
             <SelectSimNao width={'30%'} title={'Todos os Dias'} setSelected={(v) => setObjeto({ ...objeto, todoDia: v })} selected={objeto.todoDia} />
             <div className={styles.container}>
@@ -172,7 +193,7 @@ export default function Configuracao() {
             <div style={{ width: '100%' }}>
                 <CustomButton typeButton={'dark'} onClick={() => { handleSubmit(onSubmit)() }}>Salvar</CustomButton>
             </div>
-        </>
+        </div>
     )
 }
 
@@ -194,7 +215,7 @@ const DiaEspecifico = ({ horarios, register, errors, changeDiaEspecifico }) => {
         <div className={styles.containerDias}>
             <div className={styles.container}>
                 <div className={styles.day}>
-                    <input onChange={(e) => {changeDiaEspecifico(0, e.target.checked)}} type={'checkbox'} checked={horarios[0].abertura !== 'FECHADO'} />
+                    <input onChange={(e) => { changeDiaEspecifico(0, e.target.checked) }} type={'checkbox'} checked={horarios[0].abertura !== 'FECHADO'} />
                     <h5>Domingo</h5>
                 </div>
                 {
@@ -207,7 +228,7 @@ const DiaEspecifico = ({ horarios, register, errors, changeDiaEspecifico }) => {
             </div>
             <div className={styles.container}>
                 <div className={styles.day}>
-                    <input onChange={(e) => {changeDiaEspecifico(1, e.target.checked)}} type={'checkbox'} checked={horarios[1].abertura !== 'FECHADO'} />
+                    <input onChange={(e) => { changeDiaEspecifico(1, e.target.checked) }} type={'checkbox'} checked={horarios[1].abertura !== 'FECHADO'} />
                     <h5>Segunda-Feira</h5>
                 </div>
                 {
@@ -221,7 +242,7 @@ const DiaEspecifico = ({ horarios, register, errors, changeDiaEspecifico }) => {
             </div>
             <div className={styles.container}>
                 <div className={styles.day}>
-                    <input onChange={(e) => {changeDiaEspecifico(2, e.target.checked)}} type={'checkbox'} checked={horarios[2].abertura !== 'FECHADO'} />
+                    <input onChange={(e) => { changeDiaEspecifico(2, e.target.checked) }} type={'checkbox'} checked={horarios[2].abertura !== 'FECHADO'} />
                     <h5>Terca-Feira</h5>
                 </div>
                 {
@@ -234,7 +255,7 @@ const DiaEspecifico = ({ horarios, register, errors, changeDiaEspecifico }) => {
             </div>
             <div className={styles.container}>
                 <div className={styles.day}>
-                    <input onChange={(e) => {changeDiaEspecifico(3, e.target.checked)}} type={'checkbox'} checked={horarios[3].abertura !== 'FECHADO'} />
+                    <input onChange={(e) => { changeDiaEspecifico(3, e.target.checked) }} type={'checkbox'} checked={horarios[3].abertura !== 'FECHADO'} />
                     <h5>Quarta-Feira</h5>
                 </div>
                 {
@@ -247,7 +268,7 @@ const DiaEspecifico = ({ horarios, register, errors, changeDiaEspecifico }) => {
             </div>
             <div className={styles.container}>
                 <div className={styles.day}>
-                    <input onChange={(e) => {changeDiaEspecifico(4, e.target.checked)}} type={'checkbox'} checked={horarios[4].abertura !== 'FECHADO'} />
+                    <input onChange={(e) => { changeDiaEspecifico(4, e.target.checked) }} type={'checkbox'} checked={horarios[4].abertura !== 'FECHADO'} />
                     <h5>Quinta-Feira</h5>
                 </div>
                 {
@@ -260,7 +281,7 @@ const DiaEspecifico = ({ horarios, register, errors, changeDiaEspecifico }) => {
             </div>
             <div className={styles.container}>
                 <div className={styles.day}>
-                    <input onChange={(e) => {changeDiaEspecifico(5, e.target.checked)}} type={'checkbox'} checked={horarios[5].abertura !== 'FECHADO'} />
+                    <input onChange={(e) => { changeDiaEspecifico(5, e.target.checked) }} type={'checkbox'} checked={horarios[5].abertura !== 'FECHADO'} />
                     <h5>Sexta-Feira</h5>
                 </div>
                 {
@@ -273,7 +294,7 @@ const DiaEspecifico = ({ horarios, register, errors, changeDiaEspecifico }) => {
             </div>
             <div className={styles.container}>
                 <div className={styles.day}>
-                    <input onChange={(e) => {changeDiaEspecifico(6, e.target.checked)}} type={'checkbox'} checked={horarios[6].abertura !== 'FECHADO'} />
+                    <input onChange={(e) => { changeDiaEspecifico(6, e.target.checked) }} type={'checkbox'} checked={horarios[6].abertura !== 'FECHADO'} />
                     <h5>Sabado</h5>
                 </div>
                 {

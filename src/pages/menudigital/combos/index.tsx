@@ -90,19 +90,21 @@ export default function Promocoes() {
         input.onchange = async (e: Event) => {
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
-           var imagemstring = await blobToBase64(files[0])
-            var obj = {
-                imagemString: imagemstring,
-                idCombo: c.idCombo,
-                comboId: c.id,
-                empresaid: c.empresaId
-            };
-            var res = await sendImage(obj);
-            if(res){
-                setTimeout(() => {
-                loadData();
-                }, 1000);
+            setLoading(true);
+            var str = await sendImage(files);
+            if(str){
+                c.localPath = str;
+                await api.put(`/Combo/UpdateCombo`,c).then(({data}) => {
+                    toast.success('Combo atualizado com sucessso!');
+                    loadData();
+                }).catch((err) => {
+                    toast.error(`Erro ao atualizar o Combo`);
+
+                });
+            }else{
+                toast.error(`Erro ao enviar imagem`);
             }
+            setLoading(false);
         }
     }
  
@@ -110,7 +112,7 @@ export default function Promocoes() {
         {
             name: '#',
             selector: (row: ICombo) => row.id,
-            cell: (c: ICombo) => <PictureBox onClick={() => {setImage(c)}} url={c?.imagem?.localOnline} size={'100px'} />,
+            cell: (c: ICombo) => <PictureBox onClick={() => {setImage(c)}} url={c.localPath} size={'100px'} />,
         },
         {
             name: 'Codigo',

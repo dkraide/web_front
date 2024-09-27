@@ -103,8 +103,7 @@ const ConfiguracaoNFCE = ({ handleSubmit, user, register, errors, setValue }: pr
             var formData = new FormData();
             formData.append('file', files[0], files[0].name)
             formData.append('empresa', config.empresaId.toString())
-            setTimeout(() => {
-            }, 500)
+           
             api.put(`ConfigNFCE/SetCertificado`, formData, { headers: { "Content-Type": 'multipart/form-data' } })
                 .then(({ data }: AxiosResponse) => {
                     setValue('fileName', files[0].name)
