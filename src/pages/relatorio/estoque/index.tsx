@@ -32,7 +32,7 @@ export default function RelatorioEstoque() {
     const [result, setResult] = useState<relatorioProps[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState<searchProps>()
-    const [user, setUser] = useState<IUsuario>()
+    const [user, setUser] = useState<IUsuario>({} as IUsuario)
     const { getUser } = useContext(AuthContext)
 
     useEffect(() => {
@@ -138,7 +138,7 @@ export default function RelatorioEstoque() {
             <div className={styles.box}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                <SelectClasseMaterial width={'350px'} empresaId={user.empresaSelecionada} selected={search?.classeId} setSelected={(v) => {setSearch({...search, classeId: v})}}/>
+                <SelectClasseMaterial width={'350px'} selected={search?.classeId} setSelected={(v) => {setSearch({...search, classeId: v})}}/>
                 <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
             <hr />
