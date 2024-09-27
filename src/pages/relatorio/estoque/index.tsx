@@ -32,7 +32,7 @@ export default function RelatorioEstoque() {
     const [result, setResult] = useState<relatorioProps[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState<searchProps>()
-    const [user, setUser] = useState<IUsuario>({} as IUsuario)
+    const [user, setUser] = useState<IUsuario>()
     const { getUser } = useContext(AuthContext)
 
     useEffect(() => {
