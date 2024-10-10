@@ -113,28 +113,34 @@ export default function Produtos() {
             name: '#',
             selector: (row: IProduto) => row.id,
             cell: (p: IProduto) => <PictureBox onClick={() => {setImage(p)}} url={p.localPath} size={'100px'} />,
+            sortable: true,
         },
         {
             name: 'Nome',
             selector: (row: IProduto) => row.nome,
             cell: (row: IProduto) => <a href={'#'} onClick={() => { setProdEdit({ column: 'NOME', defaultValue: row.nome, id: row.id }) }}>{row["nome"]}</a>,
+            sortable: true,
         },
         {
             name: 'Venda',
             selector: (row: IProduto) => row.valor,
             cell: (row: IProduto) => <a href={'#'} onClick={() => { setProdEdit({ column: 'VALOR', defaultValue: row.valor.toFixed(2), id: row.id }) }}>R$ {row['valor'].toFixed(2)}</a>,
+            sortable: true,
         },
         {
             name: 'Posicao',
             selector: (row: IProduto) => row.posicao,
             cell: (row: IProduto) => <a href={'#'} onClick={() => { setProdEdit({ column: 'POSICAO', defaultValue: row.posicao.toString(), id: row.id }) }}>{row["posicao"]}</a>,
+            sortable: true,
         },
         {
             name: 'Visivel',
             selector: (row: IProduto) => row.visivelMenu,
             cell: (row: IProduto) => <div>
-            <CustomButton onClick={() => {onToggle(row.id)}} typeButton={row.visivelMenu ? 'success' : 'danger'}> {row.visivelMenu ? 'Visivel' : 'Invisivel'}</CustomButton>
+            <CustomButton onClick={() => {onToggle(row.id)}} typeButton={row.visivelMenu ? 'success' : 'danger'}> {row.visivelMenu ? 'Visivel' : 'Invisivel'}</CustomButton>,
             </div>,
+            sortable: true,
+
         },
     ]
     return (
