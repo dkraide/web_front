@@ -10,9 +10,10 @@ interface props{
   pagination?: boolean
   handleChangeSelected?: (data) => void
   expandableIcon?: ReactNode
+  paginationPerPage?: number
   expandableComponent?: (row) => ReactNode
 }
-export default function CustomTable({expandableComponent, expandableIcon, pagination, handleChangeSelected, selectable, loading, columns, data}: props){
+export default function CustomTable({paginationPerPage, expandableComponent, expandableIcon, pagination, handleChangeSelected, selectable, loading, columns, data}: props){
     return (
         <DataTable
         customStyles={{
@@ -36,7 +37,7 @@ export default function CustomTable({expandableComponent, expandableIcon, pagina
            noDataComponent={'Sem itens para serem exibidos.'}
            selectableRows={selectable}
            expandableRows={!!expandableIcon}
-           paginationPerPage={5}
+           paginationPerPage={paginationPerPage || 5}
            paginationRowsPerPageOptions={[5,10,15,20,25,35,50]}
            expandableIcon={{collapsed: expandableIcon, expanded: expandableIcon}}
            onSelectedRowsChange={handleChangeSelected}

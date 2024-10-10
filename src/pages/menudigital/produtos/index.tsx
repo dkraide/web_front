@@ -82,7 +82,6 @@ export default function Produtos() {
     }
 
     function setImage(p: IProduto){
-        console.log('caralho');
         var input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
@@ -101,7 +100,6 @@ export default function Produtos() {
                     loadData();
                 }).catch((err) => {
                     toast.error(`Erro ao atualizar o produto`);
-
                 });
             }else{
                 toast.error(`Erro ao enviar imagem`);
@@ -124,7 +122,7 @@ export default function Produtos() {
         {
             name: 'Venda',
             selector: (row: IProduto) => row.valor,
-            cell: (row: IProduto) => <a href={'#'} onClick={() => { setProdEdit({ column: 'VALOR', defaultValue: row.valor.toFixed(2), id: row.id }) }}>R$${row['valor'].toFixed(2)}</a>,
+            cell: (row: IProduto) => <a href={'#'} onClick={() => { setProdEdit({ column: 'VALOR', defaultValue: row.valor.toFixed(2), id: row.id }) }}>R$ {row['valor'].toFixed(2)}</a>,
         },
         {
             name: 'Posicao',

@@ -1,0 +1,61 @@
+.container {
+    padding: 10px 10px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.table{
+    width: 100%;
+    flex-direction: 1;
+}
+.form{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    flex: 1;
+}
+.picture{
+    width:35%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button {
+    padding: 10px 30px;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: flex-end;
+
+    button {
+        margin-right: 10px;
+
+    }
+}
+
+.btnCancel {
+    background-color: var(--danger);
+
+    &:hover {
+        background-color: var(--danger-press);
+    }
+
+    &:disabled {
+        background-color: var(--danger-press);
+    }
+
+}
+
+.btnSuccess {
+    background-color: var(--success);
+
+    &:hover {
+        background-color: var(--success-press);
+    }
+
+    &:disabled {
+        background-color: var(--success-press);
+    }
+}
