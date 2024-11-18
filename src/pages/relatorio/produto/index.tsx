@@ -22,6 +22,7 @@ import { CSVLink } from "react-csv";
 interface searchProps {
     dateIn: string
     dateFim: string
+    searchStr?: string
 }
 interface relatorioProps {
     produto: string
@@ -48,7 +49,7 @@ export default function RelatorioProduto() {
     }, [])
 
     const loadData = async () => {
-        
+
         var u: any;
         if (!user) {
             var res = await getUser();
@@ -59,11 +60,11 @@ export default function RelatorioProduto() {
             setLoading(true);
         }
         var url = '';
-        if(!search){
+        if (!search) {
             var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
             var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
             url = `/Relatorio/produto?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}`
-        }else{
+        } else {
             url = `/Relatorio/produto?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}`;
         }
         await api.get(url)
@@ -87,6 +88,12 @@ export default function RelatorioProduto() {
             { label: "Venda", key: "venda" },
             { label: "Custo", key: "custo" }
         ]
+    }
+
+    const getData = () => {
+        return result.filter((result) => {
+            return result?.produto?.toLowerCase().includes(search?.searchStr?.toLowerCase());
+        })
     }
 
     const columns = [
@@ -134,9 +141,11 @@ export default function RelatorioProduto() {
                 <CustomButton onClick={(v) => {
                     ExportToExcel(getHeaders(), result, "relatorio_produto");
                 }} style={{ marginRight: 10 }} typeButton={'dark'}>Excel</CustomButton>
+                <hr/>
+                <InputGroup title={'Pesquisar'} value={search.searchStr} onChange={(e) => { setSearch({ ...search, searchStr: e.currentTarget.value }) }} />
                 <CustomTable
                     columns={columns}
-                    data={result}
+                    data={getData()}
                     loading={loading}
                 />
             </div>}
