@@ -41,7 +41,7 @@ export default function RelatorioProduto() {
 
     useEffect(() => {
         if (!search) {
-            setSearch({ dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') });
+            setSearch({ dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd'), searchStr: '' });
         }
         setTimeout(() => {
             loadData();
