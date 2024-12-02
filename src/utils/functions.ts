@@ -192,3 +192,9 @@ export const ExportToExcel = (columns: ColumnData[], data: any[], fileName: stri
     FileSaver.saveAs(d, fileName + ".xlsx");
 }
 
+
+
+export const GetCurrencyBRL = (value: number) => {
+    const valorFormatado = value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    return valorFormatado;
+}
