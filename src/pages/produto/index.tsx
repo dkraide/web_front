@@ -15,7 +15,7 @@ import ProdutoForm from '@/components/Modals/Produto';
 import AjusteEmMassa from '@/components/Modals/Produto/AjusteEmMassa';
 
 
-export default function ClasseMaterial() {
+export default function Produto() {
     const [loading, setLoading] = useState(true)
     const [list, setList] = useState<IProduto[]>([])
     const { getUser } = useContext(AuthContext)
