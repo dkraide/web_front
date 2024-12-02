@@ -41,8 +41,6 @@ export  const  SelectBaseRef = forwardRef<SelectInstance<dataProps>, selectProps
         styles={{
         control: (base) => ({
             ...base,
-            backgroundColor: 'transparent',
-            borderColor: 'black',
         })
     }} 
     noOptionsMessage={(v) => <label>Nenhum item Encontrado</label>} 
@@ -79,15 +77,6 @@ export function SelectBase({id, maxTitleSize, width, datas, selected, title, set
             },
           })}
         styles={{
-        control: (base) => ({
-            ...base,
-            borderRadius: '0',
-            borderColor: 'var(--main)',
-            top: '-8px',
-            padding: '0px !important',
-            margin: '0',
-        }),
-        
     }} 
     noOptionsMessage={(v) => <label>Nenhum item Encontrado</label>} 
     options={datas} 
