@@ -18,6 +18,7 @@ import BoxInfo from "@/components/ui/BoxInfo"
 import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
+import { GetCurrencyBRL } from "@/utils/functions"
 
 interface searchProps {
     dateIn: string
@@ -128,20 +129,20 @@ export default function FechamentoCaixa() {
             c.push({
                 name: p,
                 selector: row => row[p],
-                cell: row => `R$ ${row[p].toFixed(2)}`,
+                cell: row => GetCurrencyBRL(row[p]),
                 sortable: true
             });
         });
         c.push({
             name: 'Fechamento (R$)',
             selector: row => row.valorDinheiroFinal,
-            cell: row => row.status ? `R$ ${row.valorDinheiroFinal.toFixed(2)}` : '--',
+            cell: row => row.status ? GetCurrencyBRL(row.valorDinheiroFinal) : '--',
             sortable: true
         });
         c.push({
             name: 'Diferenca',
             selector: row => row.diferenca,
-            cell: row => `R$ ${row.diferenca.toFixed(2)}`,
+            cell: row => GetCurrencyBRL(row.valorDinheiroFinal),
             sortable: true
         });
         return c;
@@ -204,13 +205,13 @@ export default function FechamentoCaixa() {
         {
             name: 'Abertura (R$)',
             selector: row => row.valorDinheiro,
-            cell: (row: IMovimentoCaixa) => `R$ ${row.valorDinheiro.toFixed(2)}`,
+            cell: (row: IMovimentoCaixa) => GetCurrencyBRL(row.valorDinheiro),
             sortable: true,
         },
         {
             name: 'Sangrias',
             selector: row => row.valorSangria,
-            cell: (row) => `R$ ${(row.valorSangria || 0).toFixed(2)}`,
+            cell: (row) => GetCurrencyBRL(row.valorSangria || 0),
             sortable: true,
         },
     ]

@@ -19,6 +19,7 @@ import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
 import SelectTipoVendedor from "@/components/Selects/SelectTipoVendedor"
+import { GetCurrencyBRL } from "@/utils/functions"
 
 interface searchProps {
     dateIn: string
@@ -80,7 +81,12 @@ export default function RelatorioUsuario() {
         if (!result) {
             return '0';
         }
-        return `${prefix} ${_.sumBy(result, field).toFixed(2)}`
+        if(prefix == 'R$'){
+            return GetCurrencyBRL(_.sumBy(result, field));
+
+        }else{
+            return `${_.sumBy(result, field).toFixed(2)}`
+        }
     }
     function getHeaders() {
         [
@@ -105,13 +111,13 @@ export default function RelatorioUsuario() {
         {
             name: 'Venda',
             selector: row => row.venda,
-            cell: (row) => `R$ ${row.venda.toFixed(2)}`,
+            cell: (row) => GetCurrencyBRL(row.venda),
             sortable: true,
         },
         {
             name: 'Custo',
             selector: row => row.custo,
-            cell: (row) => `R$ ${row.custo.toFixed(2)}`,
+            cell: (row) => GetCurrencyBRL(row.custo),
             sortable: true,
         },
 

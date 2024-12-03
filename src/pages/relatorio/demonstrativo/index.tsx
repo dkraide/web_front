@@ -17,6 +17,7 @@ import { Spinner } from 'react-bootstrap'
 import BoxInfo from '@/components/ui/BoxInfo'
 import SelectSimNao from '@/components/Selects/SelectSimNao'
 import { ExportToExcel } from '@/utils/functions'
+import { GetCurrencyBRL } from '@/utils/functions'
 
 interface searchProps {
     dateIn: string
@@ -259,9 +260,9 @@ export default function Demonstrativo() {
             <hr />
             {loading ? <Spinner /> : <div>
                 <div className={styles.box}>
-                    <BoxInfo style={{ marginRight: 10 }} title={'Entradas'} value={`R$ ${getEntradas().toFixed(2)}`} />
-                    <BoxInfo style={{ marginRight: 10 }} title={'Saidas'} value={`R$ ${getSaidas().toFixed(2)}`} />
-                    <BoxInfo style={{ marginRight: 10 }} title={'Resultado'} value={`R$ ${getTotal().toFixed(2)}`} />
+                    <BoxInfo style={{ marginRight: 10 }} title={'Entradas'} value={`${GetCurrencyBRL(getEntradas())}`} />
+                    <BoxInfo style={{ marginRight: 10 }} title={'Saidas'} value={`${GetCurrencyBRL(getSaidas())}`} />
+                    <BoxInfo style={{ marginRight: 10 }} title={'Resultado'} value={`${GetCurrencyBRL(getTotal())}`} />
                 </div>
                 <div style={{ width: '85%' }}>
                     <table className={"table"}>
@@ -289,7 +290,7 @@ export default function Demonstrativo() {
                                 return (
                                     <tr className={styles.success}>
                                         <td>{venda.forma}</td>
-                                        <td >R$ {venda.venda.toFixed(2)}</td>
+                                        <td > {GetCurrencyBRL(venda.venda)}</td>
                                         <td></td>
                                         <td>{getPorcentagem(venda.venda)}</td>
                                     </tr>
@@ -306,7 +307,7 @@ export default function Demonstrativo() {
                                         <tr className={styles.fixa}>
                                             <td>{despesa.descricao || despesa.motivoLancamento?.nome || 'N/D'}</td>
                                             <td></td>
-                                            <td>R$ {despesa.valorTotal.toFixed(2)}</td>
+                                            <td> {GetCurrencyBRL(despesa.valorTotal)}</td>
                                             <td>{getPorcentagem(despesa.valorTotal)}</td>
                                         </tr>
                                     )
@@ -323,7 +324,7 @@ export default function Demonstrativo() {
                                         <tr className={styles.variavel}>
                                             <td>{despesa.descricao || despesa.motivoLancamento?.nome || 'N/D'}</td>
                                             <td></td>
-                                            <td>R$ {despesa.valorTotal.toFixed(2)}</td>
+                                            <td>{GetCurrencyBRL(despesa.valorTotal)}</td>
                                             <td>{getPorcentagem(despesa.valorTotal)}</td>
                                         </tr>
                                     )
@@ -340,7 +341,7 @@ export default function Demonstrativo() {
                                         <tr className={styles.taxa}>
                                             <td>{despesa.descricao || despesa.motivoLancamento?.nome || 'N/D'}</td>
                                             <td></td>
-                                            <td>R$ {despesa.valorTotal.toFixed(2)}</td>
+                                            <td>{GetCurrencyBRL(despesa.valorTotal)}</td>
                                             <td>{getPorcentagem(despesa.valorTotal)}</td>
                                         </tr>
                                     )
@@ -356,7 +357,7 @@ export default function Demonstrativo() {
                                         <tr className={styles.outro}>
                                            <td>{despesa.descricao ||  despesa.motivoLancamento?.nome || 'N/D'}</td>
                                             <td></td>
-                                            <td>R$ {despesa.valorTotal.toFixed(2)}</td>
+                                            <td>{GetCurrencyBRL(despesa.valorTotal)}</td>
                                             <td>{getPorcentagem(despesa.valorTotal)}</td>
                                         </tr>
                                     )
@@ -365,38 +366,38 @@ export default function Demonstrativo() {
                             })}
                             <tr className={styles.geral}>
                                 <td><b>ENTRADAS</b></td>
-                                <td>R$ {_.sumBy(vendas, v => v.venda).toFixed(2)}</td>
+                                <td>{GetCurrencyBRL(_.sumBy(vendas, v => v.venda))}</td>
                                 <td></td>
                                 <td></td>
                             </tr>
                             <tr className={styles.geral}>
                                 <td><b>DESPESAS FIXAS</b></td>
                                 <td></td>
-                                <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA FIXA' ? v.valorTotal : 0).toFixed(2)}</td>
+                                <td> {GetCurrencyBRL(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA FIXA' ? v.valorTotal : 0))}</td>
                                 <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA FIXA' ? v.valorTotal : 0) || 0)}</td>
                             </tr>
                             <tr className={styles.geral}>
                                 <td><b>DESPESAS VARIAVEIS</b></td>
                                 <td></td>
-                                <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL' ? v.valorTotal : 0).toFixed(2)}</td>
+                                <td> {GetCurrencyBRL(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL' ? v.valorTotal : 0))}</td>
                                 <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'DESPESA VARIAVEL' ? v.valorTotal : 0) || 0)}</td>
                             </tr>
                             <tr className={styles.geral}>
                                 <td><b>TAXAS E TRIBUTOS</b></td>
                                 <td></td>
-                                <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS' ? v.valorTotal : 0).toFixed(2)}</td>
+                                <td>{GetCurrencyBRL(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS' ? v.valorTotal : 0))}</td>
                                 <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'TAXAS E TRIBUTOS' ? v.valorTotal : 0) || 0)}</td>
                             </tr>
                             <tr className={styles.geral}>
                                 <td><b>OUTRAS DESPESAS</b></td>
                                 <td></td>
-                                <td>R$ {_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0).toFixed(2)}</td>
+                                <td>{GetCurrencyBRL(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0))}</td>
                                 <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0) || 0)}</td>
                             </tr>
                             <tr className={styles.geral}>
                                 <td><b>RESULTADO</b></td>
-                                <td> R$ {getEntradas().toFixed(2)}</td>
-                                <td> R$ {getSaidas().toFixed(2)}</td>
+                                <td>{GetCurrencyBRL(getEntradas())}</td>
+                                <td> {GetCurrencyBRL(getSaidas())}</td>
                                 <td>{getPorcentagem(_.sumBy(despesas, v => v.valorTotal) || 0)}</td>
                             </tr>
                         </tbody>
