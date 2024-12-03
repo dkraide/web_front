@@ -4,6 +4,11 @@ import { AuthTokenError } from './errors/AuthTokenError';
 import { signOut } from '../contexts/AuthContext';
 
 export function setupAPIClient(ctx = undefined) {
+
+
+    //fiz uma mudanca aqui
+
+    //ttttt
     let cookies = parseCookies(ctx);
     const api = axios.create({
           baseURL: `https://pdv.krdsys.tech/api`,
