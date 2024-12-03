@@ -5,7 +5,7 @@ import { signOut } from '../contexts/AuthContext';
 
 export function setupAPIClient(ctx = undefined) {
     let cookies = parseCookies(ctx);
-
+     //adicionei teste aqui
     const api = axios.create({
           baseURL: `https://pdv.krdsys.tech/api`,
        // baseURL: 'http://localhost:7000/api',
