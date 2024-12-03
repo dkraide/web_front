@@ -5,7 +5,6 @@ import { signOut } from '../contexts/AuthContext';
 
 export function setupAPIClient(ctx = undefined) {
     let cookies = parseCookies(ctx);
-     //adicionei teste aqui
     const api = axios.create({
           baseURL: `https://pdv.krdsys.tech/api`,
        // baseURL: 'http://localhost:7000/api',
@@ -17,9 +16,7 @@ export function setupAPIClient(ctx = undefined) {
         return response;
     }, (error: AxiosError) => {
         if (error.response?.status === 401) {
-            //qualquer erro 401 devemos deslogar o usuario
             if (typeof window !== undefined) {
-                //Chamar a funcao para deslogar o usuario
                 signOut();
             } else {
                 return Promise.reject(new AuthTokenError())
@@ -28,7 +25,5 @@ export function setupAPIClient(ctx = undefined) {
 
         return Promise.reject(error);
     })
-
     return api;
-
 }
