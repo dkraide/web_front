@@ -9,7 +9,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { fGetNumber, fgetDate, nameof } from "@/utils/functions"
+import { GetCurrencyBRL, fGetNumber, fgetDate, nameof } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
@@ -80,7 +80,13 @@ export default function RelatorioDia() {
         if (!result) {
             return '0';
         }
-        return `${prefix} ${_.sumBy(result, field).toFixed(2)}`
+        if(prefix == 'R$'){
+            return GetCurrencyBRL(_.sumBy(result, field));
+
+        }else{
+            return `${_.sumBy(result, field).toFixed(2)}`
+        }
+      
     }
     function getHeaders() {
         [
@@ -95,7 +101,7 @@ export default function RelatorioDia() {
 
     const columns = [
         {
-            name: 'Dia',
+            name: 'Diaaaaa',
             selector: row => row.dia,
             cell: row => format(fgetDate(row.dia), 'dd/MM/yyyy'),
             sortable: true,
@@ -108,25 +114,25 @@ export default function RelatorioDia() {
         {
             name: 'Venda',
             selector: row => row.venda,
-            cell: (row) => `R$ ${row.venda.toFixed(2)}`,
+            cell: (row) => GetCurrencyBRL(row.venda),
             sortable: true,
         },
         {
             name: 'Faturado',
             selector: row => row.faturado,
-            cell: (row) => `R$ ${row.faturado.toFixed(2)}`,
+            cell: (row) => GetCurrencyBRL(row.faturado),
             sortable: true,
         },
         {
             name: 'Custo',
             selector: row => row.custo,
-            cell: (row) => `R$ ${row.custo.toFixed(2)}`,
+            cell: (row) => GetCurrencyBRL(row.custo),
             sortable: true,
         },
         {
             name: 'Lucro (R$)',
             selector: row => row.venda - row.custo,
-            cell: (row) => `R$ ${(row.venda - row.custo).toFixed(2)}`,
+            cell: (row) => GetCurrencyBRL(row.venda - row.custo),
             sortable: true,
         },
         {

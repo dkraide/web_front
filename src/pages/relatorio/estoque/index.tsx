@@ -15,6 +15,7 @@ import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import IProduto from "@/interfaces/IProduto"
 import SelectClasseMaterial from "@/components/Selects/SelectClasseMaterial"
+import { GetCurrencyBRL } from "@/utils/functions"
 
 interface searchProps {
     dateIn: string
@@ -74,7 +75,12 @@ export default function RelatorioEstoque() {
         if (!result) {
             return '0';
         }
-        return `${prefix} ${_.sumBy(result, field).toFixed(2)}`
+        if(prefix == 'R$'){
+            return GetCurrencyBRL(_.sumBy(result, field));
+
+        }else{
+            return `${_.sumBy(result, field).toFixed(2)}`
+        }
     }
     function getHeaders() {
         return [

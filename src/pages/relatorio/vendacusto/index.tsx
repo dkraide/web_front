@@ -15,6 +15,7 @@ import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, LineChart, Line } from 'recharts';
 import { fGetDate, getMonths, random_rgba } from "@/utils/functions"
+import { GetCurrencyBRL } from "@/utils/functions"
 
 
 interface searchProps {
@@ -99,8 +100,9 @@ export default function VendaCusto() {
         }
         if (!prefix) {
             return valor;
+        }else{
+            return GetCurrencyBRL(valor)
         }
-        return `${prefix} ${valor.toFixed(2)}`
     }
     function getDataDia() {
         //primeiro passo pegar cada mes entre o intervalo de data;
@@ -217,7 +219,7 @@ export default function VendaCusto() {
                                     fill="#8884d8"
                                     label
                                 />
-                                <Tooltip formatter={(value, name) => <>R$ {(value.valueOf() as number).toFixed(2)}</>} />
+                                <Tooltip formatter={(value, name) => <>{GetCurrencyBRL((value.valueOf() as number))}</>} />
                             </PieChart>
                         </div>
                     </div>
@@ -247,7 +249,7 @@ export default function VendaCusto() {
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="name" />
                                 <YAxis />
-                                <Tooltip formatter={(value, name) => <>R$ {(value.valueOf() as number).toFixed(2)}</>} />
+                                <Tooltip formatter={(value, name) => <>{GetCurrencyBRL(value.valueOf() as number)}</>} />
                                 <Legend />
                                 <Line type="monotone" dataKey="venda" name={"Venda (R$)"} stroke="var(--green)" strokeWidth={3} />
                                 <Line type="monotone" dataKey="despesa" name={"Despesa (R$)"} stroke="var(--main)" strokeWidth={3} />
@@ -263,7 +265,7 @@ export default function VendaCusto() {
                                     <CartesianGrid strokeDasharray="3 3" />
                                     <XAxis dataKey="name" />
                                     <YAxis />
-                                    <Tooltip formatter={(value, name) => <>R$ {(value.valueOf() as number).toFixed(2)}</>} />
+                                    <Tooltip formatter={(value, name) => <>{GetCurrencyBRL(value.valueOf() as number)}</>} />
                                     <Legend />
                                     <Line type="monotone" dataKey="lucro" name={"Lucro (R$)"} stroke="var(--green)" strokeWidth={3} />
                                 </LineChart>
