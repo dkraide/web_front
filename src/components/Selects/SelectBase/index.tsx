@@ -84,5 +84,5 @@ export function SelectBase({id, maxTitleSize, width, datas, selected, title, set
     
     }} />
     </div>
-}
+} 
  
