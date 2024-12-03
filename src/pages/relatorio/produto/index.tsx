@@ -47,7 +47,7 @@ export default function RelatorioProduto() {
         setTimeout(() => {
             loadData();
         }, 1000);
-    }, [])
+    }, []);
 
     const loadData = async () => {
 

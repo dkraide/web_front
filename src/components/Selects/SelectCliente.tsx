@@ -66,8 +66,6 @@ export default function SelectCliente({ignore, width, selected, setSelected }: s
         <Select styles={{
             control: (base) => ({
                 ...base,
-                backgroundColor: 'transparent',
-                borderColor: 'black',
             })
         }} noOptionsMessage={(v) => <label>Nenhum item Encontrado</label>} options={getData()} defaultValue={selected.toString()} onChange={setSelectedProd} />
     )
