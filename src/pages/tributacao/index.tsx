@@ -107,9 +107,9 @@ export default function Tributacao() {
     ]
     return (
         <div className={styles.container}>
-            <h4>Tributacoes</h4>
+            <h4>Tributações</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Nova Tributacao</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Nova Tributação</CustomButton>
             <hr/>
             <CustomTable
                 columns={columns}

@@ -121,7 +121,7 @@ export default function ConferenciaEstoque() {
     ]
     return (
         <div className={styles.container}>
-            <h4>Conferencia de Estoque</h4>
+            <h4>Conferência de Estoque</h4>
             <div className={styles.box}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />

@@ -11,6 +11,7 @@ import { InputGroup } from "@/components/ui/InputGroup"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
 import CustomButton from "@/components/ui/Buttons"
+import { GetCurrencyBRL } from "@/utils/functions"
 
 interface searchProps{
     dateIn: string
@@ -95,14 +96,14 @@ export default function MovimentoCaixa(){
         },
         {
             name: 'R$ Abertura',
-            cell: ({valorDinheiro }: IMovimentoCaixa) => <p>R$ {valorDinheiro.toFixed(2)}</p>,
+            cell: ({valorDinheiro }: IMovimentoCaixa) => <p>{GetCurrencyBRL(valorDinheiro)}</p>,
             selector: (row: IMovimentoCaixa) => row.valorDinheiro,
             sortable: true,
             width: '15%'
         },
         {
             name: 'R$ Fechamento',
-            cell: ({valorDinheiroFinal }: IMovimentoCaixa) =>  <p>R$ {valorDinheiroFinal.toFixed(2)}</p>,
+            cell: ({valorDinheiroFinal }: IMovimentoCaixa) =>  <p>{GetCurrencyBRL(valorDinheiroFinal)}</p>,
             selector: (row: IMovimentoCaixa) => row.valorDinheiroFinal,
             sortable: true,
             width: '15%'

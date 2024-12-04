@@ -17,7 +17,7 @@ import { endOfMonth } from "date-fns";
 import { format } from "date-fns";
 import SelectSimNao from "@/components/Selects/SelectSimNao";
 import SelectMotivoLancamento from "@/components/Selects/SelectMotivoLancamento";
-import { fGetNumber } from "@/utils/functions";
+import { fGetNumber , validateString , validateNumber } from "@/utils/functions";
 import IEntrada from "@/interfaces/IEntrada";
 
 
@@ -68,6 +68,17 @@ export default function EntradaForm({ user, isOpen, id, setClose, color }: props
         objeto.descricao = data.descricao;
         objeto.dataLancamento =new Date( data.dataLancamento);
         objeto.dataRecebimento = new Date(data.dataRecebimento || new Date());
+        if(
+            !validateString(objeto.descricao,3) ||
+            !validateNumber(objeto.valorTotal,0.01)
+        ){
+            const message=
+            !validateString(objeto.descricao,3)?'Informe uma descrição!':
+            'Informe um valor total!';
+            toast.error(message);
+            setSending(false);
+            return;
+        }
         if(!objeto.motivoLancamentoId || objeto.motivoLancamentoId <= 0){
             toast.error(`Selecione um motivo de Lancamento`);
             return;

@@ -14,9 +14,10 @@ import IPromocao from "@/interfaces/IPromocao";
 import SelectClasseProduto from "@/components/Selects/SelectClasseProduto";
 import SelectProduto from "@/components/Selects/SelectProduto";
 import SelectClasseMaterial from "@/components/Selects/SelectClasseMaterial";
-import { fGetNumber } from "@/utils/functions";
+import { fGetNumber , validateNumber} from "@/utils/functions";
 import { format } from "date-fns";
 import SelectDiaSemana from "@/components/Selects/SelectDiaSemana";
+
 
 
 interface props {
@@ -70,6 +71,17 @@ export default function AtacadoForm({user, isOpen, id, setClose, color }: props)
         setSending(true);
         item.quantidade = fGetNumber(data.quantidade);
         item.valorFinal = fGetNumber(data.valorFinal);
+        if(
+            !validateNumber(item.quantidade,1) ||
+            !validateNumber(item.valorFinal,0.01)
+        ){
+            const message=
+            !validateNumber(item.quantidade,1)?'Informe uma quantidade para a promoção!':
+            'Informe um valor para a promoção!';
+            toast.error(message);
+            setSending(false);
+            return;
+        }
         if(item.id > 0){
             api.put(`Promocao/UpdatePromocao`, item)
             .then(({data}: AxiosResponse) => {

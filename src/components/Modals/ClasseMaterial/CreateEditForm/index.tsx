@@ -11,6 +11,7 @@ import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
+import { validateString } from "@/utils/functions";
 
 
 interface props {
@@ -57,6 +58,12 @@ export default function ClasseForm({user, isOpen, classeId, setClose, color }: p
     const onSubmit = async (data: any) =>{
         setSending(true);
         classe.nomeClasse = data.nomeClasse;
+        if(!validateString(classe.nomeClasse,3)){
+            const message ="Crie uma classe com no mínimo 3 caracteres!";
+            toast.error(message);
+            setSending(false);
+            return;
+        }
         if(classe.id > 0){
             api.put(`ClasseMaterial/Update`, classe)
             .then(({data}: AxiosResponse) => {

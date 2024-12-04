@@ -10,7 +10,7 @@ import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import { apiIBPT } from "@/services/apiIBPT";
-import { fGetNumber, fGetOnlyNumber } from "@/utils/functions";
+import { fGetNumber, fGetOnlyNumber , fValidateNumer,validateString} from "@/utils/functions";
 import ITributacao from "@/interfaces/ITributacao";
 import SelectStatus from "@/components/Selects/SelectStatus";
 import SelectICMS from "@/components/Selects/SelectICMS";
@@ -96,37 +96,43 @@ export default function TributacaoForm({user, isOpen, id, setClose, color }: pro
         obj.federal = fGetNumber(data.federal);
         obj.estadual = fGetNumber(data.estadual);
         obj.municipal = fGetNumber(data.municipal);
+        if(!validateString(obj.ncm,8)){
+            const message='Informe um NCM válido!';
+            toast.error(message);
+            setSending(false);
+            return;
+        }
         if(obj.id > 0){
             api.put(`Tributacao/Update`, obj)
             .then(({data}: AxiosResponse) => {
-                toast.success(`Tributacao atualizado com sucesso!`);
+                toast.success(`Tributação atualizado com sucesso!`);
                 setClose(true);
             })
             .catch((err: AxiosError) => {
-                   toast.error(`Erro ao atualizar Tributacao. ${err.response?.data}`);
+                   toast.error(`Erro ao atualizar Tributação. ${err.response?.data}`);
             })
 
         }else{
             obj.empresaId = user.empresaSelecionada;
             api.post(`Tributacao/Create`, obj)
             .then(({data}: AxiosResponse) => {
-                toast.success(`Tributacao cadastrado com sucesso!`);
+                toast.success(`Tributação cadastrado com sucesso!`);
                 setClose(true);
             })
             .catch((err: AxiosError) => {
-                   toast.error(`Erro ao criar Tributacao. ${err.response?.data}`);
+                   toast.error(`Erro ao criar Tributação. ${err.response?.data}`);
             })
         }
         setSending(false);
     }
     return (
-        <BaseModal height={'80%'} width={'80%'} color={color} title={'Cadastro de Tributacao'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'80%'} width={'80%'} color={color} title={'Cadastro de Tributação'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading  />
             ) : (
                 <div className={styles.container}>
                     <InputForm width={'15%'} onBlur={() => {getNCM()}} defaultValue={obj.ncm}  title={'NCM'} errors={errors} inputName={"ncm"} register={register} />
-                    <InputForm width={'70%'} defaultValue={obj.descricao} title={'Descricao'} errors={errors} inputName={"descricao"} register={register} />
+                    <InputForm width={'70%'} defaultValue={obj.descricao} title={'Descrição'} errors={errors} inputName={"descricao"} register={register} />
                     <SelectStatus width={'15%'} selected={obj.status} setSelected={(v) => {setObj({...obj, status: v})}} />
                     <InputForm width={'20%'} defaultValue={obj.cfop}  title={'CFOP'} errors={errors} inputName={"cfop"} register={register} />
                     <InputForm width={'20%'} defaultValue={obj.cest}  title={'CEST'} errors={errors} inputName={"cest"} register={register} />
