@@ -24,7 +24,7 @@ import VinculeMateriaPrima from "../MateriaPrima/VinculaProduto";
 import IMateriaPrima from "@/interfaces/IMateriaPrima";
 import ITamanhoMateriaPrima from "@/interfaces/ITamanhoMateriaPrima";
 import IProdutoMateriaPrima from "@/interfaces/IProdutoMateriaPrima";
-import { fGetNumber } from "@/utils/functions";
+import { fGetNumber, validateNumber, validateString  } from "@/utils/functions";
 import SelectSimNao from "@/components/Selects/SelectSimNao";
 
 interface props {
@@ -87,11 +87,31 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
 
     }, []);
 
+
+    const onError = (message) => {
+        toast.error(message);
+        setSending(false);
+    }
+
     const onSubmit = async (data: any) => {
         setSending(true);
         obj.nome = data.nome;
         obj.unidadeCompra = data.unidadeCompra;
         obj.valor = fGetNumber(data.valor);
+        if(
+            !validateString(obj.nome,3) ||
+            !validateNumber(obj.tributacaoId,1) ||
+            !validateNumber(obj.classeMaterialId,1) ||
+            !validateNumber(obj.valor,0.01,9999)
+        ){
+            const message=
+            !validateString(obj.nome,3)?'Informe um nome maior que 3 caracteres!':
+            !validateNumber(obj.tributacaoId,1)?'Informe uma tributação!':
+            !validateNumber(obj.classeMaterialId,1)?'Informe um grupo!':
+            'Informe um valor de venda válido!';
+            onError(message);
+            return;
+        }
         obj.valorCompra = fGetNumber(data.valorCompra);
         obj.quantidadeMinima = fGetNumber(data.quantidadeMinima);
         obj.cod = data.cod;
@@ -164,7 +184,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
     function addTamanho() {
         var codigo = getValues<string>("codigoTamanho");
         if (!codigo || codigo.length == 0) {
-            toast.error(`Informe um taamanho para adicionar`);
+            toast.error(`Informe um tamanho para adicionar`);
             return;
         }
         if (!obj.tamanhos) {
@@ -307,14 +327,14 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                                 <InputForm defaultValue={obj.cod} width={'10%'} title={'Cod'} errors={errors} inputName={"cod"} register={register} />
                                 <InputForm placeholder={'Nome do Produto'} defaultValue={obj.nome} width={'75%'} title={'Nome'} errors={errors} inputName={"nome"} register={register} />
                                 <SelectStatus width={'15%'} selected={obj.status} setSelected={(v) => { setObj({ ...obj, status: v }) }} />
-                                <InputForm placeholder={'Descricao'} defaultValue={obj.descricao} width={'100%'} title={'Descrição'} errors={errors} inputName={"descricao"} register={register} />
+                                <InputForm placeholder={'Descrição'} defaultValue={obj.descricao} width={'100%'} title={'Descrição'} errors={errors} inputName={"descricao"} register={register} />
                                 <InputForm defaultValue={obj.unidadeCompra} maxLength={3} width={'15%'} title={'UN Medida'} errors={errors} inputName={"unidadeCompra"} register={register} />
                                 <InputForm defaultValue={obj.valorCompra} width={'15%'} title={'Custo (R$)'} errors={errors} inputName={"valorCompra"} register={register} />
                                 <InputForm defaultValue={obj.valor} width={'15%'} title={'Venda (R$)'} errors={errors} inputName={"valor"} register={register} />
                                 <InputForm defaultValue={obj.quantidadeMinima} width={'15%'} title={'Estoque Min.'} errors={errors} inputName={"quantidadeMinima"} register={register} />
                                 <InputForm defaultValue={obj.quantidade} width={'15%'} title={'Estoque Atual'} errors={errors} inputName={"quantidade"} register={register} />
                                 <div style={{width: '100%', display: 'flex'}}>
-                                <SelectSimNao title={'Conferencia'} width={'15%'} selected={obj.isConferencia} setSelected={(v) => { setObj({ ...obj, isConferencia: v }) }} />
+                                <SelectSimNao title={'Conferência'} width={'15%'} selected={obj.isConferencia} setSelected={(v) => { setObj({ ...obj, isConferencia: v }) }} />
                                 <InputForm defaultValue={obj.codigoFornecedor} width={'15%'} title={'Cod. Fornecedor'} errors={errors} inputName={"codigoFornecedor"} register={register} />
                                 <InputForm defaultValue={obj.multiplicadorFornecedor} width={'15%'} title={'Multiplicador'} errors={errors} inputName={"multiplicadorFornecedor"} register={register} />
                                 </div>

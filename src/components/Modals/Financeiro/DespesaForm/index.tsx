@@ -17,7 +17,7 @@ import { endOfMonth } from "date-fns";
 import { format } from "date-fns";
 import SelectSimNao from "@/components/Selects/SelectSimNao";
 import SelectMotivoLancamento from "@/components/Selects/SelectMotivoLancamento";
-import { fGetNumber } from "@/utils/functions";
+import { fGetNumber , validateString , validateNumber } from "@/utils/functions";
 import SelectTipoDespesa from "@/components/Selects/SelectTipoDespesa";
 
 
@@ -76,6 +76,17 @@ export default function DespesaForm({ user, isOpen, id, setClose, color }: props
         objeto.dataPagamento = new Date(data.dataPagamento || new Date());
         objeto.pedidoReferencia = data.pedidoReferencia;
         objeto.dataCompetencia = new Date(data.dataCompetencia);
+        if(
+            !validateString(objeto.descricao,3)||
+            !validateNumber(objeto.valorSubTotal,0.01)
+        ){
+            const message=
+            !validateString(objeto.descricao,3)?'Informe uma descrição!':
+            'Informe um valor Subtotal!';
+            toast.error(message);
+            setSending(false);
+            return;
+        }
         if(objeto.desconto > objeto.valorSubTotal + objeto.acrescimo){
             toast.error(`Desconto excessivo`);
             return;

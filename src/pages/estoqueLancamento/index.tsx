@@ -60,7 +60,7 @@ export default function EstoqueLancamento(){
         .then(({data}: AxiosResponse<ILancamentoEstoque[]>) => {
             setVendas(data);
         }).catch((err: AxiosError) => {
-              toast.error(`Erro ao buscar lancamentos. ${err.response?.data || err.message}`);
+              toast.error(`Erro ao buscar lançamentos. ${err.response?.data || err.message}`);
         });
         setLoading(false);
     }
@@ -100,7 +100,7 @@ export default function EstoqueLancamento(){
 
     return(
         <div className={styles.container}>
-        <h4>Lancamentos De Estoque</h4>
+        <h4>Lançamentos De Estoque</h4>
         <div className={styles.boxSearch}>
             <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => {setSearch({...search, dateIn: v.target.value})}}  title={'Inicio'} width={'20%'}/>
             <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()}  onChange={(v) => {setSearch({...search, dateFim: v.target.value})}}  title={'Final'} width={'20%'}/>

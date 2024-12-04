@@ -13,6 +13,7 @@ import IUsuario from '@/interfaces/IUsuario';
 import IProduto from '@/interfaces/IProduto';
 import IPromocao from '@/interfaces/IPromocao';
 import AtacadoForm from '@/components/Modals/Promocao/AtacadoForm';
+import { GetCurrencyBRL } from '@/utils/functions';
 
 
 export default function Atacado() {
@@ -82,7 +83,7 @@ export default function Atacado() {
         },
         {
             name: 'Valor',
-            selector: row => row['valorFinal'],
+            selector: row => GetCurrencyBRL(row['valorFinal']),
             sortable: true,
             grow: 0
         },
@@ -95,7 +96,7 @@ export default function Atacado() {
     ]
     return (
         <div className={styles.container}>
-            <h4>Promocoes</h4>
+            <h4>Promoções</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
             <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Nova Promocao</CustomButton>
             <hr/>

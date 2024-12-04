@@ -20,6 +20,7 @@ import _ from 'lodash';
 import IEntrada from '@/interfaces/IEntrada';
 import SelectStatusRecebimento from '@/components/Selects/SelectStatusRecebimento';
 import EntradaForm from '@/components/Modals/Financeiro/EntradaForm';
+import { GetCurrencyBRL } from '@/utils/functions';
 
 interface searchProps{
     dateIn: string
@@ -86,7 +87,7 @@ export default function Entrada() {
             width: '10%',
         },
         {
-            name: 'Descricao',
+            name: 'Descrição',
             selector: row => row.descricao,
             sortable: true,
             width: '40%',
@@ -108,7 +109,7 @@ export default function Entrada() {
         {
             name: 'Valor',
             selector: row => row.valorTotal,
-            cell: (row: IEntrada) => row.valorTotal.toFixed(2),
+            cell: (row: IEntrada) => GetCurrencyBRL(row.valorTotal),
             sortable: true,
             width: '10%',
         },
@@ -132,13 +133,13 @@ export default function Entrada() {
             </div>
             <CustomButton style={{marginBottom: '10px'}} typeButton={'dark'} onClick={() => {setEdit(0)}}>Nova Entrada</CustomButton>
            <div className={styles.boxSearch}>
-           <BoxInfo style={{marginRight: '10px'}} title={'Geral'} value={`R$ ${_.sumBy(list, p => p.valorTotal).toFixed(2)}`}/>
-           <BoxInfo style={{marginRight: '10px'}} title={'A Receber'} value={`R$ ${_.sumBy(list, p => {
+           <BoxInfo style={{marginRight: '10px'}} title={'Geral'} value={GetCurrencyBRL(_.sumBy(list, p => p.valorTotal))}/>
+           <BoxInfo style={{marginRight: '10px'}} title={'A Receber'} value={GetCurrencyBRL(_.sumBy(list, p => {
             if(new Date(p.dataRecebimento) < new Date || p.statusRecebimento){
                  return 0
             }
             return p.valorTotal;
-           }).toFixed(2)}`}/>
+           }))}/>
            <BoxInfo style={{marginRight: '10px'}} title={'Recebido'} value={`R$ ${_.sumBy(list, p =>  p.statusRecebimento ?  p.valorTotal : 0).toFixed(2)}`}/>
            </div>
             <hr/>

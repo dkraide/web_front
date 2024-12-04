@@ -73,7 +73,7 @@ export default function MotivoLancamento() {
     ]
     return (
         <div className={styles.container}>
-            <h4>Motivos de Lancamentos</h4>
+            <h4>Motivos de Lançamentos</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
             <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Motivo</CustomButton>
             <hr/>

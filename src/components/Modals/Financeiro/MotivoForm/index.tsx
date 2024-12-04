@@ -12,6 +12,7 @@ import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
 import IMotivoLancamento from "@/interfaces/IMotivoLancamento";
+import { validateString } from "@/utils/functions";
 
 
 interface props {
@@ -57,6 +58,11 @@ export default function MotivoForm({user, isOpen, id, setClose, color }: props) 
     const onSubmit = async (data: any) =>{
         setSending(true);
         objeto.nome = data.nome;
+        if(!validateString(objeto.nome,3)){
+            toast.error("Digite um motivo de no mínimo 3 caracteres!");
+            setSending(false);
+            return;
+        }
         if(objeto.id > 0){
             api.put(`MotivoLancamento/Update`, objeto)
             .then(({data}: AxiosResponse) => {
@@ -66,7 +72,6 @@ export default function MotivoForm({user, isOpen, id, setClose, color }: props) 
             .catch((err: AxiosError) => {
                    toast.error(`Erro ao atualizar Motivo. ${err.response?.data}`);
             })
-
         }else{
             objeto.empresaId = user.empresaSelecionada;
             api.post(`MotivoLancamento/Create`, objeto)

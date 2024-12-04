@@ -12,7 +12,7 @@ import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
 import IMateriaPrima from "@/interfaces/IMateriaPrima";
-import { fGetNumber, sendImage } from "@/utils/functions";
+import { fGetNumber, sendImage , validateNumber, validateString  } from "@/utils/functions";
 import PictureBox from "@/components/ui/PictureBox";
 
 
@@ -62,6 +62,12 @@ export default function MateriaPrimaForm({ user, isOpen, id, setClose, color }: 
         classe.nome = data.nome;
         classe.valorCusto = fGetNumber(data.valorCusto);
         classe.valorVenda = fGetNumber(data.valorVenda);
+        if(!validateString(classe.nome,3)){
+            const message="Informe um nome com no mínimo 3 caracteres!";
+            toast.error(message);
+            setSending(false);
+            return;
+        }
         if (classe.id > 0) {
             api.put(`MateriaPrima/UpdateMateria`, classe)
                 .then(({ data }: AxiosResponse) => {

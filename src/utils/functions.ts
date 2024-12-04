@@ -198,3 +198,28 @@ export const GetCurrencyBRL = (value: number) => {
     const valorFormatado = value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     return valorFormatado;
 }
+
+
+export const validateString = (value: string, minlenght?: number) => {
+    if(!value){
+        return false;
+    }
+    if(minlenght &&  value.length < minlenght){
+        return false;
+    }
+    return true;
+}
+
+export const validateNumber = (value: any, min?: number, max?: number) => {
+    var number = fGetNumber(value);
+    if(!value){
+        return false;
+    }
+    if(min &&  number < min){
+        return false;
+    }
+    if(min && number> max){
+    return false;
+    }
+    return true;
+}

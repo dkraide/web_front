@@ -16,6 +16,7 @@ import EstoqueForm from '@/components/Modals/Produto/EstoqueForm';
 import BoxInfo from '@/components/ui/BoxInfo';
 import _ from 'lodash';
 import { CSVLink } from "react-csv";
+import { GetCurrencyBRL } from '@/utils/functions';
 
 
 export default function Estoque() {
@@ -109,21 +110,21 @@ export default function Estoque() {
         {
             name: 'Custo Un.',
             selector: row => row['valorCompra'],
-            cell: row => `R$ ${row.valorCompra.toFixed(2)}`,
+            cell: row => GetCurrencyBRL(row.valorCompra),
             sortable: true,
             width: '10%'
         },
         {
             name: 'Custo Total',
             selector: row => row['valorCompra'],
-            cell: row => row.quantidade >= 0 ? `R$ ${(row.valorCompra * row.quantidade).toFixed(2)}`: `R$ 0.00`,
+            cell: row => row.quantidade >= 0 ? GetCurrencyBRL(row.valorCompra*row.quantidade): `R$ 0,00`,
             sortable: true,
             width: '10%'
         },
         {
             name: 'Venda Total',
             selector: row => row['valor'],
-            cell: (row: IProduto) => row.quantidade >= 0 ? `R$ ${(row.valor * row.quantidade).toFixed(2)}`: `R$ 0.00`,
+            cell: (row: IProduto) => row.quantidade >= 0 ? GetCurrencyBRL(row.valor*row.quantidade): `R$ 0,00`,
             sortable: true,
             width: '10%'
         }
@@ -135,8 +136,8 @@ export default function Estoque() {
             <hr/>
             <div className={styles.box}>
             <BoxInfo style={{ marginRight: 10 }} title={'Estoque'} value={_.sumBy(list, x => x.quantidade > 0 ? x.quantidade : 0).toFixed(2)}/>
-            <BoxInfo style={{ marginRight: 10 }} title={'Valor'} value={`R$ ${_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valor : 0).toFixed(2)}`}/>
-            <BoxInfo style={{ marginRight: 10 }} title={'Compra'} value={`R$ ${_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valorCompra : 0).toFixed(2)}`}/>
+            <BoxInfo style={{ marginRight: 10 }} title={'Valor'} value={ GetCurrencyBRL(_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valor : 0))}/>
+            <BoxInfo style={{ marginRight: 10 }} title={'Compra'} value={GetCurrencyBRL(_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valorCompra : 0))}/>
             </div>
             <hr/>
             <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorio_estoque.csv"}>

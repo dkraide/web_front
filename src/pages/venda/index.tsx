@@ -9,10 +9,11 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { fGetNumber, printHTML } from "@/utils/functions"
+import { fGetNumber, printHTML , GetCurrencyBRL } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import CustomButton from "@/components/ui/Buttons"
+
 
 interface searchProps{
     vendedorId: number
@@ -97,7 +98,7 @@ export default function Venda(){
         },
         {
             name: 'Tipo',
-            selector: row => row['estd'] ? 'FATURADO': 'ORCAMENTO',
+            selector: row => row['estd'] ? 'FATURADO': 'ORÇAMENTO',
             sortable: true,
             width: '10%',
         },
@@ -109,7 +110,7 @@ export default function Venda(){
         },
         {
             name: 'Valor',
-            selector: row => `${row.valorTotal.toFixed(2)}`,
+            selector: row => GetCurrencyBRL(row.valorTotal),
             sortable: true,
             width: '10%',
         }

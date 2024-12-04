@@ -20,6 +20,7 @@ import SelectStatusLancamento from '@/components/Selects/SelectStatusLancamento'
 import { CSVLink } from "react-csv";
 import Confirm from '@/components/Modals/Confirm';
 import DespesaFormaForm from '@/components/Modals/Financeiro/DespesaFormaForm';
+import { GetCurrencyBRL } from '@/utils/functions';
 
 interface searchProps {
     dateIn: string
@@ -156,7 +157,7 @@ export default function Despesa() {
         {
             name: 'Valor',
             selector: row => row.valorTotal,
-            cell: (row: IDespesa) => row.valorTotal.toFixed(2),
+            cell: (row: IDespesa) => GetCurrencyBRL(row.valorTotal),
             sortable: true,
             width: '10%',
         },
@@ -181,20 +182,20 @@ export default function Despesa() {
             </div>
             <CustomButton style={{ marginBottom: '10px' }} typeButton={'dark'} onClick={() => { setEdit(0) }} >Nova Despesa</CustomButton>
             <div className={styles.boxSearch}>
-                <BoxInfo style={{ marginRight: '10px' }} title={'Geral'} value={`R$ ${_.sumBy(list, p => p.valorTotal).toFixed(2)}`} />
-                <BoxInfo style={{ marginRight: '10px' }} title={'Em Aberto'} value={`R$ ${_.sumBy(list, p => {
+                <BoxInfo style={{ marginRight: '10px' }} title={'Geral'} value={GetCurrencyBRL(_.sumBy(list, p => p.valorTotal))} />
+                <BoxInfo style={{ marginRight: '10px' }} title={'Em Aberto'} value={GetCurrencyBRL(_.sumBy(list, p => {
                     if (new Date(p.dataVencimento) < new Date || p.statusLancamento) {
                         return 0
                     }
                     return p.valorTotal;
-                }).toFixed(2)}`} />
-                <BoxInfo style={{ marginRight: '10px' }} title={'Pago'} value={`R$ ${_.sumBy(list, p => p.statusLancamento ? p.valorTotal : 0).toFixed(2)}`} />
-                <BoxInfo style={{ marginRight: '10px' }} title={'Vencido'} value={`R$ ${_.sumBy(list, p => {
+                }))} />
+                <BoxInfo style={{ marginRight: '10px' }} title={'Pago'} value={GetCurrencyBRL(_.sumBy(list, p => p.statusLancamento ? p.valorTotal : 0))} />
+                <BoxInfo style={{ marginRight: '10px' }} title={'Vencido'} value={GetCurrencyBRL(_.sumBy(list, p => {
                     if (new Date(p.dataVencimento) < new Date && !p.statusLancamento) {
                         return p.valorTotal
                     }
                     return 0;
-                }).toFixed(2)}`} />
+                }))} />
 
             </div>
             <hr />

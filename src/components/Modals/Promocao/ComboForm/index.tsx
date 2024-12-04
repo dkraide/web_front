@@ -14,7 +14,7 @@ import IPromocao from "@/interfaces/IPromocao";
 import SelectClasseProduto from "@/components/Selects/SelectClasseProduto";
 import SelectProduto from "@/components/Selects/SelectProduto";
 import SelectClasseMaterial from "@/components/Selects/SelectClasseMaterial";
-import { fGetNumber } from "@/utils/functions";
+import { fGetNumber , validateString } from "@/utils/functions";
 import ICombo from "@/interfaces/ICombo";
 import AddItem from "./AddItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -68,6 +68,17 @@ export default function ComboForm({ user, isOpen, id, setClose, color }: props) 
         setSending(true);
         item.codigo = data.codigo;
         item.descricao = data.descricao;
+        if(
+            !validateString(item.codigo,1)||
+            !validateString(item.descricao,3)
+        ){
+            const message=
+            !validateString(item.codigo,1)?'Informe um código!':
+            'Informe uma descrição de no mínimo 3 caracteres';
+            toast.error(message);
+            setSending(false);
+            return;
+        }
         if (item.id > 0) {
             api.put(`Combo/UpdateCombo`, item)
                 .then(({ data }: AxiosResponse) => {

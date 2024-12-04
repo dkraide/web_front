@@ -16,7 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import ITabelaPromocional from "@/interfaces/ITabelaPromocional";
 import ITabelaPromocionalProduto from "@/interfaces/ITabelaPromocionalProduto";
-import { fGetNumber } from "@/utils/functions";
+import { fGetNumber , validateString , validateNumber} from "@/utils/functions";
 
 
 interface props {
@@ -65,6 +65,17 @@ export default function TabelaForm({ user, isOpen, id, setClose, color }: props)
         setSending(true);
         item.titulo = data.titulo;
         item.quantidadeMinima = fGetNumber(data.quantidadeMinima);
+        if(
+            !validateString(item.titulo,3)||
+            !validateNumber(item.quantidadeMinima,1)
+        ){
+            const message=
+            !validateString(item.titulo,3)?'Digite uma descrição de no mínimo 3 caracteres!':
+            'Digite uma quantidade mínima!';
+            toast.error(message);
+            setSending(false);
+            return;
+        }
         if (item.id > 0) {
             api.put(`TabelaPromocional/UpdateTabela`, item)
                 .then(({ data }: AxiosResponse) => {

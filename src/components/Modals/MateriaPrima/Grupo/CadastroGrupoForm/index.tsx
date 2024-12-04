@@ -11,7 +11,7 @@ import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import SelectStatus from "@/components/Selects/SelectStatus";
 import IMateriaPrima from "@/interfaces/IMateriaPrima";
-import { fGetNumber, sendImage } from "@/utils/functions";
+import { fGetNumber, sendImage , validateString } from "@/utils/functions";
 import PictureBox from "@/components/ui/PictureBox";
 import IGrupoAdicional, { IGrupoAdicionalMateriaPrima } from "@/interfaces/IGrupoAdicional";
 import BaseModal from "@/components/Modals/Base/Index";
@@ -68,6 +68,12 @@ export default function CadastroGrupoForm({ user, isOpen, id, setClose, color }:
         classe.descricao = data.descricao;
         classe.minimo = fGetNumber(data.minimo);
         classe.maximo = fGetNumber(data.maximo);
+        if(!validateString(classe.descricao,3)){
+            const message="Informe uma descrição de no mínimo 3 caracteres!"
+            toast.error(message);
+            setSending(false);
+            return;
+        }
         if (classe.id > 0) {
             api.put(`GrupoAdicional/UpdateGrupo`, classe)
                 .then(({ data }: AxiosResponse) => {
