@@ -124,7 +124,7 @@ export default function Demonstrativo() {
             res.push({
                 razao: venda.forma,
                 entrada: venda.venda.toFixed(2),
-                saida: '',
+                saida: 'venda',
                 fat: getPorcentagem(venda.venda)
             });
         });
@@ -237,6 +237,7 @@ export default function Demonstrativo() {
         { label: "% Fat", key: "fat" },
     ]
 
+
     function getPorcentagem(valor: number) {
         var x = getEntradas();
         var porcentagem = (valor / x) * 100;
@@ -249,7 +250,7 @@ export default function Demonstrativo() {
                 <SelectSimNao title={'Despesa em Aberta'} width={'20%'} selected={search?.incluiEmHaver} setSelected={(v) => { setSearch({ ...search, incluiEmHaver: v }) }} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                <SelectSimNao title={'Calcula Custo Produto'} width={'20%'} selected={search?.calculaCusto} setSelected={(v) => { setSearch({ ...search, calculaCusto: v }) }} />
+                <SelectSimNao title={'Calcula Custo Produto'} width={'20%'} selected={search?.calculaCusto} setSelected={(v) => { setSearch({ ...search, calculaCusto: v }) }}/>
                 <div style={{ width: '100%' }}>
                     <CustomButton onClick={() => { loadData() }} typeButton={'dark'}>Pesquisar</CustomButton>
                     <CustomButton onClick={(v) => {
@@ -296,7 +297,6 @@ export default function Demonstrativo() {
                                     </tr>
                                 )
                             })}
-
 
                             <tr className={styles.fixa}>
                                 <td colSpan={4}><b>DESPESAS FIXAS</b></td>
@@ -394,6 +394,14 @@ export default function Demonstrativo() {
                                 <td>{GetCurrencyBRL(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0))}</td>
                                 <td>{getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0) || 0)}</td>
                             </tr>
+                            {search.calculaCusto && (
+                                <tr className={styles.geral}>
+                                    <td><b>CUSTO PRODUTO</b></td>
+                                    <td></td>
+                                    <td>{GetCurrencyBRL(_.sumBy(vendas, (v) => v.custo))}</td>
+                                    <td>{getPorcentagem(_.sumBy(vendas, (v) => v.custo) || 0)}</td>
+                                </tr>
+                            )}
                             <tr className={styles.geral}>
                                 <td><b>RESULTADO</b></td>
                                 <td>{GetCurrencyBRL(getEntradas())}</td>
