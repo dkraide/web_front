@@ -3,6 +3,7 @@ import ICodBarras from "./ICodBarras"
 import IFornecedor from "./IFornecedor"
 import IGrupoAdicional from "./IGrupoAdicional"
 import IMateriaPrima from "./IMateriaPrima"
+import IProdutoGrupo from "./IProdutoGrupo"
 import IProdutoImagem from "./IProdutoImagem"
 import IProdutoMateriaPrima from "./IProdutoMateriaPrima"
 import IPromocao from "./IPromocao"
@@ -24,7 +25,7 @@ export default interface IProduto{
          materiaPrimas: IProdutoMateriaPrima[]
          tamanhos: ITamanho[]
          fornecedores: IFornecedor[]
-         grupoAdicionais: IGrupoAdicional[]
+         grupoAdicionais: IProdutoGrupo[]
          codBarras: ICodBarras[]
          classeMaterial: IClasseMaterial
          idClasseMaterial: number

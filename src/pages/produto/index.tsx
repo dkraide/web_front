@@ -100,11 +100,17 @@ export default function Produto() {
             grow: 0
         }
     ]
+
+    const handleNovaPizza = () => {
+        window.location.href = '/produto/novaPizza';
+    }
     return (
         <div className={styles.container}>
             <h4>Produtos</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
             <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Produto</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={handleNovaPizza}  style={{marginLeft: '10px'}} >Nova Pizza</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} style={{marginLeft: '10px'}}  >Novo Prato</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => {window.location.href = '/produto/franquia'}} style={{marginLeft: '10px'}} >Franquia</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => {setAjuste(true)}}  style={{marginLeft: '10px'}}>Ajuste Massa</CustomButton>
             <hr/>
