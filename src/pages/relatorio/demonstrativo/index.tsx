@@ -222,6 +222,14 @@ export default function Demonstrativo() {
             saida: _.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0).toFixed(2),
             fat: getPorcentagem(_.sumBy(despesas, v => v.tipoDespesa.toUpperCase() == 'OUTROS' ? v.valorTotal : 0) || 0)
         });
+        search.calculaCusto &&(
+            res.push({
+                razao:'CUSTO PRODUTO',
+                entrada:'',
+                saida:_.sumBy(vendas, v => v.custo).toFixed(2),
+                fat: getPorcentagem(_.sumBy(vendas, v =>  v.custo) || 0)
+            })
+        )
         res.push({
             razao: 'RESULTADO',
             entrada: getEntradas().toFixed(2),
