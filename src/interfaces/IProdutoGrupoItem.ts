@@ -5,7 +5,7 @@ export interface IProdutoGrupoItem {
   id: string;
   idProdutoGrupoItem: string;
   idProdutoGrupo: number;
-  produtoGrupoId: string;
+  produtoGrupoId: number;
   produtoGrupo: IProdutoGrupo;
   materiaPrima: IMateriaPrima;
   idMateriaPrima: number;

@@ -1,0 +1,70 @@
+.container {
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+}
+
+.filtro, .card{
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: white;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.card {
+    padding: 10px 10px 5px 10px;
+    span {
+        background-color: var(--background);
+        padding: 5px;
+        border-radius: 2px;
+        text-align: center;
+        max-height: 32px;
+        margin-bottom: 5px;
+    }
+
+    .cod {
+        width: 10%;
+    }
+
+    .nome {
+        width: 65%;
+        text-align: start;
+        text-overflow: ellipsis;
+        display: inline-block;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .ativo,
+    .inativo {
+        width: 20%;
+
+    }
+
+    .ativo {
+        background-color: var(--green);
+        color: var(--white);
+    }
+
+    .inativo {
+        background-color: var(--main);
+        color: var(--white);
+    }
+
+    .estoque{
+        width: 30%;
+    }
+
+
+
+}
+
+.grupo {
+    margin-bottom: 15px;
+}

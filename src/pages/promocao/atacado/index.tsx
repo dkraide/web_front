@@ -72,7 +72,7 @@ export default function Atacado() {
         },
         {
             name: 'Item',
-            selector: row => row['produto'] ? row.produto.nome : row.classeMaterial.nomeClasse,
+            selector: row => row['produto'] ? row.produto?.nome : row.classeMaterial?.nomeClasse,
             sortable: true,
         },
         {

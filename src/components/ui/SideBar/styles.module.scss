@@ -58,12 +58,7 @@
     flex-direction: column;
     background-color: var(--background);
     overflow-x: hidden;
-    padding-top: 10px;
-    padding-bottom: 10px;
-    padding-right: 10px;
-      
 }
-
 @media print {
     .sideBar, .navbar {
         display: none !important;
