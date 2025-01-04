@@ -1,32 +1,23 @@
 .container{
     height: 100%;
     width: 100%;
-    padding: 10px;
-    background-color: var(--white);
 }
-
-.row{
+.grupo{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    margin-top: 10px;
     align-items: center;
 }
-.tabs{
-    height: 90%;
-}
+
 .buttons{
-    height: 10%;
+    position: fixed;
+    bottom: 0;
+    margin-bottom: 50px;
+    margin-top: auto;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     justify-content: flex-end;
-
     button{
-        height: 35px;
+        margin-right: 10px;
     }
 }
-.contentTab{
-    padding: 10px;
-}
-
