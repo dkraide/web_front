@@ -8,12 +8,13 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { GetCurrencyBRL, LucroPorcentagem, fGetNumber, fgetDate, isMobile, nameof } from "@/utils/functions"
+import { GetCurrencyBRL, LucroPorcentagem, fGetNumber, fgetDate, nameof } from "@/utils/functions"
 import CustomButton from "@/components/ui/Buttons"
 import BoxInfo from "@/components/ui/BoxInfo"
 import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
+import { isMobile } from "react-device-detect"
 
 interface searchProps {
     dateIn: string
@@ -144,7 +145,7 @@ export default function RelatorioDia() {
         return(
             <div key={item.dia} className={styles.item}>
                  <span className={styles.qtd}>Qtd<br/><b>{item.quantidade}</b></span>
-                 <span className={styles.nome}>Dia<br/><b>{format(new Date(item.dia), 'dd/MM/yy')}</b></span>
+                 <span className={styles.nome}>Dia<br/><b>{format(fgetDate(item.dia), 'dd/MM/yy')}</b></span>
                  <span className={styles.venda}>Venda<br/><b>{GetCurrencyBRL(item.venda)}</b></span>
                  <span className={styles.custo}>Custo<br/><b>{GetCurrencyBRL(item.custo)}</b></span>
                  <span className={styles.media}>Media<br/><b>{GetCurrencyBRL(item.venda / item.quantidade)}</b></span>

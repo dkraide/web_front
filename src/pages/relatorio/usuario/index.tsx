@@ -9,7 +9,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { fGetNumber, isMobile, LucroPorcentagem, nameof } from "@/utils/functions"
+import { fGetNumber,  LucroPorcentagem, nameof } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
@@ -20,6 +20,7 @@ import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
 import SelectTipoVendedor from "@/components/Selects/SelectTipoVendedor"
 import { GetCurrencyBRL } from "@/utils/functions"
+import { isMobile } from 'react-device-detect'
 
 interface searchProps {
     dateIn: string

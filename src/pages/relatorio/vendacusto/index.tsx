@@ -14,8 +14,9 @@ import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, LineChart, Line } from 'recharts';
-import { fGetDate, getMonths, isMobile, random_rgba } from "@/utils/functions"
+import { fGetDate, getMonths, } from "@/utils/functions"
 import { GetCurrencyBRL } from "@/utils/functions"
+import { isMobile } from 'react-device-detect'
 
 
 interface searchProps {
