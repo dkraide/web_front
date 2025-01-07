@@ -7,11 +7,10 @@ import styles from './styles.module.scss';
 import IUsuario from "@/interfaces/IUsuario";
 import BaseModal from "../../Base/Index";
 import _ from "lodash";
-import IVenda from "@/interfaces/IVenda";
-import { LabelGroup } from "@/components/ui/LabelGroup";
 import { format } from "date-fns";
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa";
 import { Spinner, Tab, Tabs } from "react-bootstrap";
+import { isMobile } from "react-device-detect";
 
 interface props {
     isOpen: boolean
@@ -55,7 +54,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
             .catch((err) => {
                 toast.error(`Erro ao buscar totais. ${err.message}`)
             })
-            api.get(`/MovimentoCaixa/Produtos?MovimentoCaixaId=${id}`)
+        api.get(`/MovimentoCaixa/Produtos?MovimentoCaixaId=${id}`)
             .then(({ data }: AxiosResponse<prodProps[]>) => {
                 setProdutos(data);
             })
@@ -99,7 +98,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
     }
     function calculaDiferenca() {
         var resultado = calculaEsperado();
-        return obj.valorDinheiroFinal - resultado ;
+        return obj.valorDinheiroFinal - resultado;
     }
 
     return (
@@ -108,8 +107,8 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                 <Loading />
             ) : (
                 <div className={styles.container}>
-                    <div className={styles.detail}>
-                        <div style={{width: '45%'}}>
+                    <div hidden={isMobile} className={styles.detail}>
+                        <div style={{ width: '45%' }}>
                             <table className={"table"}>
                                 <thead>
                                     <tr>
@@ -140,7 +139,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                                 </tbody>
                             </table>
                         </div>
-                        <div style={{width: '45%'}}>
+                        <div style={{ width: '45%' }}>
                             <table className={"table"}>
                                 <thead>
                                     <tr>
@@ -186,7 +185,81 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                             className="mb-3"
                             justify
                         >
-                            <Tab eventKey="home" title="Totais">
+                            {isMobile && <Tab eventKey="detalhes" title="Detalhes">
+                                <div style={{ width: '100%' }}>
+                                    <table className={"table"}>
+                                        <thead>
+                                            <tr>
+                                                <th colSpan={2}>Detalhe</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Nro</td>
+                                                <td>{obj.idMovimentoCaixa || obj.id}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Abertura</td>
+                                                <td>{format(new Date(obj.dataMovimento || new Date()), 'dd/MM/yyyy HH:mm')}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Usuario</td>
+                                                <td>{obj.usuario?.nome || obj.idUsuario}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Status</td>
+                                                <td>{obj.status ? 'FECHADO' : 'ABERTO'}</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Fechamento</td>
+                                                <td>{obj.status ? format(new Date(obj.dataFechamento), 'dd/MM/yyyy HH:mm') : '--'}</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </Tab>}
+                            {isMobile && <Tab eventKey="totais" title="Totais">
+                                <div style={{ width: '100%' }}>
+                            <table className={"table"}>
+                                <thead>
+                                    <tr>
+                                        <th colSpan={2}>Totais</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Abertura (+)</td>
+                                        <td>R$ {obj.valorDinheiro.toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Vendas (+)</td>
+                                        <td>R$ {calcularVendas().toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Entradas (+)</td>
+                                        <td>R$ {calculaEntradas().toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sangrias (-)</td>
+                                        <td>R$ {calcularSangrias().toFixed(2)}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Informado (=)</td>
+                                        <td>R$ {obj.status ? obj.valorDinheiroFinal.toFixed(2) : '--'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Esperado (=)</td>
+                                        <td>R$ {obj.status ? calculaEsperado().toFixed(2) : '--'}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Diferenca (=)</td>
+                                        <td>R$ {obj.status ? calculaDiferenca().toFixed(2) : '--'}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                            </Tab>}
+                            <Tab eventKey="home" title="Pagamentos">
                                 <div>
                                     <table className={"table"}>
                                         <thead>
@@ -244,9 +317,9 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                                     <table className={"table"}>
                                         <thead>
                                             <tr>
-                                                <th style={{width: '60%'}}>Produto</th>
-                                                <th style={{width: '20%'}}>Quantidade</th>
-                                                <th style={{width: '20%'}}>Valor</th>
+                                                <th style={{ width: '60%' }}>Produto</th>
+                                                <th style={{ width: '20%' }}>Quantidade</th>
+                                                <th style={{ width: '20%' }}>Valor</th>
                                             </tr>
                                         </thead>
                                         <tbody>

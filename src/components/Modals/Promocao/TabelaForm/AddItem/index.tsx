@@ -17,6 +17,7 @@ import ITabelaPromocionalProduto from "@/interfaces/ITabelaPromocionalProduto";
 import { api } from "@/services/apiClient";
 import IUsuario from "@/interfaces/IUsuario";
 import { AxiosError, AxiosResponse } from "axios";
+import { isMobile } from "react-device-detect";
 
 
 interface props {
@@ -97,9 +98,9 @@ export default function AddItem({ isOpen, setClose, user }: props) {
       
     }
     return (
-        <BaseModal isOpen={isOpen} setClose={setClose} title={'Adicionar item na Tabela'} height={'50%'} width={'50%'}>
+        <BaseModal isOpen={isOpen} setClose={setClose} title={'Adicionar item na Tabela'} height={'50vh'} width={'50%'}>
            <div className={styles.container}>
-           <SelectClasseProduto title={'Tipo'} width={'60%'} selected={isProduto} setSelected={(v) => setIsProduto(v)} />
+           <SelectClasseProduto title={'Tipo'} width={isMobile ? '100%' : '60%'} selected={isProduto} setSelected={(v) => setIsProduto(v)} />
             {isProduto ?
                 <SelectProduto selected={item?.id || 0} setSelected={(v) => {
                     setItem(v);
@@ -107,7 +108,7 @@ export default function AddItem({ isOpen, setClose, user }: props) {
                 <SelectClasseMaterial selected={item?.id || 0} setSelected={(v) => {
                     setItem(v);
                 }} />}
-            <InputForm  width={'50%'} title={'Valor Unitario'} errors={errors} inputName={"valorUnitario"} register={register} />
+            <InputForm  width={isMobile ? '100%' : '50%'} title={'Valor Unitario'} errors={errors} inputName={"valorUnitario"} register={register} />
             <div className={styles.button}>
                         <CustomButton onClick={() => { setClose(); } } typeButton={"secondary"}>Cancelar</CustomButton>
                         <CustomButton typeButton={'dark'}  onClick={() => {handleSubmit(onSubmit)()}}>Confirmar</CustomButton>

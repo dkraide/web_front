@@ -2,7 +2,9 @@ import { api } from "@/services/apiClient";
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { addHours } from "date-fns";
 import FileSaver from "file-saver";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useWindowSize } from "rooks";
 import XLSX from 'sheetjs-style';
 
 
@@ -103,6 +105,26 @@ function getBase64(file) {
         console.log('Error: ', error);
     };
 }
+
+export const isMobile = () => {
+    const { innerWidth } = useWindowSize();
+    const [mobile, setMobile] = useState(false);
+
+    useEffect(() => {
+    console.log('innerWidth', innerWidth)
+
+        if (!innerWidth) {
+            return;
+        }
+        setMobile(innerWidth < 600);
+
+    }, [innerWidth]);
+
+
+    return mobile;
+
+}
+
 
 export const printHTML = (html: any) => {
     const blob: Blob = new Blob([html], { type: 'text/html' });
@@ -222,4 +244,12 @@ export const validateNumber = (value: any, min?: number, max?: number) => {
     return false;
     }
     return true;
+}
+
+
+export const LucroPorcentagem = (venda, compra) => {
+    if(venda <= compra){
+        return 0
+    }
+    return (((venda - compra) / venda) * 100)
 }

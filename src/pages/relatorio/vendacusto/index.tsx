@@ -14,7 +14,7 @@ import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
 import { BarChart, Bar, Rectangle, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, LineChart, Line } from 'recharts';
-import { fGetDate, getMonths, random_rgba } from "@/utils/functions"
+import { fGetDate, getMonths, isMobile, random_rgba } from "@/utils/functions"
 import { GetCurrencyBRL } from "@/utils/functions"
 
 
@@ -188,15 +188,14 @@ export default function VendaCusto() {
     return (
         <div className={styles.container}>
             <h4>Relatorio de Vendas e Custos</h4>
-            <div className={styles.box}>
+            <div className={styles.boxSearch}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
-            </div>
-            <hr />
-            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={result?.vendas || []} headers={getHeaders()} filename={"relatorioMes.csv"}>
+                <CustomButton typeButton={'dark'}><CSVLink data={result?.vendas || []} headers={getHeaders()} filename={"relatorioMes.csv"}>
                 Download Planilha
             </CSVLink></CustomButton>
+                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
+            </div>
             <hr />
             {loading ? <Spinner /> : <div>
                 <div className={styles.box}>
@@ -204,8 +203,8 @@ export default function VendaCusto() {
                     <BoxInfo style={{ marginRight: 10 }} title={'Despesas'} value={getValue('despesa', 'R$').toString()} />
                     <BoxInfo style={{ marginRight: 10 }} title={'Lucro'} value={getValue('lucro', 'R$').toString()} />
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%' }}>
-                    <div style={{ width: '35%', minWidth: '350px', padding: '5px' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', width: '100%', justifyContent: isMobile ? 'center' : 'flex-start'}}>
+                    <div style={{ width:  isMobile ? '100%' : -'35%', minWidth: '350px', padding: '5px' }}>
                         <div className={"krd-card"} >
                             <h4 className={"krd-card-title"}>Relação Venda/Despesa</h4>
                             <PieChart height={200} width={200} >
@@ -223,7 +222,7 @@ export default function VendaCusto() {
                             </PieChart>
                         </div>
                     </div>
-                    <div style={{ width: '35%', minWidth: '350px', padding: '5px' }}>
+                    <div style={{ width:  isMobile ? '100%' : '35%', minWidth: '350px', padding: '5px' }}>
                         <div className={"krd-card"} >
                             <h4 className={"krd-card-title"}>Relação Meses Com/Sem Lucro</h4>
                             <PieChart height={200} width={200} >
@@ -256,7 +255,7 @@ export default function VendaCusto() {
                             </LineChart>
                         </ResponsiveContainer>
                     </div>
-                    <div style={{ width: '50%', minWidth: '350px', padding: '5px' }}>
+                    <div style={{ width: isMobile ? '100%' :  '50%', minWidth: '350px', padding: '5px' }}>
                         <div className={"krd-card"} >
                             <h4 className={"krd-card-title"}>Relatorio de lucro (R$)</h4>
                             <ResponsiveContainer height={250} width={'100%'}>
@@ -272,7 +271,7 @@ export default function VendaCusto() {
                             </ResponsiveContainer>
                         </div>
                     </div>
-                    <div style={{ width: '50%', minWidth: '350px', padding: '5px' }}>
+                    <div style={{ width: isMobile ? '100%' : '50%', minWidth: '350px', padding: '5px' }}>
                         <div className={"krd-card"} >
                             <h4 className={"krd-card-title"}>Relatorio de lucro (%)</h4>
                             <ResponsiveContainer height={250} width={'100%'}>

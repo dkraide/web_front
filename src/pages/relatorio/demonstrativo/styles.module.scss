@@ -1,11 +1,31 @@
 .container{
-    padding: 10px;
+    padding: 5px;
+}
+.boxSearch{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    width: 100%;
+    justify-content: space-between;
+    button{
+        height: 35px;
+        margin-top: 5px;
+    }
 }
 .box{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     margin-bottom: 10px;
+    width: 100%;
+}
+.box > div{
+    width: 30%;
+    min-width: 0px !important;
+}
+.box > div > div:first-child{
+    font-size: 16px;
 }
 .s{
     background-color: var(--green);

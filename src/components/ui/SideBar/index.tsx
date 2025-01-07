@@ -156,7 +156,7 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/relatorio/dia'}>Por Dia</MenuItem>
                                     <MenuItem href={'/relatorio/formaPagamento'}>Por Forma</MenuItem>
                                     <MenuItem href={'/relatorio/produto'}>Por Produto</MenuItem>
-                                    <MenuItem href={'/relatorio/usuario'}>Por Usuiario</MenuItem>
+                                    <MenuItem href={'/relatorio/usuario'}>Por Usuario</MenuItem>
                                     <MenuItem href={'/relatorio/demonstrativo'}>Demonstrativo</MenuItem>
                                     <MenuItem href={'/relatorio/vendacusto'}>Venda/Custo </MenuItem>
                                     <MenuItem href={'/relatorio/FechamentoCaixa'}>Fechamento</MenuItem>

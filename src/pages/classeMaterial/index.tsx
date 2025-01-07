@@ -12,6 +12,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import ClasseForm from '@/components/Modals/ClasseMaterial/CreateEditForm';
 import IUsuario from '@/interfaces/IUsuario';
+import ClasseMaterialMobile from '@/components/Mobile/Pages/ClasseMaterialMobile';
+import { useWindowSize } from 'rooks';
 
 
 export default function ClasseMaterial() {
@@ -21,6 +23,16 @@ export default function ClasseMaterial() {
     const [search, setSearch] = useState('')
     const [edit, setEdit] = useState(-1);
     const [user, setUser] = useState<IUsuario>()
+    const [mobile, setMobile] = useState(false);
+    const { innerWidth } = useWindowSize();
+
+    useEffect(() => {
+        if(!innerWidth){
+            return;
+        }
+        setMobile(innerWidth < 600);
+
+    }, [innerWidth])
 
     const loadData = async () => {
        var u: any;
@@ -75,6 +87,11 @@ export default function ClasseMaterial() {
             grow: 0
         }
     ]
+
+
+    if(mobile){
+        return <ClasseMaterialMobile list={classes} loadData={loadData} user={user}/>
+    }
     return (
         <div className={styles.container}>
             <h4>Classes de Materiais</h4>

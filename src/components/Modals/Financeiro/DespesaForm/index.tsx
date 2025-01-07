@@ -6,12 +6,9 @@ import { InputForm } from "@/components/ui/InputGroup";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import styles from './styles.module.scss';
-import IClasseMaterial from "@/interfaces/IClasseMaterial";
 import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
-import SelectStatus from "@/components/Selects/SelectStatus";
-import IMotivoLancamento from "@/interfaces/IMotivoLancamento";
 import IDespesa from "@/interfaces/IDespesa";
 import { endOfMonth } from "date-fns";
 import { format } from "date-fns";
@@ -19,6 +16,7 @@ import SelectSimNao from "@/components/Selects/SelectSimNao";
 import SelectMotivoLancamento from "@/components/Selects/SelectMotivoLancamento";
 import { fGetNumber , validateString , validateNumber } from "@/utils/functions";
 import SelectTipoDespesa from "@/components/Selects/SelectTipoDespesa";
+import { isMobile } from "react-device-detect";
 
 
 interface props {
@@ -148,8 +146,8 @@ export default function DespesaForm({ user, isOpen, id, setClose, color }: props
                     <InputForm defaultValue={objeto.pedidoReferencia} width={'10%'} title={'Ped. Ref.'} errors={errors} inputName={"pedidoReferencia"} register={register} />
                     <SelectSimNao width={'20%'} title={'Pago'} selected={objeto.statusLancamento} setSelected={(v) => { setObjeto({ ...objeto, statusLancamento: v }) }} />
                     {objeto.statusLancamento ? <InputForm type={'date'} defaultValue={format(new Date(objeto.dataPagamento || new Date()), 'yyyy-MM-dd')} width={'15%'} title={'Pagamento'} errors={errors} inputName={"dataPagamento"} register={register} /> :
-                        <div style={{ width: '15%' }}></div>}
-                    <SelectTipoDespesa width={'70%'} selected={objeto.tipoDespesa} setSelected={(v) => {
+                        <div hidden={isMobile} style={{ width: '15%' }}></div>}
+                    <SelectTipoDespesa width={isMobile ? '50%' : '75%'} selected={objeto.tipoDespesa} setSelected={(v) => {
                         setObjeto({ ...objeto, tipoDespesa: v })
                     }} />
                     <InputForm type={'date'} defaultValue={format(new Date(objeto.dataCompetencia || new Date()), 'yyyy-MM-dd')} width={'30%'} title={'Competencia'} errors={errors} inputName={"dataCompetencia"} register={register} />

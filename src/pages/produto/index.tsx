@@ -136,9 +136,9 @@ export default function Produto() {
         window.location.href = '/produto/novoPrato';
     }
 
-    // if(mobile){
-    //     return <ProdutoMobile produtos={list}/>
-    // }
+    if(mobile){
+        return <ProdutoMobile produtos={list} user={user} loadData={loadData} handleNovaPizza={handleNovaPizza} handleNovoPrato={handleNovoPrato}/>
+    }
     return (
         <div className={styles.container}>
             <h4>Produtos</h4>
