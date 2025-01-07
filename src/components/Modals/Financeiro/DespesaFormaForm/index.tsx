@@ -17,6 +17,7 @@ import IDespesa from "@/interfaces/IDespesa";
 import SelectFormaPagamento from "@/components/Selects/SelectFormaPagamento";
 import IFormaPagamento from "@/interfaces/IFormaPagamento";
 import SelectTipoDespesa from "@/components/Selects/SelectTipoDespesa";
+import { isMobile } from "react-device-detect";
 
 
 interface props {
@@ -159,7 +160,7 @@ export default function DespesaFormaForm({ user, isOpen, setClose, color }: prop
                 <div className={styles.container}>
                     <InputForm type={'date'} defaultValue={format(startOfMonth(new Date()), 'yyyy-MM-dd')} width={'15%'} title={'Inicio'} errors={errors} inputName={"dataIn"} register={register} />
                     <InputForm type={'date'} defaultValue={format(endOfMonth(new Date()), 'yyyy-MM-dd')} width={'15%'} title={'Fim'} errors={errors} inputName={"dataFim"} register={register} />
-                    <SelectFormaPagamento width={'55%'} selected={forma?.id} setSelected={(v) => { setForma(v) }} />
+                    <SelectFormaPagamento width={isMobile ? '100%' : '55%'} selected={forma?.id} setSelected={(v) => { setForma(v) }} />
                     <CustomButton style={{ width: '10%', height: 45, marginTop: 10 }} disabled={loading} loading={loading} onClick={() => { pesquisarValor(); }} typeButton={"secondary"}>Confirmar</CustomButton>
                     {relatorio?.forma != null && <div style={{ width: '100%' }}>
                         <hr />

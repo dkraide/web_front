@@ -1,5 +1,58 @@
+.container{
+    padding: 5px;
+}
 .boxSearch{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    margin-bottom: 10px;
+    width: 100%;
+    justify-content: space-between;
+    button{
+        height: 35px;
+    }
+}
+.box{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    width: 100%;
+}
+.box > div{
+    width: 30%;
+    min-width: 0px !important;
+}
+.box > div > div:first-child{
+    font-size: 16px;
+}
+
+
+.item{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    background-color: var(--white);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 5px;
+    justify-content: space-between;
+    .w10{
+        width: 10%;
+    }
+    .w40{
+        width: 40%;
+    }
+    .w15{
+        width: 15%;
+    }
+    .w30{
+        width: 30%;
+    }
+    .w20{
+        width: 20%;
+    }
+
+
 }

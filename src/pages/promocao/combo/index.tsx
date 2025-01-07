@@ -13,6 +13,7 @@ import IUsuario from '@/interfaces/IUsuario';
 import IPromocao from '@/interfaces/IPromocao';
 import ComboForm from '@/components/Modals/Promocao/ComboForm';
 import ICombo from '@/interfaces/ICombo';
+import { isMobile } from 'react-device-detect';
 
 
 export default function Combo() {
@@ -81,17 +82,35 @@ export default function Combo() {
             grow: 0
         }
     ]
+
+    const Item = (item: ICombo) => {
+        return(
+            <div key={item.id} className={styles.item} onClick={() => {setEdit(item.id)}} >
+                 <span className={styles.w60}>Codigo<br /><b>{item.codigo}</b></span>
+                 <span className={item.status ? styles.ativo : styles.inativo}>{item.status ? 'ATIVO' : 'INATIVO'}</span>
+                 <span className={styles.w100}>Descricao<br /><b>{item.descricao}</b></span>
+            </div>
+        )
+
+    }
+
+    if(loading){
+        return <></>
+    }
     return (
         <div className={styles.container}>
             <h4>Combos</h4>
-            <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
+            <InputGroup width={isMobile ? '100%' :'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
             <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Combo</CustomButton>
             <hr/>
-            <CustomTable
+             {isMobile ? <>
+             {getFiltered()?.map((item) => Item(item))}
+             </> : <>
+                <CustomTable
                 columns={columns}
                 data={getFiltered()}
                 loading={loading}
-            />
+            /></>}
 
             {(edit >= 0) && <ComboForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
                 if(v){

@@ -11,7 +11,8 @@ import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
-import { validateString } from "@/utils/functions";
+import { isMobile, validateString } from "@/utils/functions";
+
 
 
 interface props {
@@ -93,9 +94,9 @@ export default function ClasseForm({user, isOpen, classeId, setClose, color }: p
                 <Loading  />
             ) : (
                 <div className={styles.container}>
-                    <InputForm defaultValue={classe.id} width={'10%'} title={'Cod'} readOnly={true} errors={errors} inputName={"id"} register={register} />
-                    <InputForm defaultValue={classe.nomeClasse} width={'75%'} title={'Nome'} errors={errors} inputName={"nomeClasse"} register={register} />
-                    <SelectStatus width={'15%'} selected={classe.status} setSelected={(v) => {setClasse({...classe, status: v})}} />
+                    {!!classe.id &&  <InputForm defaultValue={classe.id} width={'10%'} title={'Cod'} readOnly={true} errors={errors} inputName={"id"} register={register} />}
+                    <SelectStatus  width={'15%'} selected={classe.status} setSelected={(v) => {setClasse({...classe, status: v})}} />
+                    <InputForm defaultValue={classe.nomeClasse} width={isMobile ? '100%' : '75%'} title={'Nome'} errors={errors} inputName={"nomeClasse"} register={register} />
                     <div className={styles.button}>
                         <CustomButton onClick={() => { setClose(); } } typeButton={"secondary"}>Cancelar</CustomButton>
                         <CustomButton typeButton={'dark'} loading={sending} onClick={() => {handleSubmit(onSubmit)()}}>Confirmar</CustomButton>

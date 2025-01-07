@@ -13,6 +13,7 @@ import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
 import IMotivoLancamento from "@/interfaces/IMotivoLancamento";
 import { validateString } from "@/utils/functions";
+import { isMobile } from "react-device-detect";
 
 
 interface props {
@@ -92,7 +93,7 @@ export default function MotivoForm({user, isOpen, id, setClose, color }: props) 
             ) : (
                 <div className={styles.container}>
                     <InputForm defaultValue={objeto.id} width={'10%'} title={'Cod'} readOnly={true} errors={errors} inputName={"id"} register={register} />
-                    <InputForm defaultValue={objeto.nome} width={'75%'} title={'Nome'} errors={errors} inputName={"nome"} register={register} />
+                    <InputForm defaultValue={objeto.nome} width={isMobile ? '100%' : '75%'} title={'Nome'} errors={errors} inputName={"nome"} register={register} />
                     <div className={styles.button}>
                         <CustomButton onClick={() => { setClose(); } } typeButton={"secondary"}>Cancelar</CustomButton>
                         <CustomButton typeButton={'dark'} loading={sending} onClick={() => {handleSubmit(onSubmit)()}}>Confirmar</CustomButton>

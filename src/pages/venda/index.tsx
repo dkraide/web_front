@@ -13,6 +13,7 @@ import { fGetNumber, printHTML , GetCurrencyBRL } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import CustomButton from "@/components/ui/Buttons"
+import { isMobile } from "react-device-detect"
 
 
 interface searchProps{
@@ -116,6 +117,25 @@ export default function Venda(){
         }
     ]
 
+    const Item = (item: IVenda) => {
+        return (
+            <div className={styles.item} onClick={() => {setShowVenda(item.id)}}>
+                <span className={styles.w20}>Venda<br /><b>{item.idVenda}</b></span>
+                <span className={styles.w30}>Data<br /><b>{format(new Date(item.idVenda), 'dd/MM/yy HH:mm')}</b></span>
+                <span className={styles.w30}>Status<br /><b>{item.statusVenda ? 'OK' : 'CANCELADA'}</b></span>
+                <span className={styles.w20}>Valor<br /><b>{GetCurrencyBRL(item.valorTotal)}</b></span>
+                <span className={styles.w20}>Caixa<br /><b>{item.idMovimentoCaixa}</b></span>
+                <span className={styles.w20}>Usuario<br /><b>{item.usuario?.nome}</b></span>
+                <span className={styles.w20}>Tipo<br /><b>{item.estd ? 'FATURADO' : 'ORCAMENTO'}</b></span>
+            </div>
+        )
+
+    }
+
+    if(loading){
+        return <></>
+    }
+
     return(
         <div className={styles.container}>
         <h4>Vendas</h4>
@@ -126,11 +146,15 @@ export default function Venda(){
             <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
         </div>
         <hr/>
-        <CustomTable
+        {isMobile ? <>
+           {vendas?.map((p) => Item(p))}
+        </> : <>
+            <CustomTable
             columns={columns}
             data={vendas}
             loading={loading}
         />
+        </>}
         {showVenda > 0 && <Visualizar id={showVenda} isOpen={showVenda > 0} user={user} setClose={() => {setShowVenda(0)}} />}
         {showMovimento > 0 && <VisualizarMovimento id={showMovimento} isOpen={showMovimento > 0} user={user} setClose={() => {setShowMovimento(0)}} />}
     </div>

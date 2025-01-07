@@ -135,7 +135,7 @@ export default function ComboForm({ user, isOpen, id, setClose, color }: props) 
         }} />
     }
     return (
-        <BaseModal height={'80%'} width={'50%'} color={color} title={'Cadastro de Combo'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'90vh'} width={'50%'} color={color} title={'Cadastro de Combo'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading />
             ) : (

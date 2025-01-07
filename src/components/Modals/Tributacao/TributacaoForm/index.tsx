@@ -16,6 +16,7 @@ import SelectStatus from "@/components/Selects/SelectStatus";
 import SelectICMS from "@/components/Selects/SelectICMS";
 import SelectPISCofins from "@/components/Selects/SelectPISCofins";
 import SelectOrigem from "@/components/Selects/SelectOrigem";
+import { isMobile } from "react-device-detect";
 
 
 interface props {
@@ -131,8 +132,8 @@ export default function TributacaoForm({user, isOpen, id, setClose, color }: pro
                 <Loading  />
             ) : (
                 <div className={styles.container}>
-                    <InputForm width={'15%'} onBlur={() => {getNCM()}} defaultValue={obj.ncm}  title={'NCM'} errors={errors} inputName={"ncm"} register={register} />
-                    <InputForm width={'70%'} defaultValue={obj.descricao} title={'Descrição'} errors={errors} inputName={"descricao"} register={register} />
+                    <InputForm width={isMobile ? '100%' : '15%'} onBlur={() => {getNCM()}} defaultValue={obj.ncm}  title={'NCM'} errors={errors} inputName={"ncm"} register={register} />
+                    <InputForm width={isMobile ? '100%' : '70%'} defaultValue={obj.descricao} title={'Descrição'} errors={errors} inputName={"descricao"} register={register} />
                     <SelectStatus width={'15%'} selected={obj.status} setSelected={(v) => {setObj({...obj, status: v})}} />
                     <InputForm width={'20%'} defaultValue={obj.cfop}  title={'CFOP'} errors={errors} inputName={"cfop"} register={register} />
                     <InputForm width={'20%'} defaultValue={obj.cest}  title={'CEST'} errors={errors} inputName={"cest"} register={register} />

@@ -9,7 +9,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { fGetNumber, nameof } from "@/utils/functions"
+import { fGetNumber, isMobile, LucroPorcentagem, nameof } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
@@ -61,14 +61,14 @@ export default function RelatorioUsuario() {
             setLoading(true);
         }
         var url = '';
-        if(!search){
+        if (!search) {
             var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
             var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
             url = `/Relatorio/Usuario?vendedor=${usuarioGorjeta}&empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}`
-        }else{
+        } else {
             url = `/Relatorio/Usuario?vendedor=${usuarioGorjeta}&empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}`;
         }
-        
+
         await api.get(url)
             .then(({ data }: AxiosResponse<relatorioProps[]>) => {
                 setResult(data);
@@ -81,10 +81,10 @@ export default function RelatorioUsuario() {
         if (!result) {
             return '0';
         }
-        if(prefix == 'R$'){
+        if (prefix == 'R$') {
             return GetCurrencyBRL(_.sumBy(result, field));
 
-        }else{
+        } else {
             return `${_.sumBy(result, field).toFixed(2)}`
         }
     }
@@ -123,15 +123,31 @@ export default function RelatorioUsuario() {
 
     ]
 
+    const Item = (item: relatorioProps) => {
+        return (
+            <div key={item.usuario} className={styles.item}>
+                <span className={styles.qtd}>Qtd<br /><b>{item.quantidade}</b></span>
+                <span className={styles.nome}>Classe<br /><b>{item.usuario}</b></span>
+                <span className={styles.venda}>Venda<br /><b>{GetCurrencyBRL(item.venda)}</b></span>
+                <span className={styles.venda}>Custo<br /><b>{GetCurrencyBRL(item.custo)}</b></span>
+                <span className={styles.venda}>Margem(R$)<br /><b>{GetCurrencyBRL(item.venda - item.custo)}</b></span>
+                <span className={styles.venda}>Margem(%)<br /><b>{LucroPorcentagem(item.venda, item.custo).toFixed(2)}</b></span>
+            </div>
+        )
+    }
+
 
     return (
         <div className={styles.container}>
             <h4>Relatorio por Usuario</h4>
-            <div className={styles.box}>
+            <div className={styles.boxSearch}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                <SelectTipoVendedor width={'35%'} selected={usuarioGorjeta} setSelected={setUsuarioGorjeta}/>
-                <CustomButton style={{marginLeft: 10, marginTop: 10, height: '50px'}} onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
+                <SelectTipoVendedor width={isMobile ? '100%' : '35%'} selected={usuarioGorjeta} setSelected={setUsuarioGorjeta} />
+                <CustomButton typeButton={'dark'}><CSVLink data={result} headers={getHeaders()} filename={"relatorioProduto.csv"}>
+                    Download Planilha
+                </CSVLink></CustomButton>
+                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
             <hr />
             {loading ? <Spinner /> : <div>
@@ -141,14 +157,16 @@ export default function RelatorioUsuario() {
                     <BoxInfo style={{ marginRight: 10 }} title={'Custo'} value={getValue('custo', 'R$')} />
                 </div>
 
-                <CustomButton style={{marginBottom: 10}} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={result} headers={getHeaders()} filename={"relatorioProduto.csv"}>
-                    Download Planilha
-                </CSVLink></CustomButton>
-                <CustomTable
-                    columns={columns}
-                    data={result}
-                    loading={loading}
-                />
+
+                {isMobile ? <>
+                    {result?.map((item) => Item(item))}
+                </> : <>
+                    <CustomTable
+                        columns={columns}
+                        data={result}
+                        loading={loading}
+                    />
+                </>}
             </div>}
         </div>
     )
