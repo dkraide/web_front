@@ -14,7 +14,8 @@ import BoxInfo from "@/components/ui/BoxInfo"
 import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
-import { GetCurrencyBRL, isMobile, LucroPorcentagem } from "@/utils/functions"
+import { GetCurrencyBRL, LucroPorcentagem } from "@/utils/functions"
+import { isMobile } from 'react-device-detect'
 
 
 interface searchProps {

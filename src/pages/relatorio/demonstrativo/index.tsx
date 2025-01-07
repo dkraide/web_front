@@ -16,8 +16,9 @@ import CustomTable from '@/components/ui/CustomTable'
 import { Spinner } from 'react-bootstrap'
 import BoxInfo from '@/components/ui/BoxInfo'
 import SelectSimNao from '@/components/Selects/SelectSimNao'
-import { ExportToExcel, isMobile } from '@/utils/functions'
+import { ExportToExcel } from '@/utils/functions'
 import { GetCurrencyBRL } from '@/utils/functions'
+import { isMobile } from 'react-device-detect'
 
 interface searchProps {
     dateIn: string

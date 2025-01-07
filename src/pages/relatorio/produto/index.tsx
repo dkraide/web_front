@@ -9,7 +9,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { ExportToExcel, fGetNumber, isMobile, LucroPorcentagem, nameof } from "@/utils/functions"
+import { ExportToExcel, fGetNumber,  LucroPorcentagem, nameof } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
@@ -19,6 +19,7 @@ import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
 import { GetCurrencyBRL } from "@/utils/functions"
+import { isMobile } from 'react-device-detect'
 
 interface searchProps {
     dateIn: string
