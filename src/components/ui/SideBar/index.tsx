@@ -168,6 +168,7 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/pdv/configuracao'}>Configuracao</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
+                                <MenuItem href={'/menudigital/pedidos'}>Pedidos</MenuItem>
                                     <MenuItem href={'/menudigital/produtos'}>Produtos</MenuItem>
                                     <MenuItem href={'/menudigital/categorias'}>Categorias</MenuItem>
                                     <MenuItem href={'/menudigital/promocoes'}>Promocoes</MenuItem>
