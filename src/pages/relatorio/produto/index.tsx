@@ -20,6 +20,7 @@ import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
 import { GetCurrencyBRL } from "@/utils/functions"
 import { isMobile } from 'react-device-detect'
+import IProduto from "@/interfaces/IProduto"
 
 interface searchProps {
     dateIn: string
@@ -30,7 +31,8 @@ interface relatorioProps {
     produto: string
     quantidade: number
     venda: number,
-    custo: number
+    custo: number,
+    obj: IProduto
 }
 
 export default function RelatorioProduto() {
@@ -85,11 +87,12 @@ export default function RelatorioProduto() {
             return GetCurrencyBRL(_.sumBy(result, field));
 
         } else {
-            return `${_.sumBy(result, field).toFixed(2)}`
+            return `${_.sumBy(result, field)?.toFixed(2)}`
         }
     }
     function getHeaders() {
         return [
+            { label: "Grupo", key: "classe" },
             { label: "Produto", key: "produto" },
             { label: "Quantidade", key: "quantidade" },
             { label: "Venda", key: "venda" },
@@ -100,7 +103,12 @@ export default function RelatorioProduto() {
     const getData = () => {
         return result.filter((result) => {
             return result?.produto?.toLowerCase().includes(search?.searchStr?.toLowerCase());
-        })
+        }).map((p) => {
+            return {
+                ...p,
+                classe: p?.obj?.classeMaterial?.nomeClasse || 'sem classe'
+            }
+        });
     }
 
     const columns = [
@@ -152,7 +160,7 @@ export default function RelatorioProduto() {
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
                 <CustomButton onClick={(v) => {
-                    ExportToExcel(getHeaders(), result, "relatorio_produto");
+                    ExportToExcel(getHeaders(), getData(), "relatorio_produto");
                 }} typeButton={'dark'}>Excel</CustomButton>
                 <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
