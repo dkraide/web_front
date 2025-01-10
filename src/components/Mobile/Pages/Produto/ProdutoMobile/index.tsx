@@ -36,7 +36,7 @@ type searchProps = {
 
 export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizza, handleNovoPrato }: props) {
     const [list, setList] = useState<groupped[]>([])
-    const [search, setSearch] = useState<searchProps>({ str: '' })
+    const [search, setSearch] = useState<searchProps>({ str: '', status: true })
     const [formSearch, setFormSearch] = useState(false)
     const [edit, setEdit] = useState(-1);
     useEffect(() => {
@@ -50,7 +50,14 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
             const classe = produtos[0].classeMaterial; // Assume que todos os produtos no grupo têm a mesma classe
 
             var p = _.filter(produtos, (item) => {
+                if(search?.status && !item.status){
+                    return false;
+                }
+                if(search?.status === false && item.status){
+                    return false;
+                }
                 var text = `${item.cod} ${item.nome}`;
+               
                 return text.toUpperCase().includes(search?.str?.toUpperCase())
             })
             return { classe, produtos: p };
@@ -94,8 +101,8 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
                     <PictureBox height={'90%'} size={'100%'} url={produto.localPath} />
                 </div>
                 <div className={styles.desc}>
-                    <span className={styles.cod}>{produto.cod}</span>
-                    <span className={styles.nome}>{produto.nome}</span>
+                  
+                    <span className={styles.nome}>{produto.cod} - {produto.nome}</span>
                     <span className={styles.estoque}>Estoque <br/><b>{produto.quantidade} {produto.unidadeCompra}</b></span>
                     <span className={produto.status ? styles.ativo : styles.inativo}>{produto.status ? 'ATIVO' : 'INATIVO'}</span>
                     <span className={styles.valores}>Venda <br/><b>{GetCurrencyBRL(produto.valor)}</b></span>

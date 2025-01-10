@@ -57,7 +57,7 @@
         }
     
         .nome {
-            width: 50%;
+            width: 100%;
             text-align: start;
             text-overflow: ellipsis;
             display: inline-block;
@@ -83,7 +83,8 @@
         }
 
         .estoque{
-            width: 20%;
+            text-align: start;
+            width: 80%;
             font-size: 12px;
         }
         .valores{
