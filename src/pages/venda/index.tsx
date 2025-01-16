@@ -121,7 +121,7 @@ export default function Venda(){
         return (
             <div className={styles.item} onClick={() => {setShowVenda(item.id)}}>
                 <span className={styles.w20}>Venda<br /><b>{item.idVenda}</b></span>
-                <span className={styles.w30}>Data<br /><b>{format(new Date(item.idVenda), 'dd/MM/yy HH:mm')}</b></span>
+                <span className={styles.w30}>Data<br /><b>{format(new Date(item.dataVenda), 'dd/MM/yy HH:mm')}</b></span>
                 <span className={styles.w30}>Status<br /><b>{item.statusVenda ? 'OK' : 'CANCELADA'}</b></span>
                 <span className={styles.w20}>Valor<br /><b>{GetCurrencyBRL(item.valorTotal)}</b></span>
                 <span className={styles.w20}>Caixa<br /><b>{item.idMovimentoCaixa}</b></span>
