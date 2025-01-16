@@ -169,7 +169,7 @@ export default function Configuracao() {
             <h3>Configuracao</h3>
             <div className={styles.container}>
                 <SelectSimNao title={'Entrega'} width={'15%'} selected={objeto.entrega} setSelected={(v) => { setObjeto({ ...objeto, entrega: v }) }} />
-                <SelectBase datas={tempoEspera()} title={'Valor Fixo'} width={'15%'} selected={objeto.tempoEspera} setSelected={(v) => { setObjeto({ ...objeto, tempoEspera: v }) }} />
+                <SelectBase datas={tempoEspera()} title={'Tempo de Espera'} width={'15%'} selected={objeto.tempoEspera} setSelected={(v) => { setObjeto({ ...objeto, tempoEspera: v }) }} />
                 <SelectSimNao title={'Valor Fixo'} width={'15%'} selected={objeto.isValorFixo} setSelected={(v) => { setObjeto({ ...objeto, isValorFixo: v }) }} />
                 <InputForm defaultValue={objeto.valorInicial} width={'15%'} title={'Valor Inicial'} errors={errors} inputName={"valorInicial"} register={register} />
                 <InputForm defaultValue={objeto.valorPorKm} width={'15%'} title={'Valor por KM '} errors={errors} inputName={"valorPorKm"} register={register} />

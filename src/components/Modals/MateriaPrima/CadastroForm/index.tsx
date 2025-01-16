@@ -6,14 +6,14 @@ import { InputForm } from "@/components/ui/InputGroup";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import styles from './styles.module.scss';
-import IClasseMaterial from "@/interfaces/IClasseMaterial";
 import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
 import IMateriaPrima from "@/interfaces/IMateriaPrima";
-import { fGetNumber, sendImage , validateNumber, validateString  } from "@/utils/functions";
+import { fGetNumber, sendImage, validateNumber, validateString } from "@/utils/functions";
 import PictureBox from "@/components/ui/PictureBox";
+import { isMobile } from "react-device-detect";
 
 
 interface props {
@@ -62,8 +62,8 @@ export default function MateriaPrimaForm({ user, isOpen, id, setClose, color }: 
         classe.nome = data.nome;
         classe.valorCusto = fGetNumber(data.valorCusto);
         classe.valorVenda = fGetNumber(data.valorVenda);
-        if(!validateString(classe.nome,3)){
-            const message="Informe um nome com no mínimo 3 caracteres!";
+        if (!validateString(classe.nome, 3)) {
+            const message = "Informe um nome com no mínimo 3 caracteres!";
             toast.error(message);
             setSending(false);
             return;
@@ -92,7 +92,7 @@ export default function MateriaPrimaForm({ user, isOpen, id, setClose, color }: 
         setSending(false);
     }
 
-    function setImage(){
+    function setImage() {
         var input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
@@ -104,29 +104,27 @@ export default function MateriaPrimaForm({ user, isOpen, id, setClose, color }: 
             const files = target.files as FileList;
             setLoading(true);
             var str = await sendImage(files);
-            if(str){
-                setClasse({...classe, localPath: str});
-            }else{
+            if (str) {
+                setClasse({ ...classe, localPath: str });
+            } else {
                 toast.error(`Erro ao enviar imagem`);
             }
             setLoading(false);
         }
     }
- 
+
     return (
-        <BaseModal height={'50vh'} width={'50%'} color={color} title={'Cadastro de ingrediente'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'60vh'} width={'50%'} color={color} title={'Cadastro de ingrediente'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading />
             ) : (
                 <div className={styles.container}>
-                    <div className={styles.picture}>
-                        <PictureBox onClick={setImage} size={'200px'} height={'200px'} width={'200px'} url={classe.localPath}/>
-                        
+                    <div className={styles.picture} style={{ width: isMobile ? '100%' : '35%' }}>
+                        <PictureBox onClick={setImage} size={'200px'} height={isMobile ? '150px' :'200px'} width={isMobile ? '150px' : '200px'} url={classe.localPath} />
                     </div>
                     <div className={styles.form}>
-                        <InputForm defaultValue={classe.id} width={'10%'} title={'Cod'} readOnly={true} errors={errors} inputName={"id"} register={register} />
-                        <InputForm defaultValue={classe.nome} width={'75%'} title={'Nome'} errors={errors} inputName={"nome"} register={register} />
-                        <SelectStatus width={'15%'} selected={classe.status} setSelected={(v) => { setClasse({ ...classe, status: v }) }} />
+                        <InputForm defaultValue={classe.nome} width={isMobile ? '100%' : '75%'} title={'Nome'} errors={errors} inputName={"nome"} register={register} />
+                        <SelectStatus width={isMobile ? '100%' : '15%'} selected={classe.status} setSelected={(v) => { setClasse({ ...classe, status: v }) }} />
                         <InputForm defaultValue={classe.valorCusto} width={'25%'} title={'Custo'} errors={errors} inputName={"valorCusto"} register={register} />
                         <InputForm defaultValue={classe.valorVenda} width={'25%'} title={'Venda'} errors={errors} inputName={"valorVenda"} register={register} />
                     </div>

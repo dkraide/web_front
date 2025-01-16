@@ -117,7 +117,7 @@ export default function TabelaForm({ user, isOpen, id, setClose, color }: props)
         setItem({ ...item, produtos: item.produtos });
     }
     return (
-        <BaseModal height={'80%'} width={'50%'} color={color} title={'Cadastro de Tabela Promocional'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'90vh'} width={'50%'} color={color} title={'Cadastro de Tabela Promocional'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading />
             ) : (

@@ -10,7 +10,6 @@ import BaseModal from "../../Base/Index";
 import _ from "lodash";
 import SelectClasseMaterial from "@/components/Selects/SelectClasseMaterial";
 import SelectCampoProduto from "@/components/Selects/SelectCampoProduto";
-import SelectSimNao from "@/components/Selects/SelectSimNao";
 import SelectStatus from "@/components/Selects/SelectStatus";
 
 

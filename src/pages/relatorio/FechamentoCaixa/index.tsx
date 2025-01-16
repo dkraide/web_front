@@ -1,4 +1,3 @@
-import IVenda from "@/interfaces/IVenda"
 import { useEffect, useState, useContext } from "react"
 import { startOfMonth, endOfMonth, format, addHours } from 'date-fns'
 import { api } from "@/services/apiClient"
@@ -10,15 +9,12 @@ import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
 import { ExportToExcel, fGetNumber, fgetDate, nameof } from "@/utils/functions"
-import Visualizar from "@/components/Modals/Venda/Visualizar"
-import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
 import CustomButton from "@/components/ui/Buttons"
-import BoxInfo from "@/components/ui/BoxInfo"
 import _ from "lodash"
 import { Spinner } from "react-bootstrap"
-import { CSVLink } from "react-csv";
 import { GetCurrencyBRL } from "@/utils/functions"
+import { isMobile } from "react-device-detect"
 
 interface searchProps {
     dateIn: string
@@ -109,7 +105,6 @@ export default function FechamentoCaixa() {
 
     function getFormas() {
         var arrayPagamentos = [];
-        console.log(result);
         result.map((caixa) => {
             caixa.vendas.map((formas) => {
                 var f = formas.venda.forma;
@@ -151,7 +146,6 @@ export default function FechamentoCaixa() {
     function buildData() {
         var pagamentos = getFormas();
         var res = [];
-        console.log(result);
         result.map((p) => {
             var obj = p.caixa as any;
             obj.valorSangria = _.sumBy(p.caixa.sangrias, pp => pp.isSangria ? pp.valorMovimento : 0);
@@ -216,26 +210,45 @@ export default function FechamentoCaixa() {
         },
     ]
 
+
+    if (loading) {
+        return <div className={styles.loading}>Carregando...</div>;
+    }
+    const Item = (item) => {
+        return (
+            <div key={item.id} className={styles.item}>
+                <span className={styles.w15}>Nro<br /><b>{item.idMovimentoCaixa}</b></span>
+                <span className={styles.w30}>Abertura<br /><b>{format(new Date(item.dataMovimento), 'dd/MM/yy HH:mm')}</b></span>
+                <span className={styles.w30}>Fechamento<br /><b>{format(new Date(item.dataFechamento), 'dd/MM/yy HH:mm')}</b></span>
+                <span className={styles.w20}>Diferenca<br /><b>{GetCurrencyBRL(item.diferenca)}</b></span>
+                <span className={styles.w15}>Sangria<br /><b>{GetCurrencyBRL(item.valorSangria)}</b></span>
+                <span className={styles.w30}>Abertura<br /><b>{GetCurrencyBRL(item.valorDinheiro)}</b></span>
+                <span className={styles.w30}>Fechamento<br /><b>{GetCurrencyBRL(item.valorDinheiroFinal)}</b></span>
+            </div>
+        )
+
+    }
+
     return (
         <div className={styles.container}>
             <h4>Relatorio de Fechamento</h4>
-            <div className={styles.box}>
+            <div className={styles.boxSearch}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
-            </div>
-            <hr />
-            {loading ? <Spinner /> : <div>
                 <CustomButton onClick={(v) => {
                     ExportToExcel(getHeaders(), buildData(), "fechamento");
-                }} style={{ marginRight: 10 }} typeButton={'dark'}>Excel</CustomButton>
-                <hr />
+                }} typeButton={'dark'}>Excel</CustomButton>
+                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
+            </div>
+            {isMobile ? <>
+                {buildData()?.map((item) => Item(item))}
+            </> : <>
                 <CustomTable
                     columns={buildColumns()}
                     data={buildData()}
                     loading={loading}
                 />
-            </div>}
+            </>}
         </div>
     )
 }

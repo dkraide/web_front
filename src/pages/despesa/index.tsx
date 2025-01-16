@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import IUsuario from '@/interfaces/IUsuario';
 import IDespesa from '@/interfaces/IDespesa';
-import { endOfMonth, format, startOfMonth } from 'date-fns';
+import { compareAsc, endOfMonth, format, startOfMonth } from 'date-fns';
 import DespesaForm from '@/components/Modals/Financeiro/DespesaForm';
 import { Badge } from 'react-bootstrap';
 import BoxInfo from '@/components/ui/BoxInfo';
@@ -21,6 +21,7 @@ import { CSVLink } from "react-csv";
 import Confirm from '@/components/Modals/Confirm';
 import DespesaFormaForm from '@/components/Modals/Financeiro/DespesaFormaForm';
 import { GetCurrencyBRL } from '@/utils/functions';
+import { isMobile } from 'react-device-detect';
 
 interface searchProps {
     dateIn: string
@@ -79,7 +80,7 @@ export default function Despesa() {
     function getDataCsv() {
         var res = getFiltered().map((p) => {
             return {
-                descricao:(p.motivoLancamento?.nome || p.descricao).toString(),
+                descricao: (p.motivoLancamento?.nome || p.descricao).toString(),
                 dataVencimento: format(new Date(p.dataVencimento), 'dd/MM/yyyy'),
                 valorTotal: p.valorTotal.toFixed(2),
                 statusLancamento: p.statusLancamento ? 'PAGO' : new Date(p.dataVencimento) < new Date() ? 'VENCIDO' : 'EM ABERTO'
@@ -96,16 +97,16 @@ export default function Despesa() {
         return res;
     }
 
-    async function remover(){
+    async function remover() {
         setLoading(true);
         await api.delete(`/Despesa/Delete?Id=${deletar}`)
-        .then((data) => {
-            loadData();
-        })
-        .catch((err) => {
-            toast.error(`Erro ao tentar remover despesa.`);
+            .then((data) => {
+                loadData();
+            })
+            .catch((err) => {
+                toast.error(`Erro ao tentar remover despesa.`);
 
-        });
+            });
         setLoading(false);
     }
 
@@ -115,8 +116,8 @@ export default function Despesa() {
             selector: row => row.id,
             cell: ({ id }: IDespesa) =>
                 <>
-                 <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>
-                 <CustomButton onClick={() => { setDeletar(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faTrash} /></CustomButton>
+                    <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>
+                    <CustomButton onClick={() => { setDeletar(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faTrash} /></CustomButton>
                 </>,
             sortable: true,
             width: '10%',
@@ -170,6 +171,32 @@ export default function Despesa() {
         }
     ]
 
+ 
+    const Item = (item: IDespesa) => {
+
+        function getStatus(vencimento, status){
+            if(status){
+                return 'pago'
+            }
+            var v = new Date(vencimento);
+            var res = compareAsc(v, new Date())
+            return res >= 0 ? 'aberto' : 'vencido'
+
+        }
+        return(
+            <div className={styles.item} onClick={() => { setEdit(item.id) }}>
+                <span className={styles.w20}>Vencimento <br/><b>{format(new Date(item.dataVencimento), 'dd/MM/yy')}</b></span>
+                <span className={styles.w20}>Valor <br/><b>{ GetCurrencyBRL(item.valorTotal)}</b></span>
+                <span className={styles[getStatus(item.dataVencimento, item.statusLancamento)]}><b>{getStatus(item.dataVencimento, item.statusLancamento).toUpperCase()}</b></span>
+                <span className={styles.w100}>Descricao <br/><b>{ item.descricao || item.motivoLancamento?.nome || ''}</b></span>
+            </div>
+        )
+    }
+
+    if (loading) {
+        return <></>
+    }
+
     return (
         <div className={styles.container}>
             <h4>Despesas</h4>
@@ -178,10 +205,17 @@ export default function Despesa() {
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
                 <SelectStatusLancamento width={'30%'} selected={search?.status || 0} setSelected={(v) => { setSearch({ ...search, status: v }) }} />
                 <CustomButton style={{ height: '40px', marginLeft: 10, marginTop: '14px' }} typeButton={'dark'} onClick={loadData}>Pesquisar</CustomButton>
-                <InputGroup width={'100%'} placeholder={'Filtro'} title={'Pesquisar'} value={search?.filter || ''} onChange={(e) => { setSearch({ ...search, filter: e.target.value }) }} />
             </div>
-            <CustomButton style={{ marginBottom: '10px' }} typeButton={'dark'} onClick={() => { setEdit(0) }} >Nova Despesa</CustomButton>
-            <div className={styles.boxSearch}>
+            <div className={isMobile ? styles.boxSearch : ''}>
+                <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Nova {isMobile && <br />}Despesa</CustomButton>
+                <CustomButton typeButton={'dark'}><CSVLink data={getDataCsv()} headers={getHeaders()} filename={"relatorio_despesa.csv"}>
+                    Download Planilha
+                </CSVLink></CustomButton>
+                <CustomButton typeButton={'dark'} onClick={() => { setDespesaForma(1) }}>
+                    Gerar Despesa por Forma
+                </CustomButton>
+            </div>
+            <div className={isMobile ? styles.box : styles.boxSearch} style={isMobile ? {} : {justifyContent: 'flex-start'}}>
                 <BoxInfo style={{ marginRight: '10px' }} title={'Geral'} value={GetCurrencyBRL(_.sumBy(list, p => p.valorTotal))} />
                 <BoxInfo style={{ marginRight: '10px' }} title={'Em Aberto'} value={GetCurrencyBRL(_.sumBy(list, p => {
                     if (new Date(p.dataVencimento) < new Date || p.statusLancamento) {
@@ -198,19 +232,17 @@ export default function Despesa() {
                 }))} />
 
             </div>
+            <InputGroup width={'100%'} placeholder={'Filtro'} title={'Pesquisar'} value={search?.filter || ''} onChange={(e) => { setSearch({ ...search, filter: e.target.value }) }} />
             <hr />
-            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorio_despesa.csv"}>
-                Download Planilha
-            </CSVLink></CustomButton>
-            <CustomButton style={{ marginBottom: 10, marginLeft: 5 }} typeButton={'dark'} onClick={() => {setDespesaForma(1)}}>
-                Gerar Despesa por Forma
-            </CustomButton>
-            <hr />
-            <CustomTable
-                columns={columns}
-                data={getFiltered()}
-                loading={loading}
-            />
+            {isMobile ? <>
+            {getFiltered()?.map((item) => Item(item))}
+            </> : <>
+                <CustomTable
+                    columns={columns}
+                    data={getFiltered()}
+                    loading={loading}
+                />
+            </>}
 
             {(edit >= 0) && <DespesaForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
                 if (v) {
@@ -218,13 +250,13 @@ export default function Despesa() {
                 }
                 setEdit(-1);
             }} />}
-             {(deletar >= 0) && <Confirm  message={`Tem certeza que deseja deletar essa despesa?`} isOpen={deletar > 0}  setClose={(v) => {
+            {(deletar >= 0) && <Confirm message={`Tem certeza que deseja deletar essa despesa?`} isOpen={deletar > 0} setClose={(v) => {
                 if (v) {
                     remover();
                 }
                 setDeletar(0);
             }} />}
-            {(despesaForma > 0) && <DespesaFormaForm user={user} isOpen={despesaForma > 0}  setClose={(v) => {
+            {(despesaForma > 0) && <DespesaFormaForm user={user} isOpen={despesaForma > 0} setClose={(v) => {
                 if (v) {
                     loadData();
                 }

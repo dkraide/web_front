@@ -14,6 +14,7 @@ import ClasseForm from '@/components/Modals/ClasseMaterial/CreateEditForm';
 import IUsuario from '@/interfaces/IUsuario';
 import IMotivoLancamento from '@/interfaces/IMotivoLancamento';
 import MotivoForm from '@/components/Modals/Financeiro/MotivoForm';
+import { isMobile } from 'react-device-detect';
 
 
 export default function MotivoLancamento() {
@@ -71,18 +72,34 @@ export default function MotivoLancamento() {
             sortable: true,
         }
     ]
+
+    const Item = (item: IMotivoLancamento) => {
+        return(
+            <div className={styles.item} onClick={() => {setEdit(item.id)}}>
+                <span className={styles.w100}>Descrição<br /><b>{item.nome}</b></span>
+            </div>
+        )
+    }
+
+    if(loading){
+        return <></>
+    }
     return (
         <div className={styles.container}>
             <h4>Motivos de Lançamentos</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
             <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Motivo</CustomButton>
             <hr/>
+            {isMobile ? <>
+              {getFiltered()?.map((item) => Item(item))}
+            </> : <>
             <CustomTable
                 columns={columns}
                 data={getFiltered()}
                 loading={loading}
             />
 
+            </>}
             {(edit >= 0) && <MotivoForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
                 if(v){
                     loadData();

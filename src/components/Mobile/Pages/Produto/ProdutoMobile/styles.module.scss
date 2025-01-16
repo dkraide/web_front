@@ -1,0 +1,108 @@
+.container {
+    height: 100%;
+    width: 100%;
+    padding: 5px;
+}
+
+.filtro, .card{
+    width: 100%;
+    padding: 5px;
+    border-radius: 5px;
+    background-color: white;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.card {
+    width: 100%;
+    border-radius: 5px;
+    background-color: white;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    padding: 10px 10px 5px 10px;
+    transition: all 0.125s;
+    &:active{
+        background-color: #909292;
+    }
+
+    .pic{
+        width: 20%;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .desc{
+        width: 80%;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        span {
+            padding: 5px;
+            border-radius: 2px;
+            text-align: center;
+            max-height: 32px;
+            margin-bottom: 5px;
+        }
+    
+        .cod {
+            width: 8%;
+        }
+    
+        .nome {
+            width: 100%;
+            text-align: start;
+            text-overflow: ellipsis;
+            display: inline-block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+           
+        }
+        .ativo,
+        .inativo {
+            width: 20%;
+    
+        }
+    
+        .ativo {
+            background-color: var(--green);
+            color: var(--white);
+        }
+    
+        .inativo {
+            background-color: var(--main);
+            color: var(--white);
+        }
+
+        .estoque{
+            text-align: start;
+            width: 80%;
+            font-size: 12px;
+        }
+        .valores{
+            width: 25%;
+            font-size: 12px;
+        }
+    }
+
+}
+
+.grupo {
+    margin-bottom: 15px;
+}
+
+.buttons{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+}

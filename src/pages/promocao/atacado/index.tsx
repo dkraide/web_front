@@ -14,6 +14,7 @@ import IProduto from '@/interfaces/IProduto';
 import IPromocao from '@/interfaces/IPromocao';
 import AtacadoForm from '@/components/Modals/Promocao/AtacadoForm';
 import { GetCurrencyBRL } from '@/utils/functions';
+import { isMobile } from 'react-device-detect';
 
 
 export default function Atacado() {
@@ -25,11 +26,11 @@ export default function Atacado() {
     const [user, setUser] = useState<IUsuario>()
 
     const loadData = async () => {
-       var u: any;
-       if(!user){
-        var res = await getUser();
-        setUser(res);
-        u = res;
+        var u: any;
+        if (!user) {
+            var res = await getUser();
+            setUser(res);
+            u = res;
         }
         await api
             .get(`/Promocao/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
@@ -54,7 +55,7 @@ export default function Atacado() {
     const columns = [
         {
             name: '#',
-            cell: ({ id }: IPromocao) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }: IPromocao) => <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>,
             sortable: true,
             grow: 0
         },
@@ -72,7 +73,7 @@ export default function Atacado() {
         },
         {
             name: 'Item',
-            selector: row => row['produto'] ? row.produto.nome : row.classeMaterial.nomeClasse,
+            selector: row => row['produto'] ? row.produto?.nome : row.classeMaterial?.nomeClasse,
             sortable: true,
         },
         {
@@ -94,20 +95,40 @@ export default function Atacado() {
             grow: 0
         }
     ]
+
+    const Item = (item: IPromocao) => {
+
+        return (
+            <div className={styles.item} onClick={() => { setEdit(item.id) }}>
+                <span className={styles.w80}>Item<br /><b>{item.produto?.nome || item.classeMaterial?.nomeClasse || '--'}</b></span>
+                <span className={item.status ? styles.ativo : styles.inativo}>{item.status ? 'ATIVO' : 'INATIVO'}</span>
+                <span className={styles.w20}>Tipo<br /><b>{item.produtoId > 0 ? 'PRODUTO' : 'GRUPO'}</b></span>
+                <span className={styles.w20}>Qtd<br /><b>{item.quantidade.toFixed(2)}</b></span>
+                <span className={styles.w20}>Valor Final<br /><b>{GetCurrencyBRL(item.valorFinal)}</b></span>
+            </div>
+        )
+
+    }
+
+    if (loading) {
+        return <></>
+    }
     return (
         <div className={styles.container}>
             <h4>Promoções</h4>
-            <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Nova Promocao</CustomButton>
-            <hr/>
-            <CustomTable
-                columns={columns}
-                data={getFiltered()}
-                loading={loading}
-            />
-
+            <InputGroup width={isMobile ? '100%' : '50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
+            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Nova Promocao</CustomButton>
+            {isMobile ? <>
+                {getFiltered()?.map((item) => Item(item))}
+            </> : <>
+                <CustomTable
+                    columns={columns}
+                    data={getFiltered()}
+                    loading={loading}
+                />
+            </>}
             {(edit >= 0) && <AtacadoForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if(v){
+                if (v) {
                     loadData();
                 }
                 setEdit(-1);

@@ -13,6 +13,8 @@ import IUsuario from '@/interfaces/IUsuario';
 import IProduto from '@/interfaces/IProduto';
 import ProdutoForm from '@/components/Modals/Produto';
 import AjusteEmMassa from '@/components/Modals/Produto/AjusteEmMassa';
+import { useWindowSize } from 'rooks';
+import ProdutoMobile from '@/components/Mobile/Pages/Produto/ProdutoMobile';
 
 
 export default function Produto() {
@@ -22,7 +24,19 @@ export default function Produto() {
     const [search, setSearch] = useState('')
     const [edit, setEdit] = useState(-1);
     const [ajuste, setAjuste] = useState(false);
-    const [user, setUser] = useState<IUsuario>()
+    const [user, setUser] = useState<IUsuario>();
+    const { innerWidth } = useWindowSize();
+    const [mobile, setMobile] = useState(false);
+
+    useEffect(() => {
+        if(!innerWidth){
+            return;
+        }
+        setMobile(innerWidth < 600);
+
+    }, [innerWidth])
+
+    
 
     const loadData = async () => {
        var u: any;
@@ -51,10 +65,24 @@ export default function Produto() {
         return res;
     }
 
+    const handleEdit = (produto : IProduto) => {
+        if(produto.tipo == "PIZZA"){
+            window.location.href = `/produto/novaPizza?id=${produto.id}`;
+            return;
+        }
+        if(produto.tipo == "PRATO"){
+            window.location.href = `/produto/novoPrato?id=${produto.id}`;
+            return;
+
+        }
+        setEdit(produto.id);
+
+    }
+
     const columns = [
         {
             name: '#',
-            cell: ({ id }: IProduto) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: (produto: IProduto) => <CustomButton onClick={() => {handleEdit(produto)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
             sortable: true,
             grow: 0
         },
@@ -104,13 +132,20 @@ export default function Produto() {
     const handleNovaPizza = () => {
         window.location.href = '/produto/novaPizza';
     }
+    const handleNovoPrato = () => {
+        window.location.href = '/produto/novoPrato';
+    }
+
+    if(mobile){
+        return <ProdutoMobile produtos={list} user={user} loadData={loadData} handleNovaPizza={handleNovaPizza} handleNovoPrato={handleNovoPrato}/>
+    }
     return (
         <div className={styles.container}>
             <h4>Produtos</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
             <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Produto</CustomButton>
             <CustomButton typeButton={'dark'} onClick={handleNovaPizza}  style={{marginLeft: '10px'}} >Nova Pizza</CustomButton>
-            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} style={{marginLeft: '10px'}}  >Novo Prato</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={handleNovoPrato} style={{marginLeft: '10px'}}  >Novo Prato</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => {window.location.href = '/produto/franquia'}} style={{marginLeft: '10px'}} >Franquia</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => {setAjuste(true)}}  style={{marginLeft: '10px'}}>Ajuste Massa</CustomButton>
             <hr/>

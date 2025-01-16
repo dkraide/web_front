@@ -1,6 +1,5 @@
-import IVenda from "@/interfaces/IVenda"
 import { useEffect, useState, useContext } from "react"
-import { startOfMonth, endOfMonth, format, addHours } from 'date-fns'
+import { startOfMonth, endOfMonth, format } from 'date-fns'
 import { api } from "@/services/apiClient"
 import { AxiosError, AxiosResponse } from "axios"
 import { toast } from "react-toastify"
@@ -9,15 +8,13 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { GetCurrencyBRL, fGetNumber, fgetDate, nameof } from "@/utils/functions"
-import Visualizar from "@/components/Modals/Venda/Visualizar"
-import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
-import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
+import { GetCurrencyBRL, LucroPorcentagem, fGetNumber, fgetDate, nameof } from "@/utils/functions"
 import CustomButton from "@/components/ui/Buttons"
 import BoxInfo from "@/components/ui/BoxInfo"
 import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
+import { isMobile } from "react-device-detect"
 
 interface searchProps {
     dateIn: string
@@ -49,7 +46,7 @@ export default function RelatorioDia() {
     }, [])
 
     const loadData = async () => {
-      
+
         var u: any;
         if (!user) {
             var res = await getUser();
@@ -60,11 +57,11 @@ export default function RelatorioDia() {
             setLoading(true);
         }
         var url = '';
-        if(!search){
+        if (!search) {
             var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
             var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
             url = `/Relatorio/Dia?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}`
-        }else{
+        } else {
             url = `/Relatorio/Dia?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}`;
         }
         await api.get(url)
@@ -80,13 +77,13 @@ export default function RelatorioDia() {
         if (!result) {
             return '0';
         }
-        if(prefix == 'R$'){
+        if (prefix == 'R$') {
             return GetCurrencyBRL(_.sumBy(result, field));
 
-        }else{
+        } else {
             return `${_.sumBy(result, field).toFixed(2)}`
         }
-      
+
     }
     function getHeaders() {
         [
@@ -97,11 +94,11 @@ export default function RelatorioDia() {
             { label: "Custo", key: "custo" }
         ]
     }
-  
+
 
     const columns = [
         {
-            name: 'Diaaaaa',
+            name: 'Dia',
             selector: row => row.dia,
             cell: row => format(fgetDate(row.dia), 'dd/MM/yyyy'),
             sortable: true,
@@ -144,6 +141,22 @@ export default function RelatorioDia() {
 
     ]
 
+    const Item = (item: relatorioProps) => {
+        return(
+            <div key={item.dia} className={styles.item}>
+                 <span className={styles.qtd}>Qtd<br/><b>{item.quantidade}</b></span>
+                 <span className={styles.nome}>Dia<br/><b>{format(fgetDate(item.dia), 'dd/MM/yy')}</b></span>
+                 <span className={styles.venda}>Venda<br/><b>{GetCurrencyBRL(item.venda)}</b></span>
+                 <span className={styles.custo}>Custo<br/><b>{GetCurrencyBRL(item.custo)}</b></span>
+                 <span className={styles.media}>Media<br/><b>{GetCurrencyBRL(item.venda / item.quantidade)}</b></span>
+                 <span className={styles.venda}>Margem (R$)<br/><b>{GetCurrencyBRL(item.venda - item.custo)}</b></span>
+                 <span className={styles.venda}>Margem (%)<br/><b>{LucroPorcentagem(item.venda, item.custo).toFixed(2)}</b></span>
+
+
+            </div>
+        )
+    }
+
 
     return (
         <div className={styles.container}>
@@ -151,25 +164,27 @@ export default function RelatorioDia() {
             <div className={styles.box}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
-            </div>
-            <hr />
-            {loading ? <Spinner /> : <div>
-                <div className={styles.box}>
-                    <BoxInfo style={{ marginRight: 10 }} title={'Quantidade'} value={getValue('quantidade', '')} />
-                    <BoxInfo style={{ marginRight: 10 }} title={'Venda'} value={getValue('venda', 'R$')} />
-                    <BoxInfo style={{ marginRight: 10 }} title={'Faturado'} value={getValue('faturado', 'R$')} />
-                    <BoxInfo style={{ marginRight: 10 }} title={'Custo'} value={getValue('custo', 'R$')} />
-                </div>
-
-                <CustomButton style={{marginBottom: 10}} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={result} headers={getHeaders()} filename={"relatorioDia.csv"}>
+                <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink  data={result} headers={getHeaders()} filename={"relatorioDia.csv"}>
                     Download Planilha
                 </CSVLink></CustomButton>
-                <CustomTable
+                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
+            </div>
+            {loading ? <Spinner /> : <div>
+                <div className={styles.box}>
+                    <BoxInfo style={{ marginRight: 10, width: isMobile ? '45%' : 'auto' }} title={'Quantidade'} value={getValue('quantidade', '')} />
+                    <BoxInfo style={{ marginRight: 10, width: isMobile ? '45%' : 'auto'  }} title={'Venda'} value={getValue('venda', 'R$')} />
+                    <BoxInfo style={{ marginRight: 10, width: isMobile ? '45%' : 'auto'  }} title={'Faturado'} value={getValue('faturado', 'R$')} />
+                    <BoxInfo style={{ marginRight: 10, width: isMobile ? '45%' : 'auto'  }} title={'Custo'} value={getValue('custo', 'R$')} />
+                </div>
+                 {isMobile  ?<>
+                          {result?.map((item) => Item(item))}
+                 </> : <>
+                 <CustomTable
                     columns={columns}
                     data={result}
                     loading={loading}
                 />
+                 </>}
             </div>}
         </div>
     )

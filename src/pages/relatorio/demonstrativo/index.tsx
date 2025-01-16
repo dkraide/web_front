@@ -18,6 +18,7 @@ import BoxInfo from '@/components/ui/BoxInfo'
 import SelectSimNao from '@/components/Selects/SelectSimNao'
 import { ExportToExcel } from '@/utils/functions'
 import { GetCurrencyBRL } from '@/utils/functions'
+import { isMobile } from 'react-device-detect'
 
 interface searchProps {
     dateIn: string
@@ -254,10 +255,10 @@ export default function Demonstrativo() {
     return (
         <div className={styles.container}>
             <h4>Demonstrativo de Resultado</h4>
-            <div className={styles.box}>
-                <SelectSimNao title={'Despesa em Aberta'} width={'20%'} selected={search?.incluiEmHaver} setSelected={(v) => { setSearch({ ...search, incluiEmHaver: v }) }} />
+            <div className={styles.boxSearch}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
+                <SelectSimNao title={'Despesa em Aberta'} width={'20%'} selected={search?.incluiEmHaver} setSelected={(v) => { setSearch({ ...search, incluiEmHaver: v }) }} />
                 <SelectSimNao title={'Calcula Custo Produto'} width={'20%'} selected={search?.calculaCusto} setSelected={(v) => { setSearch({ ...search, calculaCusto: v }) }}/>
                 <div style={{ width: '100%' }}>
                     <CustomButton onClick={() => { loadData() }} typeButton={'dark'}>Pesquisar</CustomButton>
@@ -273,7 +274,7 @@ export default function Demonstrativo() {
                     <BoxInfo style={{ marginRight: 10 }} title={'Saidas'} value={`${GetCurrencyBRL(getSaidas())}`} />
                     <BoxInfo style={{ marginRight: 10 }} title={'Resultado'} value={`${GetCurrencyBRL(getTotal())}`} />
                 </div>
-                <div style={{ width: '85%' }}>
+                <div style={{ width: isMobile ? '100%' : '85%' }}>
                     <table className={"table"}>
                         <thead>
                             <tr>

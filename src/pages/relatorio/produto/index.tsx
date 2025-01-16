@@ -9,7 +9,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { ExportToExcel, fGetNumber, nameof } from "@/utils/functions"
+import { ExportToExcel, fGetNumber,  LucroPorcentagem, nameof } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
@@ -17,8 +17,10 @@ import CustomButton from "@/components/ui/Buttons"
 import BoxInfo from "@/components/ui/BoxInfo"
 import _ from "lodash"
 import { Spinner } from "react-bootstrap"
-import { CSVLink } from "react-csv";  
+import { CSVLink } from "react-csv";
 import { GetCurrencyBRL } from "@/utils/functions"
+import { isMobile } from 'react-device-detect'
+import IProduto from "@/interfaces/IProduto"
 
 interface searchProps {
     dateIn: string
@@ -29,7 +31,8 @@ interface relatorioProps {
     produto: string
     quantidade: number
     venda: number,
-    custo: number
+    custo: number,
+    obj: IProduto
 }
 
 export default function RelatorioProduto() {
@@ -80,15 +83,16 @@ export default function RelatorioProduto() {
         if (!result) {
             return '0';
         }
-        if(prefix == 'R$'){
+        if (prefix == 'R$') {
             return GetCurrencyBRL(_.sumBy(result, field));
 
-        }else{
-            return `${_.sumBy(result, field).toFixed(2)}`
+        } else {
+            return `${_.sumBy(result, field)?.toFixed(2)}`
         }
     }
     function getHeaders() {
         return [
+            { label: "Grupo", key: "classe" },
             { label: "Produto", key: "produto" },
             { label: "Quantidade", key: "quantidade" },
             { label: "Venda", key: "venda" },
@@ -99,7 +103,12 @@ export default function RelatorioProduto() {
     const getData = () => {
         return result.filter((result) => {
             return result?.produto?.toLowerCase().includes(search?.searchStr?.toLowerCase());
-        })
+        }).map((p) => {
+            return {
+                ...p,
+                classe: p?.obj?.classeMaterial?.nomeClasse || 'sem classe'
+            }
+        });
     }
 
     const columns = [
@@ -128,13 +137,31 @@ export default function RelatorioProduto() {
 
     ]
 
+    const Item = (item: relatorioProps) => {
+        return(
+            <div className={styles.item}>
+                    <span className={styles.qtd}>Qtd<br/><b>{item.quantidade}</b></span>
+                    <span className={styles.nome}>Produto<br/><b>{item.produto}</b></span>
+                    <span className={styles.venda}>Venda<br/><b>{GetCurrencyBRL(item.venda)}</b></span>
+                    <span className={styles.venda}>Custo<br/><b>{GetCurrencyBRL(item.custo)}</b></span>
+                    <span className={styles.venda}>Margem(R$)<br/><b>{GetCurrencyBRL(item.venda - item.custo)}</b></span>
+                    <span className={styles.venda}>Margem(%)<br/><b>{LucroPorcentagem(item.venda, item.custo).toFixed(2)}</b></span>
+
+
+            </div>
+        )
+    }
+
 
     return (
         <div className={styles.container}>
             <h4>Relatorio por Produto</h4>
-            <div className={styles.box}>
+            <div className={styles.boxSearch}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
+                <CustomButton onClick={(v) => {
+                    ExportToExcel(getHeaders(), getData(), "relatorio_produto");
+                }} typeButton={'dark'}>Excel</CustomButton>
                 <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
             <hr />
@@ -144,16 +171,16 @@ export default function RelatorioProduto() {
                     <BoxInfo style={{ marginRight: 10 }} title={'Venda'} value={getValue('venda', 'R$')} />
                     <BoxInfo style={{ marginRight: 10 }} title={'Custo'} value={getValue('custo', 'R$')} />
                 </div>
-                <CustomButton onClick={(v) => {
-                    ExportToExcel(getHeaders(), result, "relatorio_produto");
-                }} style={{ marginRight: 10 }} typeButton={'dark'}>Excel</CustomButton>
-                <hr/>
                 <InputGroup title={'Pesquisar'} value={search.searchStr} onChange={(e) => { setSearch({ ...search, searchStr: e.currentTarget.value }) }} />
-                <CustomTable
-                    columns={columns}
-                    data={getData()}
-                    loading={loading}
-                />
+                {isMobile ? <>
+                     {getData()?.map((item) => Item(item))}
+                </> : <>
+                    <CustomTable
+                        columns={columns}
+                        data={getData()}
+                        loading={loading}
+                    />
+                </>}
             </div>}
         </div>
     )

@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import IComboItem from "@/interfaces/IComboItem";
 import { fGetNumber } from "@/utils/functions";
 import { toast } from "react-toastify";
+import { isMobile } from "react-device-detect";
 
 
 interface props {
@@ -47,7 +48,7 @@ export default function AddItem({ isOpen, setClose }: props) {
     return (
         <BaseModal isOpen={isOpen} setClose={setClose} title={'Adicionar item ao Combo'} height={'100%'} width={'50%'}>
            <div className={styles.container}>
-           <SelectClasseProduto title={'Tipo'} width={'60%'} selected={isProduto} setSelected={(v) => setIsProduto(v)} />
+           <SelectClasseProduto title={'Tipo'} width={isMobile ? '100%' : '60%'} selected={isProduto} setSelected={(v) => setIsProduto(v)} />
             {isProduto ?
                 <SelectProduto selected={item.produtoId || 0} setSelected={(v) => {
                     setItem({ ...item, classeMaterial: null, produto: v, produtoId: v.id, idProduto: v.idProduto, classeMaterialId: 0, idClasseMaterial: 0 });

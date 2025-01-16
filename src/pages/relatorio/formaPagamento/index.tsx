@@ -14,7 +14,8 @@ import BoxInfo from "@/components/ui/BoxInfo"
 import _ from "lodash"
 import { Spinner } from "react-bootstrap"
 import { CSVLink } from "react-csv";
-import { GetCurrencyBRL } from "@/utils/functions"
+import { GetCurrencyBRL, LucroPorcentagem } from "@/utils/functions"
+import { isMobile } from 'react-device-detect'
 
 
 interface searchProps {
@@ -46,7 +47,7 @@ export default function RelatorioForma() {
     }, [])
 
     const loadData = async () => {
-        
+
         var u: any;
         if (!user) {
             var res = await getUser();
@@ -57,11 +58,11 @@ export default function RelatorioForma() {
             setLoading(true);
         }
         var url = '';
-        if(!search){
+        if (!search) {
             var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
             var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
-            url =`/Relatorio/FormaPagamento?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}`
-        }else{
+            url = `/Relatorio/FormaPagamento?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}`
+        } else {
             url = `/Relatorio/FormaPagamento?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}`;
         }
         await api.get(url)
@@ -76,10 +77,10 @@ export default function RelatorioForma() {
         if (!result) {
             return '0';
         }
-        if(prefix == 'R$'){
+        if (prefix == 'R$') {
             return GetCurrencyBRL(_.sumBy(result, field));
 
-        }else{
+        } else {
             return `${_.sumBy(result, field).toFixed(2)}`
         }
     }
@@ -119,13 +120,30 @@ export default function RelatorioForma() {
 
     ]
 
+    const Item = (item:relatorioProps) => {
+        return(
+            <div key={item.forma} className={styles.item}>
+                <span className={styles.qtd}>Qtd<br/><b>{item.quantidade}</b></span>
+                <span className={styles.nome}>Qtd<br/><b>{item.forma}</b></span>
+                <span className={styles.venda}>Venda<br/><b>{GetCurrencyBRL(item.venda)}</b></span>
+                <span className={styles.margem}>Margem (R$)<br/><b>{GetCurrencyBRL(item.venda - item.custo)}</b></span>
+                <span className={styles.margem}>Margem (%)<br/><b>{LucroPorcentagem(item.venda, item.custo).toFixed(2)}</b></span>
+                <span className={styles.venda}>Custo<br/><b>{GetCurrencyBRL(item.custo)}</b></span>
+
+            </div>
+        )
+    }
+
 
     return (
         <div className={styles.container}>
             <h4>Relatorio por Forma de Pagamento</h4>
-            <div className={styles.box}>
+            <div className={styles.boxSearch}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
+                <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={result} headers={getHeaders()} filename={"relatorioForma.csv"}>
+                    Download Planilha
+                </CSVLink></CustomButton>
                 <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
             <hr />
@@ -136,14 +154,17 @@ export default function RelatorioForma() {
                     <BoxInfo style={{ marginRight: 10 }} title={'Custo'} value={getValue('custo', 'R$')} />
                 </div>
 
-                <CustomButton style={{marginBottom: 10}} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={result} headers={getHeaders()} filename={"relatorioForma.csv"}>
-                    Download Planilha
-                </CSVLink></CustomButton>
-                <CustomTable
-                    columns={columns}
-                    data={result}
-                    loading={loading}
-                />
+
+                {isMobile ? <>
+                {result?.map((result) => Item(result))}
+
+                </> : <>
+                    <CustomTable
+                        columns={columns}
+                        data={result}
+                        loading={loading}
+                    />
+                </>}
             </div>}
         </div>
     )

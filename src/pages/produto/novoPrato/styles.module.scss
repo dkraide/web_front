@@ -1,0 +1,51 @@
+.container{
+    height: 100%;
+    width: 100%;
+    padding: 10px;
+    background-color: var(--white);
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    align-items: center;
+}
+.tabs{
+    height: 90%;
+}
+.buttons{
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+    button{
+        height: 35px;
+    }
+}
+.contentTab{
+    padding: 10px;
+}
+
+.grupo{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 10px;
+    border-radius: 5px;
+    border: solid 1pt #525252;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin-bottom: 5px;
+    align-items: center;
+
+    &:hover{
+        background-color: #d9d9d9;
+
+    }
+}
+

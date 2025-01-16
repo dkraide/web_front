@@ -12,6 +12,7 @@ import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import IUsuario from '@/interfaces/IUsuario';
 import ITributacao from '@/interfaces/ITributacao';
 import TributacaoForm from '@/components/Modals/Tributacao/TributacaoForm';
+import { isMobile } from 'react-device-detect';
 
 
 export default function Tributacao() {
@@ -23,11 +24,11 @@ export default function Tributacao() {
     const [user, setUser] = useState<IUsuario>()
 
     const loadData = async () => {
-       var u: any;
-       if(!user){
-        var res = await getUser();
-        setUser(res);
-        u = res;
+        var u: any;
+        if (!user) {
+            var res = await getUser();
+            setUser(res);
+            u = res;
         }
         await api
             .get(`/Tributacao/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
@@ -53,7 +54,7 @@ export default function Tributacao() {
     const columns = [
         {
             name: '#',
-            cell: ({ id }: ITributacao) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }: ITributacao) => <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>,
             sortable: true,
             grow: 0
         },
@@ -105,20 +106,39 @@ export default function Tributacao() {
             grow: 0
         }
     ]
+
+    if (loading) {
+        return <></>
+    }
+    const Item = (item: ITributacao) => {
+        return (
+            <div className={styles.item} onClick={() => { setEdit(item.id) }} >
+                <span className={styles.w20}>NCM<br /><b>{item.ncm}</b></span>
+                <span className={styles.w80}>Descricao<br /><b>{item.descricao}</b></span>
+                <span className={styles.w20}>CFOP<br /><b>{item.cfop}</b></span>
+                <span className={styles.w20}>ICMS<br /><b>{item.cstIcms}</b></span>
+                <span className={styles.w20}>PIS<br /><b>{item.cstPis}</b></span>
+                <span className={styles.w20}>COFINS<br /><b>{item.cstCofins}</b></span>
+            </div>
+        )
+    }
     return (
         <div className={styles.container}>
             <h4>Tributações</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Nova Tributação</CustomButton>
-            <hr/>
-            <CustomTable
-                columns={columns}
-                data={getFiltered()}
-                loading={loading}
-            />
+            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Nova Tributação</CustomButton>
+            {isMobile ? <>
+                {getFiltered()?.map((item) => Item(item))}
+            </> : <>
+                <CustomTable
+                    columns={columns}
+                    data={getFiltered()}
+                    loading={loading}
+                />
+            </>}
 
             {(edit >= 0) && <TributacaoForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if(v){
+                if (v) {
                     loadData();
                 }
                 setEdit(-1);

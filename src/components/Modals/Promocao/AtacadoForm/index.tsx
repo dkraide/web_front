@@ -17,6 +17,7 @@ import SelectClasseMaterial from "@/components/Selects/SelectClasseMaterial";
 import { fGetNumber , validateNumber} from "@/utils/functions";
 import { format } from "date-fns";
 import SelectDiaSemana from "@/components/Selects/SelectDiaSemana";
+import { isMobile } from "react-device-detect";
 
 
 
@@ -111,8 +112,8 @@ export default function AtacadoForm({user, isOpen, id, setClose, color }: props)
                 <Loading  />
             ) : (
                 <div className={styles.container}>
-                    <SelectClasseProduto title={'Tipo'} width={'60%'} selected={isProduto} setSelected={(v) => setIsProduto(v)}/>
-                    <SelectStatus width={'30%'} selected={item.status} setSelected={(v) => {setItem({...item, status: v})}} />
+                    <SelectClasseProduto title={'Tipo'} width={isMobile ? '100%' : '60%'} selected={isProduto} setSelected={(v) => setIsProduto(v)}/>
+                    <SelectStatus width={isMobile ? '100%' : '30%'} selected={item.status} setSelected={(v) => {setItem({...item, status: v})}} />
                     {isProduto ? 
                     <SelectProduto empresaId={user.empresaSelecionada}  selected={item.produtoId || 0} setSelected={(v) => {
                         setItem({...item, produtoId: v.id, idProduto: v.idProduto, classeMaterialId: 0, idClasseMaterial: 0})

@@ -12,6 +12,7 @@ import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
 import CustomButton from "@/components/ui/Buttons"
 import { GetCurrencyBRL } from "@/utils/functions"
+import { isMobile } from "react-device-detect"
 
 interface searchProps{
     dateIn: string
@@ -23,7 +24,6 @@ export default function MovimentoCaixa(){
     const [vendas, setVendas] = useState<IMovimentoCaixa[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState<searchProps>()
-    const [showVenda, setShowVenda] = useState(0)
     const [showMovimento, setShowMovimento] = useState(0)
     const [user, setUser] = useState<IUsuario>()
     const { getUser } = useContext(AuthContext)
@@ -111,6 +111,25 @@ export default function MovimentoCaixa(){
       
     ]
 
+    const Item = (item: IMovimentoCaixa) => {
+        return (
+            <div className={styles.item} onClick={() => {setShowMovimento(item.id)}}>
+                <span className={styles.w40}>Nro<br /><b>{item.idMovimentoCaixa}</b></span>
+                <span className={styles.w30}>Abertura<br /><b>{format(new Date(item.dataMovimento), 'dd/MM/yy HH:mm')}</b></span>
+                <span className={styles.w30}>Fechamento<br /><b>{format(new Date(item.dataFechamento), 'dd/MM/yy HH:mm')}</b></span>
+                <span className={styles.w40}>Usuario<br /><b>{item.usuario?.nome}</b></span>
+                <span className={styles.w30}>Abertura<br /><b>{GetCurrencyBRL(item.valorDinheiro)}</b></span>
+                <span className={styles.w30}>Fechamento<br /><b>{GetCurrencyBRL(item.valorDinheiroFinal)}</b></span>
+            </div>
+        )
+
+    }
+
+    if(loading){
+        return <></>
+    }
+
+
     return(
         <div className={styles.container}>
         <h4>Caixas</h4>
@@ -120,11 +139,15 @@ export default function MovimentoCaixa(){
             <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
         </div>
         <hr/>
+        {isMobile ? <>
+            {vendas?.map((item) => Item(item))}
+        </> : <>
         <CustomTable
             columns={columns}
             data={vendas}
             loading={loading}
         />
+        </>}
         {showMovimento > 0 && <VisualizarMovimento id={showMovimento} isOpen={showMovimento > 0} user={user} setClose={() => {setShowMovimento(0)}} />}
     </div>
     )
