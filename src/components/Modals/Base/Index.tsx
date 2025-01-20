@@ -20,12 +20,10 @@ export default function BaseModal({headerOff, background, color, height, width, 
         size="xl"
         show={isOpen}
         onHide={() => setClose()}
-        dialogClassName="modal-90w"
+        dialogClassName="modal-100w"
         aria-labelledby="example-custom-modal-styling-title"
         scrollable={true}
         centered
-        
-       
         
       >
         <Modal.Header closeButton hidden={headerOff} style={{
@@ -37,7 +35,7 @@ export default function BaseModal({headerOff, background, color, height, width, 
         </Modal.Header>
         <Modal.Body style={{
           backgroundColor: 'var(--gray-100)',
-          height: height || '100vh'
+          height: height || '100vh',
         }}> 
         {children}
         </Modal.Body>
