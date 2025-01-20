@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { api } from "@/services/apiClient";
-import {  AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import Loading from "@/components/Loading";
-import {  InputGroup } from "@/components/ui/InputGroup";
+import { InputGroup } from "@/components/ui/InputGroup";
 import { toast } from "react-toastify";
 import styles from './styles.module.scss';
 import IUsuario from "@/interfaces/IUsuario";
@@ -13,6 +13,7 @@ import ILancamentoEstoqueProduto from "@/interfaces/ILancamentoEstoqueProduto";
 import { endOfMonth, format, startOfMonth } from "date-fns";
 import CustomTable from "@/components/ui/CustomTable";
 import AjusteEstoqueForm from "../AjusteEstoqueForm";
+import { ExportToExcel } from "@/utils/functions";
 
 
 interface props {
@@ -48,6 +49,7 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
     const loadData = async () => {
         api.get(`/Estoque/Select?ProdutoId=${id}&dataIn=${search?.dateIn || format(startOfMonth(new Date()), 'yyyy-MM-dd')}&dataFim=${search?.dateFim || format(endOfMonth(new Date()), 'yyyy-MM-dd')}`)
             .then(({ data }: AxiosResponse<resultProps>) => {
+                console.log(data);
                 setResult(data);
             })
             .catch((err) => {
@@ -56,23 +58,91 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
         setLoading(false);
     }
 
-    if(ajuste){
+    if (ajuste) {
         return <AjusteEstoqueForm isOpen={ajuste} produto={result.produto} user={user} setClose={(v) => {
-            if(v){
+            if (v) {
                 loadData();
             }
             setAjuste(false);
-        } }/>
+        }} />
     }
 
+    const columns = [
+        {
+            name: 'Tipo',
+            selector: (row: ILancamentoEstoqueProduto) => row.isEntrada,
+            cell: (row: ILancamentoEstoqueProduto) => <>{row.isEntrada ? 'ENTRADA' : 'SAIDA'}</>,
+            sortable: true,
+            width: '10%'
+        },
+        {
+            name: 'Nro',
+            selector: (row: ILancamentoEstoqueProduto) => row.idLancamentoEstoqueProduto,
+            cell: (row: ILancamentoEstoqueProduto) => row.idLancamentoEstoqueProduto,
+            sortable: true,
+            width: '10%'
+        },
+        {
+            name: 'Observacao',
+            selector: (row: ILancamentoEstoqueProduto) => row.observacao,
+            cell: (row: ILancamentoEstoqueProduto) => row.observacao,
+            sortable: true,
+            width: '45%'
+        },
+        {
+            name: 'Data',
+            selector: (row: ILancamentoEstoqueProduto) => row.dataLancamento.toString(),
+            cell: (row: ILancamentoEstoqueProduto) => format(new Date(row.dataLancamento ?? new Date()), 'dd/MM/yyyy HH:mm'),
+            sortable: true,
+            width: '15%'
+        },
+        {
+            name: 'Qntd',
+            selector: (row: ILancamentoEstoqueProduto) => row.quantidade,
+            cell: (row: ILancamentoEstoqueProduto) => row.quantidade.toFixed(2),
+            sortable: true,
+            width: '10%'
+        },
+        {
+            name: 'Custo',
+            selector: (row: ILancamentoEstoqueProduto) => row.custoUnitario,
+            cell: (row: ILancamentoEstoqueProduto) => `R$ ${(row.custoUnitario * row.quantidade).toFixed(2)}`,
+            sortable: true,
+            width: '10%'
+        },
+    ]
+
+    const dataExcel = () => {
+        return result.lancamentos.map((lancamento) => {
+            return{
+                tipo: lancamento.isEntrada ? 'ENTRADA' :"SAIDA",
+                nro: lancamento.id,
+                obs: lancamento.observacao,
+                data: format(new Date(lancamento.dataLancamento), 'dd-MM-yy HH:mm'),
+                qtd: lancamento.quantidade,
+                custo: lancamento.custoUnitario * lancamento.quantidade
+            }
+        });
+
+    }
+
+    const headers = [
+        {label: 'Tipo', key:'tipo'},
+        {label: 'Nro', key:'nro'},
+        {label: 'Obs', key:'obs'},
+        {label: 'Data', key:'data'},
+        {label: 'Qtd', key:'qtd'},
+        {label: 'Custo', key:'custo'}
+    ]
+
     return (
-        <BaseModal height={'90%'} width={'95%'} color={color} title={'Relatorio de Estoque'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'90vh'} width={'95vw'} color={color} title={'Relatorio de Estoque'} isOpen={isOpen} setClose={setClose}>
             {(loading || !result) ? (
                 <Loading />
             ) : (
                 <div className={styles.container}>
                     <div className={styles.info}>
-                        <InputGroup width={'20%'} title={'Cod'} value={result.produto.cod} />
+                        <InputGroup width={'10%'} title={'Cod'} value={result.produto.cod} />
                         <InputGroup width={'80%'} title={'Cod'} value={result.produto.nome} />
                     </div>
                     <div className={styles.info}>
@@ -81,141 +151,15 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
                         <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />
                         <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
                     </div>
+                    <hr/>
+                    <CustomButton onClick={() => { ExportToExcel(headers, dataExcel(), 'relatorio_estoque') }} typeButton={'dark'}>Excel</CustomButton>
                     <div className={styles.info}>
-                        <div style={{ width: '49%' }}>
-                            <h3>Entradas</h3>
-                            <Entradas  lancamentos={result.lancamentos} />
-                        </div>
-                        <div style={{ width: '50%' }}>
-                            <h3>Saidas</h3>
-                            <Saidas lancamentos={result.lancamentos} />
-                        </div>
+                        <CustomTable
+                            data={(result?.lancamentos) ?? []}
+                            columns={columns} />
                     </div>
                 </div>
             )}
         </BaseModal>
     )
-}
-
-
-const Saidas = ({  lancamentos }: resultProps) => {
-
-    function getSaidas() {
-        var list = [];
-       
-        lancamentos.map((lancamento) => {
-            if (!lancamento.isEntrada) {
-                list.push({
-                    tipo: 'Ajuste',
-                    ref: lancamento.idLancamentoEstoque,
-                    data: lancamento.dataLancamento,
-                    qntd: lancamento.quantidade,
-                    custo: lancamento.custoUnitario * lancamento.quantidade
-                });
-            }
-        });
-
-        return list;
-    }
-
-    const columns = [
-        {
-            name: 'Tipo',
-            selector: row => row.tipo,
-            sortable: true,
-            grow: 1,
-        },
-        {
-            name: 'Ref',
-            selector: row => row.ref,
-            sortable: true,
-            grow: 1,
-        },
-        {
-            name: 'Data',
-            selector: row => row.data,
-            cell: row => format(new Date(row.data), 'dd/MM/yyyy HH:mm'),
-            sortable: true,
-            grow: 1,
-        },
-        {
-            name: 'Qntd',
-            selector: row => row.data,
-            cell: row => row.qntd.toFixed(2),
-            sortable: true,
-            grow: 1,
-        },
-        {
-            name: 'Custo',
-            selector: row => row.data,
-            cell: row => `R$ ${row.custo.toFixed(2)}`,
-            sortable: true,
-            grow: 1,
-        },
-    ]
-
-    return (
-        <CustomTable data={getSaidas()} columns={columns} />
-    )
-
-}
-const Entradas = ({ lancamentos }: resultProps) => {
-
-    function getSaidas() {
-        var list = [];
-        lancamentos.map((lancamento) => {
-            if (lancamento.isEntrada) {
-                list.push({
-                    tipo: 'Ajuste',
-                    ref: lancamento.idLancamentoEstoque,
-                    data: lancamento.dataLancamento,
-                    qntd: lancamento.quantidade,
-                    custo: lancamento.custoUnitario * lancamento.quantidade
-                });
-            }
-        });
-
-        return list;
-    }
-
-    const columns = [
-        {
-            name: 'Tipo',
-            selector: row => row.tipo,
-            sortable: true,
-            grow: 1,
-        },
-        {
-            name: 'Ref',
-            selector: row => row.ref,
-            sortable: true,
-            grow: 1,
-        },
-        {
-            name: 'Data',
-            selector: row => row.data,
-            cell: row => format(new Date(row.data), 'dd/MM/yyyy HH:mm'),
-            sortable: true,
-            grow: 1,
-        },
-        {
-            name: 'Qntd',
-            selector: row => row.data,
-            cell: row => row.qntd.toFixed(2),
-            sortable: true,
-            grow: 1,
-        },
-        {
-            name: 'Custo',
-            selector: row => row.data,
-            cell: row => `R$ ${row.custo.toFixed(2)}`,
-            sortable: true,
-            grow: 1,
-        },
-    ]
-
-    return (
-        <CustomTable data={getSaidas()} columns={columns} />
-    )
-
 }
