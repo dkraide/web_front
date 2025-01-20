@@ -50,14 +50,14 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
             const classe = produtos[0].classeMaterial; // Assume que todos os produtos no grupo têm a mesma classe
 
             var p = _.filter(produtos, (item) => {
-                if(search?.status && !item.status){
+                if (search?.status && !item.status) {
                     return false;
                 }
-                if(search?.status === false && item.status){
+                if (search?.status === false && item.status) {
                     return false;
                 }
                 var text = `${item.cod} ${item.nome}`;
-               
+
                 return text.toUpperCase().includes(search?.str?.toUpperCase())
             })
             return { classe, produtos: p };
@@ -84,7 +84,7 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
 
     const Margem = (venda, compra) => {
 
-        if(venda <= compra){
+        if (venda <= compra) {
             return '0.00'
         }
 
@@ -97,21 +97,20 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
             <div className={styles.card} onClick={(v) => {
                 setEdit(produto.id);
             }}>
-                <div className={styles.pic}>
-                    <PictureBox height={'90%'} size={'100%'} url={produto.localPath} />
-                </div>
-                <div className={styles.desc}>
-                  
+                <div className={styles.desc} style={{width: '100%'}}>
                     <span className={styles.nome}>{produto.cod} - {produto.nome}</span>
-                    <span className={styles.estoque}>Estoque <br/><b>{produto.quantidade} {produto.unidadeCompra}</b></span>
-                    <span className={produto.status ? styles.ativo : styles.inativo}>{produto.status ? 'ATIVO' : 'INATIVO'}</span>
-                    <span className={styles.valores}>Venda <br/><b>{GetCurrencyBRL(produto.valor)}</b></span>
-                    <span className={styles.valores}>Compra <br/><b>{GetCurrencyBRL(produto.valorCompra)}</b> </span>
-                    <span className={styles.valores}>Margem(R$) <br/><b>{GetCurrencyBRL(produto.valor - produto.valorCompra)}</b> </span>
-                    <span className={styles.valores}>Margem(%)  <br/><b>{Margem(produto.valor, produto.valorCompra)}</b> </span>
+                    <div className={styles.pic}>
+                        <PictureBox height={'90%'} size={'100%'} url={produto.localPath} />
+                    </div>
+                    <div className={styles.desc}>
+                        <span className={styles.estoque}>Estoque <br /><b>{produto.quantidade} {produto.unidadeCompra}</b></span>
+                        <span className={produto.status ? styles.ativo : styles.inativo}>{produto.status ? 'ATIVO' : 'INATIVO'}</span>
+                        <span className={styles.valores}>Venda <br /><b>{GetCurrencyBRL(produto.valor)}</b></span>
+                        <span className={styles.valores}>Compra <br /><b>{GetCurrencyBRL(produto.valorCompra)}</b> </span>
+                        <span className={styles.valores}>Margem(R$) <br /><b>{GetCurrencyBRL(produto.valor - produto.valorCompra)}</b> </span>
+                        <span className={styles.valores}>Margem(%)  <br /><b>{Margem(produto.valor, produto.valorCompra)}</b> </span>
+                    </div>
                 </div>
-
-
             </div>
         )
 
