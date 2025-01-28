@@ -1,0 +1,309 @@
+
+
+.page {
+    min-height: 100vh;
+    background-color: var(--background);
+    font-family: "Poppins", sans-serif;
+    height: auto;
+    overflow: scroll;
+}
+
+  
+  /* Estilos para o header */
+.header {
+    background-color: white;
+    width: 100%;
+    box-shadow: #333;
+}
+
+.nav_bar{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav_list{
+  display: flex;
+  list-style: none;
+  gap: 58px;
+  margin-top: 17px;
+}
+
+.sectionHome {
+  display: flex;
+  flex-direction: column; /* Alinha os itens verticalmente */
+  justify-content: center;
+  align-items: center; /* Centraliza os itens no centro horizontal */
+  margin-top: 40px;
+  height: 40vh; /* Altera para o tamanho desejado */
+  width: 100%; /* Ocupa toda a largura */
+  p {
+    text-align: center; /* Centraliza o texto horizontalmente */
+    font-size: 1.4rem; /* Aumenta um pouco o tamanho da fonte */
+    color: #333; /* Cor suave para o texto */
+    max-width: 1000px; /* Limita a largura do parágrafo */
+    margin: 20px 0px; /* Adiciona espaço acima e abaixo */
+    line-height: 1.6; /* Deixa o texto mais espaçado entre linhas */
+    font-family: 'Poppins', sans-serif; /* Fonte elegante */
+  }
+  @media screen and (max-width:1170px){
+    p{
+      display: none;
+    }
+  }
+}
+
+.mudarPalavra {
+  border-right: 4px solid;
+  font-weight: bold;
+  font-size: 3rem; /* Tamanho maior para destaque */
+  background: linear-gradient(90deg, #cc3051, #cc3051); /* Gradiente de cor */
+  -webkit-background-clip: text; /* Compatível com navegadores baseados em Webkit */
+  color: transparent; /* Faz o gradiente aparecer no texto */
+}
+
+@keyframes gradienteAnimado {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 100% 50%;
+  }
+}
+
+.videoContainer {
+  display: flex;
+  justify-content: center; /* Centraliza o vídeo horizontalmente */
+  align-items: center; /* Centraliza verticalmente, se necessário */
+  margin-top: 20px; /* Espaço entre o texto e o vídeo */
+  @media screen and (max-width:1170px){
+    width: 90%;
+  }
+}
+
+.iframe {
+  width: 100%; /* Ajusta o vídeo à largura do contêiner */
+  max-width: 560px; /* Define uma largura máxima para o vídeo */
+  height: 315px; /* Proporção 16:9 para o vídeo */
+}
+
+.slide{
+  width: 80%;
+  height: 40vh; /* Reduz a altura para 40% da altura da viewport */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  justify-content: space-between;
+
+  margin: 20px auto; /* Centraliza horizontalmente */
+  padding: 10px; /* Adiciona espaço interno */
+  border-radius: 10px; /* Adiciona bordas arredondadas, opcional */
+  @media screen and (max-width: 1768px) {
+    flex-direction: column; /* Empilha os cards verticalmente */
+    align-items: center; /* Centraliza os cards */
+    gap: 20px; /* Espaçamento entre os cards */
+    width: 100%; /* Ocupa toda a largura disponível */
+  }
+}
+
+.pagina{
+  width: 600px;
+  height: 500px;
+  margin: 10px;
+  border-radius: 50px;
+  transition: width 0.5s;
+  background: linear-gradient(to bottom, white, #ddd2d2);
+  flex-direction: row;
+  h3{
+    font-size: 1.5rem;
+  }
+  @media screen and (max-width: 1768px) {
+    width: 90%; /* Ocupar quase toda a largura no mobile */
+    height: auto; /* Ajusta a altura automaticamente */
+    margin: 0 auto; /* Centraliza os cards no mobile */
+  }
+}
+
+
+.infoBar{
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+}
+
+.ConteudoBar{
+  margin: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sectionBenefits{
+  margin-top: 100px;
+
+  h2 {
+    text-align: center; /* Centraliza o texto */
+    font-size: 2rem; /* Tamanho maior para o título */
+    color: #333; /* Cor do texto */
+    font-family: 'Poppins', sans-serif; /* Fonte estilosa */
+    margin-top: 100px;
+  }
+}
+
+.linhaextra {
+  display: flex; /* Alinha o ícone e o texto horizontalmente */
+  align-items: center; /* Centraliza verticalmente o ícone e o texto */
+  gap: 10px; /* Espaçamento entre o ícone e o texto */
+  opacity: 0;
+  visibility: hidden;
+}
+
+.nav_Experiment{
+  text-decoration: none;
+  color: #333;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  font-weight: 600;
+  border: 2px solid black;
+  border-radius: 4px;
+  padding: 8px 12px;
+
+  &:hover {
+    color: rgba(255, 255, 255, 0.89);
+    background-color: rgb(10, 201, 10);
+  }
+
+&.active .nav_link {
+  color: #e91e63;
+  border-bottom: 3px solid #3f51b5;
+  }
+} 
+
+.nav_item {
+  display: inline-block;
+  margin: 0 15px;
+
+  .nav_link {
+    text-decoration: none;
+    color: #333;
+    font-weight: 500;
+    transition: color 0.3s ease;
+    font-weight: 600;
+
+    &:hover {
+      color: #e91e63;
+    }
+  }
+
+  &.active .nav_link {
+    color: #e91e63;
+    border-bottom: 3px solid #3f51b5;
+  }
+}
+/* Flexbox para alinhar logo e texto */
+.headerContent {
+    display: flex;
+    align-items: center; /* Centraliza verticalmente logo e texto */
+}
+  
+  /* Estilos para a logo */
+.logo {
+    width: 50px; /* Ajuste o tamanho da logo */
+    height: auto;
+    margin-right: 4px; /* Espaçamento entre a logo e o texto */
+    margin-top: 11px;
+}
+  
+  /* Estilos para o texto */
+.text {
+    display: flex;
+    flex-direction: column; /* Empilha o h1 e h2 verticalmente */
+    align-items: flex-start;
+  
+    h1 {
+      font-size: 1.8rem;
+      margin: 0;
+      font-weight: bold;
+  }
+  
+    h2 {
+      font-size: 1.2rem;
+      margin: 0;
+  }
+}
+
+
+.texto {
+  display: flex;
+  flex-direction: column; /* Organiza cada linha em coluna */
+  justify-content: center;
+  gap: 15px; /* Espaçamento entre as linhas */
+  color: black;
+  font-size: 1.2rem;
+  font-family: 'Poppins', sans-serif;
+  padding: 10px;
+
+  .linha {
+    display: flex; /* Alinha o ícone e o texto horizontalmente */
+    gap: 10px; /* Espaçamento entre o ícone e o texto */
+
+  }
+
+  p {
+    margin: 0;
+  }
+
+  svg {
+    font-size: 1.5rem; /* Define o tamanho do ícone */
+    color: #13aa13; /* Cor do ícone */
+
+  }
+}
+
+.buttons {
+  width:80%;
+  display: flex;
+  gap: 20px; /* Espaçamento entre os botões */
+  margin-top: 20px;
+  margin-left: 270px;
+  margin-bottom: 50px;
+
+  a {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 25%;
+    text-decoration: none;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.1); /* Efeito de zoom */
+    }
+  }
+
+  .whatsappButton {
+    background-color: white; /* Cor do WhatsApp */
+    color: black;
+
+    &:hover {
+      background-color: #1da851; /* Cor mais escura ao passar o mouse */
+    }
+  }
+
+  .instagramButton {
+    background-color: white; /* Cor do Instagram */
+    color: black;
+
+    &:hover {
+      background-color: #cc3051; /* Cor mais escura ao passar o mouse */
+    }
+  }
+  @media screen and (max-width:1768px){
+    display: none;
+}
+}
