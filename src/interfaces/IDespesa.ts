@@ -16,7 +16,7 @@ export default interface IDespesa{
      desconto: number
      acrescimo: number
      valorTotal: number
-     iDMotivoLancamento: number
+     idMotivoLancamento: number
      motivoLancamento: IMotivoLancamento
      isChanged: boolean
      motivoLancamentoId: number

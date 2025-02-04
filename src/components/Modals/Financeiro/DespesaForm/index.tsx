@@ -152,7 +152,7 @@ export default function DespesaForm({ user, isOpen, id, setClose, color }: props
                     }} />
                     <InputForm type={'date'} defaultValue={format(new Date(objeto.dataCompetencia || new Date()), 'yyyy-MM-dd')} width={'30%'} title={'Competencia'} errors={errors} inputName={"dataCompetencia"} register={register} />
                     <SelectMotivoLancamento selected={objeto.motivoLancamentoId} setSelected={(v) => {
-                        setObjeto({ ...objeto, motivoLancamento: v, motivoLancamentoId: v.id , iDMotivoLancamento: v.iDMotivoLancamento})
+                        setObjeto({ ...objeto, motivoLancamento: v, motivoLancamentoId: v.id , idMotivoLancamento: v.idMotivoLancamento})
                     }} />
                     <InputForm defaultValue={objeto.descricao} title={'Descricao'} errors={errors} inputName={"descricao"} register={register} />
                     <InputForm onBlur={calculaTotal} defaultValue={objeto.valorSubTotal} width={'20%'} title={'Sub total'} errors={errors} inputName={"valorSubTotal"} register={register} />
