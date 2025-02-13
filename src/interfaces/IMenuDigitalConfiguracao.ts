@@ -19,6 +19,7 @@ export default interface IMenuDigitalConfiguracao{
     instagram: string
     facebook: string
     tempoEspera?: string
+    distanciaGratuita: number
 }
 
 interface IMenuDigitalHorario{

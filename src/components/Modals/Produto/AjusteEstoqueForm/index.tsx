@@ -10,7 +10,6 @@ import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import IProduto from "@/interfaces/IProduto";
-import IVendaProduto from "@/interfaces/IVendaProduto";
 import ILancamentoEstoqueProduto from "@/interfaces/ILancamentoEstoqueProduto";
 import { fGetNumber } from "@/utils/functions";
 import SelectEntradaSaida from "@/components/Selects/SelectEntradaSaida";

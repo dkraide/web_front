@@ -13,5 +13,7 @@ export default interface IXml{
      idLoteEnvioXML: number
      empresaId: number
      vendaId: number
-   
+     dataEmissao: Date
+     vnf: number
+     nnf: string
 }
