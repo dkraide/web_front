@@ -103,6 +103,7 @@ export default function Configuracao() {
         objeto.valorInicial = fGetNumber(data.valorInicial);
         objeto.valorPorKm = fGetNumber(data.valorPorKm);
         objeto.limiteKm = fGetNumber(data.limiteKm);
+        objeto.distanciaGratuita = fGetNumber(data.distanciaGratuita);
         api.put(`MenuDigital/Configuracao`, objeto)
             .then(({ data }: AxiosResponse) => {
                 toast.success(`grupo atualizado com sucesso!`);
@@ -171,6 +172,7 @@ export default function Configuracao() {
                 <SelectSimNao title={'Entrega'} width={'15%'} selected={objeto.entrega} setSelected={(v) => { setObjeto({ ...objeto, entrega: v }) }} />
                 <SelectBase datas={tempoEspera()} title={'Tempo de Espera'} width={'15%'} selected={objeto.tempoEspera} setSelected={(v) => { setObjeto({ ...objeto, tempoEspera: v }) }} />
                 <SelectSimNao title={'Valor Fixo'} width={'15%'} selected={objeto.isValorFixo} setSelected={(v) => { setObjeto({ ...objeto, isValorFixo: v }) }} />
+                <InputForm defaultValue={objeto.distanciaGratuita} width={'15%'} title={'Distancia Gratuita'} errors={errors} inputName={"distanciaGratuita"} register={register} />
                 <InputForm defaultValue={objeto.valorInicial} width={'15%'} title={'Valor Inicial'} errors={errors} inputName={"valorInicial"} register={register} />
                 <InputForm defaultValue={objeto.valorPorKm} width={'15%'} title={'Valor por KM '} errors={errors} inputName={"valorPorKm"} register={register} />
                 <InputForm defaultValue={objeto.limiteKm} width={'15%'} title={'Limite KM'} errors={errors} inputName={"limiteKm"} register={register} />

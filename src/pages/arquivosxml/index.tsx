@@ -18,22 +18,15 @@ import { saveAs } from 'file-saver';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faDownload } from "@fortawesome/free-solid-svg-icons"
 import LoadingModal from "@/components/Modals/LoadingModal"
+import IXml from "@/interfaces/IXml"
 interface searchProps {
     dateIn: string
     dateFim: string
 }
-interface xmlProps {
-    venda: IVenda
-    xml: {
-        path: string
-        id: number
-        pathCancel: string
-    }
-}
 
 export default function ArquivosXml() {
 
-    const [arquivos, setArquivos] = useState<xmlProps[]>([])
+    const [arquivos, setArquivos] = useState<IXml[]>([])
     const [loading, setLoading] = useState(true)
     const [search, setSearch] = useState<searchProps>()
     const [showMovimento, setShowMovimento] = useState(0)
@@ -61,7 +54,7 @@ export default function ArquivosXml() {
             setLoading(true);
         }
         await api.get(`/NFCECFEXml/Get?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${s?.dateIn || search.dateIn}&dataFim=${s?.dateFim || search.dateFim}`)
-            .then(({ data }: AxiosResponse<xmlProps[]>) => {
+            .then(({ data }: AxiosResponse<IXml[]>) => {
                 setArquivos(data);
             }).catch((err: AxiosError) => {
                 toast.error(`Erro ao buscar vendas. ${err.response?.data || err.message}`);
@@ -72,35 +65,35 @@ export default function ArquivosXml() {
     const columns = [
         {
             name: 'Venda',
-            cell: ({ venda }: xmlProps) => <a href='#' onClick={() => { setShowMovimento(venda?.id) }}>{venda?.idVenda || 0}</a>,
-            selector: row => row.venda?.idVenda || 0,
+            cell: ({ vendaId, idVenda }: IXml) => <a href='#' onClick={() => { setShowMovimento(vendaId) }}>{idVenda|| 0}</a>,
+            selector: row => row.idVenda || 0,
             sortable: true,
             grow: 0,
         },
         {
             name: 'Download',
-            cell: ({ venda, xml }: xmlProps) => <CustomButton typeButton={'dark'} onClick={() => {downloadUnico(xml.id, venda?.nnf || 0)}}><FontAwesomeIcon icon={faDownload} color={'white'}/></CustomButton>,
-            selector: row => row.venda?.nnf || '--',
+            cell: ({ id, nnf }: IXml) => <CustomButton typeButton={'dark'} onClick={() => {downloadUnico(id, nnf || '0')}}><FontAwesomeIcon icon={faDownload} color={'white'}/></CustomButton>,
+            selector: row => row.nnf || '--',
             sortable: true,
             grow: 0,
         },
         {
             name: 'Nnf',
-            selector: row => row.venda?.nnf  || 0,
+            selector: row => row.nnf  || 0,
             sortable: true,
             grow: 0,
         },
         {
             name: 'Data',
-            selector: row => row.venda?.dataVenda  || 0,
-            cell: row => format(new Date(row.venda?.dataVenda || new Date().toString()), 'dd/MM/yyyy HH:mm'),
+            selector: row => row.dataEmissao || 0,
+            cell: row => format(new Date(row.dataEmissao || new Date().toString()), 'dd/MM/yyyy HH:mm'),
             sortable: true,
             grow: 1
         },
         {
             name: 'Valor',
-            selector: row => row.venda?.valorTotal || 0,
-            cell: row => `R$ ${(row.venda?.valorTotal || 0).toFixed(2)}`,
+            selector: row => row.vnf || 0,
+            cell: row => `R$ ${(row.vnf || 0).toFixed(2)}`,
             sortable: true,
             grow: 0
         },
@@ -116,7 +109,7 @@ export default function ArquivosXml() {
                 return;
             }
             var files = [];
-            arquivos.map(p => files.push(p.xml.id));
+            arquivos.map(p => files.push(p.id));
             download(files);
             return;
         } else {
@@ -143,7 +136,7 @@ export default function ArquivosXml() {
             });
         setOnDownload(false);
     }
-    async function downloadUnico(id: number, nnf: number) {
+    async function downloadUnico(id: number, nnf: string) {
         setOnDownload(true);
         await api.post(`/NFCECFEXML/DownloadUnico?empresaId=${user.empresaSelecionada}&id=${id}`, undefined, {responseType: 'blob'})
             .then(({ data }: AxiosResponse) => {
