@@ -217,6 +217,9 @@ export const ExportToExcel = (columns: ColumnData[], data: any[], fileName: stri
 
 
 export const GetCurrencyBRL = (value: number) => {
+    if(isNaN(value) || value == undefined){
+        return  (0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
     const valorFormatado = value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     return valorFormatado;
 }
