@@ -1,0 +1,58 @@
+.container{
+    padding: 5px;
+}
+.boxSearch{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    width: 100%;
+    button{
+        height: 35px;
+        margin-right: 5px;
+    }
+}
+.box{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+    width: 100%;
+}
+.box > div{
+    width: 30%;
+    min-width: 0px !important;
+}
+.box > div > div:first-child{
+    font-size: 16px;
+}
+
+
+.item{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    background-color: var(--white);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 5px;
+    justify-content: space-between;
+
+    .qtd{
+        width: 20%;
+    }
+    .nome{
+        width: 80%;
+    }
+    .venda{
+        width: 20%;
+    }
+    .custo{
+        width: 20%;
+    }
+
+
+
+}
