@@ -1,15 +1,21 @@
 .container{
     padding: 5px;
 }
-.boxSearch{
+.boxSearch {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     margin-bottom: 10px;
     width: 100%;
     justify-content: space-between;
-    button{
-        height: 35px;
+
+    button {
+        margin: 0px 2px;
+    }
+
+    @media (min-width: 400px) { 
+        align-items: center;
+        justify-content: flex-start; // Remove o space-between em telas maiores
     }
 }
 .box{

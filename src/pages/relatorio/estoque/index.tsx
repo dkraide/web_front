@@ -88,7 +88,8 @@ export default function RelatorioEstoque() {
             { label: "Produto", key: "produto" },
             { label: "Estoque", key: "estoque" },
             { label: "Entrada", key: "entrada" },
-            { label: "Saida", key: "saida" }
+            { label: "Saida", key: "saida" },
+            { label: "Resultado", key: "resultado" }
         ]
     }
 
@@ -121,6 +122,12 @@ export default function RelatorioEstoque() {
             cell: (row) => `${row.saida.toFixed(2)}`,
             sortable: true,
         },
+        {
+            name: 'Resultado',
+            selector: row => (row.produto.quantidade - row.entrada + row.saida),
+            cell: (row) => `${(row.produto.quantidade - row.entrada + row.saida).toFixed(2)}`,
+            sortable: true,
+        },
 
     ]
 
@@ -131,21 +138,23 @@ export default function RelatorioEstoque() {
                     produto: p.produto.nome,
                     estoque: p.produto.quantidade,
                     entrada: p.entrada,
-                    saida: p.saida
+                    saida: p.saida,
+                    resultado: p.produto.quantidade - p.entrada + p.saida
                 }
             });
             return r;
         }
+        return result;
     }
 
     const Item = (item: relatorioProps) => {
         return (
             <div className={styles.item}>
-                <span className={styles.qtd}>Qtd<br/><b>{item.produto?.cod}</b></span>
-                <span className={styles.nome}>Produto<br/><b>{item.produto?.nome}</b></span>
-                <span className={styles.qtd}>Estoque<br/><b>{item.produto?.quantidade}</b></span>
-                <span className={styles.qtd}>Entrada<br/><b>{item.entrada}</b></span>
-                <span className={styles.qtd}>Saida<br/><b>{item.saida}</b></span>
+                <span className={styles.qtd}>Qtd<br /><b>{item.produto?.cod}</b></span>
+                <span className={styles.nome}>Produto<br /><b>{item.produto?.nome}</b></span>
+                <span className={styles.qtd}>Estoque<br /><b>{item.produto?.quantidade}</b></span>
+                <span className={styles.qtd}>Entrada<br /><b>{item.entrada}</b></span>
+                <span className={styles.qtd}>Saida<br /><b>{item.saida}</b></span>
             </div>
         )
     }
@@ -158,20 +167,20 @@ export default function RelatorioEstoque() {
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
                 <SelectClasseMaterial width={isMobile ? '100%' : '350px'} selected={search?.classeId} setSelected={(v) => { setSearch({ ...search, classeId: v }) }} />
+                <CustomButton style={{ marginTop: 10 }} onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
                 <CustomButton onClick={(v) => {
                     ExportToExcel(getHeaders(), getData(true), "relatorio_estoque");
                 }} style={{ marginTop: 10 }} typeButton={'dark'}>Excel</CustomButton>
-                <CustomButton style={{ marginTop: 10 }} onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
             <hr />
             {loading ? <Spinner /> : <div>
                 <div className={styles.box}>
                     <BoxInfo style={{ marginRight: 10 }} title={'Entrada'} value={getValue('entrada', '')} />
-                    <BoxInfo style={{ marginRight: 10 }} title={'Saida'} value={getValue('saida', 'R$')} />
+                    <BoxInfo style={{ marginRight: 10 }} title={'Saida'} value={getValue('saida', '')} />
                 </div>
 
                 {isMobile ? <>
-                   {result?.map((item) => Item(item))}
+                    {result?.map((item) => Item(item))}
                 </> : <>
                     <CustomTable
                         columns={columns}

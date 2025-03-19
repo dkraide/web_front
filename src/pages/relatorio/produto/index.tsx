@@ -30,8 +30,10 @@ interface searchProps {
 interface relatorioProps {
     produto: string
     quantidade: number
-    venda: number,
-    custo: number,
+    venda: number
+    custo: number
+    quantidadeMediaVenda: number
+    quantidadeVendas: number
     obj: IProduto
 }
 
@@ -95,6 +97,7 @@ export default function RelatorioProduto() {
             { label: "Grupo", key: "classe" },
             { label: "Produto", key: "produto" },
             { label: "Quantidade", key: "quantidade" },
+            { label: "Vendas", key: "quantidadeVendas" },
             { label: "Venda", key: "venda" },
             { label: "Custo", key: "custo" }
         ]
@@ -120,6 +123,11 @@ export default function RelatorioProduto() {
         {
             name: 'Quantidade',
             selector: row => row.quantidade,
+            sortable: true,
+        },
+        {
+            name: 'Vendas',
+            selector: row => row.quantidadeVendas,
             sortable: true,
         },
         {
