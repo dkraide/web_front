@@ -14,6 +14,7 @@ import IPromocao from '@/interfaces/IPromocao';
 import ComboForm from '@/components/Modals/Promocao/ComboForm';
 import ICombo from '@/interfaces/ICombo';
 import { isMobile } from 'react-device-detect';
+import ResultadoCombo from '@/components/Modals/Promocao/ResultadoCombo';
 
 
 export default function Combo() {
@@ -23,13 +24,14 @@ export default function Combo() {
     const [search, setSearch] = useState('')
     const [edit, setEdit] = useState(-1);
     const [user, setUser] = useState<IUsuario>()
+    const [showResultado, setShowResultado] = useState(0);
 
     const loadData = async () => {
-       var u: any;
-       if(!user){
-        var res = await getUser();
-        setUser(res);
-        u = res;
+        var u: any;
+        if (!user) {
+            var res = await getUser();
+            setUser(res);
+            u = res;
         }
         await api
             .get(`/Combo/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
@@ -54,9 +56,11 @@ export default function Combo() {
     const columns = [
         {
             name: '#',
-            cell: ({ id }: IPromocao) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }: IPromocao) => <>
+                <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>
+                <CustomButton style={{ marginLeft: 5 }} onClick={() => { setShowResultado(id) }} typeButton={'outline-main'}>Resultados</CustomButton></>,
             sortable: true,
-            grow: 0
+            width:'20%'
         },
         {
             name: 'Local',
@@ -84,39 +88,42 @@ export default function Combo() {
     ]
 
     const Item = (item: ICombo) => {
-        return(
-            <div key={item.id} className={styles.item} onClick={() => {setEdit(item.id)}} >
-                 <span className={styles.w60}>Codigo<br /><b>{item.codigo}</b></span>
-                 <span className={item.status ? styles.ativo : styles.inativo}>{item.status ? 'ATIVO' : 'INATIVO'}</span>
-                 <span className={styles.w100}>Descricao<br /><b>{item.descricao}</b></span>
+        return (
+            <div key={item.id} className={styles.item} onClick={() => { setEdit(item.id) }} >
+                <span className={styles.w60}>Codigo<br /><b>{item.codigo}</b></span>
+                <span className={item.status ? styles.ativo : styles.inativo}>{item.status ? 'ATIVO' : 'INATIVO'}</span>
+                <span className={styles.w100}>Descricao<br /><b>{item.descricao}</b></span>
             </div>
         )
 
     }
 
-    if(loading){
+    if (loading) {
         return <></>
     }
     return (
         <div className={styles.container}>
             <h4>Combos</h4>
-            <InputGroup width={isMobile ? '100%' :'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Combo</CustomButton>
-            <hr/>
-             {isMobile ? <>
-             {getFiltered()?.map((item) => Item(item))}
-             </> : <>
+            <InputGroup width={isMobile ? '100%' : '50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
+            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Novo Combo</CustomButton>
+            <hr />
+            {isMobile ? <>
+                {getFiltered()?.map((item) => Item(item))}
+            </> : <>
                 <CustomTable
-                columns={columns}
-                data={getFiltered()}
-                loading={loading}
-            /></>}
+                    columns={columns}
+                    data={getFiltered()}
+                    loading={loading}
+                /></>}
 
             {(edit >= 0) && <ComboForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if(v){
+                if (v) {
                     loadData();
                 }
                 setEdit(-1);
+            }} />}
+            {(showResultado > 0) && <ResultadoCombo user={user} isOpen={showResultado > 0} comboId={showResultado} setClose={(v) => {
+                setShowResultado(0);
             }} />}
 
         </div>
