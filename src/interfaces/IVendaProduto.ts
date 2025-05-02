@@ -1,3 +1,4 @@
+import ICombo from "./ICombo"
 import IProduto from "./IProduto"
 import IPromocao from "./IPromocao"
 import IVenda from "./IVenda"
@@ -21,4 +22,7 @@ export default interface IVendaProduto{
  promocaoId: number
  id: number
  empresaId: number
+ comboId: number
+ idCombo: number
+ combo: ICombo
 }

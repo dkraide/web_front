@@ -106,3 +106,7 @@ export default function ClasseForm({user, isOpen, classeId, setClose, color }: p
         </BaseModal>
     )
 }
+
+
+
+

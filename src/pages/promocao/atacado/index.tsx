@@ -15,6 +15,7 @@ import IPromocao from '@/interfaces/IPromocao';
 import AtacadoForm from '@/components/Modals/Promocao/AtacadoForm';
 import { GetCurrencyBRL } from '@/utils/functions';
 import { isMobile } from 'react-device-detect';
+import ResultadoAtacado from '@/components/Modals/Promocao/ResultadoAtacado';
 
 
 export default function Atacado() {
@@ -23,6 +24,7 @@ export default function Atacado() {
     const { getUser } = useContext(AuthContext)
     const [search, setSearch] = useState('')
     const [edit, setEdit] = useState(-1);
+    const [showResultado, setShowResultado] = useState(0);
     const [user, setUser] = useState<IUsuario>()
 
     const loadData = async () => {
@@ -55,9 +57,11 @@ export default function Atacado() {
     const columns = [
         {
             name: '#',
-            cell: ({ id }: IPromocao) => <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>,
+            width: '20%',
+            cell: ({ id }: IPromocao) => <>
+            <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>
+            <CustomButton style={{marginLeft: 5}} onClick={() => { setShowResultado(id) }} typeButton={'outline-main'}>Resultados</CustomButton></>,
             sortable: true,
-            grow: 0
         },
         {
             name: 'Local',
@@ -132,6 +136,9 @@ export default function Atacado() {
                     loadData();
                 }
                 setEdit(-1);
+            }} />}
+             {(showResultado > 0) && <ResultadoAtacado user={user} isOpen={showResultado > 0} promocaoId={showResultado} setClose={(v) => {
+                setShowResultado(0);
             }} />}
 
         </div>
