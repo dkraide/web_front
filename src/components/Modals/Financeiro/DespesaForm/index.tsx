@@ -95,6 +95,7 @@ export default function DespesaForm({ user, isOpen, id, setClose, color }: props
         }
          setSending(true);
         if (objeto.id > 0) {
+            objeto.isChanged = true;
             api.put(`Despesa/Update`, objeto)
                 .then(({ data }: AxiosResponse) => {
                     toast.success(`Despesa atualizado com sucesso!`);
