@@ -34,3 +34,36 @@
         font-style: italic;
     }
 }
+
+
+.item{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    background-color: var(--white);
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 5px;
+    justify-content: space-between;
+
+    .qtd{
+        width: 15%;
+    }
+    .nome{
+        width: 25%;
+    }
+    .venda{
+        width: 30%;
+    }
+    .custo{
+        width: 30%;
+    }
+    .media{
+        width: 20%;
+    }
+
+    .button{
+        width: 40%;
+    }
+}

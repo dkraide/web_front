@@ -9,9 +9,10 @@ import { AuthContext } from '@/contexts/AuthContext';
 import IUsuario from '@/interfaces/IUsuario';
 import SelectProdutoModal from '@/components/Modals/Produto/SelectProdutoModal';
 import { InputGroup } from '@/components/ui/InputGroup';
-import { fGetNumber } from '@/utils/functions';
+import { fGetNumber, GetCurrencyBRL } from '@/utils/functions';
 import ILancamentoEstoque from '@/interfaces/ILancamentoEstoque';
 import ILancamentoEstoqueProduto from '@/interfaces/ILancamentoEstoqueProduto';
+import _ from 'lodash';
 
 type itemLancamento = {
     item: {
@@ -192,6 +193,20 @@ export default function Xml(){
        }
     }
 
+    const quantidadeItens = () => {
+        return _.sumBy(produtos, (item) => Number(item.item.qCom ?? '0'));
+    }
+
+    const valorItens = () => {
+        let total =  _.sumBy(produtos, (item) => {
+              let qCom = fGetNumber(item.item.qCom);
+              let vUnCom = fGetNumber(item.item.vUnCom);
+              return (qCom * vUnCom) || 0;
+        });
+        return GetCurrencyBRL(total ?? 0);
+    }
+
+
     if(message.length > 0){
         return(
             <div className={styles['container-xml']}>
@@ -247,8 +262,8 @@ export default function Xml(){
             </table>
             </div>
             <div className={styles.footer}>
-                <DataItem title={'Produtos'} value={'50'}/>
-                <DataItem title={'Valor Total'} value={'R$5000,50'}/>
+                <DataItem title={'Produtos'} value={quantidadeItens()}/>
+                <DataItem title={'Valor Total'} value={valorItens()}/>
                 <CustomButton className={styles.btn} typeButton={'main'} onClick={onSubmit}>Enviar lançamento</CustomButton>
             </div>
             {prodModal >= 0 && <SelectProdutoModal isOpen={prodModal >= 0} selectedId={0} setClose={(v) => {
