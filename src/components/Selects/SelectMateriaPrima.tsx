@@ -11,14 +11,19 @@ interface selProps{
     selected: number;
     setSelected: (value: any) => void;
     width?: string;
+    empresaId?: number;
 }
 
-export  default function SelectMateriaPrima({width, selected, setSelected}: selProps){
+export  default function SelectMateriaPrima({width, selected, setSelected, empresaId}: selProps){
     const [formas, setFormas] = useState<IMateriaPrima[]>([]);
     const {getUser} = useContext(AuthContext);
     const loadFormas = async () => {
+           let e = empresaId;
+           if(!e){
            const res =  await getUser();
-           api.get(`/MateriaPrima/List?empresaId=${res?.empresaSelecionada}`)
+              e = res?.empresaSelecionada;
+           }
+           api.get(`/MateriaPrima/List?empresaId=${e}`)
            .then(({data}: AxiosResponse) => {
                    setFormas(data);
            })

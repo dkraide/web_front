@@ -24,11 +24,13 @@ interface searchProps{
     dateFim: string
 }
 
-export default function EstoqueLancamento(){
+export default function IngredientesEstoque(){
 
     const [vendas, setVendas] = useState<ILancamentoEstoque[]>([])
     const [loading, setLoading] = useState(true)
-    const [search, setSearch] = useState<searchProps>({ dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd')})
+    const [search, setSearch] = useState<searchProps>(
+        { dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd')}
+    )
     const [edit, setEdit] = useState(-1)
     const [user, setUser] = useState<IUsuario>()
     const { getUser } = useContext(AuthContext)
@@ -38,14 +40,13 @@ export default function EstoqueLancamento(){
     }, [])
 
     const loadData = async () => {
-        var u: any;
+        let u: any;
        if(!user){
-        var res = await getUser();
+        let res = await getUser();
         setUser(res);
         u = res;
         }
-         let url = `/LancamentoEstoque/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}&isProduto=true`;
-       
+        let url = `/LancamentoEstoque/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}&isProduto=false`;
         await api.get(url)
         .then(({data}: AxiosResponse<ILancamentoEstoque[]>) => {
             setVendas(data);
@@ -90,14 +91,14 @@ export default function EstoqueLancamento(){
 
     return(
         <div className={styles.container}>
-        <h4>Lançamentos De Estoque</h4>
+        <h4>Lançamentos De Estoque de Ingredientes</h4>
         <div className={styles.boxSearch}>
             <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => {setSearch({...search, dateIn: v.target.value})}}  title={'Inicio'} width={'20%'}/>
             <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()}  onChange={(v) => {setSearch({...search, dateFim: v.target.value})}}  title={'Final'} width={'20%'}/>
             <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
         </div>
         <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} style={{marginRight: 10}} >Novo Lancamento</CustomButton>
-        <CustomButton typeButton={'dark'} onClick={() => {document.location.href = `/estoqueLancamento/xml`}} >Carregar de XML</CustomButton>
+        <CustomButton typeButton={'dark'} onClick={() => {document.location.href = `/ingredientes/estoque/cadastroXml`}} >Carregar de XML</CustomButton>
         <hr/>
         <CustomTable
             columns={columns}
