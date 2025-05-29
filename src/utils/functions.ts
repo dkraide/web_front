@@ -183,7 +183,7 @@ export const fGetDate = (date: string) => {
 
 export type ACTION = '' | 'FINALIZAR' | 'LIMPAR';
 
-export const fgetDate = (date: string) => {
+export const fgetDate = (date) => {
     if (!date || date == '') {
         return new Date();
     }

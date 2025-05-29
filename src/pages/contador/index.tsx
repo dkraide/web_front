@@ -16,6 +16,9 @@ import saveAs from 'file-saver';
 import { api } from '@/services/apiClient';
 import CustomTable from '@/components/ui/CustomTable';
 import _ from 'lodash';
+import IXml from '@/interfaces/IXml';
+import { fgetDate, GetCurrencyBRL } from '@/utils/functions';
+import { isMobile } from 'react-device-detect';
 
 
 interface searchProps {
@@ -24,50 +27,41 @@ interface searchProps {
     searchString: string
     includeCancelamento: boolean
 }
-interface xmlProps {
-    venda: IVenda
-    xml: {
-        path: string
-        id: number
-        pathCancel: string
-    }
-}
-
 
 export default function Contador() {
 
     const [search, setSearch] = useState<searchProps>()
     const [onDownload, setOnDownload] = useState(false);
     const [selected, setSelected] = useState([]);
-    const [arquivos, setArquivos] = useState<xmlProps[]>([])
+    const [arquivos, setArquivos] = useState<IXml[]>([])
     const [user, setUser] = useState<IUsuario>()
     const { getUser } = useContext(AuthContext)
     const [loading, setLoading] = useState(true)
     const columns = [
         {
             name: 'Nnf',
-            selector: row => row.venda.nnf,
+            selector: row => row.nnf,
             sortable: true,
             width: '10%'
         },
         {
             name: 'Download',
-            cell: ({ venda, xml }: xmlProps) => <CustomButton typeButton={'dark'} onClick={() => { downloadUnico(xml.id, venda.nnf) }}><FontAwesomeIcon icon={faDownload} color={'white'} /></CustomButton>,
-            selector: row => row.venda.nnf,
+            cell: ({ nnf, id }: IXml) => <CustomButton typeButton={'dark'} onClick={() => { downloadUnico(id, nnf) }}><FontAwesomeIcon icon={faDownload} color={'white'} /></CustomButton>,
+            selector: row => row.nnf,
             sortable: true,
             width: '10%'
         },
         {
             name: 'Data',
-            selector: row => row.venda.dataVenda,
-            cell: row => format(new Date(row.venda.dataVenda), 'dd/MM/yyyy HH:mm'),
+            selector: row => row.dataEmissao,
+            cell: row => format(new Date(row.dataEmissao), 'dd/MM/yyyy HH:mm'),
             sortable: true,
             grow: 1
         },
         {
             name: 'Valor',
-            selector: row => row.venda.valorTotal,
-            cell: row => `R$ ${row.venda.valorTotal.toFixed(2)}`,
+            selector: row => row.vnf,
+            cell: row => `R$ ${row.vnf.toFixed(2)}`,
             sortable: true,
             width: '20%'
         },
@@ -82,7 +76,7 @@ export default function Contador() {
                 return;
             }
             var files = [];
-            arquivos.map(p => files.push(p.xml.id));
+            arquivos.map(p => files.push(p.id));
             download(files);
             return;
         } else {
@@ -109,7 +103,7 @@ export default function Contador() {
             });
         setOnDownload(false);
     }
-    async function downloadUnico(id: number, nnf: number) {
+    async function downloadUnico(id: number, nnf: string) {
         setOnDownload(true);
         await api.post(`/NFCECFEXML/DownloadUnico?empresaId=${user.empresaSelecionada}&id=${id}`, undefined, { responseType: 'blob' })
             .then(({ data }: AxiosResponse) => {
@@ -124,7 +118,7 @@ export default function Contador() {
     function filter() {
         var files = [];
         var res = arquivos?.map((arquivo) => {
-            var str = arquivo.venda.nnf.toString() + arquivo.venda.dataVenda.toString() + arquivo.venda.valorTotal.toString() + "R$";
+            var str = arquivo.nnf.toString() + arquivo.dataEmissao.toString() + arquivo.vnf.toString() + "R$";
             if (str.toUpperCase().includes(search.searchString.toUpperCase())) {
                 files.push(arquivo);
             }
@@ -148,13 +142,26 @@ export default function Contador() {
             setUser(res);
             u = res;
         }
-        await api.get(`/NFCECFEXml/Get?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${s.dateIn || search.dateIn}&dataFim=${s.dateFim || search.dateFim}`)
-            .then(({ data }: AxiosResponse<xmlProps[]>) => {
+        await api.get(`/NFCECFEXml/Get?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${s?.dateIn || search.dateIn}&dataFim=${s?.dateFim || search.dateFim}`)
+            .then(({ data }: AxiosResponse<IXml[]>) => {
                 setArquivos(data);
             }).catch((err: AxiosError) => {
                 toast.error(`Erro ao buscar vendas. ${err.response?.data || err.message}`);
             });
         setLoading(false);
+    }
+
+     const Item = (item: IXml) => {
+        return(
+            <div key={item.id} className={styles.item}>
+                 <span className={styles.qtd}>Nnf<br/><b>{item.nnf}</b></span>
+                 <span className={styles.nome}>Dia<br/><b>{format(fgetDate(item.dataEmissao), 'dd/MM/yy HH:mm')}</b></span>
+                 <span className={styles.venda}>Valor<br/><b>{GetCurrencyBRL(item.vnf)}</b></span>
+                 <CustomButton onClick={() => {
+                    downloadUnico(item.id, item.nnf);
+                 }}>Download XML</CustomButton>
+            </div>
+        )
     }
     return (
         <div className={styles.container}>
@@ -162,7 +169,6 @@ export default function Contador() {
             <div className={[styles.card, styles.w50, styles.middle, styles.row, styles.spaceBetween].join(' ')}>
                 <InputGroup minWidth={'200px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'200px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                {/* <SelectSimNao title={'Inclui Canc.'} width={'20%'} selected={search?.includeCancelamento || false} setSelected={(v) => {setSearch({...search, includeCancelamento: v})}} /> */}
                 <CustomButton style={{ height: '50px' }} onClick={() => {loadData()}} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
             <div className={[styles.row, styles.spaceAround].join(' ')}>
@@ -171,7 +177,7 @@ export default function Contador() {
                     <span>Cupons emitidos</span>
                 </div>
                 <div className={[styles.card, styles.w30, styles.cardInfo].join(' ')}>
-                    <h3>R$ {_.sumBy(arquivos, p => p.venda.valorTotal).toFixed(2)}</h3>
+                    <h3>R$ {_.sumBy(arquivos, p => p.vnf).toFixed(2)}</h3>
                     <span>Totais</span>
                 </div>
             </div>
@@ -180,13 +186,16 @@ export default function Contador() {
                 <CustomButton style={{ marginLeft: 5 }} typeButton={'dark'} onClick={() => { downloadXml(true) }}>Download Todos</CustomButton>
                 <hr />
                 <InputGroup title={'Pesquisar'} value={search?.searchString} onChange={(v) => { setSearch({ ...search, searchString: v.target.value }) }} />
-                <CustomTable
+                {isMobile ? <>
+                { arquivos.map((arquivo) => Item(arquivo))}</> : <>
+                  <CustomTable
                     handleChangeSelected={onSelectChange}
                     selectable={true}
                     columns={columns}
                     data={filter()}
                     loading={loading}
                 />
+                </>}
 
 
             </div>
