@@ -130,11 +130,15 @@ export default function SideBar({ ...props }) {
                                     rootStyles={subMenuStyle}>
                                     <MenuItem href={'/produto'}>Produtos</MenuItem>
                                     <MenuItem href={'/classeMaterial'}>Classes</MenuItem>
-                                    <MenuItem href={'/materiaPrima'}>Ingredientes {bgNew()} </MenuItem>
                                     <MenuItem href={'/tributacao'}>Tributacoes</MenuItem>
                                     <MenuItem href={'/estoque'}>Estoque</MenuItem>
                                     <MenuItem href={'/estoqueLancamento'}>Lancamento de Estoque</MenuItem>
                                     <MenuItem href={'/estoque/conferenciaEstoque'}>Conferência</MenuItem>
+                                </SubMenu>
+                                 <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Ingredientes"
+                                    rootStyles={subMenuStyle}>
+                                      <MenuItem href={'/materiaPrima'}>Ingredientes {bgNew()} </MenuItem>
+                                      <MenuItem href={'/ingredientes/estoque'}>Estoque {bgNew()} </MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promocoes">
                                     <MenuItem href={'/promocao/atacado'}> Promocao</MenuItem>
