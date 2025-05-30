@@ -18,6 +18,7 @@ import ILancamentoEstoque from "@/interfaces/ILancamentoEstoque"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEdit } from "@fortawesome/free-solid-svg-icons"
 import LancamentoEstoqueForm from "@/components/Modals/Produto/LancamentoEstoqueForm"
+import IngredienteLancamentoEstoqueForm from "@/components/Modals/MateriaPrima/IngredienteLancamentoEstoqueForm"
 
 interface searchProps{
     dateIn: string
@@ -105,7 +106,7 @@ export default function IngredientesEstoque(){
             data={vendas}
             loading={loading}
         />
-          {(edit >= 0) && <LancamentoEstoqueForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
+          {(edit >= 0) && <IngredienteLancamentoEstoqueForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
                 if(v){
                     loadData();
                 }
