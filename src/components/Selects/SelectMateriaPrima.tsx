@@ -12,9 +12,10 @@ interface selProps{
     setSelected: (value: any) => void;
     width?: string;
     empresaId?: number;
+    ignore?: number[];
 }
 
-export  default function SelectMateriaPrima({width, selected, setSelected, empresaId}: selProps){
+export  default function SelectMateriaPrima({width, selected, setSelected, empresaId, ignore}: selProps){
     const [formas, setFormas] = useState<IMateriaPrima[]>([]);
     const {getUser} = useContext(AuthContext);
     const loadFormas = async () => {
@@ -34,26 +35,39 @@ export  default function SelectMateriaPrima({width, selected, setSelected, empre
     useEffect(() => {
         loadFormas();
     }, []);
-    function getData() {
-        var data = [] as any[];
-        formas.map((forma) => {
-            var x = {
-                value: forma.id.toString(),
-                label: forma.nome || ''
-            }
-            data.push(x);
-        });
-        return data;
-    }
-
-    function onSelect(value: any) {
-        var index = _.findIndex(formas, p => p.id == value);
-        if (index >= 0) {
-            setSelected(formas[index]);
+      useEffect(() => {
+       if(!ignore || ignore.length == 0){
+        return;
+       }
+    }, [ignore]);
+        function getData() {
+            var data = [] as any[];
+            var isSelected = false;
+            formas.map((forma, index) => {
+                var ind = _.findIndex(ignore, p => p == forma.id);
+               if(ind >= 0){
+                return;
+               }
+               if(!isSelected && !selected){
+                  setSelected(forma);
+                  isSelected = true;
+               }
+                var x = {
+                    value: forma.id.toString(),
+                    label: `${forma.nome}` || ''
+                }
+                data.push(x);
+            });
+            return data;
         }
-    }
+        function setSelectedProd(value: any) {
+            var index = _.findIndex(formas, p => p.id == value);
+            if (index >= 0) {
+                setSelected(formas[index]);
+            }
+        }
 
     return(
-        <SelectBase width={width} datas={getData()} selected={selected?.toString()} title={'Materia Prima'} setSelected={onSelect}/>
+        <SelectBase width={width} datas={getData()} selected={selected?.toString()} title={'Ingrediente'} setSelected={setSelectedProd}/>
     )
 }

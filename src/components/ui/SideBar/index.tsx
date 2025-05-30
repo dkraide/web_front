@@ -137,8 +137,8 @@ export default function SideBar({ ...props }) {
                                 </SubMenu>
                                  <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Ingredientes"
                                     rootStyles={subMenuStyle}>
-                                      <MenuItem href={'/materiaPrima'}>Ingredientes {bgNew()} </MenuItem>
-                                      <MenuItem href={'/ingredientes/estoque'}>Estoque {bgNew()} </MenuItem>
+                                      <MenuItem href={'/ingredientes'}>Ingredientes</MenuItem>
+                                      <MenuItem href={'/ingredientes/estoque'}>Estoque</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promocoes">
                                     <MenuItem href={'/promocao/atacado'}> Promocao</MenuItem>

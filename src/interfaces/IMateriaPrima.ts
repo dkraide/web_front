@@ -11,4 +11,6 @@ export default interface IMateriaPrima{
      status: boolean
      empresaId: number
      localPath: string
+     multiplicadorFornecedor: number
+     codigoFornecedor: string
 }
