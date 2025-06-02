@@ -48,7 +48,7 @@ export default function VinculeMateriaPrima({user, isOpen, setClose, color }: pr
         setClose(obj);
     }
     return (
-        <BaseModal height={'30%'} width={'50%'} color={color} title={'Vincular Materia Prima'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'50vh'} color={color} title={'Vincular Materia Prima'} isOpen={isOpen} setClose={setClose}>
               <div className={styles.container}>
                 <SelectMateriaPrima selected={mp?.id} setSelected={setMp}/>
                 <SelectSimNao width={'40%'} selected={opcional} setSelected={setOpcional} title={'Opcional?'}/>

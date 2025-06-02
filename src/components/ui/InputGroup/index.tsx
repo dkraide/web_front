@@ -34,13 +34,12 @@ interface inputForm extends InputHTMLAttributes<HTMLInputElement> {
     register?: any,
     inputName: string,
     rules?: any
-
 }
-const InputForm = ({ rules, title, width, minWidth, inputName, register, errors, onChange, ...rest }: inputForm) => {
+const InputForm = ({rules, title, width, minWidth, inputName, register, errors, onChange, ...rest }: inputForm) => {
     return (
         <div className={styles["group"]} style={{ width: width || '100%', minWidth: isMobile ? '50%' : minWidth || 'auto' }}>
             <span className={errors[inputName] ? styles["error"] : styles['']}>{errors[inputName] && 'campo invalido'}</span>
-            <input {...register(inputName, { ...rules, onChange: onChange })} {...rest} />
+            <input  {...register(inputName, { ...rules, onChange: onChange })} {...rest} />
             <span className={styles["bar"]}></span>
             <label>{title}</label>
         </div>

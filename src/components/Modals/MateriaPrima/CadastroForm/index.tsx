@@ -62,6 +62,8 @@ export default function MateriaPrimaForm({ user, isOpen, id, setClose, color }: 
         classe.nome = data.nome;
         classe.valorCusto = fGetNumber(data.valorCusto);
         classe.valorVenda = fGetNumber(data.valorVenda);
+        classe.codigoFornecedor = data.codigoFornecedor;
+        classe.multiplicadorFornecedor = fGetNumber(data.multiplicadorFornecedor);
         if (!validateString(classe.nome, 3)) {
             const message = "Informe um nome com no mínimo 3 caracteres!";
             toast.error(message);
@@ -127,6 +129,8 @@ export default function MateriaPrimaForm({ user, isOpen, id, setClose, color }: 
                         <SelectStatus width={isMobile ? '100%' : '15%'} selected={classe.status} setSelected={(v) => { setClasse({ ...classe, status: v }) }} />
                         <InputForm defaultValue={classe.valorCusto} width={'25%'} title={'Custo'} errors={errors} inputName={"valorCusto"} register={register} />
                         <InputForm defaultValue={classe.valorVenda} width={'25%'} title={'Venda'} errors={errors} inputName={"valorVenda"} register={register} />
+                        <InputForm defaultValue={classe.codigoFornecedor} width={'25%'} title={'Cod. Fornecedor'} errors={errors} inputName={"codigoFornecedor"} register={register} />
+                        <InputForm defaultValue={classe.multiplicadorFornecedor} width={'25%'} title={'Multiplicador'} errors={errors} inputName={"multiplicadorFornecedor"} register={register} />
                     </div>
                     <div className={styles.button}>
                         <CustomButton onClick={() => { setClose(); }} typeButton={"secondary"}>Cancelar</CustomButton>
