@@ -139,6 +139,7 @@ export default function IngredientesEstoqueCadastroXml(){
             var qtd = fGetNumber(o.item.qCom);
             var mult = fGetNumber(o.ingrediente.multiplicadorFornecedor) || 1;
             var quantidade = qtd * mult;
+            const custo = custoUnitario(o); 
             return{
                 idLancamentoEstoque: 0,
                 idLancamentoEstoqueProduto: 0,
@@ -148,7 +149,7 @@ export default function IngredientesEstoqueCadastroXml(){
                 produtoId: 0,
                 idMateriaPrima:o.ingrediente?.idMateriaPrima ?? 0,
                 nomeProduto: o.ingrediente?.nome ?? 'N/D',
-                custoUnitario: fGetNumber(o.item.vUnCom),
+                custoUnitario: custo,
                 quantidade: Number(quantidade.toFixed(2)),
                 produto: undefined,
                 materiaPrima: undefined,
@@ -162,7 +163,7 @@ export default function IngredientesEstoqueCadastroXml(){
 
         return await api.post(`/LancamentoEstoque/CreateIngredientes`, obj).then(({data}: AxiosResponse) => {
             toast.success(`Sucesso ao criar lançamento de Estoque`);
-            document.location.href = `/estoqueLancamento`;
+            document.location.href = `/ingredientes/estoque`;
             return true;
 
         }).catch((err: AxiosError) => {
@@ -209,6 +210,12 @@ export default function IngredientesEstoqueCadastroXml(){
         return GetCurrencyBRL(total ?? 0);
     }
 
+    const custoUnitario = (item: itemLancamento) => {
+        var custoUn = fGetNumber(item.item.vUnCom);
+        var multiplicador = item.ingrediente.multiplicadorFornecedor || 1;
+        return Number((custoUn / multiplicador).toFixed(2));
+    }
+
 
     if(message.length > 0){
         return(
@@ -248,7 +255,7 @@ export default function IngredientesEstoqueCadastroXml(){
                                      </CustomButton>
                                     </>}
                                     </td>
-                                <td><InputGroup title={''} value={produto.item.vUnCom} onChange={(v) => {
+                                <td><InputGroup title={''} value={custoUnitario(produto)} onChange={(v) => {
                                     onLeave(index, v.target.value, "vUnCom")
                                 }} /></td>
                                 <td><InputGroup title={''} value={produto.ingrediente?.multiplicadorFornecedor} onChange={(v) => {

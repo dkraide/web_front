@@ -3,7 +3,7 @@ export default interface ICliente{
  lastChange: Date
  localCriacao: string
  idCliente: number
- cpF: string
+ cpf: string
  rg: string
  nome: string
  logradouro: string
@@ -23,4 +23,6 @@ export default interface ICliente{
  isPessoaJuridica: boolean
  tipoIE: number
  empresaId: number
+ needChange: boolean
+ observacao: string
 }

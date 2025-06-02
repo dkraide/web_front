@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './styles.module.scss';
 import { useContext, useEffect, useState } from 'react';
-import {  faBars,  faChartSimple, faMoneyBill, faCalculator, faPercent, faBox, faCashRegister, faUtensils, faPowerOff } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faChartSimple, faMoneyBill, faCalculator, faPercent, faBox, faCashRegister, faUtensils, faPowerOff, faUser } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '@/contexts/AuthContext';
 import IUsuario from '@/interfaces/IUsuario';
 import { api } from '@/services/apiClient';
@@ -63,8 +63,8 @@ export default function SideBar({ ...props }) {
         },
     }
 
-    function bgNew(){
-        return <Badge bg="success" style={{fontSize: '9px'}}>NOVO</Badge>
+    function bgNew() {
+        return <Badge bg="success" style={{ fontSize: '9px' }}>NOVO</Badge>
     }
 
 
@@ -83,12 +83,12 @@ export default function SideBar({ ...props }) {
                 <div hidden={user?.isContador}>
                     <a className={styles["menu-btn"]} onClick={() => { setCollapsed(!collapsed); setToggled(!toggled) }}><FontAwesomeIcon color={'var(--main)'} icon={faBars} /></a>
                 </div>
-                <div style={{marginLeft: 'auto',  marginRight: 'auto', padding: '5px' }}>
+                <div style={{ marginLeft: 'auto', marginRight: 'auto', padding: '5px' }}>
                     <SelectEmpresa isContador={user.isContador} width={'250px'} selected={user.empresaSelecionada} setSelected={(v) => {
                         updateEmpresa(v);
                     }} />
                 </div>
-                <div hidden={innerWidth <= 700 } style={{ justifyContent: 'flex-end', marginRight: '10px', display: 'flex', flexDirection: 'row' }}>
+                <div hidden={innerWidth <= 700} style={{ justifyContent: 'flex-end', marginRight: '10px', display: 'flex', flexDirection: 'row' }}>
                     <span style={{ marginRight: '10px' }}>Bem Vindo, <br /><b><a href={'/me'}>{user.nome}</a></b></span>
                     <a className={styles["menu-btn"]} onClick={signOut}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
                 </div>
@@ -115,7 +115,7 @@ export default function SideBar({ ...props }) {
                         ) : (
                             <div>
                                 <div
-                                hidden={innerWidth > 700 }
+                                    hidden={innerWidth > 700}
                                     style={{
                                         padding: '10px 20px',
                                         display: 'flex',
@@ -135,10 +135,10 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/estoqueLancamento'}>Lancamento de Estoque</MenuItem>
                                     <MenuItem href={'/estoque/conferenciaEstoque'}>Conferência</MenuItem>
                                 </SubMenu>
-                                 <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Ingredientes"
+                                <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Ingredientes"
                                     rootStyles={subMenuStyle}>
-                                      <MenuItem href={'/ingredientes'}>Ingredientes</MenuItem>
-                                      <MenuItem href={'/ingredientes/estoque'}>Estoque</MenuItem>
+                                    <MenuItem href={'/ingredientes'}>Ingredientes</MenuItem>
+                                    <MenuItem href={'/ingredientes/estoque'}>Estoque</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promocoes">
                                     <MenuItem href={'/promocao/atacado'}> Promocao</MenuItem>
@@ -166,6 +166,10 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/relatorio/FechamentoCaixa'}>Fechamento</MenuItem>
                                     <MenuItem href={'/relatorio/estoque'}>Estoque </MenuItem>
                                     <MenuItem href={'/relatorio/horario'}>Horario {bgNew()} </MenuItem>
+                                </SubMenu>
+                                <SubMenu icon={<FontAwesomeIcon icon={faUser} color={'var(--main)'} />} label="Clientes"
+                                    rootStyles={subMenuStyle}>
+                                    <MenuItem href={'/cliente'}>Clientes</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
                                     <MenuItem href={'/pdv/formaPagamento'}>Formas de Pagamento</MenuItem>

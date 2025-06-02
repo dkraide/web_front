@@ -24,7 +24,7 @@ import VinculeMateriaPrima from "../MateriaPrima/VinculaProduto";
 import IMateriaPrima from "@/interfaces/IMateriaPrima";
 import ITamanhoMateriaPrima from "@/interfaces/ITamanhoMateriaPrima";
 import IProdutoMateriaPrima from "@/interfaces/IProdutoMateriaPrima";
-import { fGetNumber, isMobile, validateNumber, validateString  } from "@/utils/functions";
+import { fGetNumber, isMobile, validateNumber, validateString } from "@/utils/functions";
 import SelectSimNao from "@/components/Selects/SelectSimNao";
 
 interface props {
@@ -98,24 +98,24 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         obj.nome = data.nome;
         obj.unidadeCompra = data.unidadeCompra;
         obj.valor = fGetNumber(data.valor);
-        if(
-            !validateString(obj.nome,3) ||
-            !validateNumber(obj.tributacaoId,1) ||
-            !validateNumber(obj.classeMaterialId,1) ||
-            !validateNumber(obj.valor,0.01,9999)
-        ){
-            const message=
-            !validateString(obj.nome,3)?'Informe um nome maior que 3 caracteres!':
-            !validateNumber(obj.tributacaoId,1)?'Informe uma tributação!':
-            !validateNumber(obj.classeMaterialId,1)?'Informe um grupo!':
-            'Informe um valor de venda válido!';
+        if (
+            !validateString(obj.nome, 3) ||
+            !validateNumber(obj.tributacaoId, 1) ||
+            !validateNumber(obj.classeMaterialId, 1) ||
+            !validateNumber(obj.valor, 0.01, 9999)
+        ) {
+            const message =
+                !validateString(obj.nome, 3) ? 'Informe um nome maior que 3 caracteres!' :
+                    !validateNumber(obj.tributacaoId, 1) ? 'Informe uma tributação!' :
+                        !validateNumber(obj.classeMaterialId, 1) ? 'Informe um grupo!' :
+                            'Informe um valor de venda válido!';
             onError(message);
             return;
         }
         obj.valorCompra = fGetNumber(data.valorCompra);
         obj.quantidadeMinima = fGetNumber(data.quantidadeMinima);
         obj.cod = data.cod;
-        obj.codigoFornecedor= data.codigoFornecedor;
+        obj.codigoFornecedor = data.codigoFornecedor;
         obj.multiplicadorFornecedor = fGetNumber(data.multiplicadorFornecedor);
         obj.descricao = data.descricao;
         if (obj.id > 0) {
@@ -165,18 +165,18 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         setValue("codigoBarras", "");
     }
     async function removeCodigo(index: number) {
-        if(obj.codBarras[index].id > 0){
-             var res = await api.delete(`/CodBarras/Delete?id=${obj.codBarras[index].id}`)
-             .then((res: AxiosResponse) => {
-                toast.success(`Codigo de barras excluido na nuvem`)
+        if (obj.codBarras[index].id > 0) {
+            var res = await api.delete(`/CodBarras/Delete?id=${obj.codBarras[index].id}`)
+                .then((res: AxiosResponse) => {
+                    toast.success(`Codigo de barras excluido na nuvem`)
                     return true;
-             }).catch((err: AxiosError) => {
-                toast.error(`Erro ao excluir codigo na nuvem. ${err.message}`)
+                }).catch((err: AxiosError) => {
+                    toast.error(`Erro ao excluir codigo na nuvem. ${err.message}`)
                     return false;
-             })
-             if(!res){
+                })
+            if (!res) {
                 return;
-             }
+            }
         }
         obj.codBarras.splice(index, 1);
         setObj({ ...obj, codBarras: obj.codBarras });
@@ -205,19 +205,19 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         setValue("codigoBarras", "");
     }
     async function removeTamanho(index: number) {
-        if(obj.tamanhos[index].id > 0){
+        if (obj.tamanhos[index].id > 0) {
             var res = await api.delete(`/Tamanho/Delete?id=${obj.tamanhos[index].id}`)
-            .then((res: AxiosResponse) => {
-               toast.success(`Tamanho excluido na nuvem`)
-                   return true;
-            }).catch((err: AxiosError) => {
-               toast.error(`Erro ao excluir Tamanho na nuvem. ${err.response?.data}`)
-                   return false;
-            })
-            if(!res){
-               return;
+                .then((res: AxiosResponse) => {
+                    toast.success(`Tamanho excluido na nuvem`)
+                    return true;
+                }).catch((err: AxiosError) => {
+                    toast.error(`Erro ao excluir Tamanho na nuvem. ${err.response?.data}`)
+                    return false;
+                })
+            if (!res) {
+                return;
             }
-       }
+        }
         obj.tamanhos.splice(index, 1);
         setObj({ ...obj, codBarras: obj.codBarras });
     }
@@ -266,37 +266,37 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
     }
     async function removeMateriaPrima(index: number) {
         if (obj.tamanhos && obj.tamanhos.length > 0) {
-            var id =  obj.tamanhos[tamanho].materiaPrimas[index].id;
-            if(id > 0){
+            var id = obj.tamanhos[tamanho].materiaPrimas[index].id;
+            if (id > 0) {
                 var res = await api.delete(`/Tamanho/DeleteMaterial?id=${id}`)
-                .then((res: AxiosResponse) => {
-                   toast.success(`Material desvinculo do tamanho na nuvem`)
-                       return true;
-                }).catch((err: AxiosError) => {
-                   toast.error(`Erro ao desvincular material do Tamanho na nuvem. ${err.message}`)
-                       return false;
-                })
-                if(!res){
-                   return;
+                    .then((res: AxiosResponse) => {
+                        toast.success(`Material desvinculo do tamanho na nuvem`)
+                        return true;
+                    }).catch((err: AxiosError) => {
+                        toast.error(`Erro ao desvincular material do Tamanho na nuvem. ${err.message}`)
+                        return false;
+                    })
+                if (!res) {
+                    return;
                 }
-           }
+            }
             obj.tamanhos[tamanho].materiaPrimas.splice(index, 1);
             setObj({ ...obj, tamanhos: obj.tamanhos });
         } else {
-            var id =   obj.materiaPrimas[index].id;
-            if(id > 0){
+            var id = obj.materiaPrimas[index].id;
+            if (id > 0) {
                 var res = await api.delete(`/ProdutoMateriaPrima/Delete?id=${id}`)
-                .then((res: AxiosResponse) => {
-                   toast.success(`Materia prima excluida na nuvem`)
-                       return true;
-                }).catch((err: AxiosError) => {
-                   toast.error(`Erro ao excluir materia prima. ${err.message}`)
-                       return false;
-                })
-                if(!res){
-                   return;
+                    .then((res: AxiosResponse) => {
+                        toast.success(`Materia prima excluida na nuvem`)
+                        return true;
+                    }).catch((err: AxiosError) => {
+                        toast.error(`Erro ao excluir materia prima. ${err.message}`)
+                        return false;
+                    })
+                if (!res) {
+                    return;
                 }
-           }
+            }
             obj.materiaPrimas.splice(index, 1);
             setObj({ ...obj, materiaPrimas: obj.materiaPrimas });
         }
@@ -309,8 +309,20 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
             return obj.tamanhos[tamanho]?.materiaPrimas || [];
         }
     }
+
+    if (modalMp) {
+        return (
+            <VinculeMateriaPrima user={user} isOpen={modalMp} setClose={(res) => {
+                if (res) {
+                    addMp(res.mp, res.qntd, res.opc);
+                }
+                setModalMp(false);
+
+            }} />
+        )
+    }
     return (
-        <BaseModal  color={color} title={'Cadastro de Produto'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal color={color} title={'Cadastro de Produto'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading />
             ) : (
@@ -333,14 +345,14 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                                 <InputForm defaultValue={obj.valor} width={'15%'} title={'Venda (R$)'} errors={errors} inputName={"valor"} register={register} />
                                 <InputForm defaultValue={obj.quantidadeMinima} width={'15%'} title={'Estoque Min.'} errors={errors} inputName={"quantidadeMinima"} register={register} />
                                 <InputForm defaultValue={obj.quantidade} width={'15%'} title={'Estoque Atual'} errors={errors} inputName={"quantidade"} register={register} />
-                                <div style={{width: '100%', display: 'flex', flexDirection: 'row', flexWrap: 'wrap'}}>
-                                <SelectSimNao title={'Conferência'} width={isMobile ? '100%' : '15%'} selected={obj.isConferencia} setSelected={(v) => { setObj({ ...obj, isConferencia: v }) }} />
-                                <InputForm defaultValue={obj.codigoFornecedor} width={'15%'} title={'Cod. Fornecedor'} errors={errors} inputName={"codigoFornecedor"} register={register} />
-                                <InputForm defaultValue={obj.multiplicadorFornecedor} width={'15%'} title={'Multiplicador'} errors={errors} inputName={"multiplicadorFornecedor"} register={register} />
+                                <div style={{ width: '100%', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                                    <SelectSimNao title={'Conferência'} width={isMobile ? '100%' : '15%'} selected={obj.isConferencia} setSelected={(v) => { setObj({ ...obj, isConferencia: v }) }} />
+                                    <InputForm defaultValue={obj.codigoFornecedor} width={'15%'} title={'Cod. Fornecedor'} errors={errors} inputName={"codigoFornecedor"} register={register} />
+                                    <InputForm defaultValue={obj.multiplicadorFornecedor} width={'15%'} title={'Multiplicador'} errors={errors} inputName={"multiplicadorFornecedor"} register={register} />
                                 </div>
                                 <SelectClasseMaterial width={isMobile ? '100%' : '49%'} selected={obj.classeMaterialId} setSelected={(v) => { setObj({ ...obj, classeMaterialId: v.id, idClasseMaterial: v.idClasseMaterial }) }} />
                                 <SelectTributacao width={isMobile ? '100%' : '49%'} selected={obj.tributacaoId} setSelected={(v) => { setObj({ ...obj, tributacaoId: v.id, idTributacao: v.idTributacao }) }} />
-                                <div className={styles.codBarras} style={{width: isMobile ? '100%' : ''}}>
+                                <div className={styles.codBarras} style={{ width: isMobile ? '100%' : '' }}>
                                     <h5>Codigo de Barras</h5>
                                     <InputGroup className="mb-3">
                                         <Form.Control
@@ -349,7 +361,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                                             aria-describedby="basic-addon2"
                                             {...register('codigoBarras')}
                                         />
-                                        <CustomButton style={{zIndex: 0,}} typeButton="dark" id="button-addon2" onClick={addCodigo}>
+                                        <CustomButton style={{ zIndex: 0, }} typeButton="dark" id="button-addon2" onClick={addCodigo}>
                                             Adicionar
                                         </CustomButton>
                                     </InputGroup>
@@ -365,35 +377,11 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                                 </div>
                             </div>
                         </Tab>
-                        <Tab eventKey="materiaPrima" title="Materia Prima / Tamanho">
+                        <Tab eventKey="materiaPrima" title="Ingredientes / Insumos">
                             <div className="row">
-                                <div className={"col-3"}>
-                                    <h5>Tamanhos</h5>
-                                    <InputGroup className="mb-3">
-                                        <Form.Control
-                                            placeholder="Tamanho"
-                                            aria-describedby="basic-addon2"
-                                            {...register('codigoTamanho')}
-                                        />
-                                        <Button variant="dark" id="button-addon2" onClick={addTamanho}>
-                                            Adicionar
-                                        </Button>
-                                    </InputGroup>
-                                    <div className={styles.codigos}>
-                                        {(obj.tamanhos && obj.tamanhos.length > 0) && (
-                                            obj.tamanhos.map((c, index) => <div
-                                                key={index}
-                                                className={tamanho == index ? styles.codigoItemSelected : styles.codigoItem}
-                                                onClick={() => { setTamanho(index) }}>
-                                                <a className={'btn btn-danger'} onClick={() => { removeTamanho(index) }}><FontAwesomeIcon icon={faTrash} /></a>
-                                                <label>{c.nome}</label>
-                                            </div>)
-                                        )}
-                                    </div>
-                                </div>
                                 <div className="col-9">
                                     <div className="mb-2">
-                                        <CustomButton typeButton={'dark'} onClick={() => { setModalMp(!modalMp) }}>Adicionar Materia</CustomButton>
+                                        <CustomButton typeButton={'dark'} onClick={() => { setModalMp(!modalMp) }}>Adicionar Ingrediente</CustomButton>
                                     </div>
                                     {((obj.tamanhos && obj.tamanhos.length > 0) || (obj.materiaPrimas && obj.materiaPrimas.length > 0)) && (
                                         getMateriaPrima().map((c, index) => <div
@@ -415,13 +403,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
 
                 </div>
             )}
-            {modalMp && <VinculeMateriaPrima user={user} isOpen={modalMp} setClose={(res) => {
-                if (res) {
-                    addMp(res.mp, res.qntd, res.opc);
-                }
-                setModalMp(false);
 
-            }} />}
         </BaseModal>
     )
 }
