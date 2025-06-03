@@ -24,8 +24,9 @@ import VinculeMateriaPrima from "../MateriaPrima/VinculaProduto";
 import IMateriaPrima from "@/interfaces/IMateriaPrima";
 import ITamanhoMateriaPrima from "@/interfaces/ITamanhoMateriaPrima";
 import IProdutoMateriaPrima from "@/interfaces/IProdutoMateriaPrima";
-import { fGetNumber, isMobile, validateNumber, validateString } from "@/utils/functions";
+import { fGetNumber, GetCurrencyBRL, isMobile, validateNumber, validateString } from "@/utils/functions";
 import SelectSimNao from "@/components/Selects/SelectSimNao";
+import CustomTable from "@/components/ui/CustomTable";
 
 interface props {
     isOpen: boolean
@@ -181,133 +182,89 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         obj.codBarras.splice(index, 1);
         setObj({ ...obj, codBarras: obj.codBarras });
     }
-    function addTamanho() {
-        var codigo = getValues<string>("codigoTamanho");
-        if (!codigo || codigo.length == 0) {
-            toast.error(`Informe um tamanho para adicionar`);
+    const columns = [
+        {
+            name: '#',
+            cell: ({ materiaPrimaId }: IProdutoMateriaPrima) => <CustomButton onClick={() => {
+                removeMateriaPrima(materiaPrimaId);
+            }} className={styles.bg}><FontAwesomeIcon icon={faTrash} /></CustomButton>,
+            sortable: true,
+            width: '10%',
+        },
+        {
+            name: 'Ingrediente',
+            selector: (row: IProdutoMateriaPrima) => row.materiaPrima?.nome || '--',
+            sortable: true,
+            width: '50%',
+        },
+        {
+            name: 'Qntd',
+            selector: (row: IProdutoMateriaPrima) => row.quantidadeMateriaPrima.toFixed(3) ?? '0',
+            sortable: true,
+            width: '20%',
+        },
+        {
+            name: 'Custo',
+            selector: (row: IProdutoMateriaPrima) => GetCurrencyBRL((row.materiaPrima?.valorCusto || 1) * (row.quantidadeMateriaPrima || 1)),
+            sortable: true,
+            width: '20%',
+        },
+    ]
+    function addMp(mp: IMateriaPrima, qntd: number, opc: boolean) {
+        if (!obj.materiaPrimas) {
+            obj.materiaPrimas = [];
+        }
+        let index = _.findIndex(obj.materiaPrimas, (o: IProdutoMateriaPrima) => o.materiaPrimaId == mp.id);
+        if (index >= 0) {
+            toast.error(`Materia prima ja vinculada ao produto.`);
             return;
         }
-        if (!obj.tamanhos) {
-            obj.tamanhos = [];
-        }
-        var ind = _.findIndex(obj.tamanhos, o => o.nome.toLocaleUpperCase() == codigo.toUpperCase());
-        if (ind >= 0) {
-            toast.error(`Tamanho ja adicionado.`);
-            return;
-        }
-        obj.tamanhos.push({
-            nome: codigo,
+        obj.materiaPrimas.push({
+            idProdutoMateriaPrima: 0,
             idProduto: obj.idProduto,
+            idMateriaPrima: mp.idMateriaPrima,
+            id: 0,
+            quantidadeMateriaPrima: qntd,
+            opcional: opc,
+            lastChange: new Date(),
+            localCriacao: 'ONLINE',
+            materiaPrima: mp,
             produtoId: obj.id,
-            empresaId: obj.empresaId
-        } as ITamanho);
-        setObj({ ...obj, codBarras: obj.codBarras });
-        setValue("codigoBarras", "");
+            materiaPrimaId: mp.id,
+            empresaId: user.empresaSelecionada
+        } as IProdutoMateriaPrima);
+        setObj({ ...obj, materiaPrimas: obj.materiaPrimas });
     }
-    async function removeTamanho(index: number) {
-        if (obj.tamanhos[index].id > 0) {
-            var res = await api.delete(`/Tamanho/Delete?id=${obj.tamanhos[index].id}`)
+    async function removeMateriaPrima(materiaPrimaId: number) {
+        let index = _.findIndex(obj.materiaPrimas, (o: IProdutoMateriaPrima) => o.materiaPrimaId == materiaPrimaId);
+        if (index < 0) {
+            toast.error(`Materia prima não encontrada.`);
+            return;
+        }
+        let id = obj.materiaPrimas[index].id;
+        if (id > 0) {
+            var res = await api.delete(`/ProdutoMateriaPrima/Delete?id=${id}`)
                 .then((res: AxiosResponse) => {
-                    toast.success(`Tamanho excluido na nuvem`)
+                    toast.success(`Materia prima excluida na nuvem`)
                     return true;
                 }).catch((err: AxiosError) => {
-                    toast.error(`Erro ao excluir Tamanho na nuvem. ${err.response?.data}`)
+                    toast.error(`Erro ao excluir materia prima. ${err.message}`)
                     return false;
                 })
             if (!res) {
                 return;
             }
         }
-        obj.tamanhos.splice(index, 1);
-        setObj({ ...obj, codBarras: obj.codBarras });
+        const newMateriaPrimas = obj.materiaPrimas.filter((_, i) => i !== index);
+        setObj({ ...obj, materiaPrimas: newMateriaPrimas });
     }
-    function addMp(mp: IMateriaPrima, qntd: number, opc: boolean) {
-        if (obj.tamanhos && obj.tamanhos.length > 0) {
-            console.log('kkk');
-            if (!obj.tamanhos[tamanho].materiaPrimas) {
-                obj.tamanhos[tamanho].materiaPrimas = [];
-            }
-            obj.tamanhos[tamanho].materiaPrimas.push({
-                id: 0,
-                idMateriaPrima: mp.idMateriaPrima,
-                idTamanhoMateriaPrima: 0,
-                idTamanho: obj.tamanhos[tamanho].idTamanho,
-                quantidadeMateriaPrima: qntd,
-                opcional: opc,
-                lastChange: new Date(),
-                localCriacao: 'ONLINE',
-                materiaPrima: mp,
-                materiaPrimaId: mp.id,
-                tamanhoId: obj.tamanhos[tamanho].id,
-                empresaId: user.empresaSelecionada
-            } as ITamanhoMateriaPrima);
-
-            setObj({ ...obj, tamanhos: obj.tamanhos });
-        } else {
-            if (!obj.materiaPrimas) {
-                obj.materiaPrimas = [];
-            }
-            obj.materiaPrimas.push({
-                idProdutoMateriaPrima: 0,
-                idProduto: obj.idProduto,
-                idMateriaPrima: mp.idMateriaPrima,
-                id: 0,
-                quantidadeMateriaPrima: qntd,
-                opcional: opc,
-                lastChange: new Date(),
-                localCriacao: 'ONLINE',
-                materiaPrima: mp,
-                produtoId: obj.id,
-                materiaPrimaId: mp.id,
-                empresaId: user.empresaSelecionada
-            } as IProdutoMateriaPrima);
-            setObj({ ...obj, materiaPrimas: obj.materiaPrimas });
+    const custoTotal = () => {
+        if (!obj.materiaPrimas || obj.materiaPrimas.length <= 0) {
+            return 0;
         }
-    }
-    async function removeMateriaPrima(index: number) {
-        if (obj.tamanhos && obj.tamanhos.length > 0) {
-            var id = obj.tamanhos[tamanho].materiaPrimas[index].id;
-            if (id > 0) {
-                var res = await api.delete(`/Tamanho/DeleteMaterial?id=${id}`)
-                    .then((res: AxiosResponse) => {
-                        toast.success(`Material desvinculo do tamanho na nuvem`)
-                        return true;
-                    }).catch((err: AxiosError) => {
-                        toast.error(`Erro ao desvincular material do Tamanho na nuvem. ${err.message}`)
-                        return false;
-                    })
-                if (!res) {
-                    return;
-                }
-            }
-            obj.tamanhos[tamanho].materiaPrimas.splice(index, 1);
-            setObj({ ...obj, tamanhos: obj.tamanhos });
-        } else {
-            var id = obj.materiaPrimas[index].id;
-            if (id > 0) {
-                var res = await api.delete(`/ProdutoMateriaPrima/Delete?id=${id}`)
-                    .then((res: AxiosResponse) => {
-                        toast.success(`Materia prima excluida na nuvem`)
-                        return true;
-                    }).catch((err: AxiosError) => {
-                        toast.error(`Erro ao excluir materia prima. ${err.message}`)
-                        return false;
-                    })
-                if (!res) {
-                    return;
-                }
-            }
-            obj.materiaPrimas.splice(index, 1);
-            setObj({ ...obj, materiaPrimas: obj.materiaPrimas });
-        }
-    }
-    function getMateriaPrima() {
-        if (!obj.tamanhos || obj.tamanhos.length == 0) {
-            return obj.materiaPrimas;
-        } else {
-            console.log(obj.tamanhos[tamanho])
-            return obj.tamanhos[tamanho]?.materiaPrimas || [];
-        }
+        return _.sumBy(obj.materiaPrimas, (row: IProdutoMateriaPrima) => {
+            return (row.materiaPrima?.valorCusto || 1) * (row.quantidadeMateriaPrima || 1);
+        })
     }
 
     if (modalMp) {
@@ -379,19 +336,17 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                         </Tab>
                         <Tab eventKey="materiaPrima" title="Ingredientes / Insumos">
                             <div className="row">
-                                <div className="col-9">
+                                <div className="col-12">
                                     <div className="mb-2">
                                         <CustomButton typeButton={'dark'} onClick={() => { setModalMp(!modalMp) }}>Adicionar Ingrediente</CustomButton>
                                     </div>
-                                    {((obj.tamanhos && obj.tamanhos.length > 0) || (obj.materiaPrimas && obj.materiaPrimas.length > 0)) && (
-                                        getMateriaPrima().map((c, index) => <div
-                                            key={index}
-                                            className={styles.codigoItem}
-                                            onClick={() => { setTamanho(index) }}>
-                                            <a className={'btn btn-danger'} onClick={() => { removeMateriaPrima(index) }}><FontAwesomeIcon icon={faTrash} /></a>
-                                            <label>{c.materiaPrima.nome} {c.quantidadeMateriaPrima && ` x ${c.quantidadeMateriaPrima.toFixed(2)}`}</label>
-                                        </div>)
-                                    )}
+                                    <CustomTable
+                                        columns={columns}
+                                        data={obj.materiaPrimas ?? []}
+                                    />
+                                    <div hidden={!obj.materiaPrimas || obj.materiaPrimas.length <= 0} className={styles.tamanho}>
+                                        <span>Custo Total: <b>{GetCurrencyBRL(custoTotal())}</b> </span>
+                                    </div>
                                 </div>
                             </div>
                         </Tab>
