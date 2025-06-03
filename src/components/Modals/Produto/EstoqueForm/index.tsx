@@ -23,17 +23,14 @@ interface props {
     color?: string
     user: IUsuario
 }
-interface resultProps {
-    produto?: IProduto
-    lancamentos: ILancamentoEstoqueProduto[]
-}
 interface searchProps {
     dateIn: string
     dateFim: string
 }
 export default function EstoqueForm({ user, isOpen, id, setClose, color }: props) {
 
-    const [result, setResult] = useState<resultProps>()
+    const [result, setResult] = useState<ILancamentoEstoqueProduto[]>();
+    const [produto, setProduto] = useState<IProduto>();
     const [loading, setLoading] = useState<boolean>(true)
     const [search, setSearch] = useState<searchProps>()
     const [ajuste, setAjuste] = useState(false);
@@ -47,10 +44,16 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
     }, []);
 
     const loadData = async () => {
-        api.get(`/Estoque/Select?ProdutoId=${id}&dataIn=${search?.dateIn || format(startOfMonth(new Date()), 'yyyy-MM-dd')}&dataFim=${search?.dateFim || format(endOfMonth(new Date()), 'yyyy-MM-dd')}`)
-            .then(({ data }: AxiosResponse<resultProps>) => {
-                console.log(data);
+        await api.get(`/Estoque/Select?ProdutoId=${id}&dataIn=${search?.dateIn || format(startOfMonth(new Date()), 'yyyy-MM-dd')}&dataFim=${search?.dateFim || format(endOfMonth(new Date()), 'yyyy-MM-dd')}`)
+            .then(({ data }: AxiosResponse<ILancamentoEstoqueProduto[]>) => {
                 setResult(data);
+            })
+            .catch((err) => {
+                toast.error(`Erro ao buscar dados. ${err.message}`)
+            });
+       await api.get(`/Produto/Select?id=${id}`)
+            .then(({ data }: AxiosResponse<IProduto>) => {
+                setProduto(data);
             })
             .catch((err) => {
                 toast.error(`Erro ao buscar dados. ${err.message}`)
@@ -59,7 +62,7 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
     }
 
     if (ajuste) {
-        return <AjusteEstoqueForm isOpen={ajuste} produto={result.produto} user={user} setClose={(v) => {
+        return <AjusteEstoqueForm isOpen={ajuste} produto={produto} user={user} setClose={(v) => {
             if (v) {
                 loadData();
             }
@@ -113,9 +116,9 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
     ]
 
     const dataExcel = () => {
-        return result.lancamentos.map((lancamento) => {
-            return{
-                tipo: lancamento.isEntrada ? 'ENTRADA' :"SAIDA",
+        return result.map((lancamento) => {
+            return {
+                tipo: lancamento.isEntrada ? 'ENTRADA' : "SAIDA",
                 nro: lancamento.id,
                 obs: lancamento.observacao,
                 data: format(new Date(lancamento.dataLancamento), 'dd-MM-yy HH:mm'),
@@ -127,12 +130,12 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
     }
 
     const headers = [
-        {label: 'Tipo', key:'tipo'},
-        {label: 'Nro', key:'nro'},
-        {label: 'Obs', key:'obs'},
-        {label: 'Data', key:'data'},
-        {label: 'Qtd', key:'qtd'},
-        {label: 'Custo', key:'custo'}
+        { label: 'Tipo', key: 'tipo' },
+        { label: 'Nro', key: 'nro' },
+        { label: 'Obs', key: 'obs' },
+        { label: 'Data', key: 'data' },
+        { label: 'Qtd', key: 'qtd' },
+        { label: 'Custo', key: 'custo' }
     ]
 
     return (
@@ -142,8 +145,8 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
             ) : (
                 <div className={styles.container}>
                     <div className={styles.info}>
-                        <InputGroup width={'10%'} title={'Cod'} value={result.produto.cod} />
-                        <InputGroup width={'80%'} title={'Cod'} value={result.produto.nome} />
+                        <InputGroup width={'10%'} title={'Cod'} value={produto?.cod} />
+                        <InputGroup width={'80%'} title={'Cod'} value={produto?.nome} />
                     </div>
                     <div className={styles.info}>
                         <CustomButton onClick={() => { setAjuste(true) }} typeButton={'dark'}>Ajuste Rapido</CustomButton>
@@ -151,11 +154,11 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
                         <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />
                         <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
                     </div>
-                    <hr/>
+                    <hr />
                     <CustomButton onClick={() => { ExportToExcel(headers, dataExcel(), 'relatorio_estoque') }} typeButton={'dark'}>Excel</CustomButton>
                     <div className={styles.info}>
                         <CustomTable
-                            data={(result?.lancamentos) ?? []}
+                            data={(result) ?? []}
                             columns={columns} />
                     </div>
                 </div>

@@ -196,11 +196,9 @@ export default function IngredientesEstoqueCadastroXml(){
         return;
        }
     }
-
     const quantidadeItens = () => {
         return _.sumBy(ingredientes, (item) => Number(item.item.qCom ?? '0'));
     }
-
     const valorItens = () => {
         let total =  _.sumBy(ingredientes, (item) => {
               let qCom = fGetNumber(item.item.qCom);
@@ -209,14 +207,11 @@ export default function IngredientesEstoqueCadastroXml(){
         });
         return GetCurrencyBRL(total ?? 0);
     }
-
     const custoUnitario = (item: itemLancamento) => {
         var custoUn = fGetNumber(item.item.vUnCom);
         var multiplicador = item.ingrediente.multiplicadorFornecedor || 1;
         return Number((custoUn / multiplicador).toFixed(2));
     }
-
-
     if(message.length > 0){
         return(
             <div className={styles['container-xml']}>
