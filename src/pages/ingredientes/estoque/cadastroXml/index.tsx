@@ -209,7 +209,7 @@ export default function IngredientesEstoqueCadastroXml(){
     }
     const custoUnitario = (item: itemLancamento) => {
         var custoUn = fGetNumber(item.item.vUnCom);
-        var multiplicador = item.ingrediente.multiplicadorFornecedor || 1;
+        var multiplicador = item.ingrediente?.multiplicadorFornecedor || 1;
         return Number((custoUn / multiplicador).toFixed(2));
     }
     if(message.length > 0){
@@ -253,7 +253,7 @@ export default function IngredientesEstoqueCadastroXml(){
                                 <td><InputGroup title={''} value={custoUnitario(produto)} onChange={(v) => {
                                     onLeave(index, v.target.value, "vUnCom")
                                 }} /></td>
-                                <td><InputGroup title={''} value={produto.ingrediente?.multiplicadorFornecedor} onChange={(v) => {
+                                <td><InputGroup title={''} value={produto.ingrediente?.multiplicadorFornecedor ?? '1'} onChange={(v) => {
                                     onLeave(index, v.target.value, "multiplicadorFornecedor")
                                 }} /></td>
                                 <td><InputGroup title={''} value={produto.item.qCom} onChange={(v) => {
