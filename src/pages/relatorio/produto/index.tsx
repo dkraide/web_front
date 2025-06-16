@@ -9,7 +9,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import IUsuario from "@/interfaces/IUsuario"
 import { AuthContext } from "@/contexts/AuthContext"
 import { InputGroup } from "@/components/ui/InputGroup"
-import { ExportToExcel, fGetNumber,  LucroPorcentagem, nameof } from "@/utils/functions"
+import { ExportToExcel, fGetNumber, LucroPorcentagem, nameof } from "@/utils/functions"
 import Visualizar from "@/components/Modals/Venda/Visualizar"
 import VisualizarMovimento from "@/components/Modals/MovimentoCaixa/Visualizar"
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa"
@@ -142,18 +142,34 @@ export default function RelatorioProduto() {
             cell: (row) => GetCurrencyBRL(row.custo),
             sortable: true,
         },
+        {
+            name: 'Lucro',
+            cell: row => {
+                const margem = row.venda > 0 ? ((row.venda - row.custo) / row.venda) * 100 : 0;
+                return `${margem.toFixed(2)}%`;
+            },
+            sortable: true,
+        },
+        {
+            name: 'Markup',
+            cell: row => {
+                const markup = row.custo > 0 ? ((row.venda - row.custo) / row.custo) * 100 : 0;
+                return `${markup.toFixed(2)}%`;
+            },
+            sortable: true,
+        },
 
     ]
 
     const Item = (item: relatorioProps) => {
-        return(
+        return (
             <div className={styles.item}>
-                    <span className={styles.qtd}>Qtd<br/><b>{item.quantidade}</b></span>
-                    <span className={styles.nome}>Produto<br/><b>{item.produto}</b></span>
-                    <span className={styles.venda}>Venda<br/><b>{GetCurrencyBRL(item.venda)}</b></span>
-                    <span className={styles.venda}>Custo<br/><b>{GetCurrencyBRL(item.custo)}</b></span>
-                    <span className={styles.venda}>Margem(R$)<br/><b>{GetCurrencyBRL(item.venda - item.custo)}</b></span>
-                    <span className={styles.venda}>Margem(%)<br/><b>{LucroPorcentagem(item.venda, item.custo).toFixed(2)}</b></span>
+                <span className={styles.qtd}>Qtd<br /><b>{item.quantidade}</b></span>
+                <span className={styles.nome}>Produto<br /><b>{item.produto}</b></span>
+                <span className={styles.venda}>Venda<br /><b>{GetCurrencyBRL(item.venda)}</b></span>
+                <span className={styles.venda}>Custo<br /><b>{GetCurrencyBRL(item.custo)}</b></span>
+                <span className={styles.venda}>Margem(R$)<br /><b>{GetCurrencyBRL(item.venda - item.custo)}</b></span>
+                <span className={styles.venda}>Margem(%)<br /><b>{LucroPorcentagem(item.venda, item.custo).toFixed(2)}</b></span>
 
 
             </div>
@@ -181,7 +197,7 @@ export default function RelatorioProduto() {
                 </div>
                 <InputGroup title={'Pesquisar'} value={search.searchStr} onChange={(e) => { setSearch({ ...search, searchStr: e.currentTarget.value }) }} />
                 {isMobile ? <>
-                     {getData()?.map((item) => Item(item))}
+                    {getData()?.map((item) => Item(item))}
                 </> : <>
                     <CustomTable
                         columns={columns}

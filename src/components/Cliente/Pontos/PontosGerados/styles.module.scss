@@ -1,7 +1,5 @@
-.container{
-    padding: 10px;
-}
-.item {
+
+.item{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -11,16 +9,21 @@
     padding: 10px;
     margin-bottom: 5px;
     justify-content: space-between;
-    .w20 {
-        width: 20%;
+    .w10{
+        width: 10%;
     }
-    .w80 {
-        width: 80%;
-    }
-    .w40 {
+    .w40{
         width: 40%;
     }
-    .w60 {
-        width: 60%;
+    .w15{
+        width: 15%;
     }
+    .w30{
+        width: 30%;
+    }
+    .w20{
+        width: 20%;
+    }
+
+
 }

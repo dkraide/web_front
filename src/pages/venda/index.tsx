@@ -54,7 +54,7 @@ export default function Venda(){
         if(!search){
             var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
             var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
-            url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}&vendedorId=$0}&movimentoCaixa=${0}&status=${0}`;
+            url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}&vendedorId=${0}&movimentoCaixa=${0}&status=${0}`;
         }else{
             url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}&vendedorId=${search.vendedorId}&movimentoCaixa=${search.movimentoCaixa}&status=${search.status}`;
         }

@@ -171,6 +171,7 @@ export default function SideBar({ ...props }) {
                                     rootStyles={subMenuStyle}>
                                     <MenuItem href={'/cliente'}>Clientes</MenuItem>
                                     <MenuItem href={'/cliente/premio'}>Premios</MenuItem>
+                                    <MenuItem href={'/cliente/pontos'}>Pontos</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
                                     <MenuItem href={'/pdv/formaPagamento'}>Formas de Pagamento</MenuItem>

@@ -19,6 +19,7 @@ import ICombo from "@/interfaces/ICombo";
 import AddItem from "./AddItem";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import SelectSimNao from "@/components/Selects/SelectSimNao";
 
 
 interface props {
@@ -140,8 +141,9 @@ export default function ComboForm({ user, isOpen, id, setClose, color }: props) 
                 <Loading />
             ) : (
                 <div className={styles.container}>
-                    <InputForm defaultValue={item.codigo} width={'40%'} title={'Codigo'} errors={errors} inputName={"codigo"} register={register} />
-                    <SelectStatus width={'40%'} selected={item.status} setSelected={(v) => { setItem({ ...item, status: v }) }} />
+                    <InputForm defaultValue={item.codigo} width={'30%'} title={'Codigo'} errors={errors} inputName={"codigo"} register={register} />
+                    <SelectSimNao width={'30%'} title={'Visivel Menu'} selected={item.visivelMenu} setSelected={(e) => {setItem({...item, visivelMenu: e})}}/>
+                    <SelectStatus width={'30%'} selected={item.status} setSelected={(v) => { setItem({ ...item, status: v }) }} />
                     <InputForm defaultValue={item.descricao} width={'100%'} title={'Descricao'} errors={errors} inputName={"descricao"} register={register} />
                     <div className={styles.itens}>
                         <CustomButton typeButton={'dark'} onClick={() => { setAddItem(true) }}>Adicionar Item</CustomButton>
