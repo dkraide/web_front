@@ -54,7 +54,7 @@ export default function Venda(){
         if(!search){
             var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
             var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
-            url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}&vendedorId=$0}&movimentoCaixa=${0}&status=${0}`;
+            url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}&vendedorId=${0}&movimentoCaixa=${0}&status=${0}`;
         }else{
             url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}&vendedorId=${search.vendedorId}&movimentoCaixa=${search.movimentoCaixa}&status=${search.status}`;
         }
@@ -121,7 +121,7 @@ export default function Venda(){
         return (
             <div className={styles.item} onClick={() => {setShowVenda(item.id)}}>
                 <span className={styles.w20}>Venda<br /><b>{item.idVenda}</b></span>
-                <span className={styles.w30}>Data<br /><b>{format(new Date(item.idVenda), 'dd/MM/yy HH:mm')}</b></span>
+                <span className={styles.w30}>Data<br /><b>{format(new Date(item.dataVenda), 'dd/MM/yy HH:mm')}</b></span>
                 <span className={styles.w30}>Status<br /><b>{item.statusVenda ? 'OK' : 'CANCELADA'}</b></span>
                 <span className={styles.w20}>Valor<br /><b>{GetCurrencyBRL(item.valorTotal)}</b></span>
                 <span className={styles.w20}>Caixa<br /><b>{item.idMovimentoCaixa}</b></span>

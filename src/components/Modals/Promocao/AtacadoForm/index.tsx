@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/services/apiClient";
 import { AxiosError, AxiosResponse } from "axios";
 import Loading from "@/components/Loading";
-import {InputForm} from "@/components/ui/InputGroup";
+import { InputForm } from "@/components/ui/InputGroup";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import styles from './styles.module.scss';
@@ -14,10 +14,11 @@ import IPromocao from "@/interfaces/IPromocao";
 import SelectClasseProduto from "@/components/Selects/SelectClasseProduto";
 import SelectProduto from "@/components/Selects/SelectProduto";
 import SelectClasseMaterial from "@/components/Selects/SelectClasseMaterial";
-import { fGetNumber , validateNumber} from "@/utils/functions";
+import { fGetNumber, validateNumber } from "@/utils/functions";
 import { format } from "date-fns";
 import SelectDiaSemana from "@/components/Selects/SelectDiaSemana";
 import { isMobile } from "react-device-detect";
+import SelectSimNao from "@/components/Selects/SelectSimNao";
 
 
 
@@ -28,7 +29,7 @@ interface props {
     color?: string
     user: IUsuario
 }
-export default function AtacadoForm({user, isOpen, id, setClose, color }: props) {
+export default function AtacadoForm({ user, isOpen, id, setClose, color }: props) {
 
     const {
         register,
@@ -48,7 +49,7 @@ export default function AtacadoForm({user, isOpen, id, setClose, color }: props)
             api.get(`/Promocao/Select?id=${id}`)
                 .then(({ data }: AxiosResponse<IPromocao>) => {
                     setItem(data);
-                    if(data.classeMaterialId > 0){
+                    if (data.classeMaterialId > 0) {
                         setIsProduto(false);
                     }
                     setLoading(false);
@@ -57,7 +58,7 @@ export default function AtacadoForm({user, isOpen, id, setClose, color }: props)
                     toast.error(`Erro ao buscar dados. ${err.message}`)
                     setLoading(false);
                 })
-        }else{
+        } else {
             item.id = 0;
             item.status = true;
             item.diaSemana = 0;
@@ -68,66 +69,67 @@ export default function AtacadoForm({user, isOpen, id, setClose, color }: props)
 
     }, []);
 
-    const onSubmit = async (data: any) =>{
+    const onSubmit = async (data: any) => {
         setSending(true);
         item.quantidade = fGetNumber(data.quantidade);
         item.valorFinal = fGetNumber(data.valorFinal);
-        if(
-            !validateNumber(item.quantidade,1) ||
-            !validateNumber(item.valorFinal,0.01)
-        ){
-            const message=
-            !validateNumber(item.quantidade,1)?'Informe uma quantidade para a promoção!':
-            'Informe um valor para a promoção!';
+        if (
+            !validateNumber(item.quantidade, 1) ||
+            !validateNumber(item.valorFinal, 0.01)
+        ) {
+            const message =
+                !validateNumber(item.quantidade, 1) ? 'Informe uma quantidade para a promoção!' :
+                    'Informe um valor para a promoção!';
             toast.error(message);
             setSending(false);
             return;
         }
-        if(item.id > 0){
+        if (item.id > 0) {
             api.put(`Promocao/UpdatePromocao`, item)
-            .then(({data}: AxiosResponse) => {
-                toast.success(`Promocao atualizado com sucesso!`);
-                setClose(true);
-            })
-            .catch((err: AxiosError) => {
-                   toast.error(`Erro ao atualizar Promocao. ${err.response?.data}`);
-            })
+                .then(({ data }: AxiosResponse) => {
+                    toast.success(`Promocao atualizado com sucesso!`);
+                    setClose(true);
+                })
+                .catch((err: AxiosError) => {
+                    toast.error(`Erro ao atualizar Promocao. ${err.response?.data}`);
+                })
 
-        }else{
+        } else {
             item.empresaId = user.empresaSelecionada;
             api.post(`Promocao/Create`, item)
-            .then(({data}: AxiosResponse) => {
-                toast.success(`Promocao cadastrado com sucesso!`);
-                setClose(true);
-            })
-            .catch((err: AxiosError) => {
-                   toast.error(`Erro ao criar Promocao. ${err.response?.data}`);
-            })
+                .then(({ data }: AxiosResponse) => {
+                    toast.success(`Promocao cadastrado com sucesso!`);
+                    setClose(true);
+                })
+                .catch((err: AxiosError) => {
+                    toast.error(`Erro ao criar Promocao. ${err.response?.data}`);
+                })
         }
         setSending(false);
     }
     return (
         <BaseModal height={'80%'} width={'50%'} color={color} title={'Cadastro de Promocao'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
-                <Loading  />
+                <Loading />
             ) : (
                 <div className={styles.container}>
-                    <SelectClasseProduto title={'Tipo'} width={isMobile ? '100%' : '60%'} selected={isProduto} setSelected={(v) => setIsProduto(v)}/>
-                    <SelectStatus width={isMobile ? '100%' : '30%'} selected={item.status} setSelected={(v) => {setItem({...item, status: v})}} />
-                    {isProduto ? 
-                    <SelectProduto empresaId={user.empresaSelecionada}  selected={item.produtoId || 0} setSelected={(v) => {
-                        setItem({...item, produtoId: v.id, idProduto: v.idProduto, classeMaterialId: 0, idClasseMaterial: 0})
-                    }}/> : 
-                    <SelectClasseMaterial selected={item.classeMaterialId || 0} setSelected={(v) => {
-                        setItem({...item, produtoId: 0, idProduto: 0, classeMaterialId: v.id, idClasseMaterial: v.idClasseMaterial})
-                    }}/>}
-                    <InputForm type={'date'} defaultValue={format(new Date(item.dataFinal), 'yyyy-MM-dd')} width={'50%'} title={'Data Final'}  errors={errors} inputName={"dataFinal"} register={register} />
-                    <SelectDiaSemana title={'Dia da Semana'} width={'50%'} selected={item.diaSemana} setSelected={(v) => setItem({...item, diaSemana: v})}/>
-                    <InputForm defaultValue={item.quantidade} width={'50%'} title={'Quantidade'}  errors={errors} inputName={"quantidade"} register={register} />
-                    <InputForm defaultValue={item.valorFinal} width={'50%'} title={'Valor Final'}  errors={errors} inputName={"valorFinal"} register={register} />
+                    <SelectClasseProduto title={'Tipo'} width={isMobile ? '100%' : '35%'} selected={isProduto} setSelected={(v) => setIsProduto(v)} />
+                    <SelectStatus width={isMobile ? '100%' : '30%'} selected={item.status} setSelected={(v) => { setItem({ ...item, status: v }) }} />
+                    <SelectSimNao title={'Visivel Menu'} width={isMobile ? '100%' : '30%'} selected={item.visivelMenu} setSelected={(v) => { setItem({ ...item, visivelMenu: v }) }} />
+                    {isProduto ?
+                        <SelectProduto empresaId={user.empresaSelecionada} selected={item.produtoId || 0} setSelected={(v) => {
+                            setItem({ ...item, produtoId: v.id, idProduto: v.idProduto, classeMaterialId: 0, idClasseMaterial: 0 })
+                        }} /> :
+                        <SelectClasseMaterial selected={item.classeMaterialId || 0} setSelected={(v) => {
+                            setItem({ ...item, produtoId: 0, idProduto: 0, classeMaterialId: v.id, idClasseMaterial: v.idClasseMaterial })
+                        }} />}
+                    <InputForm type={'date'} defaultValue={format(new Date(item.dataFinal), 'yyyy-MM-dd')} width={'50%'} title={'Data Final'} errors={errors} inputName={"dataFinal"} register={register} />
+                    <SelectDiaSemana title={'Dia da Semana'} width={'50%'} selected={item.diaSemana} setSelected={(v) => setItem({ ...item, diaSemana: v })} />
+                    <InputForm defaultValue={item.quantidade} width={'50%'} title={'Quantidade'} errors={errors} inputName={"quantidade"} register={register} />
+                    <InputForm defaultValue={item.valorFinal} width={'50%'} title={'Valor Final'} errors={errors} inputName={"valorFinal"} register={register} />
                     <div className={styles.button}>
-                        <CustomButton onClick={() => { setClose(); } } typeButton={"secondary"}>Cancelar</CustomButton>
-                        <CustomButton typeButton={'dark'} loading={sending} onClick={() => {handleSubmit(onSubmit)()}}>Confirmar</CustomButton>
+                        <CustomButton onClick={() => { setClose(); }} typeButton={"secondary"}>Cancelar</CustomButton>
+                        <CustomButton typeButton={'dark'} loading={sending} onClick={() => { handleSubmit(onSubmit)() }}>Confirmar</CustomButton>
                     </div>
                 </div>
             )}

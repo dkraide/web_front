@@ -67,7 +67,6 @@ export const sendImage = async (files: any): Promise<string|undefined> => {
     }, 500)
     return axios.post(`https://krdpic.krdsys.tech/pic/upload`, formData, { headers: { "Content-Type": 'multipart/form-data' } })
         .then(({ data }: AxiosResponse) => {
-            console.log(data);
             return data.path;
         }).catch((err: AxiosError) => {
             console.log(err);

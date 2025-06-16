@@ -12,10 +12,10 @@ export default interface IPremio {
   status: boolean;
   empresaId: number;
   id: number;
-  
-
   needChange: boolean;
   lastChange: string; // ISO date string (padrão em APIs REST)
   produtoId: number;
   classeMaterialId: number
+
+  localPath?: string
 }

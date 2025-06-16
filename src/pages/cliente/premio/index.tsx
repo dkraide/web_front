@@ -18,6 +18,8 @@ import ICliente from '@/interfaces/ICliente';
 import ClienteForm from '@/components/Modals/Cliente/ClienteForm';
 import IPremio from '@/interfaces/IPremio';
 import PremioForm from '@/components/Modals/Premio/PremioForm';
+import { Spinner } from 'react-bootstrap';
+import { isMobile } from 'react-device-detect';
 
 
 export default function ClientePremio() {
@@ -31,7 +33,7 @@ export default function ClientePremio() {
     const { innerWidth } = useWindowSize();
 
     useEffect(() => {
-        if(!innerWidth){
+        if (!innerWidth) {
             return;
         }
         setMobile(innerWidth < 600);
@@ -39,11 +41,14 @@ export default function ClientePremio() {
     }, [innerWidth])
 
     const loadData = async () => {
-       var u: any;
-       if(!user){
-        var res = await getUser();
-        setUser(res);
-        u = res;
+        var u: any;
+        if (!user) {
+            var res = await getUser();
+            setUser(res);
+            u = res;
+        }
+        if (!loading) {
+            setLoading(true);
         }
         await api
             .get(`/Premio/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
@@ -65,10 +70,36 @@ export default function ClientePremio() {
         return res;
     }
 
+    function setImage(id: number) {
+        var input = document.createElement("input");
+        input.type = "file";
+        input.accept = 'image/png, image/jpeg';
+        input.click();
+        input.onchange = async (e: Event) => {
+            setTimeout(() => {
+            }, 500)
+            const target = e.target as HTMLInputElement;
+            const files = target.files as FileList;
+            var formData = new FormData();
+            formData.append('file', files[0], files[0].name)
+            setTimeout(() => {
+            }, 500)
+            setLoading(true);
+            await api.post(`/Premio/${id}/UploadImagem`, formData, { headers: { "Content-Type": 'multipart/form-data' } })
+                .then(({ data }) => {
+                    loadData();
+                }).catch((err) => {
+
+                    toast.error(`Erro ao tentar salvar imagem.`);
+                    setLoading(false);
+                })
+        }
+    }
+
     const columns = [
         {
             name: '#',
-            cell: ({ id }: ICliente) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }: ICliente) => <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>,
             sortable: true,
             grow: 0
         },
@@ -79,13 +110,37 @@ export default function ClientePremio() {
             grow: 0
         },
         {
+            name: 'Imagem',
+            cell: ({ localPath, id }: IPremio) => <div
+                onClick={() => {
+                    setImage(id);
+                }}
+                style={{
+                    cursor: 'pointer'
+                }}
+            >
+                <img
+                    style={{
+                        width: 85,
+                        height: 85,
+                        padding: 5
+                    }}
+                    src={localPath ?? '/nopic.png'}
+                    onError={(e) => { e.currentTarget.src = '/nopic.png' }}
+                />
+
+            </div>,
+            sortable: true,
+            grow: 0
+        },
+        {
             name: 'Descricao',
-            selector: (row: IPremio) =>  row.descricao,
+            selector: (row: IPremio) => row.descricao,
             sortable: true,
         },
-         {
+        {
             name: 'Pontos',
-            selector: (row: IPremio) =>  row.quantidadePontos,
+            selector: (row: IPremio) => row.quantidadePontos,
             sortable: true,
         },
         {
@@ -96,23 +151,45 @@ export default function ClientePremio() {
         },
     ]
 
+    const Item = (item: IPremio) => {
+        return (
+            <div onClick={() => { setEdit(item.id) }} key={item.id} className={styles.item}>
+                <span className={styles.w80}>Descrição<br /><b>{item.descricao}</b></span>
+                <span className={styles.w20}>Pontos<br /><b>{item.quantidadePontos}</b></span>
+                <span className={styles.w60}>Status<br /><b>{item.status ? 'ATIVO' : 'INATIVO'}</b></span>
+            </div>
+        )
+    }
 
-    // if(mobile){
-    //     return <ClasseMaterialMobile list={clientes} loadData={loadData} user={user}/>
-    // }
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <Spinner />
+            </div>
+        )
+    }
+
     return (
         <div className={styles.container}>
             <h4>Premios</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Premio</CustomButton>
-            <hr/>
-            <CustomTable
-                columns={columns}
-                data={getFiltered()}
-                loading={loading}
-            />
+            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Novo Premio</CustomButton>
+            <hr />
+            {isMobile ? (
+                <>
+                    {getFiltered()?.map((cliente) => Item(cliente))}
+                </>
+            ) : (
+                <>
+                    <CustomTable
+                        columns={columns}
+                        data={getFiltered()}
+                        loading={loading}
+                    />
+                </>
+            )}
             {(edit >= 0) && <PremioForm user={user} isOpen={edit >= 0} premioId={edit} setClose={(v) => {
-                if(v){
+                if (v) {
                     loadData();
                 }
                 setEdit(-1);

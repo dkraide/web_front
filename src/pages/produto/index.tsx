@@ -29,21 +29,21 @@ export default function Produto() {
     const [mobile, setMobile] = useState(false);
 
     useEffect(() => {
-        if(!innerWidth){
+        if (!innerWidth) {
             return;
         }
         setMobile(innerWidth < 600);
 
     }, [innerWidth])
 
-    
+
 
     const loadData = async () => {
-       var u: any;
-       if(!user){
-        var res = await getUser();
-        setUser(res);
-        u = res;
+        var u: any;
+        if (!user) {
+            var res = await getUser();
+            setUser(res);
+            u = res;
         }
         await api
             .get(`/Produto/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
@@ -65,12 +65,12 @@ export default function Produto() {
         return res;
     }
 
-    const handleEdit = (produto : IProduto) => {
-        if(produto.tipo == "PIZZA"){
+    const handleEdit = (produto: IProduto) => {
+        if (produto.tipo == "PIZZA") {
             window.location.href = `/produto/novaPizza?id=${produto.id}`;
             return;
         }
-        if(produto.tipo == "PRATO"){
+        if (produto.tipo == "PRATO") {
             window.location.href = `/produto/novoPrato?id=${produto.id}`;
             return;
 
@@ -79,16 +79,61 @@ export default function Produto() {
 
     }
 
+    function setImage(id: number) {
+        var input = document.createElement("input");
+        input.type = "file";
+        input.accept = 'image/png, image/jpeg';
+        input.click();
+        input.onchange = async (e: Event) => {
+            setTimeout(() => {
+            }, 500)
+            const target = e.target as HTMLInputElement;
+            const files = target.files as FileList;
+            var formData = new FormData();
+            formData.append('file', files[0], files[0].name)
+            setTimeout(() => {
+            }, 500)
+            setLoading(true);
+            await api.post(`/Produto/${id}/UploadImagem`, formData, { headers: { "Content-Type": 'multipart/form-data' } })
+                .then(({ data }) => {
+                    loadData();
+                }).catch((err) => {
+
+                    toast.error(`Erro ao tentar salvar imagem.`);
+                    setLoading(false);
+                })
+        }
+    }
+
+
     const columns = [
         {
             name: '#',
-            cell: (produto: IProduto) => <CustomButton onClick={() => {handleEdit(produto)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: (produto: IProduto) => <CustomButton onClick={() => { handleEdit(produto) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>,
             sortable: true,
             grow: 0
         },
         {
-            name: 'Local',
-            selector: row => row['idProduto'] >= 0 ? 'SIM' : 'NAO',
+            name: 'Imagem',
+            cell: ({ localPath, id }: IProduto) => <div
+                onClick={() => {
+                    setImage(id);
+                }}
+                style={{
+                    cursor: 'pointer'
+                }}
+            >
+                <img
+                    style={{
+                        width: 85,
+                        height: 85,
+                        padding: 5
+                    }}
+                    src={localPath ?? '/nopic.png'}
+                    onError={(e) => { e.currentTarget.src = '/nopic.png' }}
+                />
+
+            </div>,
             sortable: true,
             grow: 0
         },
@@ -126,7 +171,25 @@ export default function Produto() {
             selector: row => row['status'] ? 'Ativo' : 'Inativo',
             sortable: true,
             grow: 0
-        }
+        },
+        {
+            name: 'Lucro',
+            cell: (row: IProduto) => {
+                const margem = row.valor > 0 ? ((row.valor - row.valorCompra) / row.valor) * 100 : 0;
+                return `${margem.toFixed(2)}%`;
+            },
+            sortable: true,
+            grow: 0
+        },
+        {
+            name: 'Markup',
+            cell: (row: IProduto) => {
+                const markup = row.valorCompra > 0 ? ((row.valor - row.valorCompra) / row.valorCompra) * 100 : 0;
+                return `${markup.toFixed(2)}%`;
+            },
+            sortable: true,
+            grow: 0
+        },
     ]
 
     const handleNovaPizza = () => {
@@ -136,19 +199,19 @@ export default function Produto() {
         window.location.href = '/produto/novoPrato';
     }
 
-    if(mobile){
-        return <ProdutoMobile produtos={list} user={user} loadData={loadData} handleNovaPizza={handleNovaPizza} handleNovoPrato={handleNovoPrato}/>
+    if (mobile) {
+        return <ProdutoMobile produtos={list} user={user} loadData={loadData} handleNovaPizza={handleNovaPizza} handleNovoPrato={handleNovoPrato} />
     }
     return (
         <div className={styles.container}>
             <h4>Produtos</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} >Novo Produto</CustomButton>
-            <CustomButton typeButton={'dark'} onClick={handleNovaPizza}  style={{marginLeft: '10px'}} >Nova Pizza</CustomButton>
-            <CustomButton typeButton={'dark'} onClick={handleNovoPrato} style={{marginLeft: '10px'}}  >Novo Prato</CustomButton>
-            <CustomButton typeButton={'dark'} onClick={() => {window.location.href = '/produto/franquia'}} style={{marginLeft: '10px'}} >Franquia</CustomButton>
-            <CustomButton typeButton={'dark'} onClick={() => {setAjuste(true)}}  style={{marginLeft: '10px'}}>Ajuste Massa</CustomButton>
-            <hr/>
+            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Novo Produto</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={handleNovaPizza} style={{ marginLeft: '10px' }} >Nova Pizza</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={handleNovoPrato} style={{ marginLeft: '10px' }}  >Novo Prato</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => { window.location.href = '/produto/franquia' }} style={{ marginLeft: '10px' }} >Franquia</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => { setAjuste(true) }} style={{ marginLeft: '10px' }}>Ajuste Massa</CustomButton>
+            <hr />
             <CustomTable
                 columns={columns}
                 data={getFiltered()}
@@ -156,17 +219,17 @@ export default function Produto() {
             />
 
             {(edit >= 0) && <ProdutoForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if(v){
+                if (v) {
                     loadData();
                 }
                 setEdit(-1);
             }} />}
             {ajuste && <AjusteEmMassa isOpen={ajuste} setClose={(v) => {
-                if(v){
+                if (v) {
                     loadData();
                 }
                 setAjuste(false);
-            }}/>}
+            }} />}
 
         </div>
     )
