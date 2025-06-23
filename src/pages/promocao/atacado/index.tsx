@@ -53,15 +53,64 @@ export default function Atacado() {
         });
         return res;
     }
+    function setImage(id: number) {
+        var input = document.createElement("input");
+        input.type = "file";
+        input.accept = 'image/png, image/jpeg';
+        input.click();
+        input.onchange = async (e: Event) => {
+            setTimeout(() => {
+            }, 500)
+            const target = e.target as HTMLInputElement;
+            const files = target.files as FileList;
+            var formData = new FormData();
+            formData.append('file', files[0], files[0].name)
+            setTimeout(() => {
+            }, 500)
+            setLoading(true);
+            await api.post(`/Promocao/${id}/UploadImagem`, formData, { headers: { "Content-Type": 'multipart/form-data' } })
+                .then(({ data }) => {
+                    loadData();
+                }).catch((err) => {
+
+                    toast.error(`Erro ao tentar salvar imagem.`);
+                    setLoading(false);
+                })
+        }
+    }
 
     const columns = [
         {
             name: '#',
-            width: '20%',
             cell: ({ id }: IPromocao) => <>
-            <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>
-            <CustomButton style={{marginLeft: 5}} onClick={() => { setShowResultado(id) }} typeButton={'outline-main'}>Resultados</CustomButton></>,
+                <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>
+                <CustomButton style={{ marginLeft: 5, }} onClick={() => { setShowResultado(id) }} typeButton={'outline-main'}>Resultados</CustomButton></>,
             sortable: true,
+            width: '200px'
+        },
+        {
+            name: 'Imagem',
+            cell: ({ localPath, id }: IProduto) => <div
+                onClick={() => {
+                    setImage(id);
+                }}
+                style={{
+                    cursor: 'pointer'
+                }}
+            >
+                <img
+                    style={{
+                        width: 85,
+                        height: 85,
+                        padding: 5
+                    }}
+                    src={localPath ?? '/nopic.png'}
+                    onError={(e) => { e.currentTarget.src = '/nopic.png' }}
+                />
+
+            </div>,
+            sortable: true,
+            grow: 0
         },
         {
             name: 'Local',
@@ -137,7 +186,7 @@ export default function Atacado() {
                 }
                 setEdit(-1);
             }} />}
-             {(showResultado > 0) && <ResultadoAtacado user={user} isOpen={showResultado > 0} promocaoId={showResultado} setClose={(v) => {
+            {(showResultado > 0) && <ResultadoAtacado user={user} isOpen={showResultado > 0} promocaoId={showResultado} setClose={(v) => {
                 setShowResultado(0);
             }} />}
 
