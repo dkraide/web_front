@@ -15,6 +15,7 @@ import ProdutoForm from '@/components/Modals/Produto';
 import AjusteEmMassa from '@/components/Modals/Produto/AjusteEmMassa';
 import { useWindowSize } from 'rooks';
 import ProdutoMobile from '@/components/Mobile/Pages/Produto/ProdutoMobile';
+import { ExportToExcel } from '@/utils/functions';
 
 
 export default function Produto() {
@@ -199,6 +200,38 @@ export default function Produto() {
         window.location.href = '/produto/novoPrato';
     }
 
+    const handleExcel = () => {
+
+        const columns = [
+            { label: 'Cod', key: 'cod' },
+            { label: 'Nome', key: 'nome' },
+            { label: 'Estoque', key: 'quantidade' },
+            { label: 'Custo', key: 'valorCompra' },
+            { label: 'Venda', key: 'valor' },
+            { label: 'Status', key: 'status' },
+            { label: 'Lucro',  key: 'lucro' },
+            { label: 'Markup', key: 'markup' }
+        ];
+
+        const data = getFiltered().map(produto => ({
+            cod: produto.cod,
+            nome: produto.nome,
+            quantidade: produto.quantidade,
+            valorCompra: produto.valorCompra,
+            valor: produto.valor,
+            status: produto.status ? 'Ativo' : 'Inativo',
+            lucro: ((produto.valor - produto.valorCompra) / produto.valor * 100).toFixed(2) + '%',
+            markup: ((produto.valor - produto.valorCompra) / produto.valorCompra * 100).toFixed(2) + '%'
+        }));
+
+        ExportToExcel(columns, data, 'Produtos');
+
+
+
+
+
+    }
+
     if (mobile) {
         return <ProdutoMobile produtos={list} user={user} loadData={loadData} handleNovaPizza={handleNovaPizza} handleNovoPrato={handleNovoPrato} />
     }
@@ -211,6 +244,7 @@ export default function Produto() {
             <CustomButton typeButton={'dark'} onClick={handleNovoPrato} style={{ marginLeft: '10px' }}  >Novo Prato</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => { window.location.href = '/produto/franquia' }} style={{ marginLeft: '10px' }} >Franquia</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => { setAjuste(true) }} style={{ marginLeft: '10px' }}>Ajuste Massa</CustomButton>
+             <CustomButton typeButton={'dark'} onClick={handleExcel}  style={{ marginLeft: '10px' }}>Excel</CustomButton>
             <hr />
             <CustomTable
                 columns={columns}

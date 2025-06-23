@@ -33,5 +33,7 @@ export default interface IUsuarioCaixa{
     removeProduto: boolean
     visualizaVendasAntigas: boolean
     finalizaVendaSemEstoque: boolean
+    removeItemComanda: boolean
+    imprimeProdutoFechamento: boolean
     empresaId: number
 }
