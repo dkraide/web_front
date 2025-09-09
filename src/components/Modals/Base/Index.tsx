@@ -5,8 +5,8 @@ export interface baseModalProps extends HTMLAttributes<HTMLDivElement> {
   isOpen: boolean;
   title?: string;
   setClose: () => void;
-  width?: number;      // 10 a 100, múltiplo de 10
-  height?: number;     // 10 a 100, múltiplo de 10
+  width?: string;      // 10 a 100, múltiplo de 10
+  height?: string;     // 10 a 100, múltiplo de 10
   color?: string;
   background?: string;
   headerOff?: boolean;
@@ -17,8 +17,8 @@ export default function BaseModal({
   headerOff,
   background,
   color,
-  width = 90,   // padrão 90%
-  height = 90,  // padrão 90%
+  width = '90%',   // padrão 90%
+  height = '90%',  // padrão 90%
   title,
   isOpen,
   children,
@@ -30,8 +30,6 @@ export default function BaseModal({
   // garantir que a largura/altura estejam entre 10 e 100
   const clamp = (value: number) => Math.min(100, Math.max(10, Math.round(value / 10) * 10));
 
-  const widthClass = `modal-width-${clamp(width)}`;
-  const heightClass = `modal-height-${clamp(height)}`;
 
   return (
     <Modal
