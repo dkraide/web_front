@@ -50,6 +50,6 @@ export  default function SelectTributacao({width, selected, setSelected}: selPro
     }
 
     return(
-        <SelectBase width={width} datas={getData()} selected={selected?.toString()} title={'Tributacao'} setSelected={onSelect}/>
+        <SelectBase width={width} datas={getData()} selected={selected?.toString()} title={'Tributação'} setSelected={onSelect}/>
     )
 }
