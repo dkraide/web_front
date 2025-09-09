@@ -16,15 +16,26 @@ import AjusteEmMassa from '@/components/Modals/Produto/AjusteEmMassa';
 import { useWindowSize } from 'rooks';
 import ProdutoMobile from '@/components/Mobile/Pages/Produto/ProdutoMobile';
 import { ExportToExcel } from '@/utils/functions';
+import NovoProdutoForm from '@/components/Modals/Produto/NovoProdutoForm';
+import EstoqueForm from '@/components/Modals/Produto/EstoqueForm';
 
+type searchProps = {
+    str: string,
+    edit: number
+    ajuste: boolean
+    viewEstoque: number
+}
 
 export default function Produto() {
     const [loading, setLoading] = useState(true)
     const [list, setList] = useState<IProduto[]>([])
     const { getUser } = useContext(AuthContext)
-    const [search, setSearch] = useState('')
-    const [edit, setEdit] = useState(-1);
-    const [ajuste, setAjuste] = useState(false);
+    const [search, setSearch] = useState<searchProps>({
+        str: '',
+        edit: -1,
+        ajuste: false,
+        viewEstoque: 0
+    });
     const [user, setUser] = useState<IUsuario>();
     const { innerWidth } = useWindowSize();
     const [mobile, setMobile] = useState(false);
@@ -61,7 +72,7 @@ export default function Produto() {
 
     function getFiltered() {
         var res = list.filter(p => {
-            return (p.nome + p.id.toString()).toLowerCase().includes(search.toLowerCase())
+            return (p.nome + p.id.toString()).toLowerCase().includes(search.str.toLowerCase())
         });
         return res;
     }
@@ -76,8 +87,7 @@ export default function Produto() {
             return;
 
         }
-        setEdit(produto.id);
-
+        setSearch({...search, edit: produto.id})
     }
 
     function setImage(id: number) {
@@ -152,6 +162,9 @@ export default function Produto() {
         {
             name: 'Estoque',
             selector: row => row['quantidade'],
+            cell: (row) => <a style={{color: 'var(--main)'}} href={'#'} onClick={() => {
+                setSearch({...search, viewEstoque: row.id})
+            }}>{row.quantidade}</a>,
             sortable: true,
             grow: 0
         },
@@ -209,7 +222,7 @@ export default function Produto() {
             { label: 'Custo', key: 'valorCompra' },
             { label: 'Venda', key: 'valor' },
             { label: 'Status', key: 'status' },
-            { label: 'Lucro',  key: 'lucro' },
+            { label: 'Lucro', key: 'lucro' },
             { label: 'Markup', key: 'markup' }
         ];
 
@@ -238,32 +251,44 @@ export default function Produto() {
     return (
         <div className={styles.container}>
             <h4>Produtos</h4>
-            <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Novo Produto</CustomButton>
+            <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search.str} onChange={(e) => { setSearch({...search, str: e.currentTarget.value}) }} />
+            <CustomButton typeButton={'dark'} onClick={() => { setSearch({...search, edit: 0}) }} >Novo Produto</CustomButton>
             <CustomButton typeButton={'dark'} onClick={handleNovaPizza} style={{ marginLeft: '10px' }} >Nova Pizza</CustomButton>
             <CustomButton typeButton={'dark'} onClick={handleNovoPrato} style={{ marginLeft: '10px' }}  >Novo Prato</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => { window.location.href = '/produto/franquia' }} style={{ marginLeft: '10px' }} >Franquia</CustomButton>
-            <CustomButton typeButton={'dark'} onClick={() => { setAjuste(true) }} style={{ marginLeft: '10px' }}>Ajuste Massa</CustomButton>
-             <CustomButton typeButton={'dark'} onClick={handleExcel}  style={{ marginLeft: '10px' }}>Excel</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => { setSearch({...search, ajuste: true}) }} style={{ marginLeft: '10px' }}>Ajuste Massa</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={handleExcel} style={{ marginLeft: '10px' }}>Excel</CustomButton>
             <hr />
             <CustomTable
                 columns={columns}
                 data={getFiltered()}
                 loading={loading}
             />
-
-            {(edit >= 0) && <ProdutoForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
+            {(search.edit == 0) && <NovoProdutoForm user={user} isOpen={search.edit >= 0} setClose={(v) => {
                 if (v) {
                     loadData();
                 }
-                setEdit(-1);
+                 setSearch({...search, edit: -1});
             }} />}
-            {ajuste && <AjusteEmMassa isOpen={ajuste} setClose={(v) => {
+            {(search.edit > 0) && <ProdutoForm user={user} isOpen={search.edit >= 0} id={search.edit} setClose={(v) => {
                 if (v) {
                     loadData();
                 }
-                setAjuste(false);
+                 setSearch({...search, edit: -1});
             }} />}
+            {search.ajuste && <AjusteEmMassa isOpen={search.ajuste} setClose={(v) => {
+                if (v) {
+                    loadData();
+                }
+                setSearch({...search, ajuste: false});
+            }} />}
+            {search.viewEstoque > 0 && <EstoqueForm user={user} id={search.viewEstoque} isOpen={search.viewEstoque > 0} setClose={(v) => {
+                  if(v){
+                    loadData();
+                  }
+                  setSearch({...search, viewEstoque: 0})
+            }}
+            />}
 
         </div>
     )

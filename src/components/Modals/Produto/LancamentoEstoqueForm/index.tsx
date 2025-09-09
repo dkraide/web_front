@@ -100,19 +100,19 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
         lancamento.idPedido = data.idPedido || 0;
         lancamento.produtos = produtos;
         if (lancamento.id > 0) {
-            await api.put(`LancamentoEstoque/Update`, lancamento)
-                .then(({ data }: AxiosResponse) => {
-                    toast.success(`Lancamento atualizado com sucesso!`);
-                    setClose(true);
-                })
-                .catch((err: AxiosError) => {
-                    toast.error(`Erro ao atualizar Lancamento. ${err.response?.data}`);
-                })
+            // await api.put(`LancamentoEstoque/Update`, lancamento)
+            //     .then(({ data }: AxiosResponse) => {
+            //         toast.success(`Lancamento atualizado com sucesso!`);
+            //         setClose(true);
+            //     })
+            //     .catch((err: AxiosError) => {
+            //         toast.error(`Erro ao atualizar Lancamento. ${err.response?.data}`);
+            //     })
 
         } else {
             lancamento.empresaId = user.empresaSelecionada;
             lancamento.isProduto = true;
-            await api.post(`LancamentoEstoque/Create`, lancamento)
+            await api.post(`v2/LancamentoEstoque/${user.empresaSelecionada}/Create`, lancamento)
                 .then(({ data }: AxiosResponse) => {
                     toast.success(`Lancamento cadastrado com sucesso!`);
                     setClose(true);
