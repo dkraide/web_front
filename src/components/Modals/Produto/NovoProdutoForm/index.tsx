@@ -213,7 +213,7 @@ export default function NovoProdutoForm({ isOpen, setClose, user }: novoProdutoP
     formData.nome = data.nome;
     formData.unidadeCompra = data.unidadeCompra;
     formData.valorCompra = fGetNumber(data.valorCompra);
-    formData.valor = fGetNumber(data.valorCompra);
+    formData.valor = fGetNumber(data.valor);
     formData.quantidadeMinima = fGetNumber(data.quantidadeMinima);
     formData.quantidade = fGetNumber(data.quantidade);
     formData.codigoFornecedor = data.codigoFornecedor;
