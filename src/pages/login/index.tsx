@@ -10,7 +10,7 @@ import { fGetNumber, fGetOnlyNumber } from '@/utils/functions';
 import CustomButton from '@/components/ui/Buttons';
 
 
-export default function Home() {
+export default function Login() {
 
   const { signIn } = useContext(AuthContext);
   const [email, setEmail] = useState('');
@@ -41,7 +41,7 @@ export default function Home() {
       <div className={styles.containerCenter}>
         <div className={styles.login}>
           <form onSubmit={handleLogin}>
-        <img style={{marginBottom: '0px'}} src={'/krd_logo.png'} width={'500px'} height={'200px'}/>
+            <img style={{ marginBottom: '0px' }} src={'/krd_logo.png'} width={'500px'} height={'200px'} />
             <FloatingLabel
               controlId="floatingInput"
               label="Usuario"
@@ -75,13 +75,13 @@ export default function Home() {
                 label="Empresa"
                 className="mb-3"
               >
-                <Form.Control  placeholder="Digite o CNPJ da Empresa"
+                <Form.Control placeholder="Digite o CNPJ da Empresa"
                   value={empresa}
                   onChange={(e) => { setEmpresa(e.target.value) }}
                 />
               </FloatingLabel>
             )}
-            <CustomButton typeButton="outline-main" type={'submit'} style={{padding: '10px', height: 'auto'}}>{loading ? <Spinner animation="border" /> : <>Entrar</>}</CustomButton>
+            <CustomButton typeButton="main" type={'submit'} style={{ padding: '10px', height: 'auto' }}>{loading ? <Spinner animation="border" /> : <>Entrar</>}</CustomButton>
           </form>
         </div>
       </div>

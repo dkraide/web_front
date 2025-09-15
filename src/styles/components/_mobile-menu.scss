@@ -1,0 +1,42 @@
+.mobile-menu {
+  position: fixed;
+  top: 4rem;
+  left: 0;
+  right: 0;
+  background-color: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+  padding: $spacing-6;
+  z-index: $z-dropdown;
+  
+  @include lg {
+    display: none;
+  }
+  
+  &__nav {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-4;
+    margin-bottom: $spacing-6;
+    
+    button {
+      background: none;
+      border: none;
+      color: hsl(var(--foreground));
+      font-weight: $font-weight-medium;
+      padding: $spacing-3 0;
+      text-align: left;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      
+      &:hover {
+        color: hsl(var(--primary));
+      }
+    }
+  }
+  
+  &__actions {
+    display: flex;
+    flex-direction: column;
+    gap: $spacing-3;
+  }
+}
