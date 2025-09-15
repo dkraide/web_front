@@ -1,0 +1,79 @@
+.header {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: $z-fixed;
+  background-color: hsl(var(--background) / 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid hsl(var(--border));
+  
+  &__container {
+    @include container;
+    @include flex-between;
+    height: 4rem;
+  }
+  
+  &__logo {
+    @include flex-center;
+    gap: $spacing-2;
+    
+    img {
+      height: 2rem;
+      width: auto;
+    }
+    
+    span {
+      font-size: $font-size-xl;
+      font-weight: $font-weight-bold;
+      color: hsl(var(--foreground));
+    }
+  }
+  
+  &__nav {
+    display: none;
+    
+    @include lg {
+      display: flex;
+      gap: $spacing-8;
+    }
+    
+    a {
+      color: hsl(var(--muted-foreground));
+      font-weight: $font-weight-medium;
+      transition: var(--transition-smooth);
+      
+      &:hover {
+        color: hsl(var(--foreground));
+      }
+    }
+    button{
+      border: none;
+      background-color: transparent;
+      color: white;
+      padding: 5px;
+      font-weight: 700;
+    }
+  }
+  
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $spacing-4;
+    // botões que devem sumir no mobile
+    .header__btn-hide-mobile {
+      display: none; // por padrão escondidos
+
+      @include lg {
+        display: inline-flex; // aparecem somente em telas grandes
+      }
+    }
+  }
+  
+  &__mobile-menu {
+    display: block;
+    
+    @include lg {
+      display: none;
+    }
+  }
+}

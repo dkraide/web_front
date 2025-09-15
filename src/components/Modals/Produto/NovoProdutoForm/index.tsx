@@ -264,7 +264,7 @@ export default function NovoProdutoForm({ isOpen, setClose, user }: novoProdutoP
 
 
   return (
-    <KRDBaseModal width={90} height={80} isOpen={isOpen} setClose={setClose} title="Novo Produto">
+    <KRDBaseModal width={90} height={90} isOpen={isOpen} setClose={setClose} title="Novo Produto">
       <div className={styles.container}>
         <AnimatePresence mode="wait">
           <motion.div

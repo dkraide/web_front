@@ -1,0 +1,120 @@
+.contact {
+  @include section;
+  background-color: hsl(var(--muted) / 0.9);
+  
+  &__container {
+    @include container;
+  }
+  
+  &__header {
+    text-align: center;
+    margin-bottom: $spacing-12;
+    
+    h2 {
+      font-size: $font-size-3xl;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-4;
+      color: white;
+      
+      @include lg {
+        font-size: $font-size-4xl;
+      }
+    }
+    
+    p {
+      font-size: $font-size-lg;
+      color: hsl(var(--muted-foreground));
+      max-width: 600px;
+      margin: 0 auto;
+    }
+  }
+  
+  &__content {
+    display: grid;
+    gap: $spacing-8;
+    
+    @include lg {
+      grid-template-columns: 1fr 1fr;
+      gap: $spacing-12;
+    }
+  }
+  
+  &__info {
+    .item {
+      display: flex;
+      align-items: center;
+      gap: $spacing-4;
+      margin-bottom: $spacing-6;
+      
+      .icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: var(--gradient-primary);
+        border-radius: $radius-lg;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        flex-shrink: 0;
+      }
+      
+      .content {
+        h3 {
+          font-weight: $font-weight-semibold;
+          margin-bottom: $spacing-1;
+          color: white;
+        }
+        
+        p {
+          color: hsl(var(--muted-foreground));
+        }
+        
+        a {
+          color: hsl(var(--primary));
+          text-decoration: none;
+          
+          &:hover {
+            text-decoration: underline;
+          }
+        }
+      }
+    }
+  }
+  
+  &__cta {
+    @extend .card;
+    padding: $spacing-8;
+    text-align: center;
+    background: var(--gradient-primary);
+    color: white;
+    border: none;
+    
+    h3 {
+      font-size: $font-size-2xl;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-4;
+    }
+    
+    p {
+      margin-bottom: $spacing-6;
+      opacity: 0.9;
+    }
+    
+    ul {
+      list-style: none;
+      margin-bottom: $spacing-6;
+      
+      li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: $spacing-2;
+        margin-bottom: $spacing-2;
+        
+        .icon {
+          color: #4ade80;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+.about {
+  @include section;
+  background-color: hsl(var(--background));
+  
+  &__container {
+    @include container;
+  }
+  
+  &__content {
+    display: grid;
+    gap: $spacing-12;
+    align-items: center;
+    
+    @include lg {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  &__text {
+    h2 {
+      font-size: $font-size-3xl;
+      font-weight: $font-weight-bold;
+      margin-bottom: $spacing-6;
+      
+      @include lg {
+        font-size: $font-size-4xl;
+      }
+    }
+    
+    p {
+      font-size: $font-size-lg;
+      color: hsl(var(--muted-foreground));
+      line-height: $line-height-relaxed;
+      margin-bottom: $spacing-6;
+    }
+  }
+  
+  &__stats {
+    @include grid-responsive(2, 2, 2);
+  }
+  
+  &__stat {
+    text-align: center;
+    padding: $spacing-6;
+    
+    .number {
+      font-size: $font-size-4xl;
+      font-weight: $font-weight-bold;
+      color: hsl(var(--primary));
+      margin-bottom: $spacing-2;
+      
+      @include lg {
+        font-size: $font-size-5xl;
+      }
+    }
+    
+    .label {
+      color: hsl(var(--muted-foreground));
+      font-weight: $font-weight-medium;
+    }
+  }
+}
