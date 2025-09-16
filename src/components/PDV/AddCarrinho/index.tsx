@@ -210,7 +210,7 @@ export default function AddCarrinho({action, onKeyEvent, finalizar, onAddProduto
 
     return (
         <div className={styles.addProduto}>
-            <h5>Adicionar Produto</h5>
+            <span>Adicionar Produto</span>
             <InputForm autoComplete={'off'} id="codProduto" onKeyDown={keyDownEvent} onKeyUp={(e) => { keyEvent(e) }
             } width={'10%'} title={'Cod'} register={register} errors={errors} inputName={'codProduto'} />
              {searchProduto  ? 
