@@ -21,6 +21,7 @@
       font-size: $font-size-3xl;
       font-weight: $font-weight-bold;
       margin-bottom: $spacing-6;
+      color: white;
       
       @include lg {
         font-size: $font-size-4xl;
