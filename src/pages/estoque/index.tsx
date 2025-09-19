@@ -17,6 +17,7 @@ import BoxInfo from '@/components/ui/BoxInfo';
 import _ from 'lodash';
 import { CSVLink } from "react-csv";
 import { GetCurrencyBRL } from '@/utils/functions';
+import UnderConstruction from '@/components/ui/UnderConstruction';
 
 
 export default function Estoque() {
@@ -28,11 +29,11 @@ export default function Estoque() {
     const [user, setUser] = useState<IUsuario>()
 
     const loadData = async () => {
-       var u: any;
-       if(!user){
-        var res = await getUser();
-        setUser(res);
-        u = res;
+        var u: any;
+        if (!user) {
+            var res = await getUser();
+            setUser(res);
+            u = res;
         }
         await api
             .get(`/Estoque/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
@@ -56,14 +57,14 @@ export default function Estoque() {
             { label: "Venda", key: "venda" }
         ]
     }
-    function getDataCsv(){
-        var res = getFiltered().map((p) =>{
-            return  {
-               cod: p.cod,
-               descricao: p.nome,
-               quantidade: p.quantidade,
-               compra: (p.valorCompra * (p.quantidade > 0 ? p.quantidade : 0)).toFixed(2),
-               venda: (p.valor * (p.quantidade > 0 ? p.quantidade : 0)).toFixed(2),
+    function getDataCsv() {
+        var res = getFiltered().map((p) => {
+            return {
+                cod: p.cod,
+                descricao: p.nome,
+                quantidade: p.quantidade,
+                compra: (p.valorCompra * (p.quantidade > 0 ? p.quantidade : 0)).toFixed(2),
+                venda: (p.valor * (p.quantidade > 0 ? p.quantidade : 0)).toFixed(2),
             }
         });
         return res;
@@ -79,7 +80,7 @@ export default function Estoque() {
     const columns = [
         {
             name: '#',
-            cell: ({ id }: IProduto) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'primary'}><FontAwesomeIcon icon={faEye}/></CustomButton>,
+            cell: ({ id }: IProduto) => <CustomButton onClick={() => { setEdit(id) }} typeButton={'primary'}><FontAwesomeIcon icon={faEye} /></CustomButton>,
             sortable: true,
             grow: 0
         },
@@ -117,29 +118,34 @@ export default function Estoque() {
         {
             name: 'Custo Total',
             selector: row => row['valorCompra'],
-            cell: row => row.quantidade >= 0 ? GetCurrencyBRL(row.valorCompra*row.quantidade): `R$ 0,00`,
+            cell: row => row.quantidade >= 0 ? GetCurrencyBRL(row.valorCompra * row.quantidade) : `R$ 0,00`,
             sortable: true,
             width: '10%'
         },
         {
             name: 'Venda Total',
             selector: row => row['valor'],
-            cell: (row: IProduto) => row.quantidade >= 0 ? GetCurrencyBRL(row.valor*row.quantidade): `R$ 0,00`,
+            cell: (row: IProduto) => row.quantidade >= 0 ? GetCurrencyBRL(row.valor * row.quantidade) : `R$ 0,00`,
             sortable: true,
             width: '10%'
         }
     ]
+
+    return (
+        <UnderConstruction />
+    )
+
     return (
         <div className={styles.container}>
             <h4>Produtos</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <hr/>
+            <hr />
             <div className={styles.box}>
-            <BoxInfo style={{ marginRight: 10 }} title={'Estoque'} value={_.sumBy(list, x => x.quantidade > 0 ? x.quantidade : 0).toFixed(2)}/>
-            <BoxInfo style={{ marginRight: 10 }} title={'Valor'} value={ GetCurrencyBRL(_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valor : 0))}/>
-            <BoxInfo style={{ marginRight: 10 }} title={'Compra'} value={GetCurrencyBRL(_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valorCompra : 0))}/>
+                <BoxInfo style={{ marginRight: 10 }} title={'Estoque'} value={_.sumBy(list, x => x.quantidade > 0 ? x.quantidade : 0).toFixed(2)} />
+                <BoxInfo style={{ marginRight: 10 }} title={'Valor'} value={GetCurrencyBRL(_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valor : 0))} />
+                <BoxInfo style={{ marginRight: 10 }} title={'Compra'} value={GetCurrencyBRL(_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valorCompra : 0))} />
             </div>
-            <hr/>
+            <hr />
             <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorio_estoque.csv"}>
                 Download Planilha
             </CSVLink></CustomButton>
@@ -151,7 +157,7 @@ export default function Estoque() {
             />
 
             {(edit >= 0) && <EstoqueForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if(v){
+                if (v) {
                     loadData();
                 }
                 setEdit(-1);

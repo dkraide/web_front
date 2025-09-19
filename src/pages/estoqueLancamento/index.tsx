@@ -18,6 +18,7 @@ import ILancamentoEstoque from "@/interfaces/ILancamentoEstoque"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEdit } from "@fortawesome/free-solid-svg-icons"
 import LancamentoEstoqueForm from "@/components/Modals/Produto/LancamentoEstoqueForm"
+import UnderConstruction from "@/components/ui/UnderConstruction"
 
 interface searchProps{
     dateIn: string
@@ -87,6 +88,10 @@ export default function EstoqueLancamento(){
             sortable: true,
         },
     ]
+
+    return(
+        <UnderConstruction/>
+    )
 
     return(
         <div className={styles.container}>
