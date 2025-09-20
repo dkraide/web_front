@@ -50,7 +50,7 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
     const [ignore, setIgnore] = useState<number[]>([])
     useEffect(() => {
         if (id > 0) {
-            api.get(`/LancamentoEstoque/Select?id=${id}`)
+            api.get(`/V2/LancamentoEstoque/${user.empresaSelecionada}/lancamentos/${id}`)
                 .then(({ data }: AxiosResponse<ILancamentoEstoque>) => {
                     setLancamento(data);
                     setProdutos(data.produtos);
