@@ -1,6 +1,6 @@
 import IVenda from "@/interfaces/IVenda"
 import { useEffect, useState, useContext } from "react"
-import {startOfMonth, endOfMonth, format} from 'date-fns'
+import { startOfMonth, endOfMonth, format } from 'date-fns'
 import { api } from "@/services/apiClient"
 import { AxiosError, AxiosResponse } from "axios"
 import { toast } from "react-toastify"
@@ -20,46 +20,43 @@ import { faEdit } from "@fortawesome/free-solid-svg-icons"
 import LancamentoEstoqueForm from "@/components/Modals/Produto/LancamentoEstoqueForm"
 import UnderConstruction from "@/components/ui/UnderConstruction"
 
-interface searchProps{
+interface searchProps {
     dateIn: string
     dateFim: string
 }
 
-export default function EstoqueLancamento(){
+export default function EstoqueLancamento() {
 
     const [vendas, setVendas] = useState<ILancamentoEstoque[]>([])
     const [loading, setLoading] = useState(true)
-    const [search, setSearch] = useState<searchProps>({ dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd')})
+    const [search, setSearch] = useState<searchProps>({ dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') })
     const [edit, setEdit] = useState(-1)
     const [user, setUser] = useState<IUsuario>()
     const { getUser } = useContext(AuthContext)
 
     useEffect(() => {
-       loadData();
+        loadData();
     }, [])
 
     const loadData = async () => {
-        var u: any;
-       if(!user){
-        var res = await getUser();
-        setUser(res);
-        u = res;
+        var u = await getUser();
+        if(!user){
+            setUser(u);
         }
-         let url = `/LancamentoEstoque/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}&isProduto=true`;
-       
+        let url = `/v2/LancamentoEstoque/${u.empresaSelecionada}/lancamentos?dataIn=${search.dateIn}&dataFim=${search.dateFim}&isProduto=true`;
         await api.get(url)
-        .then(({data}: AxiosResponse<ILancamentoEstoque[]>) => {
-            setVendas(data);
-        }).catch((err: AxiosError) => {
-              toast.error(`Erro ao buscar lançamentos. ${err.response?.data || err.message}`);
-        });
+            .then(({ data }: AxiosResponse<ILancamentoEstoque[]>) => {
+                setVendas(data);
+            }).catch((err: AxiosError) => {
+                toast.error(`Erro ao buscar lançamentos. ${err.response?.data || err.message}`);
+            });
         setLoading(false);
     }
 
     const columns = [
         {
             name: '#',
-            cell: ({ id }) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
+            cell: ({ id }) => <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>,
             sortable: true,
             grow: 0
         },
@@ -84,37 +81,33 @@ export default function EstoqueLancamento(){
         {
             name: 'Tipo',
             selector: row => row['isEntrada'],
-            cell: row => row.isEntrada? 'ENTRADA': 'SAIDA',
+            cell: row => row.isEntrada ? 'ENTRADA' : 'SAIDA',
             sortable: true,
         },
     ]
 
-    return(
-        <UnderConstruction/>
-    )
-
-    return(
+    return (
         <div className={styles.container}>
-        <h4>Lançamentos De Estoque</h4>
-        <div className={styles.boxSearch}>
-            <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => {setSearch({...search, dateIn: v.target.value})}}  title={'Inicio'} width={'20%'}/>
-            <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()}  onChange={(v) => {setSearch({...search, dateFim: v.target.value})}}  title={'Final'} width={'20%'}/>
-            <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
-        </div>
-        <CustomButton typeButton={'dark'} onClick={() => {setEdit(0)}} style={{marginRight: 10}} >Novo Lancamento</CustomButton>
-        <CustomButton typeButton={'dark'} onClick={() => {document.location.href = `/estoqueLancamento/xml`}} >Carregar de XML</CustomButton>
-        <hr/>
-        <CustomTable
-            columns={columns}
-            data={vendas}
-            loading={loading}
-        />
-          {(edit >= 0) && <LancamentoEstoqueForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if(v){
+            <h4>Lançamentos De Estoque</h4>
+            <div className={styles.boxSearch}>
+                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
+                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
+                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
+            </div>
+            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} style={{ marginRight: 10 }} >Novo Lancamento</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => { document.location.href = `/estoqueLancamento/xml` }} >Carregar de XML</CustomButton>
+            <hr />
+            <CustomTable
+                columns={columns}
+                data={vendas}
+                loading={loading}
+            />
+            {(edit >= 0) && <LancamentoEstoqueForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
+                if (v) {
                     loadData();
                 }
                 setEdit(-1);
             }} />}
-    </div>
+        </div>
     )
 }

@@ -132,10 +132,6 @@ export default function Estoque() {
     ]
 
     return (
-        <UnderConstruction />
-    )
-
-    return (
         <div className={styles.container}>
             <h4>Produtos</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
