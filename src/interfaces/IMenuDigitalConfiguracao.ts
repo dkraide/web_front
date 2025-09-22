@@ -20,6 +20,13 @@ export default interface IMenuDigitalConfiguracao{
     facebook: string
     tempoEspera?: string
     distanciaGratuita: number
+    whatsappLoja: string
+    urlIFood: string
+    urlGoomer: string
+    url99: string
+    urlUberEats: string
+
+    aberto?:boolean
 }
 
 interface IMenuDigitalHorario{
