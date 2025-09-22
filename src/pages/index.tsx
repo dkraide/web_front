@@ -6,12 +6,18 @@ import About from '@/components/LandingPage/About'
 import Contact from '@/components/LandingPage/Contact'
 import Footer from '@/components/LandingPage/Footer'
 import { canSSRGuest } from '@/utils/CanSSRGuest'
+import { Poppins } from "next/font/google";
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"], // pesos que você vai usar
+});
 
 export default function Home() {
   return (
     <div className="min-h-screen">
       <Header />
-      <main>
+      <main className={poppins.className}>
         <Hero />
         <Features />
         <Pricing />

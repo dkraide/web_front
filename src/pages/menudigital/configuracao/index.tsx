@@ -104,6 +104,11 @@ export default function Configuracao() {
         objeto.valorPorKm = fGetNumber(data.valorPorKm);
         objeto.limiteKm = fGetNumber(data.limiteKm);
         objeto.distanciaGratuita = fGetNumber(data.distanciaGratuita);
+        objeto.whatsappLoja = data.whatsappLoja;
+        objeto.urlIFood = data.urlIFood;
+        objeto.urlGoomer = data.urlGoomer;
+        objeto.urlUberEats = data.urlUberEats;
+        objeto.url99 = data.url99;
         api.put(`MenuDigital/Configuracao`, objeto)
             .then(({ data }: AxiosResponse) => {
                 toast.success(`grupo atualizado com sucesso!`);
@@ -137,10 +142,10 @@ export default function Configuracao() {
             setLoading(true);
             var str = await sendImage(files);
             if (str) {
-                if(isPerfil){
-                    setObjeto({...objeto, logoPath: str})
-                }else{
-                    setObjeto({...objeto, localPath: str})
+                if (isPerfil) {
+                    setObjeto({ ...objeto, logoPath: str })
+                } else {
+                    setObjeto({ ...objeto, localPath: str })
                 }
                 handleSubmit(onSubmit)();
             } else {
@@ -152,11 +157,11 @@ export default function Configuracao() {
 
     const tempoEspera = () => {
         return [
-            {label: '10Min - 30Min', value: '10Min - 30Min'},
-            {label: '30Min - 45Min', value: '30Min - 45Min'},
-            {label: '45Min - 1Hr', value: '45Min - 1Hr'},
-            {label: '1Hr - 1Hr 15Min', value: '1Hr - 1Hr 15Min'},
-            {label: '+ de 1Hr e 15Min', value: '+ de 1Hr e 15Min'},
+            { label: '10Min - 30Min', value: '10Min - 30Min' },
+            { label: '30Min - 45Min', value: '30Min - 45Min' },
+            { label: '45Min - 1Hr', value: '45Min - 1Hr' },
+            { label: '1Hr - 1Hr 15Min', value: '1Hr - 1Hr 15Min' },
+            { label: '+ de 1Hr e 15Min', value: '+ de 1Hr e 15Min' },
         ]
     }
     return (
@@ -182,6 +187,11 @@ export default function Configuracao() {
             <div className={styles.container}>
                 <InputForm defaultValue={objeto.facebook} width={'50%'} title={'Facebook'} errors={errors} inputName={"facebook"} register={register} />
                 <InputForm defaultValue={objeto.instagram} width={'50%'} title={'Instagram'} errors={errors} inputName={"instagram"} register={register} />
+                <InputForm defaultValue={objeto.whatsappLoja} width={'50%'} title={'WhatsApp (Numero Telefone)'} errors={errors} inputName={"whatsappLoja"} register={register} />
+                <InputForm defaultValue={objeto.urlIFood} width={'50%'} title={'Cardapio IFood'} errors={errors} inputName={"urlIFood"} register={register} />
+                <InputForm defaultValue={objeto.urlGoomer} width={'50%'} title={'Cardapio Goomer'} errors={errors} inputName={"urlGoomer"} register={register} />
+                <InputForm defaultValue={objeto.url99} width={'50%'} title={'Cardapio 99'} errors={errors} inputName={"url99"} register={register} />
+                <InputForm defaultValue={objeto.urlUberEats} width={'50%'} title={'Cardapio Uber Eats'} errors={errors} inputName={"urlUberEats"} register={register} />
             </div>
             <hr />
             <h3>Horarios</h3>
