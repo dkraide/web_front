@@ -158,7 +158,7 @@ export default function Xml() {
             } as ILancamentoEstoqueProduto
         });
 
-        return await api.post(`/LancamentoEstoque/Create`, obj).then(({ data }: AxiosResponse) => {
+        return await api.post(`/v2/LancamentoEstoque/${user.empresaSelecionada}/Create`, obj).then(({ data }: AxiosResponse) => {
             toast.success(`Sucesso ao criar lançamento de Estoque`);
             document.location.href = `/estoqueLancamento`;
             return true;
