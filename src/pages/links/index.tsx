@@ -47,7 +47,7 @@ export default function Links({ emp }: LinksProps) {
 
     const links = [
         {
-            url: `https://menu.krdsystem/?empresa=${empresa.id}`,
+            url: `https://menu.krdsystem.com/?empresa=${empresa.id}`,
             label: 'Meu Cardápio',
             icon: <FaHamburger />,
             color: '#d32525ff',

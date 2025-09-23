@@ -166,6 +166,19 @@ export default function Configuracao() {
     }
     return (
         <div className={styles.content}>
+            <CustomButton onClick={() => {
+                navigator.clipboard.writeText(`https://menu.krdsystem.com/?empresa=${objeto.empresaId}`);
+                toast.success('Link copiado para area de transferencia');
+            }}>
+                Copiar Link Menu Digital
+            </CustomButton>
+             <CustomButton onClick={() => {
+                navigator.clipboard.writeText(`https://krdsystem.com/links?empresa=${objeto.empresaId}`);
+                toast.success('Link copiado para area de transferencia');
+            }}>
+                Copiar Link Agregador de Links
+            </CustomButton>
+            <hr />
             <h3>Imagens Principal do Menu</h3>
             <hr />
             <div className={styles.container}>
