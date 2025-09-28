@@ -19,6 +19,7 @@ import { format } from "date-fns";
 import SelectDiaSemana from "@/components/Selects/SelectDiaSemana";
 import { isMobile } from "react-device-detect";
 import SelectSimNao from "@/components/Selects/SelectSimNao";
+import { now } from "lodash";
 
 
 
@@ -85,6 +86,8 @@ export default function AtacadoForm({ user, isOpen, id, setClose, color }: props
             return;
         }
         if (item.id > 0) {
+            item.lastChange = new Date();
+            item.needChange = true;
             api.put(`Promocao/UpdatePromocao`, item)
                 .then(({ data }: AxiosResponse) => {
                     toast.success(`Promocao atualizado com sucesso!`);
