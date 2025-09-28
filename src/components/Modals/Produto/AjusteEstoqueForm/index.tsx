@@ -59,7 +59,7 @@ export default function AjusteEstoqueForm({ produto, user, isOpen, setClose, col
             return;
         }
 
-        api.post(`LancamentoEstoque/AjusteRapido`, obj)
+        api.post(`/v2/LancamentoEstoque/Produto/${user.empresaSelecionada}/AjusteRapido`, obj)
             .then(({ data }: AxiosResponse) => {
                 toast.success(`objeto cadastrado com sucesso!`);
                 setClose(true);

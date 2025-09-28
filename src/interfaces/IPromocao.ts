@@ -23,4 +23,5 @@ export default interface IPromocao{
          visivelMenu: boolean
          diaSemana: number
          imagem?: IProdutoImagem
+         needChange: boolean;
 }
