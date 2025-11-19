@@ -82,6 +82,10 @@ export default function Login() {
               </FloatingLabel>
             )}
             <CustomButton typeButton="main" type={'submit'} style={{ padding: '10px', height: 'auto' }}>{loading ? <Spinner animation="border" /> : <>Entrar</>}</CustomButton>
+            <hr />
+            <CustomButton onClick={() => {
+               window.location.href = '/acessoRemoto';
+            }} typeButton="main" type={'button'} style={{ padding: '10px', height: 'auto' }}>Baixar acesso remoto</CustomButton>
           </form>
         </div>
       </div>
