@@ -137,7 +137,7 @@ export default function FechamentoCaixa() {
         c.push({
             name: 'Diferenca',
             selector: row => row.diferenca,
-            cell: row => GetCurrencyBRL(row.valorDinheiroFinal),
+            cell: row => GetCurrencyBRL(row.diferenca),
             sortable: true
         });
         return c;
