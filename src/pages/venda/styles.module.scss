@@ -26,6 +26,13 @@
 .box > div > div:first-child{
     font-size: 16px;
 }
+.boxTotais{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: 10px;
+}
 
 
 .item{
