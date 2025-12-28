@@ -14,7 +14,7 @@ import { canSSRAuth } from '@/utils/CanSSRAuth';
 import IVenda from '@/interfaces/IVenda';
 import _ from 'lodash';
 import IVendaPagamento from '@/interfaces/IVendaPagamento';
-import { random_rgba } from '@/utils/functions';
+import { GetCurrencyBRL, random_rgba } from '@/utils/functions';
 import IDuplicata from '@/interfaces/IDuplicata';
 import PagamentoDuplicata from '@/components/Modals/PagamentoDuplicata';
 
@@ -349,11 +349,11 @@ const CardInfo = ({ title, style, vendas }) => {
     <div className={[styles.cardInfo, styles[style]].join(' ')}>
       <div className={styles.content}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <h4 className={styles.title}>R${getValor(true).toFixed(2)}</h4>
+          <h4 className={styles.title}>{GetCurrencyBRL(getValor(true))}</h4>
           <h2 className={styles.info}>{getCount(true)} Hoje</h2>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <h4 className={styles.title}>R${getValor(false).toFixed(2)}</h4>
+          <h4 className={styles.title}>{GetCurrencyBRL(getValor(false))}</h4>
           <h2 className={styles.info}>{getCount(false)} Mensal</h2>
         </div>
       </div>
