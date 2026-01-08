@@ -53,4 +53,5 @@ export default interface IProduto{
          descricao: string
          isConferencia: boolean
          imagem?: IProdutoImagem
+         bloqueiaEstoque: boolean
 }

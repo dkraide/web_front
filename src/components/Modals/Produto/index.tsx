@@ -19,14 +19,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTrash } from "@fortawesome/free-solid-svg-icons";
 import ICodBarras from "@/interfaces/ICodBarras";
 import _ from "lodash";
-import ITamanho from "@/interfaces/ITamanho";
 import VinculeMateriaPrima from "../MateriaPrima/VinculaProduto";
 import IMateriaPrima from "@/interfaces/IMateriaPrima";
-import ITamanhoMateriaPrima from "@/interfaces/ITamanhoMateriaPrima";
 import IProdutoMateriaPrima from "@/interfaces/IProdutoMateriaPrima";
-import { fGetNumber, GetCurrencyBRL, isMobile, validateNumber, validateString } from "@/utils/functions";
+import { fGetNumber, GetCurrencyBRL,  validateNumber, validateString } from "@/utils/functions";
 import SelectSimNao from "@/components/Selects/SelectSimNao";
 import CustomTable from "@/components/ui/CustomTable";
+import { isMobile } from "react-device-detect";
 
 interface props {
     isOpen: boolean
@@ -302,6 +301,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
                                 <InputForm defaultValue={obj.valor} width={'15%'} title={'Venda (R$)'} errors={errors} inputName={"valor"} register={register} />
                                 <InputForm defaultValue={obj.quantidadeMinima} width={'15%'} title={'Estoque Min.'} errors={errors} inputName={"quantidadeMinima"} register={register} />
                                 <InputForm defaultValue={obj.quantidade} width={'15%'} title={'Estoque Atual'} errors={errors} inputName={"quantidade"} register={register} />
+                                <SelectSimNao title={'Bloqueia Estoque'} width={isMobile ? '50%' : '15%'} selected={obj.isConferencia} setSelected={(v) => { setObj({ ...obj, isConferencia: v }) }} />
                                 <div style={{ width: '100%', display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
                                     <SelectSimNao title={'Conferência'} width={isMobile ? '100%' : '15%'} selected={obj.isConferencia} setSelected={(v) => { setObj({ ...obj, isConferencia: v }) }} />
                                     <InputForm defaultValue={obj.codigoFornecedor} width={'15%'} title={'Cod. Fornecedor'} errors={errors} inputName={"codigoFornecedor"} register={register} />
