@@ -1,0 +1,58 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    overflow: auto;
+}
+
+.prices {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    b{
+        width: 100%;
+    }
+
+}
+
+.suitableDiet {
+    width: 100%;
+}
+
+.items {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.itemSelected,
+.itemNonSelected {
+    border: solid 1pt;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 12px;
+    transition: all 0.2s;
+    cursor: pointer;
+
+    &:hover {
+        font-weight: 600;
+    }
+}
+
+.itemSelected {
+    border-color: #365738;
+    color: #365738;
+    background-color: #bbecbe;
+}
+
+.buttons {
+    width: 100%;
+    margin-top: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+}

@@ -58,6 +58,7 @@ export default function NovaPizza() {
         }
         if(!id){
             const inicializarPizza = (): IProduto => ({
+                bloqueiaEstoque: false,
                 idProduto: 0,
                 id: 0,
                 nome: 'Pizza Salgada',
