@@ -3,9 +3,7 @@ import styles from './styles.module.scss';
 import { useContext, useEffect, useState } from 'react';
 import _ from 'lodash';
 import { InputGroup } from '@/components/ui/InputGroup';
-import { v4 as uuidv4 } from 'uuid';
 import IProduto from '@/interfaces/IProduto';
-import { IProdutoGrupoItem, IProdutoGrupoItemPreco } from '@/interfaces/IProdutoGrupoItem';
 import CustomButton from '@/components/ui/Buttons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
@@ -61,6 +59,7 @@ export default function NovoPrato() {
         }
         if (!id) {
             const inicializarPrato = (): IProduto => ({
+                bloqueiaEstoque: false,
                 idProduto: 0,
                 id: 0,
                 nome: '',
