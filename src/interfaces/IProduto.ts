@@ -1,8 +1,6 @@
 import IClasseMaterial from "./IClasseMaterial"
 import ICodBarras from "./ICodBarras"
 import IFornecedor from "./IFornecedor"
-import IGrupoAdicional from "./IGrupoAdicional"
-import IMateriaPrima from "./IMateriaPrima"
 import IProdutoGrupo from "./IProdutoGrupo"
 import IProdutoImagem from "./IProdutoImagem"
 import IProdutoMateriaPrima from "./IProdutoMateriaPrima"
@@ -54,4 +52,11 @@ export default interface IProduto{
          isConferencia: boolean
          imagem?: IProdutoImagem
          bloqueiaEstoque: boolean
+         descricaoNutricional?: string
+         calories?: string
+         allergen?: string
+         suitableDiet?: string
+         isAlcoholic?: boolean
+         serving?: number
+         valorKeeta?: number
 }

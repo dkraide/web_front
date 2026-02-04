@@ -1,3 +1,4 @@
+import IProduto from "./IProduto"
 import IProdutoImagem from "./IProdutoImagem"
 
 export default interface IClasseMaterial{
@@ -12,4 +13,6 @@ export default interface IClasseMaterial{
      empresaId: number
      status: boolean
      imagem?: IProdutoImagem
+
+     produtos?: IProduto[]
 }

@@ -49,8 +49,6 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
     const [loading, setLoading] = useState<boolean>(true)
     const [sending, setSending] = useState(false)
     const [modalMp, setModalMp] = useState(false)
-    const [tamanho, setTamanho] = useState(0)
-
     useEffect(() => {
         if (id > 0) {
             api.get(`/Produto/Select?id=${id}`)

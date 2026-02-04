@@ -1,0 +1,57 @@
+.container {
+  padding: 16px;
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 5px;
+  h5{
+    width: 100%;
+    margin:  8px 0;
+  }
+  .divider{
+    width: 100%;
+  }
+}
+
+.images {
+  display: flex;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+
+
+.acceptedCards, .merchantCategories {
+    width: 100%;
+}
+
+.items {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
+.itemSelected,
+.itemNonSelected {
+    border: solid 1pt;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 12px;
+    transition: all 0.2s;
+    cursor: pointer;
+
+    &:hover {
+        font-weight: 600;
+    }
+}
+
+.itemSelected {
+    border-color: #365738;
+    color: #365738;
+    background-color: #bbecbe;
+}
