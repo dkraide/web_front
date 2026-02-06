@@ -1,0 +1,116 @@
+.container{
+    height: 100%;
+    width: 100%;
+    padding: 35px;
+    background-color: var(--white);
+}
+
+.row{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    align-items: center;
+    justify-content: space-between;
+}
+.tabs{
+    height: 90%;
+}
+.buttons{
+    height: 10%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+
+    button{
+        height: 35px;
+    }
+}
+.contentTab{
+    padding: 10px;
+}
+
+.grupo{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 10px;
+    border-radius: 5px;
+    border: solid 1pt #525252;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin-bottom: 5px;
+    align-items: center;
+
+    &:hover{
+        background-color: #d9d9d9;
+
+    }
+}
+.codigos{
+    border-radius: 5px;
+    border: solid 1pt #f0f0f0
+}
+.codigoItem{
+    padding: 10px;
+    a{
+        margin-right: 10px;
+    }
+    label{
+        font-weight: 700;
+    }
+    border-bottom: solid 1pt #f0f0f0;
+}
+
+.prices {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    b{
+        width: 100%;
+    }
+
+}
+
+.suitableDiet {
+    width: 100%;
+}
+
+.items {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.itemSelected,
+.itemNonSelected {
+    border: solid 1pt;
+    border-radius: 5px;
+    padding: 5px;
+    font-size: 12px;
+    transition: all 0.2s;
+    cursor: pointer;
+
+    &:hover {
+        font-weight: 600;
+    }
+}
+
+.itemSelected {
+    border-color: #365738;
+    color: #365738;
+    background-color: #bbecbe;
+}
+
+.buttons {
+    width: 100%;
+    margin-top: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 10px;
+}

@@ -8,6 +8,7 @@ interface selectProps extends HtmlHTMLAttributes<HTMLDivElement> {
     datas: dataProps[]
     selected?: string
     title?: string
+    error?: string
     maxTitleSize?: number
     setSelected: (value: any) => void
     ref?: any
@@ -19,7 +20,7 @@ interface dataProps {
     label: string
 }
 export  const  SelectBaseRef = forwardRef<SelectInstance<dataProps>, selectProps>(function MyInput(props, ref) {
-    const {datas, selected, title, width, id, setSelected, onKeyDown} = props;
+    const {datas, selected, title, width, id, setSelected, onKeyDown, error} = props;
     if (!datas) {
         return <></>
     }
@@ -50,7 +51,7 @@ export  const  SelectBaseRef = forwardRef<SelectInstance<dataProps>, selectProps
      />
     </div>
   });
-export function SelectBase({id, maxTitleSize, width, datas, selected, title, setSelected, ...rest }: selectProps) {
+export function SelectBase({error, id, maxTitleSize, width, datas, selected, title, setSelected, ...rest }: selectProps) {
     if (!datas) {
         return <></>
     }
@@ -63,17 +64,19 @@ export function SelectBase({id, maxTitleSize, width, datas, selected, title, set
 
     }
     return <div style={{width: width || '100%', minWidth: '150px'}}>
-        <label className={styles.title}>{title}</label>
+        <label style={{color: error ? '#df2222' : ''}} className={styles.title}>{title} {error ? '-' : ''} {error ?? ''}</label>
          <Select
         id={id}
         value={getSelected()}
         placeholder={`${title}:`}
         theme={(theme) => ({
             ...theme,
-            borderRadius: 0,
-            borderColor: 'transparent',
+            borderRadius: 5,
+            borderWidth: 1,
+            borderColor: error ? '#df2222' : 'transparent',
             colors: {
               ...theme.colors,
+              primary: 'var(--main)'
             },
           })}
         styles={{

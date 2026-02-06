@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "@/services/apiClient";
 import { AxiosError, AxiosResponse } from "axios";
 import Loading from "@/components/Loading";
-import {InputForm} from "@/components/ui/InputGroup";
+import { InputForm } from "@/components/ui/InputGroup";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import styles from './styles.module.scss';
@@ -11,7 +11,9 @@ import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
-import { isMobile, validateString } from "@/utils/functions";
+import SelectSimNao from "@/components/Selects/SelectSimNao";
+import { isMobile } from "react-device-detect";
+import { validateString } from "@/utils/functions";
 
 
 
@@ -22,7 +24,7 @@ interface props {
     color?: string
     user: IUsuario
 }
-export default function ClasseForm({user, isOpen, classeId, setClose, color }: props) {
+export default function ClasseForm({ user, isOpen, classeId, setClose, color }: props) {
 
     const {
         register,
@@ -47,7 +49,7 @@ export default function ClasseForm({user, isOpen, classeId, setClose, color }: p
                     toast.error(`Erro ao buscar dados. ${err.message}`)
                     setLoading(false);
                 })
-        }else{
+        } else {
             classe.id = 0;
             classe.status = true;
             setClasse(classe);
@@ -56,50 +58,53 @@ export default function ClasseForm({user, isOpen, classeId, setClose, color }: p
 
     }, []);
 
-    const onSubmit = async (data: any) =>{
+    const onSubmit = async (data: any) => {
         setSending(true);
         classe.nomeClasse = data.nomeClasse;
-        if(!validateString(classe.nomeClasse,3)){
-            const message ="Crie uma classe com no mínimo 3 caracteres!";
+        classe.posicao = data.posicao;
+        if (!validateString(classe.nomeClasse, 3)) {
+            const message = "Crie uma classe com no mínimo 3 caracteres!";
             toast.error(message);
             setSending(false);
             return;
         }
-        if(classe.id > 0){
+        if (classe.id > 0) {
             api.put(`ClasseMaterial/Update`, classe)
-            .then(({data}: AxiosResponse) => {
-                toast.success(`grupo atualizado com sucesso!`);
-                setClose(true);
-            })
-            .catch((err: AxiosError) => {
-                   toast.error(`Erro ao atualizar grupo. ${err.response?.data}`);
-            })
+                .then(({ data }: AxiosResponse) => {
+                    toast.success(`grupo atualizado com sucesso!`);
+                    setClose(true);
+                })
+                .catch((err: AxiosError) => {
+                    toast.error(`Erro ao atualizar grupo. ${err.response?.data}`);
+                })
 
-        }else{
+        } else {
             classe.empresaId = user.empresaSelecionada;
             api.post(`ClasseMaterial/Create`, classe)
-            .then(({data}: AxiosResponse) => {
-                toast.success(`grupo cadastrado com sucesso!`);
-                setClose(true);
-            })
-            .catch((err: AxiosError) => {
-                   toast.error(`Erro ao criar grupo. ${err.response?.data}`);
-            })
+                .then(({ data }: AxiosResponse) => {
+                    toast.success(`grupo cadastrado com sucesso!`);
+                    setClose(true);
+                })
+                .catch((err: AxiosError) => {
+                    toast.error(`Erro ao criar grupo. ${err.response?.data}`);
+                })
         }
         setSending(false);
     }
     return (
-        <BaseModal height={'30%'} width={'50%'} color={color} title={'Cadastro de grupo'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'70%'} width={'50%'} color={color} title={'Cadastro de grupo'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
-                <Loading  />
+                <Loading />
             ) : (
                 <div className={styles.container}>
-                    {!!classe.id &&  <InputForm defaultValue={classe.id} width={'10%'} title={'Cod'} readOnly={true} errors={errors} inputName={"id"} register={register} />}
-                    <SelectStatus  width={'15%'} selected={classe.status} setSelected={(v) => {setClasse({...classe, status: v})}} />
+                    {!!classe.id && <InputForm defaultValue={classe.id} width={'10%'} title={'Cod'} readOnly={true} errors={errors} inputName={"id"} register={register} />}
+                    <SelectStatus width={'15%'} selected={classe.status} setSelected={(v) => { setClasse({ ...classe, status: v }) }} />
                     <InputForm defaultValue={classe.nomeClasse} width={isMobile ? '100%' : '75%'} title={'Nome'} errors={errors} inputName={"nomeClasse"} register={register} />
+                    <SelectSimNao width={'50%'} title={'Visivel Menu?'} selected={classe.visivelMenu} setSelected={(r) => setClasse({ ...classe, visivelMenu: r })} />
+                    <InputForm defaultValue={classe.posicao} width={isMobile ? '100%' : '30%'} title={'Posicao'} errors={errors} inputName={"posicao"} register={register} />
                     <div className={styles.button}>
-                        <CustomButton onClick={() => { setClose(); } } typeButton={"secondary"}>Cancelar</CustomButton>
-                        <CustomButton typeButton={'dark'} loading={sending} onClick={() => {handleSubmit(onSubmit)()}}>Confirmar</CustomButton>
+                        <CustomButton onClick={() => { setClose(); }} typeButton={"secondary"}>Cancelar</CustomButton>
+                        <CustomButton typeButton={'dark'} loading={sending} onClick={() => { handleSubmit(onSubmit)() }}>Confirmar</CustomButton>
                     </div>
                 </div>
             )}
