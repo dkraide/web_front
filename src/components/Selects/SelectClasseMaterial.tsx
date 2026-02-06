@@ -12,9 +12,10 @@ interface selProps{
     setSelected: (value: any) => void;
     width?: string;
     empresaId?: number
+    error?: string
 }
 
-export  default function SelectClasseMaterial({empresaId, width, selected, setSelected}: selProps){
+export  default function SelectClasseMaterial({empresaId, width, selected, setSelected, error}: selProps){
     const [formas, setFormas] = useState<IClasseMaterial[]>([]);
     const {getUser} = useContext(AuthContext);
     const loadFormas = async () => {
@@ -50,6 +51,6 @@ export  default function SelectClasseMaterial({empresaId, width, selected, setSe
     }
 
     return(
-        <SelectBase width={width} datas={getData()} selected={selected?.toString()} title={'Grupo'} setSelected={onSelect}/>
+        <SelectBase error={error} width={width} datas={getData()} selected={selected?.toString()} title={'Grupo'} setSelected={onSelect}/>
     )
 }

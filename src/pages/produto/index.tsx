@@ -85,9 +85,8 @@ export default function Produto() {
         if (produto.tipo == "PRATO") {
             window.location.href = `/produto/novoPrato?id=${produto.id}`;
             return;
-
         }
-        setSearch({...search, edit: produto.id})
+        handleItem(produto.id);
     }
 
     function setImage(id: number) {
@@ -212,6 +211,9 @@ export default function Produto() {
     const handleNovoPrato = () => {
         window.location.href = '/produto/novoPrato';
     }
+    const handleItem = (id?) => {
+        window.location.href = `/produto/item${id ? `?id=${id}` : ''}`;
+    }
 
     const handleExcel = () => {
 
@@ -252,7 +254,7 @@ export default function Produto() {
         <div className={styles.container}>
             <h4>Produtos</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search.str} onChange={(e) => { setSearch({...search, str: e.currentTarget.value}) }} />
-            <CustomButton typeButton={'dark'} onClick={() => { setSearch({...search, edit: 0}) }} >Novo Produto</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => {handleItem()}}  >Novo Produto</CustomButton>
             <CustomButton typeButton={'dark'} onClick={handleNovaPizza} style={{ marginLeft: '10px' }} >Nova Pizza</CustomButton>
             <CustomButton typeButton={'dark'} onClick={handleNovoPrato} style={{ marginLeft: '10px' }}  >Novo Prato</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => { window.location.href = '/produto/franquia' }} style={{ marginLeft: '10px' }} >Franquia</CustomButton>

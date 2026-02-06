@@ -12,9 +12,10 @@ interface selProps{
     selected: number;
     setSelected: (value: any) => void;
     width?: string;
+    error?: string
 }
 
-export  default function SelectTributacao({width, selected, setSelected}: selProps){
+export  default function SelectTributacao({width, selected, setSelected, error}: selProps){
     const [formas, setFormas] = useState<ITributacao[]>([]);
     const {getUser} = useContext(AuthContext);
     const loadFormas = async () => {
@@ -50,6 +51,6 @@ export  default function SelectTributacao({width, selected, setSelected}: selPro
     }
 
     return(
-        <SelectBase width={width} datas={getData()} selected={selected?.toString()} title={'Tributação'} setSelected={onSelect}/>
+        <SelectBase error={error} width={width} datas={getData()} selected={selected?.toString()} title={'Tributação'} setSelected={onSelect}/>
     )
 }

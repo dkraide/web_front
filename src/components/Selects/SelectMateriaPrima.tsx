@@ -42,16 +42,16 @@ export  default function SelectMateriaPrima({width, selected, setSelected, empre
     }, [ignore]);
         function getData() {
             var data = [] as any[];
-            var isSelected = false;
+           // var isSelected = false;
             formas.map((forma, index) => {
                 var ind = _.findIndex(ignore, p => p == forma.id);
                if(ind >= 0){
                 return;
                }
-               if(!isSelected && !selected){
-                  setSelected(forma);
-                  isSelected = true;
-               }
+            //    if(!isSelected && !selected){
+            //       setSelected(forma);
+            //       isSelected = true;
+            //    }
                 var x = {
                     value: forma.id.toString(),
                     label: `${forma.nome}` || ''

@@ -10,6 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import _ from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
+import SelectMateriaPrima from '@/components/Selects/SelectMateriaPrima';
+import IMateriaPrima from '@/interfaces/IMateriaPrima';
 
 type props = {
     isOpen: boolean
@@ -22,6 +24,7 @@ export default function NovoGrupo({ isOpen, setClose, grupoEditado }: props) {
 
     useEffect(() => {
         if (grupoEditado) {
+            console.log(grupoEditado);
             setGrupo(grupoEditado);
         } else {
             var newGrupo = {
@@ -55,6 +58,14 @@ export default function NovoGrupo({ isOpen, setClose, grupoEditado }: props) {
             grupo.itens[indexItem][field] = newValue;
             setGrupo({ ...grupo });
         }
+        const handleMateriaPrimaChanged = (m: IMateriaPrima) => {
+            var indexItem = _.findIndex(grupo.itens, p => p.id == item.id);
+            grupo.itens[indexItem].materiaPrimaId = m.id;
+            grupo.itens[indexItem].idMateriaPrima = m.idMateriaPrima;
+            grupo.itens[indexItem].nome = m.nome;
+            grupo.itens[indexItem].valor = m.valorVenda;
+            setGrupo({ ...grupo });
+        }
 
         const handleRemove = () => {
             var indexItem = _.findIndex(grupo.itens, p => p.id == item.id);
@@ -63,8 +74,9 @@ export default function NovoGrupo({ isOpen, setClose, grupoEditado }: props) {
         }
 
         return (
-            <div className={styles.grupo}>
-                <InputGroup width={'60%'} title={'Nome'} value={item.nome} onChange={({ currentTarget }) => { handleChangeValue(currentTarget.value, 'nome') }} />
+            <div className={styles.grupo} key={item.id}>
+                <SelectMateriaPrima width={'35%'} selected={item.materiaPrimaId} setSelected={handleMateriaPrimaChanged} />
+                <InputGroup width={'35%'} title={'Nome'} value={item.nome} onChange={({ currentTarget }) => { handleChangeValue(currentTarget.value, 'nome') }} />
                 <InputGroup type={'number'} width={'15%'} title={'Valor'} value={item.valor} onChange={({ currentTarget }) => { handleChangeValue(currentTarget.value, 'valor') }} />
                 <Switch onColor={'#fc4f6b'} onChange={(e) => { handleChangeValue(e, 'status') }} checked={item.status} />
                 <CustomButton onClick={handleRemove} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton={'outline-main'}><FontAwesomeIcon icon={faTrash} /></CustomButton>
@@ -114,7 +126,7 @@ export default function NovoGrupo({ isOpen, setClose, grupoEditado }: props) {
                 <hr />
                 <div className={styles.buttons}>
                     <CustomButton onClick={() => { setClose(); }} typeButton={"secondary"}>Cancelar</CustomButton>
-                    <CustomButton typeButton={'dark'}  onClick={() => {setClose(grupo) }}>Confirmar</CustomButton>
+                    <CustomButton typeButton={'dark'} onClick={() => { setClose(grupo) }}>Confirmar</CustomButton>
 
                 </div>
             </div>

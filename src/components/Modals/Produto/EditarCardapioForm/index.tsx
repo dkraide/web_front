@@ -42,20 +42,6 @@ export function EditarCardapioForm({ item, setClose }: props) {
         formState: { errors } } =
         useForm();
 
-    const getCalories = () => {
-        if (!produto.calories) {
-            return ''
-        };
-        var splitted = produto.calories.split(' ');
-        if (splitted.length > 0) {
-            if (splitted.length > 1) {
-                setTipoCal(splitted[1])
-            }
-            return splitted[0];
-        }
-        return produto.calories;
-    }
-
     const onSubmit = async (data) => {
         if (!loading) {
             setLoading(true);

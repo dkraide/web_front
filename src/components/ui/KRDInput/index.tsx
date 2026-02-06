@@ -1,5 +1,6 @@
 import InputMask from 'react-input-mask';
 import { Controller } from 'react-hook-form';
+import { isMobile } from 'react-device-detect';
 
 type Props = {
   label: string;
@@ -11,6 +12,7 @@ type Props = {
   mask?: string;
   error?: string;
   isCurrency?: boolean;
+  placeholder?: string;
 };
 
 export default function KRDInput({
@@ -23,6 +25,7 @@ export default function KRDInput({
   mask,
   error,
   isCurrency = false,
+  placeholder,
 }: Props) {
   const inputStyle = {
     padding: '6px 8px',
@@ -49,7 +52,7 @@ export default function KRDInput({
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, width }}>
+     <div style={{ display: 'flex', flexDirection: 'column', gap: 2, width, minWidth: isMobile ? '50%' : '' }}>
       <label style={{ fontSize: 13 }}>{label}</label>
       <Controller
         name={name}
@@ -100,11 +103,12 @@ export default function KRDInput({
           return (
             <input
               {...field}
-              value={value || ''}
+              value={value ?? ''}
               onChange={(e) => {
                 const newValue = isNumber ? e.target.valueAsNumber : e.target.value;
                 onChange(newValue);
               }}
+              placeholder={placeholder}
               type={type}
               disabled={disabled}
               style={inputStyle}

@@ -140,7 +140,6 @@ export default function Produtos() {
             <CustomButton onClick={() => {onToggle(row.id)}} typeButton={row.visivelMenu ? 'success' : 'danger'}> {row.visivelMenu ? 'Visivel' : 'Invisivel'}</CustomButton>,
             </div>,
             sortable: true,
-
         },
     ]
     return (
