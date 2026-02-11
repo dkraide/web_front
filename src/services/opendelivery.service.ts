@@ -1,3 +1,4 @@
+import IMerchantOpenDelivery from "@/interfaces/IMerchantOpenDelivery";
 import { api } from "./apiClient";
 
 async function getMerchantServices(empresaId: number) {
@@ -64,11 +65,14 @@ export interface ServiceConfig {
     schedule?: ScheduleConfig;
     hours: ServiceHours[];
     areas?: DeliveryArea[];
+
+    store_lat?: number;
+    store_lng?: number;
 }
 
 function mapServiceToPayload(
     service: ServiceConfig,
-    empresaId: number
+    empresaId: number,
 ) {
     return {
         id: service.id,

@@ -179,13 +179,13 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/pdv/configuracao'}>Configuracao</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
-                                <MenuItem href={'/menudigital/pedidos'}>Pedidos</MenuItem>
-                                    <MenuItem href={'/menudigital/produtos'}>Produtos</MenuItem>
+                                    {/* <MenuItem href={'/menudigital/produtos'}>Produtos</MenuItem>
                                     <MenuItem href={'/menudigital/categorias'}>Categorias</MenuItem>
                                     <MenuItem href={'/menudigital/promocoes'}>Promocoes</MenuItem>
-                                    <MenuItem href={'/menudigital/combos'}>Combos</MenuItem>
-                                    <MenuItem href={'/menudigital/configuracao'}>Configuracao</MenuItem>
+                                    <MenuItem href={'/menudigital/combos'}>Combos</MenuItem> */}
+                                    <MenuItem href={'/menudigital/horarios'}>Configuração</MenuItem>
                                     <MenuItem href={'/menudigital/empresa'}>Empresa</MenuItem>
+                                    <MenuItem href={'/menudigital/cardapio'}>Cardápios</MenuItem>
                                 </SubMenu>
                             </div>
                         )}

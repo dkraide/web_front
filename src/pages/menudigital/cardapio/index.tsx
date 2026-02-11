@@ -4,21 +4,18 @@ import IClasseMaterial from '@/interfaces/IClasseMaterial';
 import { api } from '@/services/apiClient';
 import IProduto from '@/interfaces/IProduto';
 import { AuthContext } from '@/contexts/AuthContext';
-import { Form, ToggleButton } from 'react-bootstrap';
+import { Form } from 'react-bootstrap';
 import { GetCurrencyBRL, sendImage } from '@/utils/functions';
 import { EditarCardapioForm } from '@/components/Modals/Produto/EditarCardapioForm';
 import { toast } from 'react-toastify';
-import CustomButton from '@/components/ui/Buttons';
-import EditMerchantForm from '@/components/Modals/Cardapio/EditMerchantForm';
-import EditServiceForm from '@/components/Modals/Cardapio/EditServiceForm';
+import { InputGroup } from '@/components/ui/InputGroup';
 
 
 export default function Cardapio() {
     const [classes, setClasses] = useState<IClasseMaterial[]>([]);
     const [loading, setLoading] = useState(true);
     const [editProd, setEditProd] = useState<IProduto>();
-    const [editLoja, setEditLoja] = useState<boolean>(false);
-    const [editHorario, setEditHorario] = useState<boolean>(false);
+    const [search, setSearch] = useState('');
     const { getUser } = useContext(AuthContext);
 
     const loadData = async () => {
@@ -38,6 +35,34 @@ export default function Cardapio() {
     useEffect(() => {
         loadData();
     }, []);
+
+    const filtered = () => {
+        if (!search) return classes;
+
+        const term = search.toLowerCase();
+
+        return classes
+            ?.map(c => {
+                const classeMatch = c.nomeClasse.toLowerCase().includes(term);
+
+                const produtosFiltrados = c.produtos?.filter(p =>
+                    p.nome.toLowerCase().includes(term)
+                ) ?? [];
+
+                // A classe entra se ela mesma bate OU se sobrar produto
+                if (classeMatch || produtosFiltrados.length > 0) {
+                    return {
+                        ...c,
+                        produtos: produtosFiltrados
+                    };
+                }
+
+                return null;
+            })
+            .filter(Boolean);
+    };
+
+
 
     function setImage(p: IProduto) {
         var input = document.createElement("input");
@@ -93,15 +118,11 @@ export default function Cardapio() {
             <div className={styles.header}>
                 <h3>Configuração de cardápio para delivery</h3>
             </div>
-            <hr />
-            <div className={styles.buttons}>
-                <CustomButton onClick={() => setEditLoja(true)}>Configuração Loja</CustomButton>
-                <CustomButton onClick={() => setEditHorario(true)}>Configuração Horarios</CustomButton>
-
-            </div>
+            <br />
+            <InputGroup title={'Pesquisar'} value={search} onChange={(e) => setSearch(e.currentTarget.value)} />
             <hr />
             <div className={styles.body}>
-                <Categorias onToggleProduto={onToggleProduto} setImage={setImage} classes={classes} onEditProd={setEditProd} />
+                <Categorias onToggleProduto={onToggleProduto} setImage={setImage} classes={filtered()} onEditProd={setEditProd} />
             </div>
             {editProd && (
                 <EditarCardapioForm
@@ -111,20 +132,6 @@ export default function Cardapio() {
                             loadData();
                         }
                         setEditProd(undefined);
-                    }}
-                />
-            )}
-            {editLoja && (
-                <EditMerchantForm
-                    setClose={(r) => {
-                        setEditLoja(false);
-                    }}
-                />
-            )}
-            {editHorario && (
-                <EditServiceForm
-                    setClose={(r) => {
-                        setEditHorario(false);
                     }}
                 />
             )}

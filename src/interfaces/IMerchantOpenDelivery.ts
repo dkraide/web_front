@@ -43,4 +43,13 @@ export default interface IMerchantOpenDelivery {
   createdAt: Date;
 
   acceptedCards?: string;
+
+  facebook?: string;
+  instagram?: string;
+  urlIFood?: string
+  urlGoomer?: string
+  url99?: string
+  urlUberEats?: string
+  urlKeeta?: string
+
 }

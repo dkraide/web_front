@@ -7,14 +7,14 @@ import { FaWhatsapp, FaFacebook, FaInstagram, FaSitemap, FaLink, FaHamburger, Fa
 import { SiIfood, SiUber } from 'react-icons/si';
 import { useRouter } from 'next/router';
 import Image from 'next/image';
+import IMerchantOpenDelivery from '@/interfaces/IMerchantOpenDelivery';
 
 type LinksProps = {
     emp?: string;
 };
 
 export default function Links({ emp }: LinksProps) {
-    const [configuracao, setConfiguracao] = useState<IMenuDigitalConfiguracao>();
-    const [empresa, setEmpresa] = useState<IEmpresa>();
+    const [configuracao, setConfiguracao] = useState<IMerchantOpenDelivery>();
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
@@ -28,13 +28,10 @@ export default function Links({ emp }: LinksProps) {
     async function loadData(empresaId: string) {
         try {
             const { data } = await api.get(
-                `/MenuDigital/Configuracao?Id=${empresaId}&withHorarios=true`
+               `/opendelivery/merchant?empresaId=${empresaId}`
             );
             console.log(data);
             setConfiguracao(data);
-
-            const { data: empresaData } = await api.get(`/MenuDigital/Empresa/${empresaId}`);
-            setEmpresa(empresaData);
         } catch (err) {
             console.log(err);
         } finally {
@@ -42,26 +39,26 @@ export default function Links({ emp }: LinksProps) {
         }
     }
 
-    if (loading || !configuracao || !empresa)
+    if (loading || !configuracao)
         return <div className={styles.loading}>Carregando...</div>;
 
     const links = [
         {
-            url: `https://menu.krdsystem.com/?empresa=${empresa.id}`,
+            url: `https://menu.krdsystem.com/?empresa=${configuracao.empresaId}`,
             label: 'Meu Cardápio',
             icon: <FaHamburger />,
             color: '#d32525ff',
         },
         {
             url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                `${empresa.endereco}, ${empresa.nro} - ${empresa.bairro} ${empresa.cidade}, ${empresa.uf}`
+                `${configuracao.street}, ${configuracao.number} - ${configuracao.district} ${configuracao.city}, ${configuracao.state}`
             )}`,
             label: 'Endereço',
             icon: <FaMapMarkerAlt />,
             color: '#4285F4', // azul Google Maps
         },
         {
-            url: configuracao.whatsappLoja ? `https://wa.me/${configuracao.whatsappLoja}` : null,
+            url: configuracao.whatsappNumber ? `https://wa.me/${configuracao.whatsappNumber}` : null,
             label: 'WhatsApp',
             icon: <FaWhatsapp />,
             color: '#25D366',
@@ -110,19 +107,19 @@ export default function Links({ emp }: LinksProps) {
             <div className={styles.header}>
                 <div
                     className={styles.backgroundImg}
-                    style={{ backgroundImage: `url(${configuracao.localPath})` }}
+                    style={{ backgroundImage: `url(${configuracao.bannerUrl})` }}
                 >
                     <div className={styles.headerContent}>
-                        {configuracao.logoPath && (
+                        {configuracao.logoUrl && (
                             <Image
-                                src={configuracao.logoPath}
+                                src={configuracao.logoUrl}
                                 alt="Logo Empresa"
                                 width={120}
                                 height={120}
                                 className={styles.logo}
                             />
                         )}
-                        <h1>{empresa.nomeFantasia}</h1>
+                        <h1>{configuracao.name}</h1>
                         <hr />
                     </div>
                 </div>

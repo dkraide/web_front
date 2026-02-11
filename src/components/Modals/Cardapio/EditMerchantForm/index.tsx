@@ -15,6 +15,12 @@ import { Button } from 'react-bootstrap';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { merchantSchema } from '@/schemas/MerchantSchema';
 import z from 'zod';
+import dynamic from 'next/dynamic';
+
+const AddressMap = dynamic(
+    () => import('@/components/Mapa/AddressMap'),
+    { ssr: false }
+);
 
 
 type props = {
@@ -27,6 +33,7 @@ export default function EditMerchantForm({ setClose }: props) {
     const [merchant, setMerchant] = useState<IMerchantOpenDelivery | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const { getUser } = useContext(AuthContext);
+
 
     const loadData = async () => {
         if (!loading) {
@@ -94,6 +101,7 @@ export default function EditMerchantForm({ setClose }: props) {
         handleSubmit,
         formState: { errors, isSubmitted },
         getValues,
+        watch,
         setValue,
     } = useForm<MerchantFormData>({
         resolver: zodResolver(merchantSchema),
@@ -103,6 +111,11 @@ export default function EditMerchantForm({ setClose }: props) {
             averageTicket: 0,
         },
     });
+    const street = watch('street');
+    const number = watch('number');
+    const city = watch('city');
+    const state = watch('state');
+
 
 
 
@@ -237,7 +250,7 @@ export default function EditMerchantForm({ setClose }: props) {
                                     <div style={{ width: '25%' }}>
                                         <AcceptedCardsComponent value={merchant?.acceptedCards} onChange={(v) => setMerchant({ ...merchant, acceptedCards: v })} />
                                     </div>
-                                     <div style={{ width: '40%' }}>
+                                    <div style={{ width: '40%' }}>
                                         <MerchantCategoriesComponent value={merchant?.merchantCategories} onChange={(v) => setMerchant({ ...merchant, merchantCategories: v })} />
                                     </div>
                                 </div>
@@ -246,6 +259,7 @@ export default function EditMerchantForm({ setClose }: props) {
                             <Tab eventKey="profile" title="Endereço e contato">
                                 <div className={styles.formGrid}>
                                     <h5>Contato</h5>
+                                    <div></div>
                                     <KRDInput width={'20%'} label="Telefone Comercial" name="commercialPhone" control={control} error={errors.commercialPhone?.message?.toString()} />
                                     <KRDInput mask="(99) 99999-9999" width={'20%'} label="WhatsApp" name="whatsappNumber" control={control} error={errors.whatsappNumber?.message?.toString()} />
                                     <KRDInput width={'50%'} label="Emails(separado por virgula)" name="contactEmails" control={control} error={errors.contactEmails?.message?.toString()} />
@@ -253,33 +267,40 @@ export default function EditMerchantForm({ setClose }: props) {
                                         <hr />
                                     </div>
                                     <h5>Endereço</h5>
-                                    <KRDInput
-                                        label="CEP"
-                                        name="postalCode"
-                                        control={control}
-                                        mask="99999-999"
-                                        width="30%"
-                                        error={errors.postalCode?.message}
-                                    />
-                                    <Button
-                                        type="button"
-                                        variant="secondary"
-                                        style={{ height: 38, marginTop: 22 }}
-                                        onClick={() => buscarCep(getValues('postalCode'))}
-                                    >Buscar CEP</Button>
-
-
-                                    <KRDInput width={'70%'} label="Rua" name="street" control={control} />
-                                    <KRDInput width={'12%'} label="Número" name="number" control={control} />
-                                    <KRDInput width={'12%'} label="Complemento" name="complement" control={control} />
-                                    <KRDInput width={'40%'} label="Bairro" name="district" control={control} />
-                                    <KRDInput width={'40%'} label="Cidade" name="city" control={control} />
-                                    <KRDInput width={'10%'} label="Estado" name="state" control={control} />
-                                    <KRDInput width={'100%'} label="referência" name="reference" control={control} />
+                                    <div className={styles.addressLayout}>
+                                        <div className={styles.addressForm}>
+                                            <KRDInput
+                                                label="CEP"
+                                                name="postalCode"
+                                                control={control}
+                                                mask="99999-999"
+                                                width="30%"
+                                                error={errors.postalCode?.message}
+                                            />
+                                            <Button
+                                                type="button"
+                                                variant="secondary"
+                                                style={{ height: 38, marginTop: 22 }}
+                                                onClick={() => buscarCep(getValues('postalCode'))}
+                                            >Buscar CEP</Button>
+                                            <KRDInput width={'70%'} label="Rua" name="street" control={control} />
+                                            <KRDInput width={'12%'} label="Número" name="number" control={control} />
+                                            <KRDInput width={'12%'} label="Complemento" name="complement" control={control} />
+                                            <KRDInput width={'40%'} label="Bairro" name="district" control={control} />
+                                            <KRDInput width={'40%'} label="Cidade" name="city" control={control} />
+                                            <KRDInput width={'10%'} label="Estado" name="state" control={control} />
+                                            <KRDInput width={'100%'} label="referência" name="reference" control={control} />
+                                        </div>
+                                        <div className={styles.addressMap}>
+                                            <AddressMap
+                                                street={street}
+                                                number={number}
+                                                city={city}
+                                                state={state}
+                                            />
+                                        </div>
+                                    </div>
                                 </div>
-                            </Tab>
-                            <Tab eventKey="contact" title="Horário de funcionamento" disabled>
-                                Tab content for Contact
                             </Tab>
                         </Tabs>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
