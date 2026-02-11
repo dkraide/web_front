@@ -1,0 +1,284 @@
+.container {
+  width: 100%;
+  height: 100%;
+}
+
+.box {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.pedidos {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+  background-color: var(--white);
+  padding: 10px;
+}
+
+.pedidos > div {
+  width: 24%;
+  height: 100%;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.novo {
+  background-color: rgb(59, 130, 246);
+}
+
+.preparando {
+  background-color: rgb(245, 158, 11);
+}
+
+.entregando {
+  background-color: rgb(231, 188, 59);
+}
+
+.finalizados {
+  background-color: rgb(22, 163, 74);
+}
+
+.pedido {
+  background-color: var(--white);
+  border-radius: 5px;
+  height: auto;
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+}
+
+.entrega {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1rem;
+}
+
+.endereco {
+  padding: 10x;
+}
+
+.buttonmodal {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+  transition: color 0.2s ease;
+}
+
+.buttonmodal:hover {
+  color: darkblue;
+}
+
+.buttonmodal:active {
+  color: navy;
+}
+
+.endereco {
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 14px;
+  color: var(--gray-600);
+}
+
+.icon {
+  margin-right: 8px;
+}
+
+.link {
+  cursor: pointer;
+}
+
+.link:hover {
+  color: darkblue;
+}
+
+.whatsappButton {
+  display: inline-flex;
+  align-items: center;
+  background-color: #25D366;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+  border: 2px solid black;
+  transition: background-color 0.3s ease;
+  position: relative;
+  margin-right: 10px;
+}
+
+.whatsappButton:hover {
+  background-color: #128C7E;
+}
+
+.whatsappIcon {
+  margin-right: 8px;
+  font-size: 20px;
+  padding-right: 15px;
+}
+
+/* Linha vertical */
+.separator {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  left: 23%;
+  background-color: black;
+  margin: 0 8px;
+}
+
+.pedidoDetalhes {
+  display: flex;
+  flex-direction: row; /* Alterado para linha, para alinhar os botões */
+  gap: 10px; /* Espaço entre os botões */
+  margin-top: 10px;
+  position: relative;
+  align-items: center; /* Garante que os botões fiquem alinhados verticalmente */
+}
+
+.valorTotal {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.statusDropdown {
+  display: flex;
+  justify-content: space-between; /* Espaço entre os grupos de botões */
+  align-items: center; /* Alinha verticalmente */
+  margin-top: 10px;
+}
+
+/* Ajustes para remover o dropdown e colocar os botões lado a lado */
+.statusButton,
+.statusButtons button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 6px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+}
+
+.statusButton:hover,
+.statusButtons button:hover {
+  background-color: #45a049;
+}
+
+.statusButton:disabled,
+.statusButtons button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.statusButtons button:first-child:hover {
+  background-color: #e53935;
+}
+
+.statusButtons button:last-child {
+  background-color: #ff9800;
+}
+
+.statusButtons button:last-child:hover {
+  background-color: #fb8c00;
+}
+
+/* Garantindo que o botão de Cancelar na div "Finalizado" tenha cor vermelha */
+.statusButtons button:first-child {
+  background-color: #f44336 !important;
+}
+
+.statusButtons button:first-child:hover {
+  background-color: #e53935 !important;
+}
+
+/* Alinhamento correto dos botões Cancelar e Mudar Status */
+.pedidoDetalhes {
+  display: flex;
+  flex-direction: row; /* Garantindo que os itens fiquem alinhados na horizontal */
+  gap: 10px; /* Espaçamento entre os itens */
+  margin-top: 10px;
+  position: relative;
+  align-items: center;
+}
+
+.statusDropdown {
+  display: flex;
+  gap: 10px;  /* Espaçamento entre os botões */
+  margin-top: 10px;
+  justify-content: flex-start; /* Garante o alinhamento dos botões à esquerda */
+  align-items: center; /* Alinha os itens verticalmente */
+  
+}
+
+.whatsappContainer {
+  display: inline-flex; /* Garante que o WhatsApp se alinhe com outros botões */
+  align-items: center;  /* Alinha verticalmente */
+  margin-right: 10px; /* Espaçamento entre o botão WhatsApp e outros botões */
+}
+
+.whatsappButton {
+  background-color: #25D366; /* Cor do WhatsApp */
+  color: white;
+  border: none;
+  padding: 6px 15px; /* Tamanho confortável para o botão */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  text-decoration: none; /* Remove o sublinhado do link */
+}
+
+.whatsappButton:hover {
+  background-color: #128C7E; /* Cor ao passar o mouse */
+}
+
+.statusDropdown {
+  display: inline-flex;
+  gap: 8px; /* Espaçamento entre os botões */
+  margin-top: 4px;
+  align-items: center;
+}
+
+.statusDropdown button,
+.whatsappButton {
+  margin-right: 10px; /* Espaço entre os botões */
+}
+
+.printButton {
+  background: none; /* Remove o fundo */
+  border: none; /* Remove bordas */
+  padding: 0px 45px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+
+.printButton:hover {
+  color: #007bff; /* Azul no hover */
+}
+
+.printButton:focus {
+  outline: none; /* Remove o contorno ao focar */
+}
+
+.printIcon {
+  font-size: 29px; /* Define o tamanho do ícone */
+  color: inherit; /* Herda a cor do botão */
+  
+}
+
+.statusButtons {
+  display: flex;
+  gap: 10px; /* Espaço entre os botões de status */
+}
