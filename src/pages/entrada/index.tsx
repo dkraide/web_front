@@ -19,8 +19,8 @@ import BoxInfo from '@/components/ui/BoxInfo';
 import _ from 'lodash';
 import IEntrada from '@/interfaces/IEntrada';
 import SelectStatusRecebimento from '@/components/Selects/SelectStatusRecebimento';
-import EntradaForm from '@/components/Modals/Financeiro/EntradaForm';
 import { GetCurrencyBRL } from '@/utils/functions';
+import EntradaForm from '@/components/Modals/Financeiro/EntradaEditForm';
 
 interface searchProps{
     dateIn: string
