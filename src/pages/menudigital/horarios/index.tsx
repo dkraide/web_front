@@ -2,7 +2,7 @@ import CollapsedDiv from '@/components/CollapsedDiv';
 import dynamic from 'next/dynamic';
 
 const DeliveryAreaMap = dynamic(
-    () => import('../../../../components/Mapa'),
+    () => import('@/components/Mapa'),
     { ssr: false }
 );
 import { useContext, useEffect, useState } from 'react';
@@ -13,18 +13,16 @@ import {
     saveMerchantServices
 } from '@/services/opendelivery.service';
 import { AuthContext } from '@/contexts/AuthContext';
+import { api } from '@/services/apiClient';
+import IMerchantOpenDelivery from '@/interfaces/IMerchantOpenDelivery';
 const COLORS = ['#22c55e', '#3b82f6', '#f97316', '#ef4444', '#a855f7'];
-
-function getNextColor(index: number) {
-    return COLORS[index % COLORS.length];
-}
-
 
 // ================== PAGE ==================
 export default function ServiceSetupPage() {
     const [services, setServices] = useState<ServiceConfig[]>([]);
     const {getUser} = useContext(AuthContext);
    const [empresaId, setEmpresaId] = useState<number>(0);
+   const [merchantConfig, setMerchantConfig] = useState<IMerchantOpenDelivery>();
     useEffect(() => {
         async function load() {
             if(empresaId == 0){
@@ -34,6 +32,11 @@ export default function ServiceSetupPage() {
             }
             const data = await getMerchantServices(empresaId);
             const mapped = data.map(mapPayloadToService);
+            await api.get(`/opendelivery/merchant?empresaId=${empresaId}`).then(({data}) => {
+                setMerchantConfig(data);
+            }).catch((err) => {
+                  console.log(err);
+            })
             setServices(mapped);
         }
 
@@ -94,16 +97,16 @@ export default function ServiceSetupPage() {
                 }}
             >
                 {services.map((service) => (
-                    <ServiceCard key={service.id} service={service} onChange={updateService} />
+                    <ServiceCard merchantConfig={merchantConfig} key={service.id} service={service} onChange={updateService} />
                 ))}
             </div>
-
+{/* 
             <hr style={{ margin: '32px 0' }} />
 
             <h2>Payload final</h2>
             <pre style={{ background: '#111', color: '#0f0', padding: 16, borderRadius: 8 }}>
                 {JSON.stringify(services, null, 2)}
-            </pre>
+            </pre> */}
         </div>
     );
 }
@@ -127,7 +130,7 @@ function ServiceToggle({ label, active, onClick }: any) {
     );
 }
 
-function ServiceCard({ service, onChange }: { service: ServiceConfig; onChange: any }) {
+function ServiceCard({ service, onChange, merchantConfig }: { service: ServiceConfig; onChange: any, merchantConfig: IMerchantOpenDelivery }) {
     return (
         <div style={{ border: '1px solid #ddd', borderRadius: 12, padding: 20, marginBottom: 24 }}>
             <h3>{service.serviceType}</h3>
@@ -149,7 +152,7 @@ function ServiceCard({ service, onChange }: { service: ServiceConfig; onChange: 
                         <HoursConfig service={service} onChange={onChange} />
                         <br />
 
-                        {service.serviceType === 'DELIVERY' && <DeliveryAreaConfig service={service} onChange={onChange} />}
+                        {service.serviceType === 'DELIVERY' && <DeliveryAreaConfig merchantConfig={merchantConfig}  service={service} onChange={onChange} />}
                     </>
 
 
@@ -232,10 +235,6 @@ export interface IDayConfig {
     }[];
 }
 
-interface HoursConfigProps {
-    value: IDayConfig[];
-    onChange: (value: IDayConfig[]) => void;
-}
 function HoursConfig({ service, onChange }: any) {
     const WEEK_DAYS = [
         { key: 'SUNDAY', label: 'Domingo' },
@@ -290,7 +289,7 @@ function HoursConfig({ service, onChange }: any) {
                                         alignItems: 'center',
                                     }}
                                 >
-                                    <strong style={{ fontSize: 13 }}>
+                                    <strong style={{ fontSize: 13, color: 'black' }}>
                                         {day.label}
                                     </strong>
 
@@ -369,12 +368,17 @@ function has(list: ServiceConfig[], type: ServiceType) {
 function DeliveryAreaConfig({
     service,
     onChange,
+    merchantConfig
 }: {
     service: ServiceConfig;
     onChange: (id: string, data: Partial<ServiceConfig>) => void;
+    merchantConfig: IMerchantOpenDelivery
 }) {
-    const STORE_LAT = -23.55052;
-    const STORE_LNG = -46.633308;
+    if(!merchantConfig){
+        return null;
+    }
+    const STORE_LAT =  merchantConfig.latitude ?? -23.55052;
+    const STORE_LNG =  merchantConfig.longitude ??  -46.633308;
 
     const COLORS = ['#22c55e', '#3b82f6', '#f97316', '#ef4444', '#a855f7'];
 
@@ -497,7 +501,7 @@ function DeliveryAreaConfig({
                 )}
 
                 {/* DEBUG */}
-                {service.areas && (
+                {/* {service.areas && (
                     <pre
                         style={{
                             marginTop: 12,
@@ -510,7 +514,7 @@ function DeliveryAreaConfig({
                     >
                         {JSON.stringify(service.areas, null, 2)}
                     </pre>
-                )}
+                )} */}
             </section>
         </CollapsedDiv>
 

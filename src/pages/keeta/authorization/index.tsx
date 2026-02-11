@@ -5,22 +5,22 @@ import styles from './styles.module.scss';
 
 export default function KeetaAuthorizationPage() {
     const router = useRouter();
-    const { authId } = router.query;
-    const [copiado, setCopiado] = useState(false);
+    const { code, keetaMerchantId } = router.query;
 
-    const copiarCodigo = async () => {
-        if (!authId) return;
+    const [copiado, setCopiado] = useState<string | null>(null);
 
-        await navigator.clipboard.writeText(authId.toString());
-        setCopiado(true);
+    const copiarTexto = async (texto: string, tipo: string) => {
+        if (!texto) return;
 
-        setTimeout(() => setCopiado(false), 2000);
+        await navigator.clipboard.writeText(texto);
+        setCopiado(tipo);
+
+        setTimeout(() => setCopiado(null), 2000);
     };
 
     return (
         <div className={styles.container}>
             <div className={styles.card}>
-                
                 {/* Logo */}
                 <div className={styles.logo}>
                     <Image
@@ -40,50 +40,60 @@ export default function KeetaAuthorizationPage() {
                     Agora você já pode receber pedidos normalmente 🎉
                 </p>
 
-                {authId ? (
+                {(code && keetaMerchantId) ? (
                     <>
                         <p className={styles.instruction}>
-                            Copie o código abaixo e cole na tela do sistema PDV:
+                            Copie os dados abaixo e cole na tela do sistema PDV:
                         </p>
 
+                        {/* Código de autorização */}
                         <div className={styles.authWrapper}>
+                            <label>Código de autorização</label>
+
                             <div className={styles.authBox}>
-                                {authId}
+                                {code}
                             </div>
 
                             <button
                                 className={styles.copyButton}
-                                onClick={copiarCodigo}
-                                title="Copiar código"
+                                onClick={() => copiarTexto(code.toString(), 'code')}
+                                title="Copiar código de autorização"
                             >
-                                {/* Ícone copiar */}
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="20"
-                                    height="20"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    strokeWidth="2"
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                >
-                                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
-                                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-                                </svg>
+                                📋
                             </button>
                         </div>
 
-                        {copiado && (
-                            <span className={styles.copied}>✔ Código copiado</span>
+                        {copiado === 'code' && (
+                            <span className={styles.copied}>✔ Código de autorização copiado</span>
+                        )}
+
+                        {/* ID Loja Keeta */}
+                        <div className={styles.authWrapper}>
+                            <label>ID Loja Keeta</label>
+
+                            <div className={styles.authBox}>
+                                {keetaMerchantId}
+                            </div>
+
+                            <button
+                                className={styles.copyButton}
+                                onClick={() => copiarTexto(keetaMerchantId.toString(), 'merchant')}
+                                title="Copiar ID da loja"
+                            >
+                                📋
+                            </button>
+                        </div>
+
+                        {copiado === 'merchant' && (
+                            <span className={styles.copied}>✔ ID da loja copiado</span>
                         )}
 
                         <p className={styles.hint}>
-                            ⚠️ Este código é obrigatório para finalizar a integração.
+                            ⚠️ Esses dados são obrigatórios para finalizar a integração.
                         </p>
                     </>
                 ) : (
-                    <p>Não foi possível localizar o código de autorização.</p>
+                    <p>Não foi possível localizar os dados de autorização.</p>
                 )}
             </div>
         </div>

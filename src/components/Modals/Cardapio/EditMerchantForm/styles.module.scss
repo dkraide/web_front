@@ -55,3 +55,23 @@
     color: #365738;
     background-color: #bbecbe;
 }
+
+.addressLayout {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.addressForm {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 5px;
+  width: 70%;
+}
+
+.addressMap {
+  width: 400px;
+  height: 300px;
+}

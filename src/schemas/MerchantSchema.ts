@@ -37,6 +37,13 @@ export const merchantSchema = z.object({
     district: z.string().min(1, 'Bairro é obrigatório'),
     city: z.string().min(1, 'Cidade é obrigatória'),
     state: z.string().min(1, 'Estado é obrigatório'),
+    facebook: z.string().optional(),
+    instagram: z.string().optional(),
+    urlIfood: z.string().optional(),
+    urlGoomer: z.string().optional(),
+    url99: z.string().optional(),
+    urlUberEats: z.string().optional(),
+    urlKeeta: z.string().optional(),
 });
 
 export type MerchantFormData = z.infer<typeof merchantSchema>;
