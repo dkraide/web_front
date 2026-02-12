@@ -9,21 +9,30 @@ import { GetCurrencyBRL, sendImage } from '@/utils/functions';
 import { EditarCardapioForm } from '@/components/Modals/Produto/EditarCardapioForm';
 import { toast } from 'react-toastify';
 import { InputGroup } from '@/components/ui/InputGroup';
+import Loading from '@/components/Loading';
+import ClasseForm from '@/components/Modals/ClasseMaterial/CreateEditForm';
+import IUsuario from '@/interfaces/IUsuario';
 
 
 export default function Cardapio() {
     const [classes, setClasses] = useState<IClasseMaterial[]>([]);
     const [loading, setLoading] = useState(true);
     const [editProd, setEditProd] = useState<IProduto>();
-    const [search, setSearch] = useState('');
+    const [editCategoria, setEditCategoria] = useState<IClasseMaterial>();
+    const [selectedClasse, setSelectedClasse] = useState<IClasseMaterial>();
+    const [user, setUser] = useState<IUsuario>();
     const { getUser } = useContext(AuthContext);
 
     const loadData = async () => {
         if (!loading) {
             setLoading(true);
         }
-        var user = await getUser();
-        await api.get(`/produto/${user.empresaSelecionada}/ListByClasse`).then(({ data }) => {
+        setSelectedClasse(undefined);
+        var u = await getUser();
+        if(!user){
+            setUser(u);
+        }
+        await api.get(`/produto/${u.empresaSelecionada}/ListByClasse`).then(({ data }) => {
             setClasses(data);
         }).catch((err) => {
             console.log(err)
@@ -35,32 +44,11 @@ export default function Cardapio() {
     useEffect(() => {
         loadData();
     }, []);
-
-    const filtered = () => {
-        if (!search) return classes;
-
-        const term = search.toLowerCase();
-
-        return classes
-            ?.map(c => {
-                const classeMatch = c.nomeClasse.toLowerCase().includes(term);
-
-                const produtosFiltrados = c.produtos?.filter(p =>
-                    p.nome.toLowerCase().includes(term)
-                ) ?? [];
-
-                // A classe entra se ela mesma bate OU se sobrar produto
-                if (classeMatch || produtosFiltrados.length > 0) {
-                    return {
-                        ...c,
-                        produtos: produtosFiltrados
-                    };
-                }
-
-                return null;
-            })
-            .filter(Boolean);
-    };
+    useEffect(() => {
+        if (classes && !selectedClasse) {
+            setSelectedClasse(classes[0])
+        }
+    }, [classes])
 
 
 
@@ -91,7 +79,7 @@ export default function Cardapio() {
         }
     }
 
-    async function onToggleProduto(isProduto, id, status) {
+    async function onToggle(isProduto, id, status) {
         var res = await onConfirm(status ? 'false' : 'true', id, 'VISIVELMENU', isProduto);
         if (!res) {
             return;
@@ -113,17 +101,36 @@ export default function Cardapio() {
             });
     }
 
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <Loading />
+
+            </div>
+        )
+    }
     return (
         <div className={styles.container}>
             <div className={styles.header}>
                 <h3>Configuração de cardápio para delivery</h3>
             </div>
-            <br />
-            <InputGroup title={'Pesquisar'} value={search} onChange={(e) => setSearch(e.currentTarget.value)} />
-            <hr />
-            <div className={styles.body}>
-                <Categorias onToggleProduto={onToggleProduto} setImage={setImage} classes={filtered()} onEditProd={setEditProd} />
+            <div className={styles.menu}>
+                <div className={styles.categorias}>
+                    <Categorias onEdit={setEditCategoria} onToggle={onToggle} classes={classes} selected={selectedClasse?.id} handleSelected={setSelectedClasse} />
+                </div>
+                <div className={styles.items}>
+                    {
+                        selectedClasse && (
+                            <Produtos produtos={selectedClasse?.produtos} onToggleProduto={onToggle} setImage={setImage} onEditProd={setEditProd} />
+                        )
+                    }
+
+                </div>
+
             </div>
+            {/* <div className={styles.body}>
+                <Categorias onToggleProduto={onToggleProduto} setImage={setImage} classes={filtered()} onEditProd={setEditProd} />
+            </div> */}
             {editProd && (
                 <EditarCardapioForm
                     item={editProd}
@@ -135,41 +142,41 @@ export default function Cardapio() {
                     }}
                 />
             )}
+            {editCategoria && (
+                <ClasseForm isOpen={true} classeId={editCategoria.id} setClose={(res?: boolean) => {
+                    if (res) {
+                        loadData();
+                    }
+                    setEditCategoria(undefined);
+                }} user={user} />
+            )}
         </div>
     )
 }
 
-const Categorias = ({ classes, onEditProd, setImage, onToggleProduto }: { onToggleProduto: (isProduto, id, status) => void, setImage: (prod: IProduto) => void, classes: IClasseMaterial[], onEditProd: (prod: IProduto) => void }) => {
+const Categorias = ({ classes, selected, handleSelected, onToggle, onEdit }: {onEdit: (classe: IClasseMaterial) => void, onToggle: (isProduto, id, status) => void, classes: IClasseMaterial[], selected?: number, handleSelected: (classe) => void }) => {
 
     return (
-        <div className={styles.categorias}>
-            {classes?.map((classe) => <Categoria onToggleProduto={onToggleProduto} setImage={setImage} key={classe.id} classe={classe} onEditProd={onEditProd} />)}
+        <div>
+            <b>Categorias</b>
+            {classes?.map((classe) => <Categoria onEdit={onEdit} onToggle={onToggle} handleSelected={handleSelected} key={classe.id} classe={classe} selected={classe.id == selected} />)}
         </div>
     )
 
 }
-const Categoria = ({ classe, onEditProd, setImage, onToggleProduto }: { onToggleProduto: (isProduto, id, status) => void, setImage: (prod: IProduto) => void, classe: IClasseMaterial, onEditProd: (prod: IProduto) => void }) => {
+const Categoria = ({ classe, selected, handleSelected, onToggle, onEdit }: {onEdit: (classe: IClasseMaterial) => void,  onToggle: (isProduto, id, status) => void, classe: IClasseMaterial, selected: boolean, handleSelected: (classe) => void }) => {
     return (
-        <div className={styles.categoria}>
-            <div className={styles.categoriaInfo}>
-                <img
-                    alt="Imagem da categoria"
-                    src={classe.localPath}
-                    onError={(e) => {
-                        e.currentTarget.src = '/comida.png';
-                    }}
-                />
-                <span>{classe.nomeClasse}</span>
+        <div onClick={() => { handleSelected(classe) }} className={[styles.categoria, selected ? styles.categoriaSelecionada : ''].join(' ')}>
+            <div className={styles.status}>
                 <Form style={{ marginLeft: 'auto' }}>
                     <Form.Switch
-                        onChange={() => { onToggleProduto(false, classe.id, classe.visivelMenu) }}
+                        onChange={() => { onToggle(false, classe.id, !classe.visivelMenu) }}
                         isValid={classe.visivelMenu}
                         checked={classe.visivelMenu}
                     />
                 </Form>
             </div>
-            <Produtos onToggleProduto={onToggleProduto} setImage={setImage} produtos={classe.produtos} onEditProd={onEditProd} />
-
+            <span onClick={() => {onEdit(classe)}} className={styles.name}>{classe.nomeClasse}</span>
         </div>
     )
 
@@ -179,7 +186,6 @@ const Produtos = ({ produtos, onEditProd, setImage, onToggleProduto }: { onToggl
     return (
         <div className={styles.produtos}>
             {produtos?.map((produto) => <Produto onToggleProduto={onToggleProduto} setImage={setImage} onEditProd={onEditProd} produto={produto} key={produto.id} />)}
-
         </div>
     )
 
