@@ -50,6 +50,9 @@ export default function ProdutoItem() {
             multiplicadorFornecedor: 1,
             posicao: 0,
             nome: '',
+            descricaoNutricional: '',
+            descricao: '',
+            codigoFornecedor: ''
         },
     });
 
