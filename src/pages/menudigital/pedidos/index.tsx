@@ -16,7 +16,6 @@ import { GetCurrencyBRL } from '@/utils/functions';
 import Visualizar from '@/components/Modals/Pedido/Visualizar';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocation, faLocationPin, faMap, faPhone, faPrint } from '@fortawesome/free-solid-svg-icons';
-import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 
 
 interface searchProps {

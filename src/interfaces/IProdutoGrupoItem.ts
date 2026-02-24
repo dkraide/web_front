@@ -17,7 +17,7 @@ export interface IProdutoGrupoItem {
   status: boolean;
   precos: IProdutoGrupoItemPreco[];
   localPath?: string;
-  temporaryImage: any;
+  temporaryImage?: any;
 }
 export interface IProdutoGrupoItemPreco {
     id: string;
