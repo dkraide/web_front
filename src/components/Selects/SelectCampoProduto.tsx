@@ -1,41 +1,49 @@
-import {useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import _ from 'lodash';
 import { SelectBase } from "./SelectBase";
 
-interface selProps{
+interface selProps {
     selected: any
     setSelected: (value: any) => void
     width?: string
     title?: string
 }
-interface IObj{
+interface IObj {
     value: number
     nome: string
 }
 
-export  default function SelectCampoProduto({title, width, selected, setSelected}: selProps){
+export default function SelectCampoProduto({ title, width, selected, setSelected }: selProps) {
     const [formas, setFormas] = useState<IObj[]>([]);
     const loadFormas = async () => {
-           var res = [{
+        var res = [{
             value: 0,
             nome: 'Valor Compra'
-           }, {
+        }, {
             value: 1,
             nome: 'Valor Venda'
-           }, {
+        }, {
             value: 2,
             nome: 'Quantidade Minima'
-           }, {
+        }, {
             value: 3,
             nome: 'Multiplicador'
-           }, {
+        }, {
             value: 4,
             nome: 'Status'
-           },{
+        }, {
             value: 5,
             nome: 'Conferencia'
-           }];
-           setFormas(res);
+        },
+        {
+            value: 6,
+            nome: 'ClasseMaterial'
+        },
+        {
+            value: 7,
+            nome: 'ValorKeeta'
+        }];
+        setFormas(res);
     }
     useEffect(() => {
         loadFormas();
@@ -51,13 +59,13 @@ export  default function SelectCampoProduto({title, width, selected, setSelected
         });
         return data;
     }
-    function setSelectedProd(value: any){
-           var index = _.findIndex(formas, p => p.value == value);
-           if(index  >= 0){
-                setSelected(formas[index]);
-           }
+    function setSelectedProd(value: any) {
+        var index = _.findIndex(formas, p => p.value == value);
+        if (index >= 0) {
+            setSelected(formas[index]);
+        }
     }
-    return(
-        <SelectBase width={width} datas={getData()} selected={selected} title={title || 'Campo'} setSelected={setSelectedProd}/>
+    return (
+        <SelectBase width={width} datas={getData()} selected={selected} title={title || 'Campo'} setSelected={setSelectedProd} />
     )
 }

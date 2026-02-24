@@ -6,7 +6,8 @@ import IProdutoGrupo from '@/interfaces/IProdutoGrupo';
 
 export function useGrupoAdicionais(
     produto: IProduto,
-    setProduto: (produto: IProduto) => void
+    setProduto: (produto: IProduto) => void,
+   
 ) {
     const addOrUpdateGrupo = (grupo: IProdutoGrupo, index: number) => {
         if (!produto.grupoAdicionais) {
@@ -52,9 +53,11 @@ export function useGrupoAdicionais(
         const newGrupos = produto.grupoAdicionais.filter((_, i) => i !== index);
         setProduto({ ...produto, grupoAdicionais: newGrupos });
     };
+    
 
     return {
         addOrUpdateGrupo,
         removeGrupo,
+        
     };
 }

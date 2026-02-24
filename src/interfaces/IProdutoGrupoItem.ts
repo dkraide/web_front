@@ -16,6 +16,8 @@ export interface IProdutoGrupoItem {
   qtdSabores: number;
   status: boolean;
   precos: IProdutoGrupoItemPreco[];
+  localPath?: string;
+  temporaryImage: any;
 }
 export interface IProdutoGrupoItemPreco {
     id: string;
