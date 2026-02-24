@@ -52,6 +52,7 @@ export default function ClasseForm({ user, isOpen, classeId, setClose, color }: 
         } else {
             classe.id = 0;
             classe.status = true;
+            classe.posicao = 0;
             setClasse(classe);
             setLoading(false);
         }
@@ -61,7 +62,7 @@ export default function ClasseForm({ user, isOpen, classeId, setClose, color }: 
     const onSubmit = async (data: any) => {
         setSending(true);
         classe.nomeClasse = data.nomeClasse;
-        classe.posicao = data.posicao;
+        classe.posicao = data.posicao ?? 0;
         if (!validateString(classe.nomeClasse, 3)) {
             const message = "Crie uma classe com no mínimo 3 caracteres!";
             toast.error(message);
@@ -100,7 +101,7 @@ export default function ClasseForm({ user, isOpen, classeId, setClose, color }: 
                     {!!classe.id && <InputForm defaultValue={classe.id} width={'10%'} title={'Cod'} readOnly={true} errors={errors} inputName={"id"} register={register} />}
                     <SelectStatus width={'15%'} selected={classe.status} setSelected={(v) => { setClasse({ ...classe, status: v }) }} />
                     <InputForm defaultValue={classe.nomeClasse} width={isMobile ? '100%' : '75%'} title={'Nome'} errors={errors} inputName={"nomeClasse"} register={register} />
-                    <SelectSimNao width={'50%'} title={'Visivel Menu?'} selected={classe.visivelMenu} setSelected={(r) => setClasse({ ...classe, visivelMenu: r })} />
+                    <SelectSimNao width={'50%'} title={'Visivel Menu?'} selected={classe.visivelMenu} setSelected={(r) => setClasse({ ...classe, visivelMenu: r == 1 })} />
                     <InputForm defaultValue={classe.posicao} width={isMobile ? '100%' : '30%'} title={'Posicao'} errors={errors} inputName={"posicao"} register={register} />
                     <div className={styles.button}>
                         <CustomButton onClick={() => { setClose(); }} typeButton={"secondary"}>Cancelar</CustomButton>

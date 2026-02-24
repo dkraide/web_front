@@ -1,7 +1,7 @@
 import BaseModal from '@/components/Modals/Base/Index';
 import styles from './styles.module.scss';
 import IProdutoGrupo from '@/interfaces/IProdutoGrupo';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { InputGroup } from '@/components/ui/InputGroup';
 import Switch from "react-switch";
 import { IProdutoGrupoItem } from '@/interfaces/IProdutoGrupoItem';
@@ -51,13 +51,15 @@ export default function NovoGrupo({ isOpen, setClose, grupoEditado }: props) {
         return <></>
     }
 
-    const Item = (item: IProdutoGrupoItem) => {
+    const ItemRow = ({ item }: { item: IProdutoGrupoItem }) => {
+        const fileInputRef = useRef<HTMLInputElement>(null);
 
         const handleChangeValue = (newValue, field) => {
             var indexItem = _.findIndex(grupo.itens, p => p.id == item.id);
             grupo.itens[indexItem][field] = newValue;
             setGrupo({ ...grupo });
         }
+
         const handleMateriaPrimaChanged = (m: IMateriaPrima) => {
             var indexItem = _.findIndex(grupo.itens, p => p.id == item.id);
             grupo.itens[indexItem].materiaPrimaId = m.id;
@@ -73,16 +75,45 @@ export default function NovoGrupo({ isOpen, setClose, grupoEditado }: props) {
             setGrupo({ ...grupo });
         }
 
+        const handleImageClick = () => {
+            fileInputRef.current?.click();
+        }
+
+        const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                handleChangeValue(reader.result, 'temporaryImage');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        const imageSrc = item.temporaryImage ?? item.localPath ?? '/comida.png';
+
         return (
             <div className={styles.grupo} key={item.id}>
-                <SelectMateriaPrima width={'35%'} selected={item.materiaPrimaId} setSelected={handleMateriaPrimaChanged} />
+                <div className={styles.imgItem} onClick={handleImageClick} style={{ cursor: 'pointer' }}>
+                    <img
+                        src={imageSrc}
+                        alt="item"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }}
+                    />
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={handleImageChange}
+                    />
+                </div>
+                <SelectMateriaPrima width={'calc(35% - 150px)'} selected={item.materiaPrimaId} setSelected={handleMateriaPrimaChanged} />
                 <InputGroup width={'35%'} title={'Nome'} value={item.nome} onChange={({ currentTarget }) => { handleChangeValue(currentTarget.value, 'nome') }} />
-                <InputGroup type={'number'} width={'15%'} title={'Valor'} value={item.valor} onChange={({ currentTarget }) => { handleChangeValue(currentTarget.value, 'valor') }} />
+                <InputGroup type={'number'} width={'100px'} title={'Valor'} value={item.valor} onChange={({ currentTarget }) => { handleChangeValue(currentTarget.value, 'valor') }} />
                 <Switch onColor={'#fc4f6b'} onChange={(e) => { handleChangeValue(e, 'status') }} checked={item.status} />
                 <CustomButton onClick={handleRemove} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton={'outline-main'}><FontAwesomeIcon icon={faTrash} /></CustomButton>
             </div>
         )
-
     }
 
     const handleNewItem = () => {
@@ -120,7 +151,9 @@ export default function NovoGrupo({ isOpen, setClose, grupoEditado }: props) {
                 <hr />
                 <div className={styles.itens}>
                     <h3>Complementos</h3>
-                    {grupo?.itens?.map((item) => Item(item))}
+                    {grupo?.itens?.map((item) => (
+                        <ItemRow key={item.id} item={item} />
+                    ))}
                     <CustomButton onClick={handleNewItem}>Novo Item</CustomButton>
                 </div>
                 <hr />

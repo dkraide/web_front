@@ -61,23 +61,55 @@ export default function ProdutoItem() {
     const { addOrUpdateGrupo, removeGrupo } = useGrupoAdicionais(produto, setProduto);
 
     useEffect(() => {
-        if(!produto || loading){
+        if (!produto || loading) {
             return;
         }
         if (produto?.id) {
             let cal = '', tipoCal = '';
-            if(produto.calories?.includes(' ')){
+            if (produto.calories?.includes(' ')) {
                 var cls = produto.calories.split(' ');
                 cal = cls[0];
                 setTipoCal(cls[1]);
             }
-            reset({...produto, calories: cal});
+            reset({ ...produto, calories: cal });
         } else {
             loadCod().then((c) => {
                 setValue('cod', c.toString());
             });
         }
     }, [produto]);
+
+    const uploadImagemItemGrupoAsync = async (
+        temporaryImagem: string,
+        produtoGrupoItemId: string,
+        empresaId: number
+    ): Promise<string | null> => {
+        try {
+            // Converte base64 para Blob
+            const [meta, base64Data] = temporaryImagem.split(',');
+            const mimeType = meta.match(/:(.*?);/)[1]; // ex: image/png
+            const byteCharacters = atob(base64Data);
+            const byteArray = new Uint8Array(byteCharacters.length);
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteArray[i] = byteCharacters.charCodeAt(i);
+            }
+            const blob = new Blob([byteArray], { type: mimeType });
+            const file = new File([blob], `item_${produtoGrupoItemId}.${mimeType.split('/')[1]}`, { type: mimeType });
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('id', produtoGrupoItemId);
+            formData.append('empresaId', empresaId.toString());
+
+            const { data } = await api.post(`v2/produtogrupoitem/image`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            return data?.url ?? data?.localPath ?? null;
+        } catch (err) {
+            toast.error('Erro ao fazer upload da imagem do item');
+            return null;
+        }
+    };
 
     const onSubmit = async (data) => {
         setLoading(true);
@@ -129,14 +161,29 @@ export default function ProdutoItem() {
                 toast.success('Produto atualizado com sucesso!');
             }
 
-            // Upload da imagem se houver uma nova
+            // Upload da imagem principal se houver uma nova
             if (hasNewImage && produtoId) {
                 const newLocalPath = await uploadImagemAsync(produtoId);
                 if (newLocalPath) {
-                    // Atualiza o produto com o novo localPath
                     setProduto({ ...updatedProduto, id: produtoId, localPath: newLocalPath });
                 }
             }
+
+            // Upload de imagens dos itens de grupo que tiverem temporaryImage
+            if (produto.grupoAdicionais?.length) {
+                for (const grupo of produto.grupoAdicionais) {
+                    if (!grupo.itens?.length) continue;
+                    for (const item of grupo.itens) {
+                        if (!item.temporaryImage) continue;
+                        const newUrl = await uploadImagemItemGrupoAsync(item.temporaryImage, item.id, user.empresaSelecionada);
+                        if (newUrl) {
+                            item.localPath = newUrl;
+                            item.temporaryImage = undefined;
+                        }
+                    }
+                }
+            }
+
         } catch (err) {
             toast.error('Erro ao salvar produto');
         } finally {
@@ -145,6 +192,7 @@ export default function ProdutoItem() {
     };
 
     const handleNewGrupo = (response?: IProdutoGrupo) => {
+        console.log(response);
         setModalGrupo(false);
         if (response) {
             response.idProduto = produto.idProduto;

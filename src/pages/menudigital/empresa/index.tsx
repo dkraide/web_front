@@ -326,12 +326,13 @@ export default function EditMerchantForm() {
                                     <h5>Redes sociais</h5>
                                     <KRDInput width={'49%'} label="Facebook" name="facebook" control={control} error={errors.facebook?.message?.toString()} />
                                     <KRDInput width={'49%'} label="Instagram" name="instagram" control={control} error={errors.instagram?.message?.toString()} />
-                                    <h5>Cardápios</h5>
+                                    <h5>Cardápios (Links)</h5>
                                     <KRDInput width={'49%'} label="Ifood" name="urlIfood" control={control} error={errors.urlIfood?.message?.toString()} />
                                     <KRDInput width={'49%'} label="Goomer" name="urlGoomer" control={control} error={errors.urlGoomer?.message?.toString()} />
                                     <KRDInput width={'49%'} label="99" name="url99" control={control} error={errors.url99?.message?.toString()} />
                                     <KRDInput width={'49%'} label="Uber Eats" name="urlUberEats" control={control} error={errors.urlUberEats?.message?.toString()} />
                                     <KRDInput width={'49%'} label="Keeta" name="urlKeeta" control={control} error={errors.urlKeeta?.message?.toString()} />
+                                    
                                 </div>
 
                             </Tab>
