@@ -28,7 +28,7 @@ export default function Links({ emp }: LinksProps) {
     async function loadData(empresaId: string) {
         try {
             const { data } = await api.get(
-               `/opendelivery/merchant?empresaId=${empresaId}`
+                `/opendelivery/merchant?empresaId=${empresaId}`
             );
             console.log(data);
             setConfiguracao(data);
@@ -39,67 +39,123 @@ export default function Links({ emp }: LinksProps) {
         }
     }
 
+
+
+
+    const LinksComponent = () => {
+        const [links, setLinks] = useState<{
+            url: string | null;
+            label: string;
+            icon: JSX.Element;
+            color: string;
+        }[]>([]);
+
+        useEffect(() => {
+               getLinks();
+        }, [])
+        const linkCardápio = async () => {
+            var res = await api.get(`/empresa/select?id=${configuracao.empresaId}`).then((response) => {
+                return response?.data?.slug;
+            }).catch((err) => {
+                console.log(err);
+                return undefined;
+            });
+            if (res) {
+                return `https://${res}.menu.krdsystem.com`;
+            }
+            return `https://menu.krdsystem.com/?empresa=${configuracao.empresaId}`;
+        }
+        const getLinks = async () => {
+           var res =  [
+                {
+                    url: await linkCardápio(),
+                    label: 'Meu Cardápio',
+                    icon: <FaHamburger />,
+                    color: '#d32525ff',
+                },
+                {
+                    url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                        `${configuracao.street}, ${configuracao.number} - ${configuracao.district} ${configuracao.city}, ${configuracao.state}`
+                    )}`,
+                    label: 'Endereço',
+                    icon: <FaMapMarkerAlt />,
+                    color: '#4285F4', // azul Google Maps
+                },
+                {
+                    url: configuracao.whatsappNumber ? `https://wa.me/${configuracao.whatsappNumber}` : null,
+                    label: 'WhatsApp',
+                    icon: <FaWhatsapp />,
+                    color: '#25D366',
+                },
+                {
+                    url: configuracao.facebook,
+                    label: 'Facebook',
+                    icon: <FaFacebook />,
+                    color: '#1877F2',
+                },
+                {
+                    url: configuracao.instagram,
+                    label: 'Instagram',
+                    icon: <FaInstagram />,
+                    color: '#E1306C',
+                },
+                {
+                    url: configuracao.urlIFood,
+                    label: 'iFood',
+                    icon: <SiIfood />,
+                    color: '#FA1923',
+                },
+                {
+                    url: configuracao.urlGoomer,
+                    label: 'Goomer',
+                    icon: <FaInstagram />,
+                    color: '#FF4500',
+                },
+                {
+                    url: configuracao.urlUberEats,
+                    label: 'Uber Eats',
+                    icon: <SiUber />,
+                    color: '#5FB300',
+                },
+                {
+                    url: configuracao.url99,
+                    label: '99Food',
+                    icon: <FaInstagram />,
+                    color: '#FFCC00',
+                },
+            ].filter(link => link.url?.trim() !== '');
+
+            setLinks(res);
+        }
+
+        if (!links) {
+            return []
+        }
+
+
+        return (
+            <div className={styles.links}>
+                {
+                    links.map((link, index) => (
+                        <a
+                            key={index}
+                            href={link.url as string}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className={styles.button}
+                            style={{ backgroundColor: link.color }}
+                        >
+                            {link.label}
+                            <span className={styles.icon}>{link.icon}</span>
+                        </a>
+                    ))
+                }
+            </div>
+        )
+    }
+
     if (loading || !configuracao)
         return <div className={styles.loading}>Carregando...</div>;
-
-    const links = [
-        {
-            url: `https://menu.krdsystem.com/?empresa=${configuracao.empresaId}`,
-            label: 'Meu Cardápio',
-            icon: <FaHamburger />,
-            color: '#d32525ff',
-        },
-        {
-            url: `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                `${configuracao.street}, ${configuracao.number} - ${configuracao.district} ${configuracao.city}, ${configuracao.state}`
-            )}`,
-            label: 'Endereço',
-            icon: <FaMapMarkerAlt />,
-            color: '#4285F4', // azul Google Maps
-        },
-        {
-            url: configuracao.whatsappNumber ? `https://wa.me/${configuracao.whatsappNumber}` : null,
-            label: 'WhatsApp',
-            icon: <FaWhatsapp />,
-            color: '#25D366',
-        },
-        {
-            url: configuracao.facebook,
-            label: 'Facebook',
-            icon: <FaFacebook />,
-            color: '#1877F2',
-        },
-        {
-            url: configuracao.instagram,
-            label: 'Instagram',
-            icon: <FaInstagram />,
-            color: '#E1306C',
-        },
-        {
-            url: configuracao.urlIFood,
-            label: 'iFood',
-            icon: <SiIfood />,
-            color: '#FA1923',
-        },
-        {
-            url: configuracao.urlGoomer,
-            label: 'Goomer',
-            icon: <FaInstagram />,
-            color: '#FF4500',
-        },
-        {
-            url: configuracao.urlUberEats,
-            label: 'Uber Eats',
-            icon: <SiUber />,
-            color: '#5FB300',
-        },
-        {
-            url: configuracao.url99,
-            label: '99Food',
-            icon: <FaInstagram />,
-            color: '#FFCC00',
-        },
-    ].filter(link => !!link.url);
 
     return (
         <div className={styles.container}>
@@ -125,22 +181,9 @@ export default function Links({ emp }: LinksProps) {
                 </div>
             </div>
 
-            {/* Links tipo Linktree */}
-            <div className={styles.links}>
-                {links.map((link, index) => (
-                    <a
-                        key={index}
-                        href={link.url as string}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={styles.button}
-                        style={{ backgroundColor: link.color }}
-                    >
-                        {link.label}
-                        <span className={styles.icon}>{link.icon}</span>
-                    </a>
-                ))}
-            </div>
+            <LinksComponent/>
+
+
             {/* Footer fixo */}
             <div className={styles.footer}>
                 <p>Quer uma página como esta para sua empresa?</p>
