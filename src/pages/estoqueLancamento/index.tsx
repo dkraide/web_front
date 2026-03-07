@@ -95,7 +95,7 @@ export default function EstoqueLancamento() {
                 <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
             <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} style={{ marginRight: 10 }} >Novo Lancamento</CustomButton>
-            <CustomButton typeButton={'dark'} onClick={() => { document.location.href = `/estoqueLancamento/xml` }} >Carregar de XML</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => { document.location.href = `/estoqueLancamento/xml` }} >Carregar de XML / Excel</CustomButton>
             <hr />
             <CustomTable
                 columns={columns}

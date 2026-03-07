@@ -40,30 +40,45 @@ export default function Xml() {
         }
         loadData();
     }, [])
-    async function getFile() {
+    async function getFile(isExcel: boolean) {
+
         var input = document.createElement("input");
         input.type = "file";
+        input.accept = isExcel ? ".xlsx,.xls" : ".xml";
         input.click();
+
         input.onchange = async (e: Event) => {
+
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
+
+            if (!files || files.length === 0)
+                return;
+
             var formData = new FormData();
-            formData.append('file', files[0], files[0].name)
-            formData.append('EmpresaId', user.empresaSelecionada.toString())
-            formData.append('IsProduto', 'true')
+            formData.append('file', files[0], files[0].name);
+            formData.append('EmpresaId', user.empresaSelecionada.toString());
+            formData.append('IsProduto', 'true');
+
+            const endpoint = isExcel
+                ? 'LancamentoEstoque/LoadXLSX'
+                : 'LancamentoEstoque/LoadXML';
+
             setLoadingXml(true);
-            setTimeout(() => {
-            }, 500);
-            await api.put(`LancamentoEstoque/LoadXML`, formData, { headers: { "Content-Type": 'multipart/form-data' } })
+
+            await api.put(endpoint, formData, {
+                headers: { "Content-Type": 'multipart/form-data' }
+            })
                 .then(({ data }: AxiosResponse) => {
                     setProdutos(data);
                     toast.success(`Produtos carregados com sucesso!`);
-                }).catch((err: AxiosError) => {
+                })
+                .catch((err: AxiosError) => {
                     toast.error(`Erro ao carregar arquivo. ${err.response?.data || err.message}`);
                 });
+
             setLoadingXml(false);
         }
-
     }
     function selectProduto(p: IProduto) {
         produtos[prodModal].produto = p;
@@ -73,8 +88,20 @@ export default function Xml() {
     if (!produtos || produtos.length <= 0) {
         return (
             <div className={styles['container-xml']}>
-                <CustomButton typeButton={'main'} onClick={getFile} loading={loadingXml}>
+                <CustomButton
+                    typeButton={'main'}
+                    onClick={() => getFile(false)}
+                    loading={loadingXml}
+                >
                     Clique aqui para selecionar o arquivo XML
+                </CustomButton>
+
+                <CustomButton
+                    typeButton={'main'}
+                    onClick={() => getFile(true)}
+                    loading={loadingXml}
+                >
+                    Clique aqui para selecionar o arquivo Excel
                 </CustomButton>
 
 
