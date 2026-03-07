@@ -106,7 +106,7 @@ export default function LancamentoEstoqueIA() {
 
     try {
       const { data }: AxiosResponse<ItemIA[]> = await api.post(
-        'LancamentoEstoque/ler-pedido',
+        '/v2/LancamentoEstoque/ler-pedido',
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
