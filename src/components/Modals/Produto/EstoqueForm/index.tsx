@@ -34,6 +34,15 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
     const [loading, setLoading] = useState<boolean>(true)
     const [search, setSearch] = useState<searchProps>()
     const [ajuste, setAjuste] = useState(false);
+    const totalEntradas = result
+        ?.filter(x => x.isEntrada)
+        .reduce((acc, cur) => acc + cur.quantidade, 0) ?? 0;
+
+    const totalSaidas = result
+        ?.filter(x => !x.isEntrada)
+        .reduce((acc, cur) => acc + cur.quantidade, 0) ?? 0;
+
+    const estoqueAtual = produto?.quantidade ?? 0;
     useEffect(() => {
         if (!search) {
             setSearch({ dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') });
@@ -51,7 +60,7 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
             .catch((err) => {
                 toast.error(`Erro ao buscar dados. ${err.message}`)
             });
-       await api.get(`/Produto/Select?id=${id}`)
+        await api.get(`/Produto/Select?id=${id}`)
             .then(({ data }: AxiosResponse<IProduto>) => {
                 setProduto(data);
             })
@@ -139,28 +148,82 @@ export default function EstoqueForm({ user, isOpen, id, setClose, color }: props
     ]
 
     return (
-        <BaseModal height={'90vh'} width={'95vw'} color={color} title={'Relatorio de Estoque'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'90vh'} width={'95vw'} color={color} title={'Relatório de Estoque'} isOpen={isOpen} setClose={setClose}>
             {(loading || !result) ? (
                 <Loading />
             ) : (
                 <div className={styles.container}>
-                    <div className={styles.info}>
-                        <InputGroup width={'10%'} title={'Cod'} value={produto?.cod} />
-                        <InputGroup width={'80%'} title={'Cod'} value={produto?.nome} />
+
+                    {/* Produto */}
+                    <div className={styles.productInfo}>
+                        <InputGroup width={'10%'} title={'Código'} value={produto?.cod} />
+                        <InputGroup width={'90%'} title={'Produto'} value={produto?.nome} />
                     </div>
-                    <div className={styles.info}>
-                        <CustomButton onClick={() => { setAjuste(true) }} typeButton={'dark'}>Ajuste Rapido</CustomButton>
-                        <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
-                        <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Final'} width={'20%'} />
-                        <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
+
+                    {/* Filtros */}
+                    <div className={styles.filters}>
+                        <InputGroup
+                            width={'175px'}
+                            type={'date'}
+                            value={search?.dateIn}
+                            onChange={(v) => setSearch({ ...search, dateIn: v.target.value })}
+                            title={'Início'}
+                        />
+
+                        <InputGroup
+                            width={'175px'}
+                            type={'date'}
+                            value={search?.dateFim}
+                            onChange={(v) => setSearch({ ...search, dateFim: v.target.value })}
+                            title={'Final'}
+                        />
+
+                        <CustomButton onClick={loadData} typeButton={'dark'}>
+                            Pesquisar
+                        </CustomButton>
+                        {/* Ações */}
+                        <div className={styles.actions}>
+                            <CustomButton onClick={() => setAjuste(true)} typeButton={'dark'}>
+                                Ajuste rápido
+                            </CustomButton>
+
+                            <CustomButton
+                                onClick={() => ExportToExcel(headers, dataExcel(), 'relatorio_estoque')}
+                                typeButton={'dark'}
+                            >
+                                Exportar Excel
+                            </CustomButton>
+                        </div>
                     </div>
-                    <hr />
-                    <CustomButton onClick={() => { ExportToExcel(headers, dataExcel(), 'relatorio_estoque') }} typeButton={'dark'}>Excel</CustomButton>
-                    <div className={styles.info}>
-                        <CustomTable
-                            data={(result) ?? []}
-                            columns={columns} />
+
+
+
+                    {/* Resumo */}
+                    <div className={styles.summary}>
+                        <div className={styles.summary}>
+                            <div className={styles.card}>
+                                <span>Entradas</span>
+                                <strong>{totalEntradas.toFixed(2)}</strong>
+                            </div>
+
+                            <div className={styles.card}>
+                                <span>Saídas</span>
+                                <strong>{totalSaidas.toFixed(2)}</strong>
+                            </div>
+
+                            <div className={styles.card}>
+                                <span>Atual</span>
+                                <strong>{estoqueAtual.toFixed(2)}</strong>
+                            </div>
+                        </div>
                     </div>
+
+                    {/* Tabela */}
+                    <CustomTable
+                        data={result ?? []}
+                        columns={columns}
+                    />
+
                 </div>
             )}
         </BaseModal>

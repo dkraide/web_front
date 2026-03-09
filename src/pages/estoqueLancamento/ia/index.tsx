@@ -14,6 +14,7 @@ import ILancamentoEstoque from '@/interfaces/ILancamentoEstoque';
 import ILancamentoEstoqueProduto from '@/interfaces/ILancamentoEstoqueProduto';
 import _ from 'lodash';
 import { Modal, Button, Spinner } from 'react-bootstrap';
+import SelectSimNao from '@/components/Selects/SelectSimNao';
 
 type ItemIA = {
   item: {
@@ -43,7 +44,7 @@ export default function LancamentoEstoqueIA() {
   const [loadingIA, setLoadingIA] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [pendingSource, setPendingSource] = useState<'gallery' | 'camera' | null>(null);
-  const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [updateValorCompra, setUpdateValorCompra] = useState(true);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
 
@@ -195,7 +196,7 @@ export default function LancamentoEstoqueIA() {
       codigoFornecedor: item.item.cProd,
     }));
 
-    return api.put(`/Produto/UpdateFromXML`, list)
+    return api.put(`/Produto/UpdateFromXML?valorCompra=${updateValorCompra}`, list)
       .then(() => true)
       .catch((err: AxiosError) => {
         toast.error(`Erro ao atualizar produtos. ${err.response?.data || err.message}`);
@@ -455,6 +456,9 @@ export default function LancamentoEstoqueIA() {
           {/* ── Footer ── */}
           <div className={styles.footer}>
             <div className={styles.footerStats}>
+            <div style={{width: '100%'}}>
+                 <SelectSimNao title={'Atualizar valor de compra?'} selected={updateValorCompra} setSelected={setUpdateValorCompra}/>              
+            </div>
               <div className={styles.statItem}>
                 <span className={styles.statLabel}>Itens</span>
                 <span className={styles.statValue}>{itens.length}</span>
