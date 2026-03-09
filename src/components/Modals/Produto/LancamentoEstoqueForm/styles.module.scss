@@ -3,18 +3,65 @@
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    height: 800px;
-    max-height: 80%;
 }
-.box{
-    h3{
-        width: 100%;
-    }
+
+.itemMobile {
     width: 100%;
+    padding: 5px;
+    background-color: white;
+    margin-bottom: 5px;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: space-between;
+    transition: all 0.2s;
+    border-bottom:  solid 1pt #dedede;
+
+    &:active {
+        background-color: #f0f0f0;
+    }
+}
+
+.box {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    h3{
+        width: 100%;
+    }
+}
+
+.boxWarning {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.boxWarning {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+
+    background: #fff3cd;
+    border: 1px solid #ffe69c;
+    border-radius: 6px;
+
+    padding: 12px 16px;
+}
+
+.icon {
+    font-size: 20px;
+    color: #d39e00;
+}
+
+.boxWarning h3 {
+    margin: 0;
+    font-size: 16px;
+}
+
+.boxWarning p {
+    margin: 2px 0 0 0;
+    font-size: 14px;
+    opacity: 0.8;
 }
 
 .button {
@@ -22,6 +69,7 @@
     flex-direction: row;
     width: 100%;
     justify-content: flex-end;
+    flex-wrap: wrap;
 
     button {
         margin-right: 10px;
