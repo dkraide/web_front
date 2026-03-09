@@ -550,6 +550,8 @@ $font:        'DM Sans', 'Segoe UI', sans-serif;
 .footerStats {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
+
   gap: 20px;
 
   @media (max-width: 600px) {
