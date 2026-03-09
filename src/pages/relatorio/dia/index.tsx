@@ -94,8 +94,6 @@ export default function RelatorioDia() {
             { label: "Custo", key: "custo" }
         ]
     }
-
-
     const columns = [
         {
             name: 'Dia',
@@ -140,7 +138,6 @@ export default function RelatorioDia() {
         },
 
     ]
-
     const Item = (item: relatorioProps) => {
         return(
             <div key={item.dia} className={styles.item}>
@@ -156,8 +153,6 @@ export default function RelatorioDia() {
             </div>
         )
     }
-
-
     return (
         <div className={styles.container}>
             <h4>Relatorio por Dia</h4>

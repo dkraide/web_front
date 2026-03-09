@@ -1,5 +1,44 @@
+.container{
+    padding: 10px;
+}
 .boxSearch{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    align-items: center;
+    button{
+        height: 35px;
+    }
+}
+.buttons{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+    span{
+        width: 100%;
+    }
+}
+.buttonsMobile{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    span{
+        width: 100%;
+        font-weight: 700;
+    }
+}
+.itemMobile{
+    width: 100%;
+    padding: 5px;
+    background-color: white;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    transition: all 0.2s;
+    &:active{
+        background-color: #f0f0f0;
+    }
 }

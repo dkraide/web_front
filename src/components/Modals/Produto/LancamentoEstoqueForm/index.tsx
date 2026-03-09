@@ -6,22 +6,22 @@ import { InputForm, InputGroup } from "@/components/ui/InputGroup";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import styles from './styles.module.scss';
-import IClasseMaterial from "@/interfaces/IClasseMaterial";
 import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
-import SelectStatus from "@/components/Selects/SelectStatus";
 import ILancamentoEstoque from "@/interfaces/ILancamentoEstoque";
 import CustomTable from "@/components/ui/CustomTable";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faTrash, faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import SelectProduto from "@/components/Selects/SelectProduto";
 import IProduto from "@/interfaces/IProduto";
 import { format } from "date-fns";
 import SelectEntradaSaida from "@/components/Selects/SelectEntradaSaida";
-import { fGetNumber, fgetDate } from "@/utils/functions";
+import { GetCurrencyBRL, fGetNumber, fgetDate } from "@/utils/functions";
 import ILancamentoEstoqueProduto from "@/interfaces/ILancamentoEstoqueProduto";
 import _ from "lodash";
+import { isMobile } from "react-device-detect";
+import { LabelGroup } from "@/components/ui/LabelGroup";
 
 
 interface props {
@@ -48,6 +48,10 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
     const [sending, setSending] = useState(false);
     const [prod, setProd] = useState<IProduto>();
     const [ignore, setIgnore] = useState<number[]>([])
+    const [mobile, setMobile] = useState(false);
+    useEffect(() => {
+        setMobile(isMobile);
+    }, []);
     useEffect(() => {
         if (id > 0) {
             api.get(`/V2/LancamentoEstoque/${user.empresaSelecionada}/lancamentos/${id}`)
@@ -152,11 +156,11 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
         setProdutos([...produtos]);
 
     }
-    function getTotal(isQtd: boolean){
+    function getTotal(isQtd: boolean) {
         var ret = 0;
-        if(isQtd){
+        if (isQtd) {
             ret = _.sumBy(produtos, p => p.quantidade);
-        }else{
+        } else {
             ret = _.sumBy(produtos, p => p.custoUnitario * p.quantidade);
         }
         return ret;
@@ -237,8 +241,21 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
             width: '15%'
         },
     ]
+    const ItemMobile = (item: ILancamentoEstoqueProduto) => {
+        return (
+            <div key={item.produtoId} className={styles.itemMobile}>
+                <div style={{ width: '10% !important', marginRight: 'auto' }}>
+                    <CustomButton><FontAwesomeIcon icon={faTrash}/></CustomButton>
+                </div>
+                <LabelGroup width={'85%'} title={'Produto'} value={item.nomeProduto} />
+                <LabelGroup width={'30%'} title={'Quantidade'} value={item.quantidade} />
+                <LabelGroup width={'30%'} title={'Custo un.'} value={GetCurrencyBRL(item.custoUnitario)} />
+                <LabelGroup width={'30%'} title={'Total'} value={GetCurrencyBRL(item.custoUnitario * item.quantidade)} />
+            </div>
+        )
+    }
     return (
-        <BaseModal height={'90%'} width={'90%'} color={color} title={'Cadastro de Lancamento de Estoque'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'90%'} width={'90%'} color={color} title={'Lançamento de estoque'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading />
             ) : (
@@ -248,7 +265,7 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
                         <InputForm readOnly={true} width={'10%'} title={'Local'} errors={errors} register={register} inputName={'idLancamentoEstoque'} defaultValue={lancamento.idLancamentoEstoque} />
                         <InputForm readOnly={true} width={'20%'} title={'Data'} errors={errors} register={register} inputName={'dataLancamento'} defaultValue={format(fgetDate(lancamento?.dataLancamento.toString()), 'dd/MM/yyyy')} />
                         <InputForm readOnly={lancamento.idLancamentoEstoque > 0} width={'10%'} title={'Nro Ref'} errors={errors} register={register} inputName={'idPedido'} defaultValue={lancamento.idPedido} />
-                        <SelectEntradaSaida width={'20%'} selected={lancamento.isEntrada ? 1 : 0} setSelected={(v) => {
+                        <SelectEntradaSaida width={isMobile ? '100%' : '20%'} selected={lancamento.isEntrada ? 1 : 0} setSelected={(v) => {
                             if (lancamento.id > 0) {
                                 return;
                             }
@@ -257,13 +274,17 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
                     </div>
                     <hr />
                     {lancamento.id > 0 ? (
-                        <div className={styles.box}>
-                            <h3>Lancamento ja contabilizado no estoque. Impossivel modifica-lo</h3>
+                        <div className={styles.boxWarning}>
+                            <FontAwesomeIcon icon={faTriangleExclamation} className={styles.icon} />
+                            <div>
+                                <h3>Lançamento já contabilizado no estoque</h3>
+                                <p>Não é possível modificá-lo.</p>
+                            </div>
                         </div>
                     ) : (
                         <div className={styles.box}>
                             <h3>Adicionar Itens</h3>
-                            <SelectProduto ignore={ignore} width={'50%'} selected={prod?.id || 0} setSelected={setProd} />
+                            <SelectProduto ignore={ignore} width={isMobile ? '100%': '50%'} selected={prod?.id || 0} setSelected={setProd} />
                             <InputForm width={'15%'} errors={errors} register={register} inputName={'quantidade'} title={'Qntd'} />
                             <InputForm width={'15%'} errors={errors} register={register} inputName={'multiplicador'} title={'Multiplicador'} />
                             <InputForm width={'15%'} errors={errors} register={register} inputName={'custoUnitario'} title={'Custo Un.'} />
@@ -271,16 +292,26 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
                         </div>)}
                     <hr />
                     <div>
-                        <CustomTable columns={columns} data={produtos} />
+                        {isMobile ? (
+                            <>
+                                {produtos?.map((item) => ItemMobile(item))}
+                            </>
+
+                        ) : (
+                            <>
+                                <CustomTable columns={columns} data={produtos} />
+                            </>
+                        )}
                     </div>
                     <div className={styles.button}>
-                        <InputGroup width={'15%'} readOnly={true}  value={`R$ ${getTotal(false).toFixed(2)}`} title={'Custo Total'} />
-                        <InputGroup width={'15%'} readOnly={true}   value={`${getTotal(true).toFixed(2)}`}  title={'Qtd Total'} />
+                        <InputGroup width={'15%'} readOnly={true} value={`R$ ${getTotal(false).toFixed(2)}`} title={'Custo Total'} />
+                        <InputGroup width={'15%'} readOnly={true} value={`${getTotal(true).toFixed(2)}`} title={'Qtd Total'} />
                         <CustomButton onClick={() => { setClose(); }} typeButton={"secondary"}>Cancelar</CustomButton>
                         <CustomButton typeButton={'dark'} loading={sending} onClick={() => { handleSubmit(onSubmit)() }}>Confirmar</CustomButton>
                     </div>
-                </div>
-            )}
-        </BaseModal>
+                </div >
+            )
+            }
+        </BaseModal >
     )
 }

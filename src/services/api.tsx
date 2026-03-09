@@ -7,7 +7,7 @@ export function setupAPIClient(ctx = undefined) {
     let cookies = parseCookies(ctx);
     const baseURL =
         process.env.NODE_ENV === "development"
-            ? "http://localhost:7000/api"
+            ? "http://localhost:7020/api"
             : "https://pdv.krdsys.tech/api";
 
     const api = axios.create({

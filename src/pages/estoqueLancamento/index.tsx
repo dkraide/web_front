@@ -1,4 +1,5 @@
-import IVenda from "@/interfaces/IVenda"
+"use client";
+
 import { useEffect, useState, useContext } from "react"
 import { startOfMonth, endOfMonth, format } from 'date-fns'
 import { api } from "@/services/apiClient"
@@ -19,6 +20,10 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faEdit } from "@fortawesome/free-solid-svg-icons"
 import LancamentoEstoqueForm from "@/components/Modals/Produto/LancamentoEstoqueForm"
 import UnderConstruction from "@/components/ui/UnderConstruction"
+import { isMobile } from "react-device-detect"
+import { LabelGroup } from "@/components/ui/LabelGroup"
+import { canSSRAuth } from "@/utils/CanSSRAuth"
+import { useRouter } from "next/router";
 
 interface searchProps {
     dateIn: string
@@ -33,6 +38,11 @@ export default function EstoqueLancamento() {
     const [edit, setEdit] = useState(-1)
     const [user, setUser] = useState<IUsuario>()
     const { getUser } = useContext(AuthContext)
+    const router = useRouter();
+    const [mobile, setMobile] = useState(false);
+    useEffect(() => {
+        setMobile(isMobile);
+    }, []);
 
     useEffect(() => {
         loadData();
@@ -40,7 +50,7 @@ export default function EstoqueLancamento() {
 
     const loadData = async () => {
         var u = await getUser();
-        if(!user){
+        if (!user) {
             setUser(u);
         }
         let url = `/v2/LancamentoEstoque/${u.empresaSelecionada}/lancamentos?dataIn=${search.dateIn}&dataFim=${search.dateFim}&isProduto=true`;
@@ -86,28 +96,65 @@ export default function EstoqueLancamento() {
         },
     ]
 
+    const ItemMobile = (item: ILancamentoEstoque) => {
+        return (
+            <div  onClick={() => { setEdit(item.id) }} key={item.id} className={styles.itemMobile}>
+                <LabelGroup width={'20%'} title={'Nro'} value={item.id.toString()} />
+                <LabelGroup width={'20%'} title={'Local'} value={item.idLancamentoEstoque.toString()} />
+                <LabelGroup width={'60%'} title={'Data'} value={format(new Date(item.dataLancamento), 'dd/MM/yyyy')} />
+                <LabelGroup width={'20%'} title={'Tipo'} value={item.isEntrada ? 'ENTRADA' : 'SAIDA'} />
+                <LabelGroup width={'80%'} title={'Comentário'} value={item.comentario} />
+
+            </div>
+        )
+    }
+
     return (
         <div className={styles.container}>
             <h4>Lançamentos De Estoque</h4>
             <div className={styles.boxSearch}>
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
                 <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                <CustomButton onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
+                <CustomButton style={{ width: mobile ? '100%' : '150px' }} onClick={loadData} typeButton={'dark'}>Pesquisar</CustomButton>
             </div>
-            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} style={{ marginRight: 10 }} >Novo Lancamento</CustomButton>
-            <CustomButton typeButton={'dark'} onClick={() => { document.location.href = `/estoqueLancamento/xml` }} >Carregar de XML / Excel</CustomButton>
+            <div className={styles[mobile ? 'buttonsMobile' : 'buttons']}>
+                <span>Cadastrar</span>
+                <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} style={{ marginRight: 10 }} >Manual</CustomButton>
+                <CustomButton typeButton={'dark'} onClick={() => { router.push(`/estoqueLancamento/xml`) }} >Com XML/Excel</CustomButton>
+                <CustomButton typeButton={'dark'} onClick={() => { router.push(`/estoqueLancamento/ia`) }} >Com I.A</CustomButton>
+            </div>
             <hr />
-            <CustomTable
-                columns={columns}
-                data={vendas}
-                loading={loading}
-            />
-            {(edit >= 0) && <LancamentoEstoqueForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if (v) {
-                    loadData();
-                }
-                setEdit(-1);
-            }} />}
-        </div>
+            {mobile ? (
+                <>
+                    {vendas.map((item, index) => ItemMobile(item))}
+                </>
+
+            ) : (
+                <>
+                    <CustomTable
+                        columns={columns}
+                        data={vendas}
+                        loading={loading}
+                    />
+                </>
+
+            )
+            }
+            {
+                (edit >= 0) && <LancamentoEstoqueForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
+                    if (v) {
+                        loadData();
+                    }
+                    setEdit(-1);
+                }} />
+            }
+        </div >
     )
 }
+export const getServerSideProps = canSSRAuth(async (ctx) => {
+    return {
+        props: {
+
+        }
+    }
+})
