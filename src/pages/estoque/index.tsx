@@ -16,7 +16,7 @@ import EstoqueForm from '@/components/Modals/Produto/EstoqueForm';
 import BoxInfo from '@/components/ui/BoxInfo';
 import _ from 'lodash';
 import { CSVLink } from "react-csv";
-import { GetCurrencyBRL } from '@/utils/functions';
+import { ExportToExcel, GetCurrencyBRL } from '@/utils/functions';
 import UnderConstruction from '@/components/ui/UnderConstruction';
 
 
@@ -49,7 +49,7 @@ export default function Estoque() {
     }, [])
 
     function getHeaders() {
-        [
+        return [
             { label: "Cod", key: "cod" },
             { label: "Descricao", key: "nome" },
             { label: "Quantidade", key: "quantidade" },
@@ -131,6 +131,12 @@ export default function Estoque() {
         }
     ]
 
+    const handleExcel = () => {
+        const c = getHeaders();
+        const data = getDataCsv();
+        ExportToExcel(c, data, "relatorio_estoque");
+    }
+
     return (
         <div className={styles.container}>
             <h4>Produtos</h4>
@@ -142,9 +148,7 @@ export default function Estoque() {
                 <BoxInfo style={{ marginRight: 10 }} title={'Compra'} value={GetCurrencyBRL(_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valorCompra : 0))} />
             </div>
             <hr />
-            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'}><CSVLink style={{ padding: 10 }} data={getDataCsv()} headers={getHeaders()} filename={"relatorio_estoque.csv"}>
-                Download Planilha
-            </CSVLink></CustomButton>
+            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'} onClick={handleExcel}>Excel</CustomButton>
             <hr />
             <CustomTable
                 columns={columns}
