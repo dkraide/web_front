@@ -18,10 +18,12 @@ import ProdutoDetalhes from './components/ProdutoDetalhes';
 import ProdutoMenuDigital from './components/ProdutoMenuDigital';
 import ProdutoGrupos from './components/ProdutoGrupos';
 import styles from './styles.module.scss';
+import SelectProdutoGrupo from '../Modals/Produto/SelectProdutoGrupo';
 
 export default function ProdutoItem() {
     const { produto, setProduto, user, loading, setLoading, loadCod } = useProdutoData();
     const [modalGrupo, setModalGrupo] = useState(false);
+    const [modalSelectGrupo, setModalSelectGrupo] = useState(false);
     const [indexGrupo, setIndexGrupo] = useState<number>(-1);
     const [tipoCal, setTipoCal] = useState('Cal');
     const [modalMp, setModalMp] = useState(false);
@@ -192,8 +194,8 @@ export default function ProdutoItem() {
     };
 
     const handleNewGrupo = (response?: IProdutoGrupo) => {
-        console.log(response);
         setModalGrupo(false);
+        setModalSelectGrupo(false);
         if (response) {
             response.idProduto = produto.idProduto;
             response.produtoId = produto.id;
@@ -247,6 +249,9 @@ export default function ProdutoItem() {
                             grupoAdicionais={produto.grupoAdicionais}
                             onAddMateriaPrima={() => setModalMp(true)}
                             onRemoveMateriaPrima={removeMateriaPrima}
+                            onVincularGrupo={() => {
+                                setModalSelectGrupo(true);
+                            }}
                             onAddGrupo={() => {
                                 setIndexGrupo(-1);
                                 setModalGrupo(true);
@@ -284,6 +289,13 @@ export default function ProdutoItem() {
                 <NovoGrupo
                     isOpen={modalGrupo}
                     grupoEditado={indexGrupo < 0 ? undefined : produto.grupoAdicionais[indexGrupo]}
+                    setClose={handleNewGrupo}
+                />
+            )}
+             {modalSelectGrupo && (
+                <SelectProdutoGrupo
+                    produtoId={produto?.id ?? 0}
+                    empresa={user?.empresaSelecionada}
                     setClose={handleNewGrupo}
                 />
             )}
