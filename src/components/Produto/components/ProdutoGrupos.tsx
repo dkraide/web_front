@@ -11,6 +11,7 @@ interface ProdutoGruposProps {
     onAddMateriaPrima: () => void;
     onRemoveMateriaPrima: (materiaPrimaId: number) => void;
     onAddGrupo: () => void;
+    onVincularGrupo: () => void;
     onEditGrupo: (index: number) => void;
     onDeleteGrupo: (index: number) => void;
 }
@@ -23,6 +24,7 @@ export default function ProdutoGrupos({
     onAddGrupo,
     onEditGrupo,
     onDeleteGrupo,
+    onVincularGrupo
 }: ProdutoGruposProps) {
     return (
         <div className={styles.row}>
@@ -41,16 +43,17 @@ export default function ProdutoGrupos({
                 ))}
             </div>
 
-            <div style={{width: '50%' }} className={styles.contentTab}>
+            <div style={{ width: '50%' }} className={styles.contentTab}>
                 <b>Grupos de Adicionais</b>
                 <div className={styles.buttons}>
+                    <CustomButton onClick={onVincularGrupo}>Adicionar grupo existente</CustomButton>
                     <CustomButton onClick={onAddGrupo}>Novo grupo de complementos</CustomButton>
                 </div>
                 <hr />
                 {grupoAdicionais?.map((grupo, index) => (
-                    <GrupoItem 
-                        key={index} 
-                        grupo={grupo} 
+                    <GrupoItem
+                        key={index}
+                        grupo={grupo}
                         onEdit={() => onEditGrupo(index)}
                         onDelete={() => onDeleteGrupo(index)}
                     />
