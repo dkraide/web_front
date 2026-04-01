@@ -1,12 +1,9 @@
 import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import { api } from '@/services/apiClient';
-import IMenuDigitalConfiguracao from '@/interfaces/IMenuDigitalConfiguracao';
-import IEmpresa from '@/interfaces/IEmpresa';
-import { FaWhatsapp, FaFacebook, FaInstagram, FaSitemap, FaLink, FaHamburger, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaWhatsapp, FaFacebook, FaInstagram,  FaLink, FaHamburger, FaMapMarkerAlt } from 'react-icons/fa';
 import { SiIfood, SiUber } from 'react-icons/si';
 import { useRouter } from 'next/router';
-import Image from 'next/image';
 import IMerchantOpenDelivery from '@/interfaces/IMerchantOpenDelivery';
 
 type LinksProps = {
@@ -27,9 +24,12 @@ export default function Links({ emp }: LinksProps) {
 
     async function loadData(empresaId: string) {
         try {
-            const { data } = await api.get(
-                `/opendelivery/merchant?empresaId=${empresaId}`
+            const response = await fetch(
+                `https://pdv.krdsys.tech/api/opendelivery/merchant?empresaId=${empresaId}`
             );
+
+            const data = await response.json();
+
             console.log(data);
             setConfiguracao(data);
         } catch (err) {
@@ -51,7 +51,7 @@ export default function Links({ emp }: LinksProps) {
         }[]>([]);
 
         useEffect(() => {
-               getLinks();
+            getLinks();
         }, [])
         const linkCardápio = async () => {
             var res = await api.get(`/empresa/select?id=${configuracao.empresaId}`).then((response) => {
@@ -66,7 +66,7 @@ export default function Links({ emp }: LinksProps) {
             return `https://menu.krdsystem.com/?empresa=${configuracao.empresaId}`;
         }
         const getLinks = async () => {
-           var res =  [
+            var res = [
                 {
                     url: await linkCardápio(),
                     label: 'Meu Cardápio',
@@ -167,7 +167,7 @@ export default function Links({ emp }: LinksProps) {
                 >
                     <div className={styles.headerContent}>
                         {configuracao.logoUrl && (
-                            <Image
+                            <img
                                 src={configuracao.logoUrl}
                                 alt="Logo Empresa"
                                 width={120}
@@ -181,7 +181,7 @@ export default function Links({ emp }: LinksProps) {
                 </div>
             </div>
 
-            <LinksComponent/>
+            <LinksComponent />
 
 
             {/* Footer fixo */}

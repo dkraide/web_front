@@ -18,6 +18,8 @@ import ProdutoMobile from '@/components/Mobile/Pages/Produto/ProdutoMobile';
 import { ExportToExcel } from '@/utils/functions';
 import NovoProdutoForm from '@/components/Modals/Produto/NovoProdutoForm';
 import EstoqueForm from '@/components/Modals/Produto/EstoqueForm';
+import CreateFromIAForm from '@/components/Modals/Produto/CreateFromIAForm';
+import { useRouter } from 'next/router';
 
 type searchProps = {
     str: string,
@@ -39,6 +41,8 @@ export default function Produto() {
     const [user, setUser] = useState<IUsuario>();
     const { innerWidth } = useWindowSize();
     const [mobile, setMobile] = useState(false);
+    const [modalIa, setModalIa] = useState(false);
+    const router = useRouter();
 
     useEffect(() => {
         if (!innerWidth) {
@@ -161,8 +165,8 @@ export default function Produto() {
         {
             name: 'Estoque',
             selector: row => row['quantidade'],
-            cell: (row) => <a style={{color: 'var(--main)'}} href={'#'} onClick={() => {
-                setSearch({...search, viewEstoque: row.id})
+            cell: (row) => <a style={{ color: 'var(--main)' }} href={'#'} onClick={() => {
+                setSearch({ ...search, viewEstoque: row.id })
             }}>{row.quantidade}</a>,
             sortable: true,
             grow: 0
@@ -253,12 +257,13 @@ export default function Produto() {
     return (
         <div className={styles.container}>
             <h4>Produtos</h4>
-            <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search.str} onChange={(e) => { setSearch({...search, str: e.currentTarget.value}) }} />
-            <CustomButton typeButton={'dark'} onClick={() => {handleItem()}}  >Novo Produto</CustomButton>
+            <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search.str} onChange={(e) => { setSearch({ ...search, str: e.currentTarget.value }) }} />
+            <CustomButton typeButton={'dark'} onClick={() => { setModalIa(true) }}>Cadastrar com I.A</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => { handleItem() }}  style={{ marginLeft: '10px' }} >Novo Produto</CustomButton>
             <CustomButton typeButton={'dark'} onClick={handleNovaPizza} style={{ marginLeft: '10px' }} >Nova Pizza</CustomButton>
             <CustomButton typeButton={'dark'} onClick={handleNovoPrato} style={{ marginLeft: '10px' }}  >Novo Prato</CustomButton>
             <CustomButton typeButton={'dark'} onClick={() => { window.location.href = '/produto/franquia' }} style={{ marginLeft: '10px' }} >Franquia</CustomButton>
-            <CustomButton typeButton={'dark'} onClick={() => { setSearch({...search, ajuste: true}) }} style={{ marginLeft: '10px' }}>Ajuste Massa</CustomButton>
+            <CustomButton typeButton={'dark'} onClick={() => { setSearch({ ...search, ajuste: true }) }} style={{ marginLeft: '10px' }}>Ajuste Massa</CustomButton>
             <CustomButton typeButton={'dark'} onClick={handleExcel} style={{ marginLeft: '10px' }}>Excel</CustomButton>
             <hr />
             <CustomTable
@@ -270,27 +275,37 @@ export default function Produto() {
                 if (v) {
                     loadData();
                 }
-                 setSearch({...search, edit: -1});
+                setSearch({ ...search, edit: -1 });
             }} />}
             {(search.edit > 0) && <ProdutoForm user={user} isOpen={search.edit >= 0} id={search.edit} setClose={(v) => {
                 if (v) {
                     loadData();
                 }
-                 setSearch({...search, edit: -1});
+                setSearch({ ...search, edit: -1 });
             }} />}
             {search.ajuste && <AjusteEmMassa isOpen={search.ajuste} setClose={(v) => {
                 if (v) {
                     loadData();
                 }
-                setSearch({...search, ajuste: false});
+                setSearch({ ...search, ajuste: false });
             }} />}
             {search.viewEstoque > 0 && <EstoqueForm user={user} id={search.viewEstoque} isOpen={search.viewEstoque > 0} setClose={(v) => {
-                  if(v){
+                if (v) {
                     loadData();
-                  }
-                  setSearch({...search, viewEstoque: 0})
+                }
+                setSearch({ ...search, viewEstoque: 0 })
             }}
             />}
+            {modalIa && <CreateFromIAForm
+                user={user}
+                setClose={(res?: number) => {
+                    setModalIa(false);
+                    if (res) {
+                        router.push(`/produto/item?id=${res}`)
+                    }
+                }}
+            />}
+
 
         </div>
     )
