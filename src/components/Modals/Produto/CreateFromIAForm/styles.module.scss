@@ -1,0 +1,81 @@
+// styles.module.scss
+.wrapper { display: flex; flex-direction: column; gap: 12px; padding: 1.25rem; }
+
+.label { font-size: 12px; color: var(--color-muted); }
+
+.textarea {
+  width: 100%; box-sizing: border-box; padding: 10px 12px;
+  border: 1px solid #ddd; border-radius: 8px; font-size: 14px;
+  resize: vertical; outline: none; font-family: inherit;
+  &:focus { border-color: #999; }
+}
+
+.erro { font-size: 12px; color: #c0392b; margin: 0; }
+
+.exTitle { font-size: 12px; color: var(--color-muted); margin: 0; }
+
+.exemplos { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.chip {
+  font-size: 12px; padding: 5px 10px; border-radius: 20px;
+  border: 1px solid #ddd; background: #f5f5f5; cursor: pointer;
+  &:hover { background: #ebebeb; }
+}
+
+.dica {
+  display: flex; align-items: flex-start; gap: 8px;
+  padding: 10px 12px; background: #f8f8f8; border-radius: 8px;
+  font-size: 12px; color: var(--color-muted); line-height: 1.5;
+}
+
+.acoes { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
+
+.btnSecundario {
+  padding: 8px 16px; border: 1px solid #ddd; border-radius: 8px;
+  background: none; font-size: 13px; cursor: pointer;
+}
+
+.btnPrimario {
+  display: flex; align-items: center; gap: 6px;
+  padding: 8px 18px; border: none; border-radius: 8px;
+  background: #1a1a1a; color: #fff; font-size: 13px;
+  font-weight: 500; cursor: pointer;
+  &:hover { background: #333; }
+}
+
+// loading
+.loadingWrapper { display: flex; flex-direction: column; align-items: center; padding: 2rem 0; gap: 8px; }
+
+.spinner {
+  width: 36px; height: 36px; border: 2px solid #eee;
+  border-top-color: #333; border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loadingMsg { font-size: 14px; font-weight: 500; margin: 4px 0 0; }
+.loadingSub { font-size: 12px; color: var(--color-muted); margin: 0; }
+
+.steps { display: flex; flex-direction: column; gap: 8px; margin-top: 1rem; width: 100%; max-width: 260px; }
+
+.step { display: flex; align-items: center; gap: 10px; font-size: 12px; color: var(--color-muted); }
+
+.stepDot {
+  width: 20px; height: 20px; border-radius: 50%; border: 1px solid #ddd;
+  display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0;
+}
+
+.stepOk { background: #e6f4ea; color: #2e7d32; border-color: #2e7d32; }
+
+// sucesso
+.sucessoWrapper { display: flex; flex-direction: column; align-items: center; padding: 2.5rem 0; gap: 8px; }
+
+.checkCircle {
+  width: 52px; height: 52px; border-radius: 50%;
+  background: #e6f4ea; color: #2e7d32;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.sucessoTitulo { font-size: 15px; font-weight: 500; margin: 8px 0 0; }
+.sucessoSub { font-size: 13px; color: var(--color-muted); margin: 0; }

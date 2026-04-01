@@ -21,4 +21,5 @@ export default interface ITributacao{
      federal: number
      estadual: number
      municipal: number
+     cBenef?: string
 }

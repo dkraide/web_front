@@ -48,7 +48,7 @@ export function useImageUpload() {
             return data.localPath;
         } catch (err) {
             const error = err as AxiosError;
-            toast.error(`Erro ao enviar imagem: ${error.message}`);
+            toast.error(`Erro ao enviar imagem: ${error.response.data}`);
             return null;
         }
     };
