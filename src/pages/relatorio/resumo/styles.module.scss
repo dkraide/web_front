@@ -1,0 +1,426 @@
+// ─── Aliases locais para as variáveis do projeto ─────────────────────────────
+// Seu projeto usa hsl(var(--token)) — seguimos o mesmo padrão
+
+$radius: var(--radius, 0.75rem);
+
+// ─── Container ────────────────────────────────────────────────────────────────
+.container {
+  padding-bottom: 2rem;
+  font-size: 14px;
+  color: hsl(var(--foreground));
+  background: var(--dark-900);
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+.header {
+  padding: 1rem 1.25rem 0.75rem;
+  border-bottom: 1px solid hsl(var(--border));
+
+  h1 {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+    color: hsl(var(--foreground));
+    font-family: 'Inter', sans-serif;
+  }
+
+  p {
+    font-size: 13px;
+    color: hsl(var(--muted-foreground));
+  }
+}
+
+// ─── Filtros ──────────────────────────────────────────────────────────────────
+.filters {
+  padding: 0.75rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: flex-end;
+  border-bottom: 1px solid hsl(var(--border));
+  background: hsl(var(--card));
+}
+
+.filterGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  select {
+    font-size: 13px;
+    padding: 5px 10px;
+    height: 32px;
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(#{$radius} / 1.5);
+    background: hsl(var(--input));
+    color: hsl(var(--foreground));
+    outline: none;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+
+    &:hover {
+      border-color: hsl(var(--primary));
+    }
+
+    &:focus {
+      border-color: hsl(var(--ring));
+      box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+    }
+
+    option {
+      background: hsl(var(--card));
+      color: hsl(var(--foreground));
+    }
+  }
+
+  input[type='date'] {
+    font-size: 13px;
+    padding: 5px 10px;
+    height: 32px;
+    border: 1px solid hsl(var(--border));
+    border-radius: calc(#{$radius} / 1.5);
+    background: hsl(var(--input));
+    color: hsl(var(--foreground));
+    outline: none;
+    font-family: 'Inter', sans-serif;
+    // corrige ícone de calendário em tema escuro
+    color-scheme: dark;
+
+    &:hover {
+      border-color: hsl(var(--primary));
+    }
+
+    &:focus {
+      border-color: hsl(var(--ring));
+      box-shadow: 0 0 0 2px hsl(var(--ring) / 0.2);
+    }
+  }
+}
+
+.filterLabel {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+
+.periodBtns {
+  display: flex;
+  gap: 4px;
+}
+
+.periodBtn {
+  font-size: 12px;
+  padding: 5px 12px;
+  height: 32px;
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(#{$radius} / 1.5);
+  background: hsl(var(--card));
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-family: 'Inter', sans-serif;
+
+  &:hover {
+    background: hsl(var(--secondary));
+    color: hsl(var(--foreground));
+    border-color: hsl(var(--primary) / 0.5);
+  }
+
+  &.active {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary));
+    font-weight: 500;
+  }
+}
+
+.customDates {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.dateSep {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+}
+
+// ─── Loading bar ──────────────────────────────────────────────────────────────
+.loadingBar {
+  height: 2px;
+  background: hsl(var(--primary));
+  animation: loadSlide 1.2s ease-in-out infinite;
+  transform-origin: left;
+
+  @keyframes loadSlide {
+    0%   { transform: scaleX(0); opacity: 1; }
+    70%  { transform: scaleX(0.8); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
+  }
+}
+
+// ─── Seções ───────────────────────────────────────────────────────────────────
+.section {
+  padding: 1.25rem 1.25rem 0;
+}
+
+.sectionTitle {
+  font-size: 15px;
+  font-weight: 500;
+  margin-bottom: 1rem;
+  color: hsl(var(--foreground));
+  font-family: 'Inter', sans-serif;
+}
+
+.divider {
+  height: 1px;
+  background: hsl(var(--border));
+  margin: 1.25rem 0 0;
+}
+
+// ─── Cards de métricas ────────────────────────────────────────────────────────
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+.metricCard {
+  background: hsl(var(--secondary));
+  border: 1px solid hsl(var(--border));
+  border-radius: $radius;
+  padding: 0.875rem 1rem;
+
+  &.green .metricValue {
+    color: #4ade80;
+  }
+
+  &.red .metricValue {
+    color: #f87171;
+  }
+}
+
+.metricLabel {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  margin-bottom: 4px;
+}
+
+.metricValue {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: hsl(var(--foreground));
+}
+
+.metricSub {
+  font-size: 12px;
+  color: hsl(var(--muted-foreground));
+  margin-top: 2px;
+}
+
+// ─── Layout linha (top5 + gráfico) ────────────────────────────────────────────
+.rowLayout {
+  display: flex;
+  gap: 12px;
+}
+
+.col30 {
+  width: 30%;
+  min-width: 180px;
+  flex-shrink: 0;
+}
+
+.col70 {
+  flex: 1;
+  min-width: 0;
+}
+
+// ─── Card genérico ────────────────────────────────────────────────────────────
+.cardBox {
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border));
+  border-radius: $radius;
+  padding: 1rem 1.25rem;
+  height: 100%;
+
+  h3 {
+    font-size: 13px;
+    font-weight: 500;
+    color: hsl(var(--muted-foreground));
+    margin-bottom: 0.75rem;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+// ─── Top 5 dias ───────────────────────────────────────────────────────────────
+.top5Item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 0;
+  border-bottom: 1px solid hsl(var(--border));
+  gap: 8px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  > div {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+.top5Row {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.rank {
+  font-size: 11px;
+  color: hsl(var(--muted-foreground));
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.top5Date {
+  font-size: 13px;
+  color: hsl(var(--foreground));
+}
+
+.top5Bar {
+  height: 3px;
+  background: hsl(var(--border));
+  border-radius: 2px;
+  margin-top: 4px;
+}
+
+.top5BarFill {
+  height: 3px;
+  background: hsl(var(--primary));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.top5Amt {
+  font-size: 13px;
+  font-weight: 500;
+  color: hsl(var(--foreground));
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+// ─── Gráficos de produtos ─────────────────────────────────────────────────────
+.graficosProdutos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+// ─── Toggle R$ / % ────────────────────────────────────────────────────────────
+.chartToggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.toggleBtn {
+  font-size: 11px;
+  padding: 3px 12px;
+  border: 1px solid hsl(var(--border));
+  border-radius: 20px;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  cursor: pointer;
+  transition: var(--transition-smooth);
+  font-family: 'Inter', sans-serif;
+
+  &:hover {
+    background: hsl(var(--secondary));
+    color: hsl(var(--foreground));
+  }
+
+  &.active {
+    background: hsl(var(--primary));
+    color: hsl(var(--primary-foreground));
+    border-color: hsl(var(--primary));
+  }
+}
+
+// ─── Gráficos de pagamento ────────────────────────────────────────────────────
+.graficosPgto {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+// ─── Tooltip customizado ──────────────────────────────────────────────────────
+.tooltip {
+  background: hsl(var(--popover));
+  border: 1px solid hsl(var(--border));
+  border-radius: calc(#{$radius} / 1.5);
+  padding: 8px 12px;
+  font-size: 12px;
+  color: hsl(var(--popover-foreground));
+
+  p {
+    margin: 0;
+    line-height: 1.6;
+  }
+}
+
+.tooltipLabel {
+  font-weight: 500;
+  margin-bottom: 4px !important;
+  color: hsl(var(--foreground)) !important;
+}
+
+// ─── Responsivo mobile ────────────────────────────────────────────────────────
+@media (max-width: 768px) {
+  .rowLayout {
+    flex-direction: column;
+  }
+
+  .col30,
+  .col70 {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .graficosProdutos {
+    grid-template-columns: 1fr;
+  }
+
+  .graficosPgto {
+    grid-template-columns: 1fr;
+  }
+
+  .cardsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .periodBtn {
+    padding: 5px 7px;
+    font-size: 11px;
+  }
+
+  .metricValue {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 420px) {
+  .cardsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filters {
+    gap: 10px;
+  }
+
+  .section {
+    padding: 1rem 0.875rem 0;
+  }
+}
