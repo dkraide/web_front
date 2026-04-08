@@ -157,7 +157,7 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem href={'/arquivosxml'}>Arquivos XML</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faChartSimple} color={'var(--main)'} />} label="Relatorios">
-                                    <MenuItem href={'/relatorio/horario'}>Resumo {bgNew()} </MenuItem>
+                                    <MenuItem href={'/relatorio/resumo'}>Resumo {bgNew()} </MenuItem>
                                     <MenuItem href={'/relatorio/classe'}>Por Classe</MenuItem>
                                     <MenuItem href={'/relatorio/dia'}>Por Dia</MenuItem>
                                     <MenuItem href={'/relatorio/horario'}>Por Horário </MenuItem>
