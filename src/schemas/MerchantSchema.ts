@@ -1,4 +1,8 @@
+// MerchantSchema.ts
+
 import { z } from 'zod';
+
+const optionalString = z.string().optional().or(z.literal(''));
 
 export const merchantSchema = z.object({
     document: z
@@ -11,23 +15,21 @@ export const merchantSchema = z.object({
     name: z
         .string()
         .min(1, 'Nome Fantasia é obrigatório'),
-    description: z
-        .string()
-        .min(1, 'Descrição  é obrigatório'),
+    description: optionalString,          // ← era obrigatório
     commercialPhone: z
         .string()
-        .min(1, 'Telefone Comercial  é obrigatório'),
+        .min(1, 'Telefone Comercial é obrigatório'),
     whatsappNumber: z
         .string()
-        .min(1, 'WhatsApp  é obrigatório'),
+        .min(1, 'WhatsApp é obrigatório'),
     contactEmails: z
         .string()
-        .min(1, 'Pelo menos um email  é obrigatório'),
-    averageTicket: z.number().min(0, 'Ticket médio deve ser maior ou igual a 0'),
-    averagePreparationTime: z.number().min(0, 'Tempo médio de preparo deve ser maior ou igual a 0'),
-    minOrderValue: z.number().min(0, 'Pedido minimo deve ser maior ou igual a 0'),
-    reference: z.string().optional(),
-    complement: z.string().optional(),
+        .min(1, 'Pelo menos um email é obrigatório'),
+    averageTicket: z.number().min(0),
+    averagePreparationTime: z.number().min(0),
+    minOrderValue: z.number().min(0),
+
+    // Endereço
     postalCode: z
         .string()
         .min(1, 'CEP é obrigatório')
@@ -37,13 +39,17 @@ export const merchantSchema = z.object({
     district: z.string().min(1, 'Bairro é obrigatório'),
     city: z.string().min(1, 'Cidade é obrigatória'),
     state: z.string().min(1, 'Estado é obrigatório'),
-    facebook: z.string().optional(),
-    instagram: z.string().optional(),
-    urlIfood: z.string().optional(),
-    urlGoomer: z.string().optional(),
-    url99: z.string().optional(),
-    urlUberEats: z.string().optional(),
-    urlKeeta: z.string().optional(),
+    complement: optionalString,           // ← já era optional, mas precisava do or('')
+    reference: optionalString,            // ← idem
+
+    // Links / redes — todos opcionais
+    facebook: optionalString,
+    instagram: optionalString,
+    urlIfood: optionalString,
+    urlGoomer: optionalString,
+    url99: optionalString,
+    urlUberEats: optionalString,
+    urlKeeta: optionalString,
 });
 
 export type MerchantFormData = z.infer<typeof merchantSchema>;

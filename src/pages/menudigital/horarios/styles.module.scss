@@ -1,0 +1,626 @@
+// =============================================
+// ServiceSetup.module.scss
+// =============================================
+
+$brand:         #16a34a;
+$brand-light:   #dcfce7;
+$brand-dark:    #15803d;
+$surface:       #ffffff;
+$surface-2:     #f8fafc;
+$surface-3:     #f1f5f9;
+$border:        #e2e8f0;
+$border-strong: #cbd5e1;
+$text-primary:  #0f172a;
+$text-secondary:#64748b;
+$text-muted:    #94a3b8;
+$danger:        #ef4444;
+$danger-light:  #fef2f2;
+$radius-sm:     6px;
+$radius-md:     10px;
+$radius-lg:     16px;
+$shadow-sm:     0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+$shadow-md:     0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
+
+// =============================================
+// LAYOUT
+// =============================================
+.page {
+  width: 100%;
+  min-height: 100vh;
+  background: $surface-2;
+  padding: 36px 32px;
+  font-family: 'DM Sans', 'Helvetica Neue', sans-serif;
+  color: $text-primary;
+}
+
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 28px;
+
+  h1 {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    margin: 0 0 4px;
+    color: $text-primary;
+  }
+
+  p {
+    font-size: 13px;
+    color: $text-secondary;
+    margin: 0;
+  }
+}
+
+.saveBtn {
+  flex-shrink: 0;
+  padding: 10px 22px;
+  border-radius: $radius-md;
+  border: none;
+  background: $brand;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 2px 8px rgba(22, 163, 74, 0.25);
+  white-space: nowrap;
+
+  &:hover:not(:disabled) {
+    background: $brand-dark;
+    box-shadow: 0 4px 14px rgba(22, 163, 74, 0.35);
+    transform: translateY(-1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+// =============================================
+// TAB BAR
+// =============================================
+.tabBar {
+  display: flex;
+  gap: 0;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: 6px;
+  margin-bottom: 20px;
+  box-shadow: $shadow-sm;
+}
+
+.tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: $radius-md;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: $text-secondary;
+  transition: all 0.18s ease;
+  position: relative;
+
+  &:hover:not(.tabActive) {
+    background: $surface-2;
+    color: $text-primary;
+  }
+}
+
+.tabActive {
+  background: $surface-2;
+  color: $text-primary;
+  font-weight: 600;
+  box-shadow: $shadow-sm;
+}
+
+.tabEmoji {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.tabLabel {
+  // label only
+}
+
+.tabDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dotGreen {
+  background: $brand;
+  box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.2);
+}
+
+.dotGray {
+  background: $border-strong;
+}
+
+// =============================================
+// MAIN CARD
+// =============================================
+.card {
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+  box-shadow: $shadow-sm;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid $border;
+  background: $surface;
+  gap: 16px;
+}
+
+.cardTitle {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+
+  strong {
+    display: block;
+    font-size: 16px;
+    font-weight: 700;
+    color: $text-primary;
+    margin-bottom: 2px;
+  }
+}
+
+.cardEmoji {
+  font-size: 26px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.cardDesc {
+  font-size: 12px;
+  color: $text-secondary;
+  display: block;
+}
+
+.statusToggleArea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.statusLabel {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 99px;
+
+  &.statusOn {
+    background: $brand-light;
+    color: $brand-dark;
+  }
+
+  &.statusOff {
+    background: $surface-3;
+    color: $text-muted;
+  }
+}
+
+// =============================================
+// TOGGLE SWITCH
+// =============================================
+.switch {
+  position: relative;
+  width: 44px;
+  height: 24px;
+  flex-shrink: 0;
+  cursor: pointer;
+  margin: 0;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    position: absolute;
+  }
+
+  .slider {
+    position: absolute;
+    inset: 0;
+    background: $border-strong;
+    border-radius: 99px;
+    transition: background 0.2s ease;
+
+    &::before {
+      content: '';
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      left: 3px;
+      top: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    }
+  }
+
+  input:checked + .slider {
+    background: $brand;
+
+    &::before {
+      transform: translateX(20px);
+    }
+  }
+}
+
+// =============================================
+// CARD BODY
+// =============================================
+.cardBody {
+  padding: 20px 24px;
+}
+
+.inactiveBanner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: $radius-md;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #92400e;
+
+  span { font-size: 16px; flex-shrink: 0; }
+  p { margin: 0; }
+}
+
+.blurred {
+  opacity: 0.45;
+  pointer-events: none;
+  user-select: none;
+  filter: grayscale(0.3);
+}
+
+// =============================================
+// SUB SECTIONS
+// =============================================
+.subSection {
+  border: 1px solid $border;
+  border-radius: $radius-md;
+  overflow: hidden;
+  margin-bottom: 12px;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.subSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 11px 14px;
+  background: $surface-2;
+  border: none;
+  border-bottom: 1px solid transparent;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: $text-primary;
+  text-align: left;
+  transition: background 0.15s;
+
+  &:hover {
+    background: $surface-3;
+  }
+}
+
+.chevron {
+  color: $text-muted;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  display: inline-block;
+
+  &.open {
+    transform: rotate(180deg);
+  }
+}
+
+.subSectionBody {
+  padding: 14px;
+  border-top: 1px solid $border;
+}
+
+// =============================================
+// TIMING / CHECKBOXES
+// =============================================
+.checkGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.checkItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: $text-primary;
+  cursor: pointer;
+
+  input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: $brand;
+    cursor: pointer;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  span:first-child { display: block; font-weight: 500; }
+}
+
+.checkHint {
+  display: block;
+  font-size: 11px;
+  color: $text-muted;
+  margin-top: 1px;
+}
+
+.checkDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+
+  input { cursor: not-allowed; }
+}
+
+.selectField {
+  margin-top: 14px;
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: $text-secondary;
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+
+  select {
+    width: 100%;
+    padding: 8px 32px 8px 10px;
+    border: 1px solid $border;
+    border-radius: $radius-sm;
+    font-size: 13px;
+    background: $surface;
+    color: $text-primary;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath fill='%2394a3b8' d='M5 6L0 0h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    cursor: pointer;
+
+    &:focus {
+      outline: none;
+      border-color: $brand;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+  }
+}
+
+// =============================================
+// HOURS
+// =============================================
+.dayCard {
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  background: $surface;
+
+  &:last-child { margin-bottom: 0; }
+}
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+
+  strong {
+    font-size: 13px;
+    color: $text-primary;
+    min-width: 30px;
+  }
+}
+
+.closedBadge {
+  font-size: 11px;
+  padding: 2px 8px;
+  background: $surface-3;
+  color: $text-muted;
+  border-radius: 99px;
+  font-weight: 500;
+}
+
+.timeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+
+  input[type="time"] {
+    padding: 4px 7px;
+    border: 1px solid $border;
+    border-radius: $radius-sm;
+    font-size: 12px;
+    width: 100px;
+    color: $text-primary;
+    background: $surface-2;
+
+    &:focus {
+      outline: none;
+      border-color: $brand;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+    }
+  }
+
+  span { font-size: 12px; color: $text-muted; }
+}
+
+.btnRemove {
+  background: none;
+  border: none;
+  color: $danger;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 3px 6px;
+  border-radius: 4px;
+  transition: background 0.15s;
+
+  &:hover { background: $danger-light; }
+}
+
+.btnLink {
+  background: none;
+  border: none;
+  color: $brand;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+  margin-top: 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: color 0.15s;
+
+  &:hover { color: $brand-dark; }
+}
+
+// =============================================
+// DELIVERY AREAS
+// =============================================
+.areaCard {
+  border: 1px solid $border;
+  border-radius: $radius-sm;
+  padding: 14px;
+  margin-top: 10px;
+  background: $surface;
+}
+
+.areaCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  strong { font-size: 13px; color: $text-primary; }
+}
+
+.colorDot {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.formField {
+  margin-bottom: 10px;
+
+  label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: $text-secondary;
+    margin-bottom: 5px;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid $border;
+    border-radius: $radius-sm;
+    font-size: 13px;
+    color: $text-primary;
+    background: $surface;
+    transition: border-color 0.15s;
+
+    &:focus {
+      outline: none;
+      border-color: $brand;
+      box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.1);
+    }
+
+    &:disabled { opacity: 0.6; }
+  }
+}
+
+.btnDanger {
+  background: none;
+  border: 1px solid $danger;
+  color: $danger;
+  padding: 5px 12px;
+  border-radius: $radius-sm;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+
+  &:hover {
+    background: $danger;
+    color: white;
+  }
+}
+
+// =============================================
+// LOADING
+// =============================================
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 64px 24px;
+  color: $text-muted;
+  font-size: 14px;
+  gap: 14px;
+}
+
+.spinner {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  border: 3px solid $border;
+  border-top-color: $brand;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

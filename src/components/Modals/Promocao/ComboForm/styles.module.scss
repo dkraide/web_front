@@ -1,67 +1,182 @@
 .container {
-    padding: 10px 10px;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 1.25rem;
+  height: 100%;
 }
 
-.itens{
-    width: 100%;
-    max-height: 500px;
-    overflow-y: auto;
-    ul{
-        list-style-type: none;
-        margin-top: 10px;
-        li{
-            border-bottom: solid 1px #757575;
-            padding-bottom: 5px;
-            display: flex;
-            flex-direction: row;
-            div{
-                margin-top: 8px;
-                margin-left: 10px;
-                width: 90%;
-                display: flex;
-                justify-content: space-between;
-            }
-        }
-    }
-}
-.button {
-    padding: 10px 30px;
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: flex-end;
-
-    button {
-        margin-right: 10px;
-
-    }
+// ── Linha de campos ──────────────────────────────────────
+.fieldsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  width: 100%;
 }
 
-.btnCancel {
-    background-color: var(--danger);
-
-    &:hover {
-        background-color: var(--danger-press);
-    }
-
-    &:disabled {
-        background-color: var(--danger-press);
-    }
-
+// ── Seção de itens ───────────────────────────────────────
+.itensSection {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 1px solid #ede6ee;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.btnSuccess {
-    background-color: var(--success);
+.itensSectionHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #faf7fb;
+  border-bottom: 1px solid #ede6ee;
+}
 
-    &:hover {
-        background-color: var(--success-press);
-    }
+.itensSectionTitle {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark-900);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
 
-    &:disabled {
-        background-color: var(--success-press);
-    }
+.itensBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 99px;
+  background: var(--main);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.addBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0d8e1;
+  background: var(--white);
+  color: #6b5d70;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  svg { font-size: 12px; }
+
+  &:hover {
+    border-color: var(--main-light);
+    color: var(--main);
+  }
+}
+
+.itensEmpty {
+  padding: 2rem;
+  text-align: center;
+  font-size: 13px;
+  color: #b0a4b4;
+}
+
+.itensList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  max-height: 320px;
+}
+
+.itensItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f5f0f6;
+  transition: background 0.1s ease;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: #fdf9fe; }
+}
+
+.itensItemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.itensItemNome {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark-900);
+}
+
+.itensItemMeta {
+  display: flex;
+  gap: 16px;
+  font-size: 11px;
+  color: #9a8d9e;
+
+  b {
+    font-weight: 500;
+    color: var(--dark-900);
+  }
+}
+
+.removeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  border: 1px solid #f5d0d0;
+  background: #fdf5f5;
+  color: var(--danger);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--danger);
+    color: var(--white);
+    border-color: var(--danger);
+  }
+}
+.totalRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  background: #faf7fb;
+  border: 1px solid #ede6ee;
+  border-radius: 8px;
+}
+
+.totalLabel {
+  font-size: 13px;
+  color: #9a8d9e;
+}
+
+.totalValue {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--dark-900);
+}
+
+// ── Footer ───────────────────────────────────────────────
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #ede6ee;
+  margin-top: auto;
 }

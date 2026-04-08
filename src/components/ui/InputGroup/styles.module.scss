@@ -1,80 +1,75 @@
-.group 			  { 
-    position:relative; 
-    margin:10px 0px; 
-    padding: 5px
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+}
+
+// ── Label ────────────────────────────────────────────────
+.label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9a8d9e;
+  transition: color 0.15s ease;
+}
+
+.labelError {
+  color: var(--danger);
+}
+
+// ── Input ────────────────────────────────────────────────
+.input {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  font-size: 13px;
+  color: var(--dark-900);
+  background: var(--white);
+  border: 1px solid #e0d8e1;
+  border-radius: 8px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &::placeholder {
+    color: #c0b4c4;
   }
-  .group input{
-    font-size:18px;
-    padding:10px 10px 10px 5px;
-    display:block;
-    border:none;
-    width: 100%;
-    background-color: transparent;
-    border-bottom:1px solid #757575;
-    color: var(--main);
+
+  &:hover {
+    border-color: #c8bfcc;
   }
-  .groupinput:focus 		{ outline:none; }
-  
-  /* LABEL ======================================= */
-  .group  label 				 {
-    color: var(--main);
-    font-size:18px;
-    font-weight:normal;
-    position:absolute;
-    pointer-events:none;
-    left:5px;
-    top:10px;
-    transition:0.2s ease all; 
-    -moz-transition:0.2s ease all; 
-    -webkit-transition:0.2s ease all;
+
+  &:focus {
+    border-color: var(--main);
+    box-shadow: 0 0 0 3px rgba(252, 79, 107, 0.1);
   }
-  
-  /* active state */
-  .group input:read-only ~ label, .group input:focus ~ label, .group input:valid ~ label{
-    top:-8px;
-    font-size:14px;
-    color: var(--main);
+
+  &:disabled {
+    background: #f7f3f8;
+    color: #b0a4b4;
+    cursor: not-allowed;
+    border-color: #ede6ee;
   }
-  
-  /* BOTTOM BARS ================================= */
-  .bar 	{ position:relative; display:block; width:100%; }
-  .bar:before, .bar:after 	{
-    content:'';
-    height:2px; 
-    width:0;
-    bottom:1px; 
-    position:absolute;
-    background:var(--main);
-    transition:0.2s ease all; 
-    -moz-transition:0.2s ease all; 
-    -webkit-transition:0.2s ease all;
+
+  // input date — normaliza aparência
+  &[type='date'],
+  &[type='datetime-local'],
+  &[type='time'] {
+    cursor: pointer;
   }
-  .bar:before {
-    left:50%;
+}
+
+.inputError {
+  border-color: var(--danger);
+
+  &:focus {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(199, 73, 73, 0.1);
   }
-  .bar:after {
-    right:50%; 
-  }
-  
-  /* active state */
-  .group input:focus ~.bar:before, .group input:focus ~.bar:after {
-    width:50%;
-  }
-  .error{
-    bottom: -10px;
-    font-style: italic;
-    font-size: 12px;
-    position:absolute;
-    color: var(--danger);
-    ~ input{
-      color: var(--danger);
-    }
-    ~ label{
-      color: var(--danger) !important;
-    }
-  }
-  @media screen and (max-width:400px) {
-    .group{
-      min-width: 50% !important;
-    }
-  }
+}
+
+// ── Mensagem de erro ─────────────────────────────────────
+.errorMsg {
+  font-size: 11px;
+  color: var(--danger);
+  margin-top: -2px;
+}

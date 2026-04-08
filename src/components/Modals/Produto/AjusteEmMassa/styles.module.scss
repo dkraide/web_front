@@ -1,21 +1,75 @@
 .container {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  padding: 1.25rem;
+  gap: 1rem;
 }
 
-
-.button {
-    margin-top: auto;
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: flex-end;
-
-    button {
-        margin-right: 10px;
-
-    }
+// ── Campos em steps ──────────────────────────────────────
+.fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex: 1;
 }
 
+.fieldRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.stepBadge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--main);
+  color: var(--white);
+  font-size: 11px;
+  font-weight: 500;
+  margin-top: 22px;
+}
+
+.fieldWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.fieldHint {
+  font-size: 11px;
+  color: #9a8d9e;
+}
+
+// ── Aviso de impacto ─────────────────────────────────────
+.warning {
+  background: #fff8e6;
+  border: 1px solid #f5d87a;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #7a6010;
+  line-height: 1.5;
+
+  b {
+    font-weight: 500;
+    color: #5a4408;
+  }
+}
+
+// ── Footer ───────────────────────────────────────────────
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid #ede6ee;
+  margin-top: auto;
+}
