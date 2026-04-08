@@ -14,7 +14,7 @@ import Image from 'next/image';
 import { useWindowSize } from 'rooks';
 import { Badge } from 'react-bootstrap';
 
-export default function SideBar({ ...props }) {
+export default function SideBar({ children, ...props }) {
 
     const [user, setUser] = useState<IUsuario | undefined>();
     const [empresa, setEmpresa] = useState(0);
@@ -46,12 +46,13 @@ export default function SideBar({ ...props }) {
             })
     }
     if (!user) {
-        return <>
-            <main  {...props}>
-
+        return (
+            <main {...props}>
+                {children}  {/* 👈 renderiza o conteúdo da página */}
             </main>
-        </>
+        )
     }
+
     const subMenuStyle = {
         ['& > a']: {
             '&:hover': {
@@ -156,8 +157,10 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/arquivosxml'}>Arquivos XML</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faChartSimple} color={'var(--main)'} />} label="Relatorios">
+                                    <MenuItem href={'/relatorio/horario'}>Resumo {bgNew()} </MenuItem>
                                     <MenuItem href={'/relatorio/classe'}>Por Classe</MenuItem>
                                     <MenuItem href={'/relatorio/dia'}>Por Dia</MenuItem>
+                                    <MenuItem href={'/relatorio/horario'}>Por Horário </MenuItem>
                                     <MenuItem href={'/relatorio/formaPagamento'}>Por Forma</MenuItem>
                                     <MenuItem href={'/relatorio/produto'}>Por Produto</MenuItem>
                                     <MenuItem href={'/relatorio/usuario'}>Por Usuario</MenuItem>
@@ -165,7 +168,6 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/relatorio/vendacusto'}>Venda/Custo </MenuItem>
                                     <MenuItem href={'/relatorio/FechamentoCaixa'}>Fechamento</MenuItem>
                                     <MenuItem href={'/relatorio/estoque'}>Estoque </MenuItem>
-                                    <MenuItem href={'/relatorio/horario'}>Horario {bgNew()} </MenuItem>
                                 </SubMenu>
                                 <SubMenu icon={<FontAwesomeIcon icon={faUser} color={'var(--main)'} />} label="Clientes"
                                     rootStyles={subMenuStyle}>
@@ -179,10 +181,6 @@ export default function SideBar({ ...props }) {
                                     <MenuItem href={'/pdv/configuracao'}>Configuracao</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
-                                    {/* <MenuItem href={'/menudigital/produtos'}>Produtos</MenuItem>
-                                    <MenuItem href={'/menudigital/categorias'}>Categorias</MenuItem>
-                                    <MenuItem href={'/menudigital/promocoes'}>Promocoes</MenuItem>
-                                    <MenuItem href={'/menudigital/combos'}>Combos</MenuItem> */}
                                     <MenuItem href={'/menudigital/horarios'}>Configuração</MenuItem>
                                     <MenuItem href={'/menudigital/empresa'}>Empresa</MenuItem>
                                     <MenuItem href={'/menudigital/cardapio'}>Cardápios</MenuItem>
@@ -192,6 +190,7 @@ export default function SideBar({ ...props }) {
                     </Menu>
                 </Sidebar>
                 <main  {...props} className={styles['main-panel']}>
+                    {children}
                 </main>
             </div>
         </div>

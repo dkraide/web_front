@@ -1,26 +1,24 @@
 import { useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import { api } from '@/services/apiClient';
-import { FaWhatsapp, FaFacebook, FaInstagram,  FaLink, FaHamburger, FaMapMarkerAlt } from 'react-icons/fa';
+import { FaWhatsapp, FaFacebook, FaInstagram, FaLink, FaHamburger, FaMapMarkerAlt } from 'react-icons/fa';
 import { SiIfood, SiUber } from 'react-icons/si';
 import { useRouter } from 'next/router';
 import IMerchantOpenDelivery from '@/interfaces/IMerchantOpenDelivery';
 
-type LinksProps = {
-    emp?: string;
-};
 
-export default function Links({ emp }: LinksProps) {
+
+export default function Links() {
     const [configuracao, setConfiguracao] = useState<IMerchantOpenDelivery>();
     const [loading, setLoading] = useState(true);
     const router = useRouter();
 
     useEffect(() => {
         if (!router.isReady) return;
-        const empresaId = emp || (router.query.empresa as string);
+        const empresaId = (router.query.empresa as string);
         if (!empresaId) return;
         loadData(empresaId);
-    }, [router.isReady, emp, router.query.empresa]);
+    }, [router.isReady, router.query.empresa]);
 
     async function loadData(empresaId: string) {
         try {
@@ -54,15 +52,22 @@ export default function Links({ emp }: LinksProps) {
             getLinks();
         }, [])
         const linkCardápio = async () => {
-            var res = await api.get(`/empresa/select?id=${configuracao.empresaId}`).then((response) => {
-                return response?.data?.slug;
-            }).catch((err) => {
+            try {
+                const baseURL = process.env.NODE_ENV === "development"
+                    ? "http://localhost:7020/api"
+                    : "https://pdv.krdsys.tech/api";
+
+                const res = await fetch(`${baseURL}/empresa/select?id=${configuracao.empresaId}`);
+
+                if (res.ok) {
+                    const data = await res.json();
+                    const slug = data?.slug;
+                    if (slug) return `https://${slug}.menu.krdsystem.com`;
+                }
+            } catch (err) {
                 console.log(err);
-                return undefined;
-            });
-            if (res) {
-                return `https://${res}.menu.krdsystem.com`;
             }
+
             return `https://menu.krdsystem.com/?empresa=${configuracao.empresaId}`;
         }
         const getLinks = async () => {

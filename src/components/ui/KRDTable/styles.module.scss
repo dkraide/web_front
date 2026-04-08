@@ -1,0 +1,251 @@
+.wrapper {
+  width: 100%;
+  font-family: inherit;
+  background-color: white;
+  border-radius: 12px;
+}
+
+// ── Table container ──────────────────────────────────────
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #ede6ee;
+  border-radius: 12px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+// ── Header ───────────────────────────────────────────────
+.thead {
+  background: #faf7fb;
+  border-bottom: 1px solid #ede6ee;
+}
+
+.th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 500;
+  color: #9a8d9e;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  user-select: none;
+
+  &.sortable {
+    cursor: pointer;
+
+    &:hover {
+      color: var(--dark-900);
+    }
+  }
+
+  &.right {
+    text-align: right;
+  }
+}
+
+.sortIcon {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 10px;
+  opacity: 0.5;
+}
+
+// ── Rows ─────────────────────────────────────────────────
+.tr {
+  border-bottom: 1px solid #f5f0f6;
+  transition: background 0.1s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background: #fdf9fe;
+  }
+
+  &.trSelected {
+    background: #fff4f6;
+
+    &:hover {
+      background: #ffedf0;
+    }
+  }
+}
+
+.td {
+  padding: 11px 16px;
+  color: var(--dark-900);
+  font-size: 13px;
+  white-space: nowrap;
+
+  &.right {
+    text-align: right;
+  }
+}
+
+// ── Checkbox ─────────────────────────────────────────────
+.checkCell {
+  width: 40px;
+  padding: 11px 8px 11px 16px;
+}
+
+.checkbox {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--main);
+  cursor: pointer;
+}
+
+// ── Expand ───────────────────────────────────────────────
+.expandCell {
+  width: 36px;
+  padding: 11px 4px 11px 12px;
+}
+
+.expandBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  border: 1px solid #ede6ee;
+  background: var(--white);
+  color: #9a8d9e;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: var(--main-light);
+    color: var(--main);
+  }
+
+  svg {
+    transition: transform 0.2s ease;
+  }
+}
+
+.expandBtnOpen {
+  border-color: var(--main);
+  color: var(--main);
+  background: #fff4f6;
+
+  svg {
+    transform: rotate(180deg);
+  }
+}
+
+.expandedRow {
+  background: #fdf9fe;
+}
+
+.expandedCell {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f0e8f1;
+}
+
+// ── Empty ────────────────────────────────────────────────
+.empty {
+  padding: 3rem 16px;
+  text-align: center;
+  color: #b0a4b4;
+  font-size: 13px;
+}
+
+// ── Loading ──────────────────────────────────────────────
+.loadingWrap {
+  display: flex;
+  justify-content: center;
+  padding: 3rem 0;
+}
+
+// ── Footer / paginação ───────────────────────────────────
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 12px 4px 0;
+}
+
+.footerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.footerLabel {
+  font-size: 12px;
+  color: #9a8d9e;
+}
+
+.perPageSelect {
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: 1px solid #ede6ee;
+  background: var(--white);
+  color: var(--dark-900);
+  cursor: pointer;
+  outline: none;
+
+  &:focus {
+    border-color: var(--main-light);
+  }
+}
+
+.footerRight {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.pageBtn {
+  min-width: 30px;
+  height: 30px;
+  padding: 0 6px;
+  border-radius: 8px;
+  border: 1px solid #ede6ee;
+  background: var(--white);
+  color: #6b5d70;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover:not(:disabled) {
+    border-color: var(--main-light);
+    color: var(--main);
+  }
+
+  &:disabled {
+    opacity: 0.35;
+    cursor: default;
+  }
+}
+
+.pageBtnActive {
+  background: var(--main);
+  border-color: var(--main);
+  color: var(--white);
+  font-weight: 500;
+
+  &:hover {
+    background: var(--main-light) !important;
+    border-color: var(--main-light) !important;
+    color: var(--white) !important;
+  }
+}
+
+.ellipsis {
+  font-size: 13px;
+  color: #b0a4b4;
+  padding: 0 2px;
+  line-height: 30px;
+}

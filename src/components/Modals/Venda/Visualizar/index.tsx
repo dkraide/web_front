@@ -58,7 +58,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                                     <tbody>
                                         <tr>
                                             <td>Nro</td>
-                                            <td>{obj.id}</td>
+                                            <td>{obj.id} - {obj.idVenda} {obj.nnf > 0 ? ` - NNF: ${obj.nnf}` : ''}</td>
                                         </tr>
                                         <tr>
                                             <td>Caixa</td>
