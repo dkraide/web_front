@@ -57,6 +57,7 @@ export default function NovoPrato() {
         if (!router.isReady) {
             return;
         }
+        loadUser();
         if (!id) {
             const inicializarPrato = (): IProduto => ({
                 bloqueiaEstoque: false,
@@ -123,17 +124,21 @@ export default function NovoPrato() {
             prato.tipo = "PRATO";
             prato.status = true;
             prato.empresaId = user.empresaSelecionada;
-            await api.post(`/Produto/Create`, prato).then(({ data }) => {
-                toast.success(`sucesso rapaz`);
+            await api.post(`/v2/Produto?empresaId=${user.empresaSelecionada}`, prato).then(({ data }) => {
+                toast.success(`sucesso`);
+                setTimeout(() => {
+                    router.push(`/produto?query=${data.nome}`);
+                }, 1000)
             }).catch((err) => {
-                toast.error(`ERRO rapaz`);
+                toast.error(`ERRO`);
             })
 
         } else {
-            await api.put(`/Produto/UpdateProduct`, prato).then(({ data }) => {
-                toast.success(`sucesso rapaz`);
+            await api.put(`/v2/Produto?empresaId=${user.empresaSelecionada}`, prato).then(({ data }) => {
+                toast.success(`sucesso`);
+                router.push(`/produto?query=${data.nome}`);
             }).catch((err) => {
-                toast.error(`ERRO rapaz`);
+                toast.error(`ERRO`);
             })
         }
     }

@@ -1,254 +1,323 @@
-import CollapsedDiv from '@/components/CollapsedDiv';
 import dynamic from 'next/dynamic';
 
 const DeliveryAreaMap = dynamic(
     () => import('@/components/Mapa'),
     { ssr: false }
 );
-import { useContext, useEffect, useState } from 'react';
-import { Badge, Button, Card, Form, Stack } from 'react-bootstrap';
-import { mapPayloadToService, mapServiceToPayload, ServiceConfig, ServiceType, TimingType } from '@/services/opendelivery.service';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import {
+    mapPayloadToService,
+    mapServiceToPayload,
+    ServiceConfig,
+    ServiceType,
+    TimingType,
     getMerchantServices,
-    saveMerchantServices
+    saveMerchantServices,
 } from '@/services/opendelivery.service';
 import { AuthContext } from '@/contexts/AuthContext';
 import { api } from '@/services/apiClient';
 import IMerchantOpenDelivery from '@/interfaces/IMerchantOpenDelivery';
-const COLORS = ['#22c55e', '#3b82f6', '#f97316', '#ef4444', '#a855f7'];
+import styles from './styles.module.scss';
 
-// ================== PAGE ==================
+// ---- constants ----
+const ALL_SERVICE_TYPES: ServiceType[] = ['DELIVERY', 'TAKEOUT', 'INDOOR'];
+
+export const SERVICE_META: Record<ServiceType, { label: string; emoji: string; description: string }> = {
+    DELIVERY: { label: 'Entrega',          emoji: '🛵', description: 'Pedidos entregues no endereço do cliente' },
+    TAKEOUT:  { label: 'Retirada',         emoji: '🥡', description: 'Cliente retira no estabelecimento' },
+    INDOOR:   { label: 'Consumo no local', emoji: '🍽️', description: 'Pedidos feitos na mesa ou balcão' },
+};
+
+/** Garante que os 3 serviços sempre existam, criando UNAVAILABLE para os que faltam */
+function ensureAllServices(loaded: ServiceConfig[]): ServiceConfig[] {
+    return ALL_SERVICE_TYPES.map((type) => {
+        const existing = loaded.find((s) => s.serviceType === type);
+        if (existing) return existing;
+        return {
+            id: crypto.randomUUID(),
+            serviceType: type,
+            status: 'UNAVAILABLE' as const,
+            timing: ['INSTANT'] as TimingType[],
+            hours: [],
+        };
+    });
+}
+
+// ======================================================
+// PAGE
+// ======================================================
 export default function ServiceSetupPage() {
-    const [services, setServices] = useState<ServiceConfig[]>([]);
-    const {getUser} = useContext(AuthContext);
-   const [empresaId, setEmpresaId] = useState<number>(0);
-   const [merchantConfig, setMerchantConfig] = useState<IMerchantOpenDelivery>();
+    const [services, setServices]             = useState<ServiceConfig[]>(() => ensureAllServices([]));
+    const [activeTab, setActiveTab]           = useState<ServiceType>('DELIVERY');
+    const { getUser }                         = useContext(AuthContext);
+    const [empresaId, setEmpresaId]           = useState<number>(0);
+    const [merchantConfig, setMerchantConfig] = useState<IMerchantOpenDelivery>();
+    const [saving, setSaving]                 = useState(false);
+    const [loading, setLoading]               = useState(true);
+
     useEffect(() => {
         async function load() {
-            if(empresaId == 0){
+            if (empresaId === 0) {
                 const user = await getUser();
                 setEmpresaId(user?.empresaSelecionada ?? 0);
                 return;
             }
-            const data = await getMerchantServices(empresaId);
-            const mapped = data.map(mapPayloadToService);
-            await api.get(`/opendelivery/merchant?empresaId=${empresaId}`).then(({data}) => {
-                setMerchantConfig(data);
-            }).catch((err) => {
-                  console.log(err);
-            })
-            setServices(mapped);
-        }
 
+            setLoading(true);
+            try {
+                const [rawServices] = await Promise.all([
+                    getMerchantServices(empresaId),
+                    api
+                        .get(`/opendelivery/merchant?empresaId=${empresaId}`)
+                        .then(({ data }) => setMerchantConfig(data))
+                        .catch(console.error),
+                ]);
+
+                setServices(ensureAllServices(rawServices.map(mapPayloadToService)));
+            } finally {
+                setLoading(false);
+            }
+        }
         load();
     }, [empresaId]);
-    function toggleService(type: ServiceType) {
-        setServices((prev) => {
-            const exists = prev.find((s) => s.serviceType === type);
-            if (exists) return prev.filter((s) => s.serviceType !== type);
 
-            return [
-                ...prev,
-                {
-                    id: crypto.randomUUID(),
-                    serviceType: type,
-                    status: 'AVAILABLE',
-                    timing: ['INSTANT'],
-                    hours: [],
-                },
-            ];
-        });
-    }
-
-    function updateService(id: string, data: Partial<ServiceConfig>) {
+    const updateService = useCallback((id: string, data: Partial<ServiceConfig>) => {
         setServices((prev) => prev.map((s) => (s.id === id ? { ...s, ...data } : s)));
-    }
+    }, []);
+
+    const handleSave = async () => {
+        setSaving(true);
+        try {
+            const payload = services.map((s) => mapServiceToPayload(s, empresaId));
+            await saveMerchantServices(payload);
+            alert('Serviços salvos com sucesso');
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const activeService = services.find((s) => s.serviceType === activeTab)!;
 
     return (
-        <div style={{ width: '100%', backgroundColor: 'white', padding: 32, margin: '0 auto', fontFamily: 'sans-serif' }}>
-            <h1>Configuração completa dos serviços</h1>
-
-            <h2>1. Tipos de serviço</h2>
-            <ServiceToggle label="Entrega" active={has(services, 'DELIVERY')} onClick={() => toggleService('DELIVERY')} />
-            <ServiceToggle label="Retirada" active={has(services, 'TAKEOUT')} onClick={() => toggleService('TAKEOUT')} />
-            <ServiceToggle label="Consumo no local" active={has(services, 'INDOOR')} onClick={() => toggleService('INDOOR')} />
-            <Button
-                variant="success"
-                onClick={async () => {
-                    const payload = services.map(s =>
-                        mapServiceToPayload(s, empresaId)
-                    );
-
-                    await saveMerchantServices(payload);
-                    alert('Serviços salvos com sucesso');
-                }}
-            >
-                Salvar configurações
-            </Button>
-
-
-            <hr style={{ margin: '10px 0' }} />
-
-            <div
-                style={{
-                    display: 'grid',
-                    gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: 24,
-                }}
-            >
-                {services.map((service) => (
-                    <ServiceCard merchantConfig={merchantConfig} key={service.id} service={service} onChange={updateService} />
-                ))}
+        <div className={styles.page}>
+            {/* ---- Header ---- */}
+            <div className={styles.pageHeader}>
+                <div>
+                    <h1>Configuração de Serviços</h1>
+                    <p>Configure os canais de atendimento do seu estabelecimento</p>
+                </div>
+                <button
+                    className={styles.saveBtn}
+                    onClick={handleSave}
+                    disabled={saving || loading}
+                    type="button"
+                >
+                    {saving ? '⏳ Salvando…' : '💾 Salvar configurações'}
+                </button>
             </div>
-{/* 
-            <hr style={{ margin: '32px 0' }} />
 
-            <h2>Payload final</h2>
-            <pre style={{ background: '#111', color: '#0f0', padding: 16, borderRadius: 8 }}>
-                {JSON.stringify(services, null, 2)}
-            </pre> */}
+            {/* ---- Tab bar ---- */}
+            <div className={styles.tabBar}>
+                {services.map((service) => {
+                    const { label, emoji }  = SERVICE_META[service.serviceType];
+                    const isActive          = activeTab === service.serviceType;
+                    const isAvailable       = service.status === 'AVAILABLE';
+
+                    return (
+                        <button
+                            key={service.serviceType}
+                            type="button"
+                            className={`${styles.tab} ${isActive ? styles.tabActive : ''}`}
+                            onClick={() => setActiveTab(service.serviceType)}
+                        >
+                            <span className={styles.tabEmoji}>{emoji}</span>
+                            <span className={styles.tabLabel}>{label}</span>
+                            <span className={`${styles.tabDot} ${isAvailable ? styles.dotGreen : styles.dotGray}`} />
+                        </button>
+                    );
+                })}
+            </div>
+
+            {/* ---- Tab content ---- */}
+            {loading ? (
+                <div className={styles.loadingState}>
+                    <span className={styles.spinner} />
+                    <p>Carregando configurações…</p>
+                </div>
+            ) : (
+                <ServiceCard
+                    service={activeService}
+                    onChange={updateService}
+                    merchantConfig={merchantConfig}
+                />
+            )}
         </div>
     );
 }
 
-// ================== COMPONENTS ==================
-function ServiceToggle({ label, active, onClick }: any) {
+// ======================================================
+// SERVICE CARD
+// ======================================================
+function ServiceCard({
+    service,
+    onChange,
+    merchantConfig,
+}: {
+    service: ServiceConfig;
+    onChange: (id: string, data: Partial<ServiceConfig>) => void;
+    merchantConfig?: IMerchantOpenDelivery;
+}) {
+    const { label, emoji, description } = SERVICE_META[service.serviceType];
+    const isAvailable = service.status === 'AVAILABLE';
+
     return (
-        <button
-            onClick={onClick}
-            style={{
-                marginRight: 12,
-                padding: '12px 18px',
-                borderRadius: 8,
-                border: active ? '2px solid #16a34a' : '1px solid #ccc',
-                background: active ? '#dcfce7' : '#fff',
-                cursor: 'pointer',
-            }}
-        >
-            {label}
-        </button>
-    );
-}
+        <div className={styles.card}>
+            {/* Card header */}
+            <div className={styles.cardHeader}>
+                <div className={styles.cardTitle}>
+                    <span className={styles.cardEmoji}>{emoji}</span>
+                    <div>
+                        <strong>{label}</strong>
+                        <span className={styles.cardDesc}>{description}</span>
+                    </div>
+                </div>
 
-function ServiceCard({ service, onChange, merchantConfig }: { service: ServiceConfig; onChange: any, merchantConfig: IMerchantOpenDelivery }) {
-    return (
-        <div style={{ border: '1px solid #ddd', borderRadius: 12, padding: 20, marginBottom: 24 }}>
-            <h3>{service.serviceType}</h3>
-            <Form.Check
-                type="switch"
-                id={`status-${service.id}`}
-                label={service.status === 'AVAILABLE' ? 'Disponível' : 'Indisponível'}
-                checked={service.status === 'AVAILABLE'}
-                onChange={(e) =>
-                    onChange(service.id, {
-                        status: e.target.checked ? 'AVAILABLE' : 'UNAVAILABLE',
-                    })
-                }
-            />
-            {
-                service.status === 'AVAILABLE' ? (
-                    <>
-                        <TimingConfig service={service} onChange={onChange} />
-                        <HoursConfig service={service} onChange={onChange} />
-                        <br />
+                <div className={styles.statusToggleArea}>
+                    <span className={`${styles.statusLabel} ${isAvailable ? styles.statusOn : styles.statusOff}`}>
+                        {isAvailable ? 'Canal ativo' : 'Canal inativo'}
+                    </span>
+                    <label className={styles.switch}>
+                        <input
+                            type="checkbox"
+                            checked={isAvailable}
+                            onChange={(e) =>
+                                onChange(service.id, {
+                                    status: e.target.checked ? 'AVAILABLE' : 'UNAVAILABLE',
+                                })
+                            }
+                        />
+                        <span className={styles.slider} />
+                    </label>
+                </div>
+            </div>
 
-                        {service.serviceType === 'DELIVERY' && <DeliveryAreaConfig merchantConfig={merchantConfig}  service={service} onChange={onChange} />}
-                    </>
+            {/* Body */}
+            <div className={styles.cardBody}>
+                {!isAvailable && (
+                    <div className={styles.inactiveBanner}>
+                        <span>⚠️</span>
+                        <p>Este canal está inativo. Ative-o para liberar as configurações abaixo.</p>
+                    </div>
+                )}
 
-
-                ) : (<></>)
-            }
-
-
-
+                <div className={!isAvailable ? styles.blurred : ''}>
+                    <TimingConfig service={service} onChange={onChange} disabled={!isAvailable} />
+                    <HoursConfig  service={service} onChange={onChange} disabled={!isAvailable} />
+                    {service.serviceType === 'DELIVERY' && merchantConfig && (
+                        <DeliveryAreaConfig
+                            service={service}
+                            onChange={onChange}
+                            merchantConfig={merchantConfig}
+                            disabled={!isAvailable}
+                        />
+                    )}
+                </div>
+            </div>
         </div>
     );
 }
 
-function TimingConfig({ service, onChange }: any) {
+// ======================================================
+// TIMING CONFIG
+// ======================================================
+const TIMING_OPTIONS: { value: TimingType; label: string; hint: string }[] = [
+    { value: 'INSTANT',   label: 'Pedido imediato', hint: 'Confirmado e preparado na hora' },
+    { value: 'SCHEDULED', label: 'Pedido agendado', hint: 'Cliente escolhe data/hora' },
+    { value: 'ONDEMAND',  label: 'Sob demanda',     hint: 'Somente quando disponível' },
+];
+
+function TimingConfig({ service, onChange, disabled }: { service: ServiceConfig; onChange: any; disabled: boolean }) {
+    const [open, setOpen] = useState(true);
+
     function toggleTiming(type: TimingType) {
+        if (disabled) return;
         const exists = service.timing.includes(type);
         const timing = exists
             ? service.timing.filter((t: TimingType) => t !== type)
             : [...service.timing, type];
-
         onChange(service.id, { timing });
     }
 
     return (
-        <Card body className="mt-3 bg-white text-dark border">
-            <h4>Tipos de pedido</h4>
+        <div className={styles.subSection}>
+            <button type="button" className={styles.subSectionHeader} onClick={() => setOpen((o) => !o)}>
+                <span>Tipos de pedido</span>
+                <span className={`${styles.chevron} ${open ? styles.open : ''}`}>▼</span>
+            </button>
 
-            <Stack gap={2}>
-                <Form.Check
-                    type="checkbox"
-                    label="Pedido imediato"
-                    checked={service.timing.includes('INSTANT')}
-                    onChange={() => toggleTiming('INSTANT')}
-                />
+            {open && (
+                <div className={styles.subSectionBody}>
+                    <div className={styles.checkGroup}>
+                        {TIMING_OPTIONS.map(({ value, label, hint }) => (
+                            <label key={value} className={`${styles.checkItem} ${disabled ? styles.checkDisabled : ''}`}>
+                                <input
+                                    type="checkbox"
+                                    checked={service.timing.includes(value)}
+                                    onChange={() => toggleTiming(value)}
+                                    disabled={disabled}
+                                />
+                                <div>
+                                    <span>{label}</span>
+                                    <span className={styles.checkHint}>{hint}</span>
+                                </div>
+                            </label>
+                        ))}
+                    </div>
 
-                <Form.Check
-                    type="checkbox"
-                    label="Pedido agendado"
-                    checked={service.timing.includes('SCHEDULED')}
-                    onChange={() => toggleTiming('SCHEDULED')}
-                />
-
-                <Form.Check
-                    type="checkbox"
-                    label="Pedido sob demanda"
-                    checked={service.timing.includes('ONDEMAND')}
-                    onChange={() => toggleTiming('ONDEMAND')}
-                />
-            </Stack>
-
-            {service.timing.includes('SCHEDULED') && (
-                <div className="mt-3">
-                    <Form.Label>Intervalo de agendamento</Form.Label>
-
-                    <Form.Select
-                        value={service.schedule?.scheduleTimeWindow}
-                        onChange={(e) =>
-                            onChange(service.id, {
-                                schedule: {
-                                    ...service.schedule,
-                                    scheduleTimeWindow: e.target.value,
-                                },
-                            })
-                        }
-                    >
-                        <option value="15_MINUTES">A cada 15 minutos</option>
-                        <option value="30_MINUTES">A cada 30 minutos</option>
-                        <option value="45_MINUTES">A cada 45 minutos</option>
-                        <option value="60_MINUTES">A cada 1 hora</option>
-                    </Form.Select>
+                    {service.timing.includes('SCHEDULED') && !disabled && (
+                        <div className={styles.selectField}>
+                            <label>Intervalo de agendamento</label>
+                            <select
+                                value={service.schedule?.scheduleTimeWindow ?? '30_MINUTES'}
+                                onChange={(e) =>
+                                    onChange(service.id, {
+                                        schedule: { ...service.schedule, scheduleTimeWindow: e.target.value },
+                                    })
+                                }
+                            >
+                                <option value="15_MINUTES">A cada 15 minutos</option>
+                                <option value="30_MINUTES">A cada 30 minutos</option>
+                                <option value="45_MINUTES">A cada 45 minutos</option>
+                                <option value="60_MINUTES">A cada 1 hora</option>
+                            </select>
+                        </div>
+                    )}
                 </div>
             )}
-        </Card>
+        </div>
     );
 }
-export interface IDayConfig {
-    day: number; // 0 = Domingo ... 6 = Sábado
-    ranges: {
-        start: string; // HH:mm
-        end: string;   // HH:mm
-    }[];
-}
 
-function HoursConfig({ service, onChange }: any) {
-    const WEEK_DAYS = [
-        { key: 'SUNDAY', label: 'Domingo' },
-        { key: 'MONDAY', label: 'Segunda' },
-        { key: 'TUESDAY', label: 'Terça' },
-        { key: 'WEDNESDAY', label: 'Quarta' },
-        { key: 'THURSDAY', label: 'Quinta' },
-        { key: 'FRIDAY', label: 'Sexta' },
-        { key: 'SATURDAY', label: 'Sábado' },
-    ];
+// ======================================================
+// HOURS CONFIG
+// ======================================================
+const WEEK_DAYS = [
+    { key: 'SUNDAY',    label: 'Dom' },
+    { key: 'MONDAY',    label: 'Seg' },
+    { key: 'TUESDAY',   label: 'Ter' },
+    { key: 'WEDNESDAY', label: 'Qua' },
+    { key: 'THURSDAY',  label: 'Qui' },
+    { key: 'FRIDAY',    label: 'Sex' },
+    { key: 'SATURDAY',  label: 'Sáb' },
+];
+
+function HoursConfig({ service, onChange, disabled }: { service: ServiceConfig; onChange: any; disabled: boolean }) {
+    const [open, setOpen] = useState(false);
 
     function addHour(day: string) {
+        if (disabled) return;
         onChange(service.id, {
-            hours: [...service.hours, { day, start: '08:00', end: '12:00' }],
+            hours: [...service.hours, { day, start: '08:00', end: '18:00' }],
         });
     }
 
@@ -265,259 +334,134 @@ function HoursConfig({ service, onChange }: any) {
     }
 
     return (
-        <section className="mt-3">
-            <CollapsedDiv title={'Horários de funcionamento'} openned={false}>
-                <Stack gap={2}>
+        <div className={styles.subSection}>
+            <button type="button" className={styles.subSectionHeader} onClick={() => setOpen((o) => !o)}>
+                <span>Horários de funcionamento</span>
+                <span className={`${styles.chevron} ${open ? styles.open : ''}`}>▼</span>
+            </button>
+
+            {open && (
+                <div className={styles.subSectionBody}>
                     {WEEK_DAYS.map((day) => {
                         const dayHours = service.hours
                             .map((h: any, index: number) => ({ ...h, index }))
                             .filter((h: any) => h.day === day.key);
 
                         return (
-                            <Card
-                                key={day.key}
-                                body
-                                style={{
-                                    backgroundColor: 'white',
-                                    padding: 8,
-                                }}
-                            >
-                                <div
-                                    style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        alignItems: 'center',
-                                    }}
-                                >
-                                    <strong style={{ fontSize: 13, color: 'black' }}>
-                                        {day.label}
-                                    </strong>
-
-                                    {dayHours.length === 0 && (
-                                        <Badge bg="secondary" pill>
-                                            Fechado
-                                        </Badge>
-                                    )}
+                            <div key={day.key} className={styles.dayCard}>
+                                <div className={styles.dayHeader}>
+                                    <strong>{day.label}</strong>
+                                    {dayHours.length === 0 && <span className={styles.closedBadge}>Fechado</span>}
                                 </div>
 
-                                <Stack gap={1} className="mt-2">
-                                    {dayHours.map((h: any) => (
-                                        <Stack
-                                            key={h.index}
-                                            direction="horizontal"
-                                            gap={1}
-                                            className="align-items-center"
-                                        >
-                                            <Form.Control
-                                                type="time"
-                                                size="sm"
-                                                value={h.start}
-                                                onChange={(e) =>
-                                                    updateHour(h.index, 'start', e.target.value)
-                                                }
-                                                style={{ maxWidth: 100 }}
-                                            />
+                                {dayHours.map((h: any) => (
+                                    <div key={h.index} className={styles.timeRow}>
+                                        <input type="time" value={h.start} disabled={disabled}
+                                            onChange={(e) => updateHour(h.index, 'start', e.target.value)} />
+                                        <span>–</span>
+                                        <input type="time" value={h.end} disabled={disabled}
+                                            onChange={(e) => updateHour(h.index, 'end', e.target.value)} />
+                                        {!disabled && (
+                                            <button type="button" className={styles.btnRemove} onClick={() => removeHour(h.index)}>✕</button>
+                                        )}
+                                    </div>
+                                ))}
 
-                                            <span style={{ fontSize: 12 }}>–</span>
-
-                                            <Form.Control
-                                                type="time"
-                                                size="sm"
-                                                value={h.end}
-                                                onChange={(e) =>
-                                                    updateHour(h.index, 'end', e.target.value)
-                                                }
-                                                style={{ maxWidth: 100 }}
-                                            />
-
-                                            <Button
-                                                size="sm"
-                                                variant="outline-danger"
-                                                style={{ padding: '2px 6px' }}
-                                                onClick={() => removeHour(h.index)}
-                                            >
-                                                ✕
-                                            </Button>
-                                        </Stack>
-                                    ))}
-                                </Stack>
-
-                                <Button
-                                    size="sm"
-                                    variant="link"
-                                    className="mt-2 p-0"
-                                    onClick={() => addHour(day.key)}
-                                >
-                                    + Adicionar horário
-                                </Button>
-                            </Card>
+                                {!disabled && (
+                                    <button type="button" className={styles.btnLink} onClick={() => addHour(day.key)}>
+                                        + Adicionar horário
+                                    </button>
+                                )}
+                            </div>
                         );
                     })}
-                </Stack>
-            </CollapsedDiv>
-        </section>
+                </div>
+            )}
+        </div>
     );
 }
 
-
-
-function has(list: ServiceConfig[], type: ServiceType) {
-    return list.some((s) => s.serviceType === type);
-}
+// ======================================================
+// DELIVERY AREA CONFIG
+// ======================================================
+const AREA_COLORS = ['#22c55e', '#3b82f6', '#f97316', '#ef4444', '#a855f7'];
 
 function DeliveryAreaConfig({
-    service,
-    onChange,
-    merchantConfig
+    service, onChange, merchantConfig, disabled,
 }: {
     service: ServiceConfig;
     onChange: (id: string, data: Partial<ServiceConfig>) => void;
-    merchantConfig: IMerchantOpenDelivery
+    merchantConfig: IMerchantOpenDelivery;
+    disabled: boolean;
 }) {
-    if(!merchantConfig){
-        return null;
-    }
-    const STORE_LAT =  merchantConfig.latitude ?? -23.55052;
-    const STORE_LNG =  merchantConfig.longitude ??  -46.633308;
-
-    const COLORS = ['#22c55e', '#3b82f6', '#f97316', '#ef4444', '#a855f7'];
+    const [open, setOpen]   = useState(false);
+    const STORE_LAT         = merchantConfig.latitude  ?? -23.55052;
+    const STORE_LNG         = merchantConfig.longitude ?? -46.633308;
 
     function getNextColor() {
-        const index = service.areas?.length ?? 0;
-        return COLORS[index % COLORS.length];
+        return AREA_COLORS[(service.areas?.length ?? 0) % AREA_COLORS.length];
     }
 
     function addArea(area: any) {
-        const newArea = {
-            id: crypto.randomUUID(),
-            color: getNextColor(),
-            price: {
-                value: 0,
-                currency: 'BRL',
-            },
-            estimateDeliveryTime: undefined,
-            ...area,
-        };
-
+        if (disabled) return;
         onChange(service.id, {
-            areas: [...(service.areas ?? []), newArea],
+            areas: [...(service.areas ?? []),
+                { id: crypto.randomUUID(), color: getNextColor(), price: { value: 0, currency: 'BRL' }, estimateDeliveryTime: undefined, ...area }],
         });
     }
 
     function updateArea(areaId: string, data: any) {
-        onChange(service.id, {
-            areas: service.areas?.map((a) =>
-                a.id === areaId ? { ...a, ...data } : a
-            ),
-        });
+        onChange(service.id, { areas: service.areas?.map((a) => (a.id === areaId ? { ...a, ...data } : a)) });
     }
 
     function removeArea(areaId: string) {
-        onChange(service.id, {
-            areas: service.areas?.filter((a) => a.id !== areaId),
-        });
+        onChange(service.id, { areas: service.areas?.filter((a) => a.id !== areaId) });
     }
 
     return (
-        <CollapsedDiv title="Áreas de entrega" openned={false}>
-            <section className="mt-4">
-                {/* MAPA */}
-                <DeliveryAreaMap
-                    storeLat={STORE_LAT}
-                    storeLng={STORE_LNG}
-                    areas={service.areas ?? []}
-                    onAddArea={addArea}
-                />
-                {/* LISTA DE ÁREAS */}
-                {service.areas && service.areas.length > 0 && (
-                    <Card className="mt-3 bg-white text-dark border">
-                        <Card.Body>
-                            {service.areas.map((area, index) => (
-                                <Card key={area.id} className="mb-3">
-                                    <Card.Body>
-                                        <div
-                                            style={{
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                gap: 8,
-                                                marginBottom: 8,
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    width: 14,
-                                                    height: 14,
-                                                    borderRadius: 4,
-                                                    backgroundColor: area.color,
-                                                }}
-                                            />
-                                            <strong>
-                                                Área {index + 1} ({area.type})
-                                            </strong>
-                                        </div>
+        <div className={styles.subSection}>
+            <button type="button" className={styles.subSectionHeader} onClick={() => setOpen((o) => !o)}>
+                <span>Áreas de entrega</span>
+                <span className={`${styles.chevron} ${open ? styles.open : ''}`}>▼</span>
+            </button>
 
-                                        <Form.Group className="mb-2">
-                                            <Form.Label>Preço da entrega</Form.Label>
-                                            <Form.Control
-                                                type="number"
-                                                step="0.01"
-                                                value={area.price.value}
-                                                onChange={(e) =>
-                                                    updateArea(area.id, {
-                                                        price: {
-                                                            ...area.price,
-                                                            value: Number(e.target.value),
-                                                        },
-                                                    })
-                                                }
-                                            />
-                                        </Form.Group>
+            {open && (
+                <div className={styles.subSectionBody}>
+                    <DeliveryAreaMap
+                        storeLat={STORE_LAT}
+                        storeLng={STORE_LNG}
+                        areas={service.areas ?? []}
+                        onAddArea={addArea}
+                    />
 
-                                        <Form.Group className="mb-2">
-                                            <Form.Label>Tempo estimado (min)</Form.Label>
-                                            <Form.Control
-                                                type="number"
-                                                value={area.estimateDeliveryTime ?? ''}
-                                                onChange={(e) =>
-                                                    updateArea(area.id, {
-                                                        estimateDeliveryTime: Number(e.target.value),
-                                                    })
-                                                }
-                                            />
-                                        </Form.Group>
+                    {service.areas?.map((area, index) => (
+                        <div key={area.id} className={styles.areaCard}>
+                            <div className={styles.areaCardHeader}>
+                                <span className={styles.colorDot} style={{ backgroundColor: area.color }} />
+                                <strong>Área {index + 1} ({area.type})</strong>
+                            </div>
 
-                                        <Button
-                                            size="sm"
-                                            variant="outline-danger"
-                                            onClick={() => removeArea(area.id)}
-                                        >
-                                            Remover área
-                                        </Button>
-                                    </Card.Body>
-                                </Card>
-                            ))}
-                        </Card.Body>
-                    </Card>
-                )}
+                            <div className={styles.formField}>
+                                <label>Preço da entrega (R$)</label>
+                                <input type="number" step="0.01" min="0" disabled={disabled} value={area.price.value}
+                                    onChange={(e) => updateArea(area.id, { price: { ...area.price, value: Number(e.target.value) } })} />
+                            </div>
 
-                {/* DEBUG */}
-                {/* {service.areas && (
-                    <pre
-                        style={{
-                            marginTop: 12,
-                            background: '#111',
-                            color: '#0f0',
-                            padding: 12,
-                            borderRadius: 8,
-                            fontSize: 12,
-                        }}
-                    >
-                        {JSON.stringify(service.areas, null, 2)}
-                    </pre>
-                )} */}
-            </section>
-        </CollapsedDiv>
+                            <div className={styles.formField}>
+                                <label>Tempo estimado (min)</label>
+                                <input type="number" min="0" disabled={disabled} value={area.estimateDeliveryTime ?? ''}
+                                    onChange={(e) => updateArea(area.id, { estimateDeliveryTime: Number(e.target.value) })} />
+                            </div>
 
+                            {!disabled && (
+                                <button type="button" className={styles.btnDanger} onClick={() => removeArea(area.id)}>
+                                    Remover área
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
     );
 }
-

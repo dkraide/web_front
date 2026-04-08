@@ -8,7 +8,15 @@ import { useWindowSize } from "rooks";
 import XLSX from 'sheetjs-style';
 
 
-
+export function searchHelper(searchString: string, searchData: string): boolean {
+  if (!searchString?.trim()) return true
+ 
+  const target = searchData?.toLowerCase() ?? ''
+  const terms  = searchString.toLowerCase().trim().split(/\s+/)
+ 
+  return terms.every(term => target.includes(term))
+}
+ 
 export const fValidateNumer = (value) => {
     return !isNaN(value.replace(',', '.'));
 }

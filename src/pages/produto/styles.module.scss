@@ -1,3 +1,210 @@
-.container{
-    padding: 10px;
+.container {
+  padding: 1.25rem;
+  background: var(--background);
+  min-height: 100%;
+}
+
+// ── Header ───────────────────────────────────────────────
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 1.25rem;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--dark-900);
+  margin: 0;
+  padding-top: 4px;
+}
+
+.headerActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+
+// ── Botões de ação ───────────────────────────────────────
+.actionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0d8e1;
+  background: var(--white);
+  color: #6b5d70;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+
+  svg {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  &:hover {
+    border-color: var(--main-light);
+    color: var(--main);
+
+    svg {
+      opacity: 1;
+    }
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.actionBtnIa {
+  background: linear-gradient(135deg, #f5f2ff 0%, #fff4f6 100%);
+  border-color: #d4cef8;
+  color: #534AB7;
+
+  &:hover {
+    border-color: var(--main);
+    color: var(--main);
+    background: #fff4f6;
+  }
+}
+
+// ── Barra de busca ───────────────────────────────────────
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 220px;
+  max-width: 420px;
+}
+
+.counter {
+  font-size: 12px;
+  color: #9a8d9e;
+  white-space: nowrap;
+}
+
+// ── Divisor ──────────────────────────────────────────────
+.divider {
+  border: none;
+  border-top: 1px solid #e8e0ea;
+  margin: 1rem 0;
+}
+
+// ── Célula de imagem ─────────────────────────────────────
+.imgCell {
+  cursor: pointer;
+  padding: 4px 0;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+.produtoImg {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ede6ee;
+}
+
+// ── Botão de editar inline ───────────────────────────────
+.editBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid #ede6ee;
+  background: var(--white);
+  color: #9a8d9e;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: var(--main-light);
+    color: var(--main);
+  }
+}
+
+// ── Botão de estoque inline ──────────────────────────────
+.estoqueBtn {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--main);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    color: var(--main-light);
+  }
+}
+
+// ── Badges ───────────────────────────────────────────────
+.badgeAtivo {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 9px;
+  border-radius: 99px;
+  background: #eaf5f0;
+  color: #3d7a5c;
+}
+
+.badgeInativo {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 9px;
+  border-radius: 99px;
+  background: #f2edf3;
+  color: #9a8d9e;
+}
+
+.badgeSuccess {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 9px;
+  border-radius: 99px;
+  background: #eaf5f0;
+  color: #3d7a5c;
+}
+
+.badgeDanger {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 9px;
+  border-radius: 99px;
+  background: #fceaea;
+  color: var(--danger);
+}
+
+.badgeNeutro {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 9px;
+  border-radius: 99px;
+  background: #f2edf3;
+  color: #6b5d70;
 }
