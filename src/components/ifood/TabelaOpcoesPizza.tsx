@@ -1,5 +1,5 @@
 import { FiTrash2, FiPlus } from "react-icons/fi";
-import styles from "./tabelaOpcoesPizza.module.scss";
+import styles from "./TabelaOpcoesPizza.module.scss";
 
 export interface OpcaoPizzaForm {
   id: string;
