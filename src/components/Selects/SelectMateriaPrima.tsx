@@ -9,7 +9,7 @@ import IMateriaPrima from "@/interfaces/IMateriaPrima";
 
 interface selProps{
     selected: number;
-    setSelected: (value: any) => void;
+    setSelected: (value: IMateriaPrima) => void;
     width?: string;
     empresaId?: number;
     ignore?: number[];
