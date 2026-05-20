@@ -147,6 +147,7 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem href={'/promocao/tabelaPreco'}> Tabela de Preco</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCalculator} color={'var(--main)'} />} label="Financeiro">
+                                     <MenuItem href={'/financeiro'}>Minhas Faturas {bgNew()}</MenuItem>
                                     <MenuItem href={'/motivoLancamento'}>Motivo de Lancamento</MenuItem>
                                     <MenuItem href={'/despesa'}>Despesas</MenuItem>
                                     <MenuItem href={'/entrada'}>Entradas</MenuItem>

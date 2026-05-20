@@ -1,0 +1,691 @@
+// ─── Variáveis locais ─────────────────────────────────────────────────────────
+$red: #e4004e;
+$border: #e8e8e8;
+$text: var(--dark-900);
+$gray: #888;
+$bg: var(--background);
+$white: var(--white);
+
+// ─── Página ───────────────────────────────────────────────────────────────────
+
+.page {
+  min-height: 100vh;
+  background: $bg;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 32px;
+  background: $white;
+  border-bottom: 1px solid $border;
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: none;
+  color: $text;
+  cursor: pointer;
+  &:hover { background: $bg; }
+}
+
+.topTitulo {
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray;
+}
+
+.body {
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.titulo {
+  font-size: 22px;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 20px;
+}
+
+// ─── Abas ─────────────────────────────────────────────────────────────────────
+
+.abas {
+  display: flex;
+  border-bottom: 2px solid $border;
+  gap: 0;
+  margin-bottom: 28px;
+}
+
+.aba {
+  padding: 10px 18px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: $gray;
+  cursor: pointer;
+  transition: color 0.15s;
+  &:hover { color: $text; }
+}
+
+.abaAtiva {
+  color: $red;
+  border-bottom-color: $red;
+}
+
+// ─── Step content ─────────────────────────────────────────────────────────────
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stepHead { margin-bottom: 4px; }
+
+.stepTitulo {
+  font-size: 18px;
+  font-weight: 700;
+  color: $text;
+  margin: 0 0 4px;
+}
+
+.stepDesc {
+  font-size: 13px;
+  color: $gray;
+  margin: 0;
+  line-height: 1.5;
+}
+
+// ─── Formulário genérico ──────────────────────────────────────────────────────
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 560px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  color: $text;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: $text;
+  background: $white;
+  outline: none;
+  &:focus { border-color: $text; }
+  &::placeholder { color: #bbb; }
+}
+
+.select {
+  padding: 10px 12px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 14px;
+  color: $text;
+  background: $white;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  &:focus { border-color: $text; }
+}
+
+.charCount {
+  font-size: 11px;
+  color: #bbb;
+  text-align: right;
+}
+
+// ─── Tipo da categoria ────────────────────────────────────────────────────────
+
+.tipoBox {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border: 1px solid $border;
+  border-radius: 6px;
+  background: $white;
+}
+
+.tipoIcon { font-size: 18px; }
+
+.tipoNome {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: $text;
+}
+
+.tipoAlterar {
+  font-size: 13px;
+  color: $red;
+  cursor: pointer;
+  font-weight: 500;
+  &:hover { text-decoration: underline; }
+}
+
+// ─── Tamanhos ─────────────────────────────────────────────────────────────────
+
+.tamanhosList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tamanhoRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f5f5f5;
+  &:last-child { border-bottom: none; }
+}
+
+.tamanhoImgBox {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  border: 1.5px dashed #ccc;
+  background: #fafafa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: border-color 0.15s;
+  &:hover { border-color: $text; }
+}
+
+.tamanhoImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tamanhoImgIcon { color: #bbb; }
+
+.tamanhoLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: $gray;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.tamanhoField {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.tamanhoFieldSm {
+  width: 110px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tamanhoFieldFracoes {
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.tamanhoInput {
+  padding: 9px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 13px;
+  color: $text;
+  background: $white;
+  outline: none;
+  width: 100%;
+  &:focus { border-color: $text; }
+  &::placeholder { color: #bbb; }
+}
+
+.fracoesRow {
+  display: flex;
+  gap: 6px;
+  margin-top: 2px;
+}
+
+.fracaoBtn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1.5px solid $border;
+  background: $white;
+  font-size: 13px;
+  font-weight: 600;
+  color: $gray;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover { border-color: $red; color: $red; }
+}
+
+.fracaoBtnAtivo {
+  background: $red;
+  border-color: $red;
+  color: $white;
+}
+
+.btnRemoverTamanho {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: $white;
+  color: $red;
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-bottom: 1px;
+  &:hover { background: #fdeaea; }
+}
+
+.btnAdicionarTamanho {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 0;
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: $red;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+
+// ─── Dica de foto ─────────────────────────────────────────────────────────────
+
+.dicaFotoBox {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: #fafafa;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 20px;
+  margin-top: 4px;
+}
+
+.dicaFotoPreview { flex-shrink: 0; }
+
+.dicaFotoCard {
+  width: 200px;
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: relative;
+}
+
+.dicaFotoCardLabel {
+  font-size: 12px;
+  font-weight: 700;
+  color: $text;
+  margin: 0;
+}
+
+.dicaFotoCardSub {
+  font-size: 11px;
+  font-weight: 600;
+  color: $gray;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin: 0;
+}
+
+.dicaFotoCardPreco {
+  font-size: 11px;
+  color: $gray;
+  margin: 0;
+}
+
+.dicaFotoPlaceholder {
+  width: 64px;
+  height: 64px;
+  border: 2px dashed #ccc;
+  border-radius: 6px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.dicaFotoTexto { flex: 1; }
+
+.dicaFotoPergunta {
+  font-size: 14px;
+  font-weight: 600;
+  color: $text;
+  margin: 0 0 6px;
+}
+
+.dicaFotoDesc {
+  font-size: 12px;
+  color: $gray;
+  line-height: 1.6;
+  margin: 0;
+  strong { color: $text; font-weight: 600; }
+}
+
+// ─── Cards resumo de tamanho ──────────────────────────────────────────────────
+
+.tamanhoCardsTitulo {
+  h3 {
+    font-size: 15px;
+    font-weight: 600;
+    color: $text;
+    margin: 0;
+  }
+}
+
+.tamanhosCards {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.tamanhoCard {
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 20px 16px;
+  background: $white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 150px;
+  text-align: center;
+}
+
+.tamanhoCardIcon { font-size: 40px; }
+
+.tamanhoCardNome {
+  font-size: 14px;
+  font-weight: 700;
+  color: $text;
+  margin: 0;
+}
+
+.tamanhoCardInfo {
+  font-size: 12px;
+  color: $gray;
+  margin: 0;
+}
+
+.tamanhoCardStatus {
+  font-size: 12px;
+  color: $gray;
+  margin: 4px 0 0;
+}
+
+// ─── Toggle (usado nos cards de resumo) ───────────────────────────────────────
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  cursor: pointer;
+  input { opacity: 0; width: 0; height: 0; }
+}
+
+.toggleSlider {
+  position: absolute;
+  inset: 0;
+  background: #ccc;
+  border-radius: 22px;
+  transition: background 0.2s;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: $white;
+    left: 3px;
+    top: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+}
+
+.toggle input:checked + .toggleSlider {
+  background: $red;
+  &::before { transform: translateX(18px); }
+}
+
+// ─── Disponibilidade ──────────────────────────────────────────────────────────
+
+.disponibilidadeSubtitulo {
+  font-size: 15px;
+  font-weight: 600;
+  color: $text;
+  margin: 0;
+}
+
+.radioCard {
+  border: 1px solid $border;
+  border-radius: 8px;
+  overflow: hidden;
+  background: $white;
+}
+
+.radioOpt {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  cursor: pointer;
+  border-bottom: 1px solid #f5f5f5;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: #fafafa; }
+
+  input[type="radio"] {
+    margin-top: 2px;
+    accent-color: $red;
+    flex-shrink: 0;
+  }
+}
+
+.radioLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: $text;
+  margin: 0 0 2px;
+}
+
+.radioDesc {
+  font-size: 12px;
+  color: $gray;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.horarioBox {
+  border: 1px solid $border;
+  border-radius: 8px;
+  padding: 18px;
+  background: #f9f9f9;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.diasRow {
+  display: flex;
+  gap: 8px;
+}
+
+.diaBtn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1.5px solid $border;
+  background: $white;
+  font-size: 12px;
+  font-weight: 700;
+  color: $gray;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  &:hover { border-color: $red; color: $red; }
+}
+
+.diaBtnAtivo {
+  background: $red;
+  border-color: $red;
+  color: $white;
+}
+
+.turnosHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.turnosLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: $text;
+}
+
+.btnAdicionarTurno {
+  background: none;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: $red;
+  cursor: pointer;
+  &:hover { text-decoration: underline; }
+}
+
+.turnoRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.turnoNum {
+  font-size: 13px;
+  color: $gray;
+  white-space: nowrap;
+  min-width: 60px;
+}
+
+.turnoSelect {
+  padding: 8px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 13px;
+  color: $text;
+  background: $white;
+  outline: none;
+  cursor: pointer;
+  &:focus { border-color: $text; }
+}
+
+// ─── Navegação inferior ───────────────────────────────────────────────────────
+
+.navFooter {
+  display: flex;
+  align-items: center;
+  padding-top: 24px;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.btnPri {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 24px;
+  border-radius: 6px;
+  border: none;
+  background: $red;
+  color: $white;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover:not(:disabled) { opacity: 0.85; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.btnSec {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: none;
+  color: $text;
+  font-size: 14px;
+  cursor: pointer;
+  &:hover { background: $bg; }
+}
+
+// ─── Erro ─────────────────────────────────────────────────────────────────────
+
+.erro {
+  font-size: 13px;
+  color: var(--danger);
+  background: #fdeaea;
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin: 0;
+}

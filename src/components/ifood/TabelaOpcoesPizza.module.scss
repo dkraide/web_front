@@ -1,0 +1,204 @@
+// ─── Variáveis locais ─────────────────────────────────────────────────────────
+$red: #e4004e;
+$border: #e8e8e8;
+$text: var(--dark-900);
+$gray: #888;
+$white: var(--white);
+
+// ─── Wrapper ─────────────────────────────────────────────────────────────────
+
+.tabelaWrapper {
+  border: 1px solid $border;
+  border-radius: 8px;
+  overflow: hidden;
+  background: $white;
+}
+
+// ─── Header ───────────────────────────────────────────────────────────────────
+
+.tabelaHeader {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  background: #fafafa;
+  border-bottom: 1px solid $border;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $gray;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// ─── Row ──────────────────────────────────────────────────────────────────────
+
+.tabelaRow {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  gap: 12px;
+  border-bottom: 1px solid #f5f5f5;
+
+  &:last-of-type { border-bottom: none; }
+  &:hover { background: #fafafa; }
+}
+
+// ─── Colunas (compartilhadas entre header e row) ──────────────────────────────
+
+.colNome {
+  flex: 3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.colPreco  { flex: 1.2; }
+.colStatus { flex: 1.2; display: flex; align-items: center; }
+.colCod    { flex: 1.2; }
+.colAcao   { width: 32px; flex-shrink: 0; }
+
+// ─── Drag handle ─────────────────────────────────────────────────────────────
+
+.dragHandle {
+  color: #ccc;
+  font-size: 16px;
+  cursor: grab;
+  flex-shrink: 0;
+  user-select: none;
+  &:active { cursor: grabbing; }
+}
+
+// ─── Inputs ───────────────────────────────────────────────────────────────────
+
+.tabelaInput {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 13px;
+  color: $text;
+  background: $white;
+  outline: none;
+  min-width: 0;
+  &:focus { border-color: $text; }
+  &::placeholder { color: #bbb; }
+}
+
+.precoInput {
+  display: flex;
+  align-items: center;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  overflow: hidden;
+  &:focus-within { border-color: $text; }
+}
+
+.precoPrefix {
+  padding: 0 8px;
+  font-size: 12px;
+  color: $gray;
+  background: #f5f5f5;
+  border-right: 1px solid #d0d0d0;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.tabelaInputPreco {
+  flex: 1;
+  padding: 8px;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: $text;
+  background: transparent;
+  min-width: 0;
+  &::placeholder { color: #bbb; }
+}
+
+.tabelaInputCod {
+  padding: 8px 10px;
+  border: 1px solid #d0d0d0;
+  border-radius: 6px;
+  font-size: 13px;
+  color: $text;
+  background: $white;
+  outline: none;
+  width: 100%;
+  &:focus { border-color: $text; }
+  &::placeholder { color: #bbb; }
+}
+
+// ─── Toggle switch ────────────────────────────────────────────────────────────
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  cursor: pointer;
+  input { opacity: 0; width: 0; height: 0; }
+}
+
+.toggleSlider {
+  position: absolute;
+  inset: 0;
+  background: #ccc;
+  border-radius: 22px;
+  transition: background 0.2s;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: $white;
+    left: 3px;
+    top: 3px;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+}
+
+.toggle input:checked + .toggleSlider {
+  background: $red;
+  &::before { transform: translateX(18px); }
+}
+
+// ─── Botão remover linha ──────────────────────────────────────────────────────
+
+.btnRemover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid $border;
+  background: $white;
+  color: $red;
+  cursor: pointer;
+  flex-shrink: 0;
+  &:hover { background: #fdeaea; }
+}
+
+// ─── Botão adicionar linha ────────────────────────────────────────────────────
+
+.btnAdicionar {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 12px 14px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1.5px solid $red;
+  background: none;
+  color: $red;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover { background: #fdeaea; }
+}

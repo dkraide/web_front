@@ -10,7 +10,7 @@ import { SelectInstance } from "react-select";
 
 interface selProps {
     selected: number;
-    setSelected: (value: any) => void;
+    setSelected: (value: IProduto) => void;
     width?: string;
     ignore?: number[];
     id?: string

@@ -25,7 +25,6 @@ import Vendas from '@/components/PDV/Vendas';
 import Sangrias from '@/components/PDV/Sangrias';
 
 
-
 export default function Pdv() {
 
     const [user, setUser] = useState<IUsuario>()
