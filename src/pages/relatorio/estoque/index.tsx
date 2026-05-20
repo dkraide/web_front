@@ -258,7 +258,7 @@ export default function RelatorioEstoque() {
                 <SelectClasseMaterial
                     width={isMobile ? '100%' : '300px'}
                     selected={search.classeId}
-                    setSelected={v => setSearch(prev => ({ ...prev, classeId: v }))}
+                    setSelected={v => setSearch(prev => ({ ...prev, classeId: v.id }))}
                 />
                 <CustomButton onClick={() => { loadData(); }} typeButton="dark" style={{ marginBottom: 10 }}>
                     Pesquisar
