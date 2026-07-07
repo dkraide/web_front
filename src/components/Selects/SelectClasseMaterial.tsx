@@ -9,7 +9,7 @@ import _ from "lodash";
 
 interface selProps{
     selected: number;
-    setSelected: (value: any) => void;
+    setSelected: (value?: IClasseMaterial) => void;
     width?: string;
     empresaId?: number
     error?: string

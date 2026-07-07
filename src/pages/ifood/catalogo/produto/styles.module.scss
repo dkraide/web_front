@@ -1,0 +1,964 @@
+// ── Loading ───────────────────────────────────────────────────────────────────
+
+.loadingPage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  gap: 12px;
+  color: #888;
+  font-size: 14px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 0.9s linear infinite;
+}
+
+// ── Layout da página ──────────────────────────────────────────────────────────
+
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--background, #f7f7f7);
+}
+
+.topBar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 32px;
+  background: var(--white);
+  border-bottom: 1px solid #ebebeb;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: none;
+  color: var(--dark-900);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover { background: var(--background); }
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.breadcrumbItem {
+  color: #888;
+  cursor: pointer;
+  &:hover { color: var(--dark-900); text-decoration: underline; }
+}
+
+.breadcrumbSep { color: #ccc; }
+
+.breadcrumbAtivo {
+  color: var(--dark-900);
+  font-weight: 500;
+}
+
+// ── Dois painéis ──────────────────────────────────────────────────────────────
+
+.layout {
+  display: flex;
+  flex: 1;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 32px 24px;
+  gap: 32px;
+  align-items: flex-start;
+}
+
+// ── Sidebar ───────────────────────────────────────────────────────────────────
+
+.sidebar {
+  width: 210px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.pageTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--dark-900);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: none;
+  background: none;
+  cursor: default;
+  text-align: left;
+  width: 100%;
+  transition: background 0.15s;
+}
+
+.stepDone {
+  cursor: pointer;
+  &:hover { background: #f0f0f0; }
+}
+
+.stepAtivo {
+  background: var(--dark-900) !important;
+  .stepNum { background: var(--white); color: var(--dark-900); }
+  .stepLabel { color: var(--white); font-weight: 600; }
+}
+
+.stepNum {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #e8e8e8;
+  color: #888;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+
+  .stepDone & {
+    background: var(--dark-900);
+    color: var(--white);
+  }
+}
+
+.stepLabel {
+  font-size: 13px;
+  color: #888;
+
+  .stepDone & { color: var(--dark-900); }
+}
+
+// ── Main ──────────────────────────────────────────────────────────────────────
+
+.main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.stepContent {
+  background: var(--white);
+  border-radius: 14px;
+  border: 1px solid #ebebeb;
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.stepHead {
+  margin-bottom: 4px;
+}
+
+.stepTitulo {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--dark-900);
+  margin: 0 0 4px;
+}
+
+.stepDesc {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
+}
+
+// ── Step 1: Tipo ──────────────────────────────────────────────────────────────
+
+.tiposGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.tipoCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 22px;
+  border-radius: 12px;
+  border: 2px solid #e8e8e8;
+  background: var(--white);
+  cursor: pointer;
+  text-align: left;
+  color: var(--dark-900);
+  transition: border-color 0.2s, box-shadow 0.2s;
+
+  &:hover { border-color: var(--dark-900); }
+}
+
+.tipoCardAtivo {
+  border-color: var(--dark-900);
+  background: #f9f9f9;
+}
+
+.tipoLabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--dark-900);
+}
+
+.tipoDesc {
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+.tipoCheck {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--dark-900);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ── Formulário ────────────────────────────────────────────────────────────────
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-900);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.labelOpt {
+  font-weight: 400;
+  text-transform: none;
+  color: #aaa;
+  letter-spacing: 0;
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--dark-900);
+  background: var(--white);
+  outline: none;
+
+  &:focus { border-color: var(--dark-900); }
+  &::placeholder { color: #ccc; }
+}
+
+.inputSm {
+  width: 80px;
+  padding: 9px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--dark-900);
+  background: var(--white);
+  outline: none;
+  &:focus { border-color: var(--dark-900); }
+}
+
+.textarea {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--dark-900);
+  background: var(--white);
+  outline: none;
+  resize: vertical;
+  min-height: 88px;
+  font-family: inherit;
+
+  &:focus { border-color: var(--dark-900); }
+  &::placeholder { color: #ccc; }
+}
+
+.select {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--dark-900);
+  background: var(--white);
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  &:focus { border-color: var(--dark-900); }
+}
+
+.charCount {
+  font-size: 11px;
+  color: #bbb;
+  text-align: right;
+  margin-top: -2px;
+}
+
+.fieldHint {
+  font-size: 11px;
+  color: #aaa;
+  line-height: 1.5;
+}
+
+.erro {
+  font-size: 12px;
+  color: var(--danger, #e53935);
+}
+
+.erroGlobal {
+  font-size: 13px;
+  color: var(--danger, #e53935);
+  background: #fdeaea;
+  padding: 10px 14px;
+  border-radius: 8px;
+  margin: 0;
+}
+
+// Imagem
+.imgPreviewRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.imgPreview {
+  width: 72px;
+  height: 72px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e8e8e8;
+}
+
+.btnTrocar {
+  font-size: 12px;
+  color: #555;
+  padding: 6px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  &:hover { background: var(--background); }
+}
+
+.btnUpload {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 16px;
+  border-radius: 8px;
+  border: 1.5px solid var(--dark-900);
+  background: none;
+  color: var(--dark-900);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  width: fit-content;
+  &:hover { background: var(--background); }
+}
+
+// Destaque box
+.destaqueBox {
+  border: 1px solid #e8e8e8;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.destaqueTop {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  background: #f9f9f9;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.destaqueRocket { font-size: 20px; flex-shrink: 0; }
+
+.destaqueTitulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark-900);
+  margin: 0 0 2px;
+}
+
+.destaqueSubtitle {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.destaqueSection {
+  padding: 14px 16px;
+  border-bottom: 1px solid #f5f5f5;
+  &:last-child { border-bottom: none; }
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sectionTag {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #888;
+  margin: 0;
+}
+
+.sectionSubtext {
+  font-size: 12px;
+  color: #aaa;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.tagsRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag {
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid #e0e0e0;
+  background: var(--white);
+  font-size: 12px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.15s;
+  &:hover { border-color: var(--dark-900); color: var(--dark-900); }
+}
+
+.tagAtivo {
+  border-color: var(--dark-900);
+  background: var(--dark-900);
+  color: var(--white);
+}
+
+.tamanhoRow {
+  display: flex;
+  gap: 16px;
+}
+
+.inputGroup {
+  display: flex;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  &:focus-within { border-color: var(--dark-900); }
+}
+
+.inputInline {
+  flex: 1;
+  padding: 8px 10px;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--dark-900);
+  background: transparent;
+  min-width: 0;
+}
+
+.selectInline {
+  padding: 8px 6px;
+  border: none;
+  border-left: 1px solid #e0e0e0;
+  background: #fafafa;
+  font-size: 12px;
+  color: #666;
+  outline: none;
+  cursor: pointer;
+}
+
+// ── Step 3: Complementos ──────────────────────────────────────────────────────
+
+.acoesGrupo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.btnOpcao {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1.5px dashed #d0d0d0;
+  background: none;
+  cursor: pointer;
+  text-align: left;
+  color: var(--dark-900);
+  transition: border-color 0.15s, background 0.15s;
+
+  &:hover:not(:disabled) { border-color: var(--dark-900); background: #fafafa; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.btnOpcaoIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #f0f0f0;
+  flex-shrink: 0;
+  color: var(--dark-900);
+}
+
+.btnOpcaoLabel {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-900);
+  margin: 0 0 3px;
+}
+
+.btnOpcaoDesc {
+  font-size: 11px;
+  color: #888;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.gruposList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.grupoCard {
+  border: 1px solid #e8e8e8;
+  border-radius: 10px;
+  padding: 14px;
+  background: #fafafa;
+}
+
+.grupoCardTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.grupoNome {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark-900);
+  margin: 0 0 2px;
+}
+
+.grupoMeta {
+  font-size: 11px;
+  color: #888;
+  margin: 0;
+}
+
+.btnDelGrupo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: var(--white);
+  color: var(--danger, #e53935);
+  cursor: pointer;
+  flex-shrink: 0;
+  &:hover { background: #fdeaea; }
+}
+
+.grupoTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.grupoTag {
+  font-size: 11px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: #ececec;
+  color: #555;
+}
+
+.vazio {
+  font-size: 12px;
+  color: #bbb;
+  padding: 16px 0;
+  margin: 0;
+}
+
+// ── Step 4: Preço ─────────────────────────────────────────────────────────────
+
+.precosRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.inputPrefix {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  &:focus-within { border-color: var(--dark-900); }
+}
+
+.prefix {
+  padding: 0 10px;
+  font-size: 13px;
+  color: #888;
+  border-right: 1px solid #e0e0e0;
+  background: #f9f9f9;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.inputPrefixed {
+  flex: 1;
+  padding: 10px 10px;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  color: var(--dark-900);
+  background: transparent;
+  &::placeholder { color: #ccc; }
+}
+
+// ── Footer de navegação ───────────────────────────────────────────────────────
+
+.navFooter {
+  display: flex;
+  align-items: center;
+  padding: 20px 0 0;
+  gap: 10px;
+}
+
+.btnPri {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 22px;
+  border-radius: 8px;
+  border: none;
+  background: var(--dark-900);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+
+  &:hover:not(:disabled) { opacity: 0.82; }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+.btnSec {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: none;
+  color: var(--dark-900);
+  font-size: 13px;
+  cursor: pointer;
+  &:hover { background: var(--background); }
+}
+
+// ── Sub-modal (criar grupo) ───────────────────────────────────────────────────
+
+.subOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+
+.subModal {
+  background: var(--white);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+}
+
+.subHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 20px 20px 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.subTitulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--dark-900);
+  margin: 0 0 2px;
+}
+
+.subSubtitle {
+  font-size: 12px;
+  color: #999;
+  margin: 0;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  border: 1px solid #e8e8e8;
+  background: none;
+  color: #666;
+  cursor: pointer;
+  font-size: 14px;
+  flex-shrink: 0;
+  &:hover { background: var(--background); color: var(--dark-900); }
+}
+
+.subStepBar {
+  display: flex;
+  gap: 3px;
+  padding: 0 20px 12px;
+  background: var(--white);
+}
+
+.subStepSeg {
+  height: 3px;
+  flex: 1;
+  border-radius: 2px;
+  background: #e8e8e8;
+  transition: background 0.2s;
+}
+
+.subStepSegAtivo {
+  background: var(--dark-900);
+}
+
+.subBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.subDesc {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+.subFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid #f0f0f0;
+}
+
+// tipos do grupo (sub-modal step 1)
+.tiposGrupoGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.tipoGrupoCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1.5px solid #e8e8e8;
+  background: var(--white);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s;
+  &:hover { border-color: var(--dark-900); }
+}
+
+.tipoGrupoAtivo {
+  border-color: var(--dark-900);
+  background: #f9f9f9;
+}
+
+.tgIcon { font-size: 18px; }
+.tgLabel { font-size: 13px; font-weight: 600; color: var(--dark-900); }
+.tgDesc { font-size: 11px; color: #888; line-height: 1.4; }
+
+.tgCheck {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--dark-900);
+  color: var(--white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Sub step 2
+.fieldRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 16px;
+}
+
+.radioOpt {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--dark-900);
+  cursor: pointer;
+  input { accent-color: var(--dark-900); }
+}
+
+.qtdRow {
+  display: flex;
+  gap: 16px;
+}
+
+// Sub step 3
+.addCompRow {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.btnAdd {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: none;
+  background: var(--dark-900);
+  color: var(--white);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  &:hover { opacity: 0.85; }
+}
+
+.compList {
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.compItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #f5f5f5;
+  &:last-child { border-bottom: none; }
+  span:first-child { flex: 1; font-size: 13px; color: var(--dark-900); }
+}
+
+.compPreco {
+  font-size: 12px;
+  color: #888;
+  white-space: nowrap;
+}
+
+.btnDel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  border: 1px solid #e0e0e0;
+  background: var(--white);
+  color: var(--danger, #e53935);
+  cursor: pointer;
+  &:hover { background: #fdeaea; }
+}

@@ -1,0 +1,403 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+// ── Abas ─────────────────────────────────────────────────────────────────────
+
+.abas {
+  display: flex;
+  border-bottom: 2px solid #f0f0f0;
+  padding: 0 24px;
+  gap: 0;
+}
+
+.aba {
+  padding: 14px 16px;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #888;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  &:hover { color: var(--dark-900); }
+}
+
+.abaAtiva {
+  color: var(--danger, #e63946);
+  border-bottom-color: var(--danger, #e63946);
+  font-weight: 600;
+}
+
+// ── Conteúdo da aba ───────────────────────────────────────────────────────────
+
+.abaContent {
+  padding: 24px;
+  min-height: 360px;
+}
+
+// ── Aba Detalhes ──────────────────────────────────────────────────────────────
+
+.detalhesGrid {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 32px;
+}
+
+.detalhesLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detalhesRight {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark-900);
+}
+
+.input {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--dark-900);
+  background: var(--white);
+  outline: none;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: var(--dark-900); }
+  &::placeholder { color: #bbb; }
+}
+
+.inputSm {
+  composes: input;
+  max-width: 180px;
+}
+
+.textarea {
+  padding: 10px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 14px;
+  color: var(--dark-900);
+  background: var(--white);
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  transition: border-color 0.15s;
+
+  &:focus { border-color: var(--dark-900); }
+  &::placeholder { color: #bbb; }
+}
+
+.charCount {
+  font-size: 11px;
+  color: #bbb;
+  text-align: right;
+}
+
+// ── Imagem ────────────────────────────────────────────────────────────────────
+
+.imagemBox {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.imagemPlaceholder {
+  width: 100%;
+  aspect-ratio: 4/3;
+  background: #f5f5f5;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.imagemPlaceholderIcon {
+  font-size: 48px;
+  opacity: 0.3;
+}
+
+.imagemPreview {
+  width: 100%;
+  aspect-ratio: 4/3;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.btnEscolherImagem {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--danger, #e63946);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--danger, #e63946);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover { background: #fdeaea; }
+}
+
+.dicaImagem {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid #f0f0f0;
+}
+
+.dicaImagemTitulo {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-900);
+  margin: 0 0 4px;
+}
+
+.dicaImagemDesc {
+  font-size: 12px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+// ── Aba Preço ─────────────────────────────────────────────────────────────────
+
+.semTamanhos {
+  font-size: 13px;
+  color: #888;
+  text-align: center;
+  padding: 40px 0;
+}
+
+.tamanhosPrecoList {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.tamanhoPrecoItem {
+  padding: 24px 0;
+  border-bottom: 1px solid #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  &:last-child { border-bottom: none; }
+}
+
+.tamanhoPrecoHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.tamanhoPrecoIcon {
+  font-size: 28px;
+}
+
+.tamanhoPrecoNome {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dark-900);
+}
+
+.tamanhoPrecoFields {
+  display: flex;
+  align-items: flex-end;
+  gap: 24px;
+}
+
+.tamanhoPrecoField {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.precoInputWrapper {
+  display: flex;
+  align-items: center;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--white);
+  transition: border-color 0.15s;
+
+  &:focus-within { border-color: var(--dark-900); }
+}
+
+.prefixo {
+  padding: 10px 10px 10px 12px;
+  font-size: 13px;
+  color: #888;
+  background: #f8f8f8;
+  border-right: 1px solid #e0e0e0;
+}
+
+.precoInput {
+  padding: 10px 12px;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: var(--dark-900);
+  width: 100px;
+  background: transparent;
+}
+
+.tamanhoPrecoToggle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+
+// ── Toggle ────────────────────────────────────────────────────────────────────
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  cursor: pointer;
+
+  input { opacity: 0; width: 0; height: 0; }
+}
+
+.toggleSlider {
+  position: absolute;
+  inset: 0;
+  background: #ddd;
+  border-radius: 12px;
+  transition: background 0.2s;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    left: 3px;
+    top: 3px;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+}
+
+.toggle input:checked + .toggleSlider {
+  background: var(--danger, #e63946);
+}
+
+.toggle input:checked + .toggleSlider::before {
+  transform: translateX(20px);
+}
+
+// ── Aba Classificação ─────────────────────────────────────────────────────────
+
+.classificacaoTitulo {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--dark-900);
+  margin: 0 0 8px;
+}
+
+.classificacaoDesc {
+  font-size: 13px;
+  color: #666;
+  margin: 0 0 20px;
+  line-height: 1.6;
+}
+
+.aviso {
+  background: #fffbe6;
+  border: 1px solid #ffe58f;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #7a5a00;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.restricoesTitulo {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark-900);
+  margin: 0 0 16px;
+}
+
+.restricoesList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.restricaoItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.restricaoCheck {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  flex-shrink: 0;
+  accent-color: var(--danger, #e63946);
+  cursor: pointer;
+}
+
+.restricaoLabel {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dark-900);
+  margin: 0 0 2px;
+}
+
+.restricaoDesc {
+  font-size: 12px;
+  color: #888;
+  margin: 0;
+  line-height: 1.4;
+}
+
+// ── Rodapé ────────────────────────────────────────────────────────────────────
+
+.erro {
+  font-size: 12px;
+  color: var(--danger);
+  padding: 0 24px;
+  margin: 0;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 16px 24px;
+  border-top: 1px solid #f0f0f0;
+}

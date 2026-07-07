@@ -1,0 +1,252 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 18px 16px;
+  background: #f7f7f7;
+  border-top: 1px solid #ebebeb;
+}
+
+.grupoCard {
+  background: var(--white);
+  border-radius: 10px;
+  border: 1px solid #e8e8e8;
+  overflow: visible;
+}
+
+.grupoHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.grupoInfo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grupoNome {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-900);
+}
+
+.grupoBadge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.opcional    { background: #f0f0f0; color: #666; }
+.obrigatorio { background: #fdeaea; color: var(--danger); }
+
+.grupoAcoes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+}
+
+// Opções
+.opcoesList {
+  display: flex;
+  flex-direction: column;
+   overflow: visible;
+}
+
+.opcaoRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.1s;
+
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: #fafafa; }
+}
+
+.opcaoPausada { opacity: 0.45; }
+
+.opcaoImg {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.opcaoImgPlaceholder {
+  width: 40px;
+  height: 40px;
+  border-radius: 6px;
+  background: #f0f0f0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.opcaoInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.opcaoNome {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--dark-900);
+}
+
+.opcaoDesc {
+  font-size: 11px;
+  color: #888;
+}
+
+.tagVinculado {
+  font-size: 10px;
+  color: var(--green);
+  background: #e6f4ee;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.opcaoPreco {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  min-width: 64px;
+  flex-shrink: 0;
+}
+
+.precoOriginal {
+  font-size: 10px;
+  color: #bbb;
+  text-decoration: line-through;
+}
+
+.precoAtual {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-900);
+}
+
+// Botões
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: var(--white);
+  color: var(--dark-900);
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:hover { background: var(--background); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.menuWrapper { position: relative; }
+
+.dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 4px);
+  background: var(--white);
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  z-index: 200;
+  min-width: 180px;
+  overflow: visible;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: none;
+  font-size: 12px;
+  color: var(--dark-900);
+  cursor: pointer;
+  text-align: left;
+
+  &:hover { background: var(--background); }
+}
+
+// Form modais
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+}
+
+.formDesc {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.precoRow {
+  display: flex;
+  gap: 10px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.vinculoAtual {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  background: #e6f4ee;
+  border-radius: 6px;
+  border: 1px solid #b8dfc8;
+}
+
+.vinculoLabel {
+  font-size: 10px;
+  color: var(--green);
+  font-weight: 600;
+}
+
+.vinculoNome {
+  font-size: 12px;
+  color: var(--green);
+  flex: 1;
+}
+
+.removerBtn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: var(--danger);
+  cursor: pointer;
+  padding: 0;
+  &:hover { text-decoration: underline; }
+}
+
+.erro { font-size: 12px; color: var(--danger); }
