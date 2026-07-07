@@ -2,14 +2,14 @@ import { useState } from "react";
 import BaseModal from "@/components/Modals/Base/Index";
 import CustomButton from "@/components/ui/Buttons";
 import SelectProduto from "@/components/Selects/SelectProduto";
-import { IFoodItemResumo, externalCodeProduto, parseVinculo } from "@/interfaces/ifoodCatalog";
+import {  externalCodeProduto, parseVinculo } from "@/interfaces/ifoodCatalog";
 import IProduto from "@/interfaces/IProduto";
 import styles from "./ModalVinculo.module.scss";
 
 interface Props {
   isOpen: boolean;
   empresaId: number;
-  item: IFoodItemResumo | null;
+  item: any | null;
   onClose: () => void;
   onVinculado: (itemId: string, externalCode: string) => void;
 }

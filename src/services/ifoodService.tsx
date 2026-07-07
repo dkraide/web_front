@@ -18,7 +18,7 @@ export const ifoodService = {
   // Auth
   async getStatus(empresaId: number) {
     const { data } = await api.get<ApiResult<IFoodIntegracaoStatus>>(
-      `/ifood/empresas/${empresaId}/integracoes`
+      `/ifood/empresas/${empresaId}/status`
     );
     return data;
   },

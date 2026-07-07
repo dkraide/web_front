@@ -45,7 +45,7 @@ export default function IFoodPage() {
         try {
             const result = await ifoodService.getStatus(empresaId);
             if (result.sucesso) {
-                setIntegracao(result.dados[0]);
+                setIntegracao(result.dados);
                 // token ativo mas sem merchant ainda
                 if (result.dados.tokenValido && !result.dados.merchantId) {
                     await resolverMerchant();
