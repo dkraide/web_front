@@ -1,13 +1,12 @@
 import IClasseMaterial from "./IClasseMaterial"
 import ICodBarras from "./ICodBarras"
 import IFornecedor from "./IFornecedor"
-import IProdutoGrupo from "./IProdutoGrupo"
+import IProdutoGrupoAdicional from "./IProdutoGrupoAdicional"
 import IProdutoImagem from "./IProdutoImagem"
 import IProdutoMateriaPrima from "./IProdutoMateriaPrima"
 import IPromocao from "./IPromocao"
 import ITamanho from "./ITamanho"
 import ITributacao from "./ITributacao"
-
 export default interface IProduto{
          idProduto: number
          nome: string
@@ -21,9 +20,8 @@ export default interface IProduto{
          tributacao: ITributacao
          idTributacao: number
          materiaPrimas: IProdutoMateriaPrima[]
-         tamanhos: ITamanho[]
          fornecedores: IFornecedor[]
-         grupoAdicionais: IProdutoGrupo[]
+         grupoAdicionais: IProdutoGrupoAdicional[]
          codBarras: ICodBarras[]
          classeMaterial: IClasseMaterial
          idClasseMaterial: number

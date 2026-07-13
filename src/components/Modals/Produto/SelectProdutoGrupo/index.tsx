@@ -1,14 +1,12 @@
-import IProdutoGrupo from '@/interfaces/IProdutoGrupo';
+import IGrupoAdicional from '@/interfaces/IGrupoAdicional';
 import styles from './styles.module.scss';
 import { useEffect, useState } from 'react';
 import { api } from '@/services/apiClient';
 import { AxiosResponse } from 'axios';
 import BaseModal from '../../Base/Index';
-import { v4 as uuidv4 } from 'uuid';
 
 type props = {
-    setClose: (grupo?: IProdutoGrupo) => void;
-    produtoId: number;
+    setClose: (grupo?: IGrupoAdicional) => void;
     empresa: number;
 };
 
@@ -20,22 +18,21 @@ const TIPO_LABELS: Record<string, string> = {
     MASSA: 'Massa',
 };
 
-export default function SelectProdutoGrupo({ produtoId, setClose, empresa }: props) {
-    const [grupos, setGrupos] = useState<IProdutoGrupo[]>([]);
-    const [filtered, setFiltered] = useState<IProdutoGrupo[]>([]);
+export default function SelectProdutoGrupo({ setClose, empresa }: props) {
+    const [grupos, setGrupos] = useState<IGrupoAdicional[]>([]);
+    const [filtered, setFiltered] = useState<IGrupoAdicional[]>([]);
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState('');
-    const [selected, setSelected] = useState<IProdutoGrupo | null>(null);
+    const [selected, setSelected] = useState<IGrupoAdicional | null>(null);
 
     const loadData = async () => {
         setLoading(true);
         await api
-            .get(`/v2/ProdutoGrupo/List/${empresa}`)
-            .then(({ data }: AxiosResponse<IProdutoGrupo[]>) => {
+            .get(`/v2/GrupoAdicional?empresaId=${empresa}`)
+            .then(({ data }: AxiosResponse<IGrupoAdicional[]>) => {
                 if (!data) return;
-                const items = data.filter(
-                    (p) => p.produtoId !== produtoId && p.tipo === 'PADRAO'
-                );
+                // Filtra apenas grupos do tipo PADRAO (evita grupos de tamanho/sabor/massa/borda de pizza)
+                const items = data.filter((g) => g.tipo === 'PADRAO');
                 setGrupos(items);
                 setFiltered(items);
             });
@@ -57,18 +54,10 @@ export default function SelectProdutoGrupo({ produtoId, setClose, empresa }: pro
         }
     }, [search, grupos]);
 
-    const handleSelectGrupo = (grupo: IProdutoGrupo) => {
-        const clone: IProdutoGrupo = {
-            ...grupo,
-            id: 0,
-            produtoId: 0,
-            itens: grupo.itens?.map((item) => ({
-                ...item,
-                id: uuidv4(),
-                idProdutoGrupoItem: undefined
-            })),
-        };
-        setClose(clone);
+    const handleSelectGrupo = (grupo: IGrupoAdicional) => {
+        // Grupo agora é compartilhado entre produtos — não clonamos mais nada,
+        // apenas devolvemos o grupo selecionado para o pai montar o vínculo.
+        setClose(grupo);
     };
 
     return (
@@ -115,8 +104,8 @@ export default function SelectProdutoGrupo({ produtoId, setClose, empresa }: pro
                     <ul className={styles.list}>
                         {filtered.map((grupo) => (
                             <li
-                                key={grupo.idProdutoGrupo}
-                                className={`${styles.listItem} ${selected?.idProdutoGrupo === grupo.idProdutoGrupo ? styles.listItemSelected : ''}`}
+                                key={grupo.id}
+                                className={`${styles.listItem} ${selected?.id === grupo.id ? styles.listItemSelected : ''}`}
                                 onClick={() => setSelected(grupo)}
                                 onDoubleClick={() => handleSelectGrupo(grupo)}
                             >

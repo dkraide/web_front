@@ -13,6 +13,7 @@ import CustomButton from '../Buttons';
 import Image from 'next/image';
 import { useWindowSize } from 'rooks';
 import { Badge } from 'react-bootstrap';
+import EdnaChat from '@/components/EdnaChat';
 
 export default function SideBar({ children, ...props }) {
 
@@ -131,9 +132,10 @@ export default function SideBar({ children, ...props }) {
                                     rootStyles={subMenuStyle}>
                                     <MenuItem href={'/produto'}>Produtos</MenuItem>
                                     <MenuItem href={'/classeMaterial'}>Classes</MenuItem>
-                                    <MenuItem href={'/tributacao'}>Tributacoes</MenuItem>
+                                    <MenuItem href={'/grupo-adicional'}>Grupos de Compl.</MenuItem>
+                                    <MenuItem href={'/tributacao'}>Tributações</MenuItem>
                                     <MenuItem href={'/estoque'}>Estoque</MenuItem>
-                                    <MenuItem href={'/estoqueLancamento'}>Lancamento de Estoque</MenuItem>
+                                    <MenuItem href={'/estoqueLancamento'}>Lançamento de estoque</MenuItem>
                                     <MenuItem href={'/estoque/conferenciaEstoque'}>Conferência</MenuItem>
                                 </SubMenu>
                                 <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Ingredientes"
@@ -192,6 +194,7 @@ export default function SideBar({ children, ...props }) {
                 </Sidebar>
                 <main  {...props} className={styles['main-panel']}>
                     {children}
+                    {/* {!user.isPdv && <EdnaChat empresaId={user.empresaSelecionada} />} */}
                 </main>
             </div>
         </div>

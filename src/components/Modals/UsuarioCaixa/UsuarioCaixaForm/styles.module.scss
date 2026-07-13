@@ -1,20 +1,57 @@
-.container {
-    padding: 10px 10px;
+// Prefixo "uc" (UsuarioCaixa) em TODAS as classes de propósito — nomes como
+// .container/.section/.button são comuns em CSS global de templates admin e
+// podem vazar/colidir se o arquivo não for tratado como CSS Module.
+.ucForm {
     display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    padding: 4px 0px 8px;
+    box-sizing: border-box;
 }
 
-.button {
-    padding: 10px 30px;
+.ucCard {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    gap: 14px;
     width: 100%;
+    box-sizing: border-box;
+    background: #fafafc;
+    border: 1px solid #e6e0e8;
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+
+.ucCardTitle {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #d91141;
+}
+
+// Dados cadastrais: campos maiores, 3 por linha em telas largas.
+.ucGridWide {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 14px 16px;
+    width: 100%;
+}
+
+// Toggles SIM/NAO: mais compactos, cabem mais por linha.
+.ucGridNarrow {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 12px 16px;
+    width: 100%;
+}
+
+.ucFooter {
+    display: flex;
     justify-content: flex-end;
-
-    button {
-        margin-right: 10px;
-
-    }
+    gap: 12px;
+    padding: 8px 0;
+    position: sticky;
+    background: #fff;
 }

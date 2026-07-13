@@ -1,18 +1,17 @@
 import CustomButton from '@/components/ui/Buttons';
 import IProdutoMateriaPrima from '@/interfaces/IProdutoMateriaPrima';
-import IProdutoGrupo from '@/interfaces/IProdutoGrupo';
+import IProdutoGrupoAdicional from '@/interfaces/IProdutoGrupoAdicional';
 import MateriaPrimaItem from './MateriaPrimaItem';
 import GrupoItem from './GrupoItem';
 import styles from '../styles.module.scss';
 
 interface ProdutoGruposProps {
     materiaPrimas?: IProdutoMateriaPrima[];
-    grupoAdicionais?: IProdutoGrupo[];
+    grupoAdicionais?: IProdutoGrupoAdicional[];
     onAddMateriaPrima: () => void;
     onRemoveMateriaPrima: (materiaPrimaId: number) => void;
-    onAddGrupo: () => void;
     onVincularGrupo: () => void;
-    onEditGrupo: (index: number) => void;
+    onEditGrupo: (vinculo: IProdutoGrupoAdicional) => void;
     onDeleteGrupo: (index: number) => void;
 }
 
@@ -21,7 +20,6 @@ export default function ProdutoGrupos({
     grupoAdicionais,
     onAddMateriaPrima,
     onRemoveMateriaPrima,
-    onAddGrupo,
     onEditGrupo,
     onDeleteGrupo,
     onVincularGrupo
@@ -46,15 +44,14 @@ export default function ProdutoGrupos({
             <div style={{ width: '50%' }} className={styles.contentTab}>
                 <b>Grupos de Adicionais</b>
                 <div className={styles.buttons}>
-                    <CustomButton onClick={onVincularGrupo}>Adicionar grupo existente</CustomButton>
-                    <CustomButton onClick={onAddGrupo}>Novo grupo de complementos</CustomButton>
+                    <CustomButton onClick={onVincularGrupo}>Vincular grupo existente</CustomButton>
                 </div>
                 <hr />
-                {grupoAdicionais?.map((grupo, index) => (
+                {grupoAdicionais?.map((vinculo, index) => (
                     <GrupoItem
                         key={index}
-                        grupo={grupo}
-                        onEdit={() => onEditGrupo(index)}
+                        vinculo={vinculo}
+                        onEdit={() => onEditGrupo(vinculo)}
                         onDelete={() => onDeleteGrupo(index)}
                     />
                 ))}

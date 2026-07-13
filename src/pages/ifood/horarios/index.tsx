@@ -8,13 +8,13 @@ import CustomButton from "@/components/ui/Buttons";
 import styles from "../styles.module.scss";
 
 const DIAS = [
-  { key: "MONDAY",    label: "Segunda" },
-  { key: "TUESDAY",   label: "Terça" },
+  { key: "MONDAY", label: "Segunda" },
+  { key: "TUESDAY", label: "Terça" },
   { key: "WEDNESDAY", label: "Quarta" },
-  { key: "THURSDAY",  label: "Quinta" },
-  { key: "FRIDAY",    label: "Sexta" },
-  { key: "SATURDAY",  label: "Sábado" },
-  { key: "SUNDAY",    label: "Domingo" },
+  { key: "THURSDAY", label: "Quinta" },
+  { key: "FRIDAY", label: "Sexta" },
+  { key: "SATURDAY", label: "Sábado" },
+  { key: "SUNDAY", label: "Domingo" },
 ];
 
 type TurnoLocal = { start: string; duration: number; erro?: string };
@@ -83,12 +83,34 @@ export default function IFoodHorariosPage() {
       setLoading(false);
     }
   }
-
+  function minutosParaHoras(minutos: number): string {
+    const total = ((minutos % 1440) + 1440) % 1440; // garante que não passe de 23:59 / fique negativo
+    const h = Math.floor(total / 60);
+    const m = total % 60;
+    return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  }
   function adicionarTurno(dia: string) {
-    setHorariosMap(prev => ({
-      ...prev,
-      [dia]: validarTurnos([...(prev[dia] ?? []), { start: "09:00", duration: 360 }]),
-    }));
+    setHorariosMap(prev => {
+      const turnosDoDia = prev[dia] ?? [];
+
+      // acha o horário de término mais tardio entre os turnos existentes
+      const fimMaisTarde = turnosDoDia.reduce((max, t) => {
+        const fim = horasParaMinutos(t.start) + t.duration;
+        return Math.max(max, fim);
+      }, -1);
+
+      const novoStart = fimMaisTarde === -1
+        ? "09:00" // primeiro turno do dia continua padrão 09:00
+        : minutosParaHoras(fimMaisTarde + 1); // +1 min depois do fim do anterior
+
+      return {
+        ...prev,
+        [dia]: validarTurnos([
+          ...turnosDoDia,
+          { start: novoStart, duration: 360 },
+        ]),
+      };
+    });
   }
 
   function removerTurno(dia: string, index: number) {
