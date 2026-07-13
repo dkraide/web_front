@@ -8,12 +8,9 @@ import { toast } from "react-toastify";
 import styles from './styles.module.scss';
 import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
-import SelectStatus from "@/components/Selects/SelectStatus";
-import IFormaPagamento from "@/interfaces/IFormaPagamento";
 import SelectSimNao from "@/components/Selects/SelectSimNao";
 import BaseModal from "../../Base/Index";
 import IUsuarioCaixa from "@/interfaces/IUsuarioCaixa";
-
 
 interface props {
     isOpen: boolean
@@ -22,23 +19,81 @@ interface props {
     color?: string
     user: IUsuario
 }
+
+// Agrupamento das permissões só pra organizar visualmente o form.
+const GRUPOS_PERMISSOES: { titulo: string, campos: (keyof IUsuarioCaixa)[] }[] = [
+    {
+        titulo: 'Acesso a menus',
+        campos: [
+            'menuSAT', 'menuEmpresa', 'menuRelatorio', 'menuTributacao',
+            'menuProduto', 'menuPromocao', 'menuCaixa', 'menuHistorico',
+        ],
+    },
+    {
+        titulo: 'Produto',
+        campos: [
+            'cadastroProduto', 'removeProduto', 'materiaPrima',
+            'visualizarEstoquePesquisa', 'visualizaLucroProduto',
+        ],
+    },
+    {
+        titulo: 'Venda / Caixa',
+        campos: [
+            'vendaDiaria', 'cancelarVenda', 'lancarRemessaCompra',
+            'valorFechamento', 'alteraValorCarrinho', 'alteraDescontoVenda',
+            'editarComanda', 'removeItemComanda', 'finalizaVendaSemEstoque',
+            'imprimeProdutoFechamento', 'visualizaVendasAntigas',
+            'visualizarVendaCaixa', 'impFechamentoCanceladas',
+            'permitePausarVenda',
+        ],
+    },
+]
+
+const LABELS: Partial<Record<keyof IUsuarioCaixa, string>> = {
+    menuSAT: 'Menu SAT',
+    menuEmpresa: 'Menu Empresa',
+    menuRelatorio: 'Menu Relatório',
+    menuTributacao: 'Menu Tributação',
+    menuProduto: 'Menu Produto',
+    menuPromocao: 'Menu Promoção',
+    menuCaixa: 'Menu Caixa',
+    menuHistorico: 'Menu Histórico',
+    cadastroProduto: 'Cadastro de produto',
+    removeProduto: 'Remove produto',
+    materiaPrima: 'Matéria prima',
+    visualizarEstoquePesquisa: 'Ver estoque na pesquisa',
+    visualizaLucroProduto: 'Visualiza lucro do produto',
+    vendaDiaria: 'Venda diária',
+    cancelarVenda: 'Cancelar venda',
+    lancarRemessaCompra: 'Lançar remessa de compra',
+    valorFechamento: 'Valor de fechamento',
+    alteraValorCarrinho: 'Altera valor do carrinho',
+    alteraDescontoVenda: 'Altera desconto da venda',
+    editarComanda: 'Editar comanda',
+    removeItemComanda: 'Remove item da comanda',
+    finalizaVendaSemEstoque: 'Finaliza venda sem estoque',
+    imprimeProdutoFechamento: 'Impr. produto fechamento',
+    visualizaVendasAntigas: 'Visualiza vendas antigas',
+    visualizarVendaCaixa: 'Visualizar venda no caixa',
+    impFechamentoCanceladas: 'Impr. fechamento canc.',
+    permitePausarVenda: 'Permite pausar venda',
+}
+
 export default function UsuarioCaixaForm({ user, isOpen, classeId, setClose, color }: props) {
 
     const {
         register,
-        getValues,
-        setValue,
         handleSubmit,
         formState: { errors } } =
         useForm();
 
-
     const [obj, setObj] = useState<IUsuarioCaixa>({} as IUsuarioCaixa)
     const [loading, setLoading] = useState<boolean>(true)
     const [sending, setSending] = useState(false);
+
     useEffect(() => {
         if (classeId > 0) {
-            api.get(`/Usuario/Select?id=${classeId}`)
+            api.get(`/v2/Usuario/Select/${classeId}?empresaId=${user.empresaSelecionada}`)
                 .then(({ data }: AxiosResponse<IUsuarioCaixa>) => {
                     setObj(data);
                     setLoading(false);
@@ -48,73 +103,87 @@ export default function UsuarioCaixaForm({ user, isOpen, classeId, setClose, col
                     setLoading(false);
                 })
         } else {
-            obj.id = 0;
-            setObj(obj);
+            setObj({ ...obj, id: 0 });
             setLoading(false);
         }
-
     }, []);
 
+    const toggle = (campo: keyof IUsuarioCaixa, v: boolean) => {
+        setObj(prev => ({ ...prev, [campo]: v }))
+    }
+
     const onSubmit = async (data: any) => {
-        obj.nome = data.nome;
-        obj.login = data.login;
-        obj.senha = data.senha;
-        if (obj.id > 0) {
-            api.put(`Usuario/UpdateUsuario`, obj)
-                .then(({ data }: AxiosResponse) => {
+        const payload: IUsuarioCaixa = {
+            ...obj,
+            nome: data.nome,
+            login: data.login,
+            senha: data.senha,
+            email: data.email,
+            telefone: data.telefone,
+            rg: data.rg,
+            cpf: data.cpf,
+            tipo: data.tipo,
+        }
+
+        setSending(true);
+
+        if (payload.id > 0) {
+            api.put(`/v2/Usuario/Update`, payload)
+                .then(() => {
                     toast.success(`Usuario atualizado com sucesso!`);
                     setClose(true);
                 })
                 .catch((err: AxiosError) => {
                     toast.error(`Erro ao atualizar Usuario. ${err.response?.data}`);
                 })
-
+                .finally(() => setSending(false));
         } else {
-            obj.empresaId = user.empresaSelecionada;
-            api.post(`Usuario/Create`, obj)
-                .then(({ data }: AxiosResponse) => {
+            payload.empresaId = user.empresaSelecionada;
+            api.post(`/v2/Usuario/Create`, payload)
+                .then(() => {
                     toast.success(`Usuario cadastrado com sucesso!`);
                     setClose(true);
                 })
                 .catch((err: AxiosError) => {
-                    toast.error(`Erro ao criarUsuario. ${err.response?.data}`);
+                    toast.error(`Erro ao criar Usuario. ${err.response?.data}`);
                 })
+                .finally(() => setSending(false));
         }
-        setSending(false);
     }
+
     return (
         <BaseModal color={color} title={'Cadastro de Usuario'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading />
             ) : (
-                <div className={styles.container}>
-                    <InputForm defaultValue={obj.nome} width={'40%'} title={'Nome'} errors={errors} inputName={"nome"} register={register} />
-                    <InputForm defaultValue={obj.login} width={'30%'} title={'Usuario'} errors={errors} inputName={"login"} register={register} />
-                    <InputForm defaultValue={obj.senha} width={'30%'} title={'Senha'} errors={errors} inputName={"senha"} register={register} />
-                    <SelectSimNao width={'30%'} title={'Menu Sat'} selected={obj.menuSAT} setSelected={(v) => { setObj({ ...obj, menuSAT: v }) }} />
-                    <SelectSimNao width={'30%'} title={'cadastro Produto'} selected={obj.cadastroProduto} setSelected={(v) => { setObj({ ...obj, cadastroProduto: v }) }} />
-                    <SelectSimNao width={'30%'} title={'menu Promocao'} selected={obj.menuPromocao} setSelected={(v) => { setObj({ ...obj, menuPromocao: v }) }} />
-                    <SelectSimNao width={'30%'} title={'visualiza Lucro Produto'} selected={obj.visualizaLucroProduto} setSelected={(v) => { setObj({ ...obj, visualizaLucroProduto: v }) }} />
-                    <SelectSimNao width={'30%'} title={'lancar Remessa Compra'} selected={obj.lancarRemessaCompra} setSelected={(v) => { setObj({ ...obj, lancarRemessaCompra: v }) }} />
-                    <SelectSimNao width={'30%'} title={'visualiza Vendas Antigas'} selected={obj.visualizaVendasAntigas} setSelected={(v) => { setObj({ ...obj, visualizaVendasAntigas: v }) }} />
-                    <SelectSimNao width={'30%'} title={'venda Diaria'} selected={obj.vendaDiaria} setSelected={(v) => { setObj({ ...obj, vendaDiaria: v }) }} />
-                    <SelectSimNao width={'30%'} title={'valor Fechamento'} selected={obj.valorFechamento} setSelected={(v) => { setObj({ ...obj, valorFechamento: v }) }} />
-                    <SelectSimNao width={'30%'} title={'altera ValorCarrinho'} selected={obj.alteraValorCarrinho} setSelected={(v) => { setObj({ ...obj, alteraValorCarrinho: v }) }} />
-                    <SelectSimNao width={'30%'} title={'altera DescontoVenda'} selected={obj.alteraDescontoVenda} setSelected={(v) => { setObj({ ...obj, alteraDescontoVenda: v }) }} />
-                    <SelectSimNao width={'30%'} title={'visualizar Estoque Pesquisa'} selected={obj.visualizarEstoquePesquisa} setSelected={(v) => { setObj({ ...obj, visualizarEstoquePesquisa: v }) }} />
-                    <SelectSimNao width={'30%'} title={'remove Produto'} selected={obj.removeProduto} setSelected={(v) => { setObj({ ...obj, removeProduto: v }) }} />
-                    <SelectSimNao width={'30%'} title={'materia Prima'} selected={obj.materiaPrima} setSelected={(v) => { setObj({ ...obj, materiaPrima: v }) }} />
-                    <SelectSimNao width={'30%'} title={'menu Tributacao'} selected={obj.menuTributacao} setSelected={(v) => { setObj({ ...obj, menuTributacao: v }) }} />
-                    <SelectSimNao width={'30%'} title={'cancelar Venda'} selected={obj.cancelarVenda} setSelected={(v) => { setObj({ ...obj, cancelarVenda: v }) }} />
-                    <SelectSimNao width={'30%'} title={'menu Empresa'} selected={obj.menuEmpresa} setSelected={(v) => { setObj({ ...obj, menuEmpresa: v }) }} />
-                    <SelectSimNao width={'30%'} title={'menu Relatorio'} selected={obj.menuRelatorio} setSelected={(v) => { setObj({ ...obj, menuRelatorio: v }) }} />
-                    <SelectSimNao width={'30%'} title={'menu Historico'} selected={obj.menuHistorico} setSelected={(v) => { setObj({ ...obj, menuHistorico: v }) }} />
-                    <SelectSimNao width={'30%'} title={'menu Produto'} selected={obj.menuProduto} setSelected={(v) => { setObj({ ...obj, menuProduto: v }) }} />
-                    <SelectSimNao width={'30%'} title={'editar Comanda'} selected={obj.editarComanda} setSelected={(v) => { setObj({ ...obj, editarComanda: v }) }} />
-                    <SelectSimNao width={'30%'} title={'Imp. Prod. Fechamento'} selected={obj.imprimeProdutoFechamento} setSelected={(v) => { setObj({ ...obj, imprimeProdutoFechamento: v }) }} />
-                    <SelectSimNao width={'30%'} title={'Remove Prod. Comanda'} selected={obj.removeItemComanda} setSelected={(v) => { setObj({ ...obj, removeItemComanda: v }) }} />
-                    <SelectSimNao width={'30%'} title={'finaliza Venda Sem Estoque'} selected={obj.finalizaVendaSemEstoque} setSelected={(v) => { setObj({ ...obj, finalizaVendaSemEstoque: v }) }} />
-                    <div className={styles.button}>
+                <div className={styles.ucForm}>
+                    <section className={styles.ucCard}>
+                        <h5 className={styles.ucCardTitle}>Dados do usuário</h5>
+                        <div className={styles.ucGridWide}>
+                            <InputForm defaultValue={obj.nome} width={'100%'} title={'Nome'} errors={errors} inputName={"nome"} register={register} />
+                            <InputForm defaultValue={obj.login} width={'100%'} title={'Usuario'} errors={errors} inputName={"login"} register={register} />
+                            <InputForm defaultValue={obj.senha} width={'100%'} title={'Senha'} errors={errors} inputName={"senha"} register={register} />
+                        </div>
+                    </section>
+
+                    {GRUPOS_PERMISSOES.map(grupo => (
+                        <section className={styles.ucCard} key={grupo.titulo}>
+                            <h5 className={styles.ucCardTitle}>{grupo.titulo}</h5>
+                            <div className={styles.ucGridNarrow}>
+                                {grupo.campos.map(campo => (
+                                    <SelectSimNao
+                                        key={campo}
+                                        width={'100%'}
+                                        title={LABELS[campo]}
+                                        selected={obj[campo] as boolean}
+                                        setSelected={(v) => toggle(campo, v)}
+                                    />
+                                ))}
+                            </div>
+                        </section>
+                    ))}
+
+                    <div className={styles.ucFooter}>
                         <CustomButton onClick={() => { setClose(); }} typeButton={"secondary"}>Cancelar</CustomButton>
                         <CustomButton typeButton={'dark'} loading={sending} onClick={() => { handleSubmit(onSubmit)() }}>Confirmar</CustomButton>
                     </div>

@@ -65,33 +65,35 @@ export default function IFoodLojaPage() {
   async function carregarInterrupcoes() {
     try {
       const result = await ifoodService.getInterrupcoes(empresaId);
+      console.log(result.dados)
       if (result.sucesso) setInterrupcoes(result.dados);
     } catch { }
   }
 
-  async function onCriarPausa(form: PausaForm) {
-    setLoadingPausa(true);
-    setErro(null);
-    try {
-      const result = await ifoodService.criarInterrupcao(empresaId, {
-        description: form.description,
-        start: new Date(form.start).toISOString(),
-        end: new Date(form.end).toISOString(),
-      });
-      if (result.sucesso) {
-        setInterrupcoes(prev => [...prev, result.dados]);
-        setModalPausa(false);
-        reset();
-        await carregarStatus();
-      } else {
-        setErro(result.erro);
-      }
-    } catch {
-      setErro("Erro ao criar pausa.");
-    } finally {
-      setLoadingPausa(false);
+
+async function onCriarPausa(form: PausaForm) {
+  setLoadingPausa(true);
+  setErro(null);
+  try {
+    const result = await ifoodService.criarInterrupcao(empresaId, {
+      description: form.description,
+      start: form.start,
+      end: form.end,
+    });
+    if (result.sucesso) {
+      setInterrupcoes(prev => [...prev, result.dados]);
+      setModalPausa(false);
+      reset();
+      await carregarStatus();
+    } else {
+      setErro(result.erro);
     }
+  } catch {
+    setErro("Erro ao criar pausa.");
+  } finally {
+    setLoadingPausa(false);
   }
+}
 
   async function onRemoverPausa(id: string) {
     setLoadingRemover(id);

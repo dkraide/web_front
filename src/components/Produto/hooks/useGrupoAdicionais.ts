@@ -1,63 +1,42 @@
 import { toast } from 'react-toastify';
-import { AxiosError, AxiosResponse } from 'axios';
-import { api } from '@/services/apiClient';
 import IProduto from '@/interfaces/IProduto';
-import IProdutoGrupo from '@/interfaces/IProdutoGrupo';
+import IProdutoGrupoAdicional from '@/interfaces/IProdutoGrupoAdicional';
 
 export function useGrupoAdicionais(
     produto: IProduto,
     setProduto: (produto: IProduto) => void,
-   
 ) {
-    const addOrUpdateGrupo = (grupo: IProdutoGrupo, index: number) => {
+    const addOrUpdateGrupo = (vinculo: IProdutoGrupoAdicional, index: number) => {
         if (!produto.grupoAdicionais) {
             produto.grupoAdicionais = [];
         }
 
         if (index < 0) {
-            // Adicionar novo
-            produto.grupoAdicionais.push(grupo);
+            // Adicionar novo vínculo
+            produto.grupoAdicionais.push(vinculo);
         } else {
-            // Atualizar existente
-            produto.grupoAdicionais[index] = grupo;
+            // Atualizar vínculo existente
+            produto.grupoAdicionais[index] = vinculo;
         }
 
         setProduto({ ...produto });
     };
 
-    const removeGrupo = async (index: number) => {
+    const removeGrupo = (index: number) => {
         if (!produto.grupoAdicionais || index < 0 || index >= produto.grupoAdicionais.length) {
             toast.error('Grupo não encontrado.');
             return;
         }
 
-        const grupo = produto.grupoAdicionais[index];
-
-        // // Se o grupo já está salvo na nuvem, deleta lá também
-        // if (grupo.id && grupo.id > 0) {
-        //     const res = await api
-        //         .delete(`/ProdutoGrupo/Delete?id=${grupo.id}`)
-        //         .then((res: AxiosResponse) => {
-        //             toast.success('Grupo excluído na nuvem');
-        //             return true;
-        //         })
-        //         .catch((err: AxiosError) => {
-        //             toast.error(`Erro ao excluir grupo. ${err.message}`);
-        //             return false;
-        //         });
-
-        //     if (!res) return;
-        // }
-
-        // Remove do array local
+        // A remoção do vínculo é feita localmente aqui. O backend (ProdutoService)
+        // já identifica e remove os vínculos que não vierem mais na lista quando
+        // o produto for salvo (PUT /v2/Produto).
         const newGrupos = produto.grupoAdicionais.filter((_, i) => i !== index);
         setProduto({ ...produto, grupoAdicionais: newGrupos });
     };
-    
 
     return {
         addOrUpdateGrupo,
         removeGrupo,
-        
     };
 }

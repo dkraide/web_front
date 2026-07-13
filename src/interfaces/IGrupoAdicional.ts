@@ -1,31 +1,19 @@
-import IMateriaPrima from "./IMateriaPrima"
+import { IGrupoAdicionalItem } from "./IGrupoAdicionalItem"
+import IProdutoGrupoAdicional from "./IProdutoGrupoAdicional"
 
-export default interface IGrupoAdicional{
-        idGrupoAdicional: number
-        id: number
-        descricao: string
-        status: boolean
-        minimo: number
-        maximo: number
-        empresaId: number
-        lastChange: Date
-        localCriacao: string
-        produtosAdicionais: IGrupoAdicionalMateriaPrima[]
-}
-
-export interface IGrupoAdicionalMateriaPrima{
-        idGrupoAdicionalMateriaPrima: number;
-        id: number;
-        nome: string;
-        valor: number;
-        status: boolean;
-        idGrupoAdicional: number;
-        grupoAdicionalId: number;
-        grupoAdicional: IGrupoAdicional;
-        materiaPrima: IMateriaPrima;
-        materiaPrimaId: number;
-        idMateriaPrima: number;
-        empresaId: number;
-        lastChange: Date;
-        localCriacao: string;
+export default interface IGrupoAdicional {
+    keetaId: string;
+    idGrupoAdicional: number;
+    id: number;
+    empresaId: number;
+    tipo: 'PADRAO' | 'BORDA' | 'TAMANHO' | 'SABOR' | 'MASSA';
+    descricao: string;
+    status: boolean;
+    minimo: number;
+    maximo: number;
+    itens: IGrupoAdicionalItem[];
+    lastChange: Date;
+    needChange: boolean;
+    // navegação reversa: quais produtos usam esse grupo adicional
+    produtos?: IProdutoGrupoAdicional[];
 }

@@ -7,29 +7,34 @@ import { InputGroup } from '@/components/ui/InputGroup'
 import KRDTable, { KRDColumn } from '@/components/ui/KRDTable'
 import { toast } from 'react-toastify'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faUserPlus, faKey } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faLayerGroup } from '@fortawesome/free-solid-svg-icons'
 import IUsuario from '@/interfaces/IUsuario'
-import IUsuarioCaixa from '@/interfaces/IUsuarioCaixa'
-import UsuarioCaixaForm from '@/components/Modals/UsuarioCaixa/UsuarioCaixaForm'
-import DefinirSenhaWebModal from '@/components/Modals/UsuarioCaixa/DefinirSenhaWebModal'
+import IGrupoAdicional from '@/interfaces/IGrupoAdicional'
+import GrupoAdicionalForm from '@/components/Modals/GrupoAdicional/GrupoAdicionalForm'
 import { searchHelper } from '@/utils/functions'
+
+const TIPO_LABELS: Record<string, string> = {
+    PADRAO: 'Padrão',
+    BORDA: 'Borda',
+    TAMANHO: 'Tamanho',
+    SABOR: 'Sabor',
+    MASSA: 'Massa',
+}
 
 type SearchProps = {
     str: string
     edit: number
-    senhaWebId: number
 }
 
-export default function UsuarioPage() {
+export default function GrupoAdicionalPage() {
     const { getUser } = useContext(AuthContext)
 
     const [loading, setLoading] = useState(true)
-    const [list, setList] = useState<IUsuarioCaixa[]>([])
+    const [list, setList] = useState<IGrupoAdicional[]>([])
     const [user, setUser] = useState<IUsuario>()
     const [search, setSearch] = useState<SearchProps>({
         str: '',
         edit: -1,
-        senhaWebId: -1,
     })
 
     useEffect(() => {
@@ -44,8 +49,8 @@ export default function UsuarioPage() {
             u = res
         }
         try {
-            const { data } = await api.get<IUsuarioCaixa[]>(
-                `/v2/Usuario/List/${u.empresaSelecionada}`
+            const { data } = await api.get<IGrupoAdicional[]>(
+                `/v2/GrupoAdicional?empresaId=${u.empresaSelecionada}`
             )
             setList(data)
         } catch (err) {
@@ -57,20 +62,18 @@ export default function UsuarioPage() {
     }
 
     function getFiltered() {
-        return list.filter(u =>
-            searchHelper(search.str, `${u.nome} ${u.login} ${u.id}`)
+        return list.filter(g =>
+            searchHelper(search.str, `${g.descricao} ${g.id}`)
         )
     }
 
-    const usuarioSenhaWeb = list.find(u => u.id === search.senhaWebId)
-
-    const columns: KRDColumn<IUsuarioCaixa>[] = [
+    const columns: KRDColumn<IGrupoAdicional>[] = [
         {
             name: '',
-            cell: usuario => (
+            cell: grupo => (
                 <button
                     className={styles.editBtn}
-                    onClick={() => setSearch(prev => ({ ...prev, edit: usuario.id }))}
+                    onClick={() => setSearch(prev => ({ ...prev, edit: grupo.id }))}
                 >
                     <FontAwesomeIcon icon={faEdit} />
                 </button>
@@ -78,50 +81,45 @@ export default function UsuarioPage() {
             width: '48px',
         },
         {
-            name: 'Nome',
-            selector: row => row.nome,
+            name: 'Descrição',
+            selector: row => row.descricao,
             sortable: true,
         },
         {
-            name: 'Login',
-            selector: row => row.login,
-            sortable: true,
-            width: '160px',
-        },
-        {
-            name: 'Local',
-            selector: row => row.idUsuario > 0 ? 'Sim' : 'Não',
+            name: 'Tipo',
+            selector: row => row.tipo,
             cell: row => (
-                <span className={row.idUsuario > 0 ? styles.badgeAtivo : styles.badgeInativo}>
-                    {row.idUsuario > 0 ? 'Sim' : 'Não'}
+                <span className={`${styles.tipoBadge} ${styles[`tipo_${row.tipo}`]}`}>
+                    {TIPO_LABELS[row.tipo] ?? row.tipo}
+                </span>
+            ),
+            sortable: true,
+            width: '110px',
+        },
+        {
+            name: 'Min / Max',
+            selector: row => row.minimo,
+            cell: row => `${row.minimo} / ${row.maximo}`,
+            width: '100px',
+            right: true,
+        },
+        {
+            name: 'Itens',
+            selector: row => row.itens?.length ?? 0,
+            cell: row => row.itens?.length ?? 0,
+            width: '80px',
+            right: true,
+        },
+        {
+            name: 'Status',
+            selector: row => row.status ? 'Ativo' : 'Inativo',
+            cell: row => (
+                <span className={row.status ? styles.badgeAtivo : styles.badgeInativo}>
+                    {row.status ? 'Ativo' : 'Inativo'}
                 </span>
             ),
             sortable: true,
             width: '90px',
-        },
-        {
-            name: 'Senha Web',
-            selector: row => row.temSenhaWeb ? 'Definida' : 'Não definida',
-            cell: row => (
-                <span className={row.temSenhaWeb ? styles.badgeAtivo : styles.badgeInativo}>
-                    {row.temSenhaWeb ? 'Definida' : 'Não definida'}
-                </span>
-            ),
-            sortable: true,
-            width: '130px',
-        },
-        {
-            name: 'Ações',
-            cell: usuario => (
-                <button
-                    className={styles.senhaWebBtn}
-                    onClick={() => setSearch(prev => ({ ...prev, senhaWebId: usuario.id }))}
-                >
-                    <FontAwesomeIcon icon={faKey} />
-                    Definir senha web
-                </button>
-            ),
-            width: '190px',
         },
     ]
 
@@ -129,14 +127,14 @@ export default function UsuarioPage() {
         <div className={styles.container}>
             {/* Header */}
             <div className={styles.header}>
-                <h4 className={styles.title}>Usuários</h4>
+                <h4 className={styles.title}>Grupos de Adicionais</h4>
                 <div className={styles.headerActions}>
                     <button
                         className={styles.actionBtn}
                         onClick={() => setSearch(prev => ({ ...prev, edit: 0 }))}
                     >
-                        <FontAwesomeIcon icon={faUserPlus} />
-                        Novo usuário
+                        <FontAwesomeIcon icon={faLayerGroup} />
+                        Novo grupo adicional
                     </button>
                 </div>
             </div>
@@ -145,7 +143,7 @@ export default function UsuarioPage() {
             <div className={styles.searchBar}>
                 <div className={styles.searchInput}>
                     <InputGroup
-                        placeholder="Filtrar por nome, login ou código..."
+                        placeholder="Filtrar por descrição ou código..."
                         title=""
                         value={search.str}
                         onChange={e => setSearch(prev => ({ ...prev, str: e.target.value }))}
@@ -153,14 +151,14 @@ export default function UsuarioPage() {
                 </div>
                 {!loading && (
                     <span className={styles.counter}>
-                        {getFiltered().length} usuário{getFiltered().length !== 1 ? 's' : ''}
+                        {getFiltered().length} grupo{getFiltered().length !== 1 ? 's' : ''}
                     </span>
                 )}
             </div>
 
             <hr className={styles.divider} />
 
-            <KRDTable<IUsuarioCaixa>
+            <KRDTable<IGrupoAdicional>
                 columns={columns}
                 data={getFiltered()}
                 loading={loading}
@@ -168,23 +166,14 @@ export default function UsuarioPage() {
             />
 
             {(search.edit === 0 || search.edit > 0) && (
-                <UsuarioCaixaForm
+                <GrupoAdicionalForm
                     isOpen
-                    user={user}
-                    classeId={search.edit}
+                    id={search.edit}
+                    empresaId={user?.empresaSelecionada}
                     setClose={(res) => {
                         if (res) loadData()
                         setSearch(prev => ({ ...prev, edit: -1 }))
                     }}
-                />
-            )}
-
-            {search.senhaWebId > 0 && usuarioSenhaWeb && (
-                <DefinirSenhaWebModal
-                    isOpen
-                    usuarioId={usuarioSenhaWeb.id}
-                    usuarioNome={usuarioSenhaWeb.nome}
-                    setClose={() => setSearch(prev => ({ ...prev, senhaWebId: -1 }))}
                 />
             )}
         </div>

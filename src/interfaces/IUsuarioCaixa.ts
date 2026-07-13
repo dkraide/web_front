@@ -1,16 +1,17 @@
-export default interface IUsuarioCaixa{
+export default interface IUsuarioCaixa {
     id: number
     idUsuario: number
+    empresaId: number
     login: string
     senha: string
-    email: string
+    email?: string
     nome: string
-    telefone: string
-    rg: string
-    cpf: string
-    tipo: string
-    localCriacao: string
-    lastChange: Date
+    telefone?: string
+    rg?: string
+    cpf?: string
+    tipo?: string
+    temSenhaWeb: boolean
+
     menuSAT: boolean
     menuEmpresa: boolean
     menuRelatorio: boolean
@@ -33,7 +34,9 @@ export default interface IUsuarioCaixa{
     removeProduto: boolean
     visualizaVendasAntigas: boolean
     finalizaVendaSemEstoque: boolean
-    removeItemComanda: boolean
     imprimeProdutoFechamento: boolean
-    empresaId: number
+    removeItemComanda: boolean
+    visualizarVendaCaixa: boolean
+    impFechamentoCanceladas: boolean
+    permitePausarVenda: boolean
 }

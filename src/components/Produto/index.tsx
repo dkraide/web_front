@@ -3,10 +3,11 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
 import { api } from '@/services/apiClient';
-import IProdutoGrupo from '@/interfaces/IProdutoGrupo';
+import IGrupoAdicional from '@/interfaces/IGrupoAdicional';
+import IProdutoGrupoAdicional from '@/interfaces/IProdutoGrupoAdicional';
 import CustomButton from '@/components/ui/Buttons';
-import NovoGrupo from '@/components/Modals/Produto/prato/NovoGrupo';
 import VinculeMateriaPrima from '@/components/Modals/MateriaPrima/VinculaProduto';
 import { productSchema } from '@/schemas/ProductSchema';
 import { useProdutoData } from './hooks/useProdutoData';
@@ -21,10 +22,9 @@ import styles from './styles.module.scss';
 import SelectProdutoGrupo from '../Modals/Produto/SelectProdutoGrupo';
 
 export default function ProdutoItem() {
+    const router = useRouter();
     const { produto, setProduto, user, loading, setLoading, loadCod } = useProdutoData();
-    const [modalGrupo, setModalGrupo] = useState(false);
     const [modalSelectGrupo, setModalSelectGrupo] = useState(false);
-    const [indexGrupo, setIndexGrupo] = useState<number>(-1);
     const [tipoCal, setTipoCal] = useState('Cal');
     const [modalMp, setModalMp] = useState(false);
 
@@ -81,29 +81,33 @@ export default function ProdutoItem() {
         }
     }, [produto]);
 
+    // Upload de imagem de item de grupo adicional.
+    // OBS: os itens agora pertencem ao GrupoAdicional compartilhado, não mais
+    // ao vínculo do produto. Esse fluxo idealmente deveria acontecer na tela
+    // de gestão do Grupo Adicional, e não aqui. Mantido por compatibilidade
+    // enquanto essa tela não existe no front — ver observação no chat.
     const uploadImagemItemGrupoAsync = async (
         temporaryImagem: string,
-        produtoGrupoItemId: string,
+        grupoAdicionalItemId: string,
         empresaId: number
     ): Promise<string | null> => {
         try {
-            // Converte base64 para Blob
             const [meta, base64Data] = temporaryImagem.split(',');
-            const mimeType = meta.match(/:(.*?);/)[1]; // ex: image/png
+            const mimeType = meta.match(/:(.*?);/)[1];
             const byteCharacters = atob(base64Data);
             const byteArray = new Uint8Array(byteCharacters.length);
             for (let i = 0; i < byteCharacters.length; i++) {
                 byteArray[i] = byteCharacters.charCodeAt(i);
             }
             const blob = new Blob([byteArray], { type: mimeType });
-            const file = new File([blob], `item_${produtoGrupoItemId}.${mimeType.split('/')[1]}`, { type: mimeType });
+            const file = new File([blob], `item_${grupoAdicionalItemId}.${mimeType.split('/')[1]}`, { type: mimeType });
 
             const formData = new FormData();
             formData.append('file', file);
-            formData.append('id', produtoGrupoItemId);
+            formData.append('id', grupoAdicionalItemId);
             formData.append('empresaId', empresaId.toString());
 
-            const { data } = await api.post(`v2/produtogrupoitem/image`, formData, {
+            const { data } = await api.post(`v2/grupoadicionalitem/image`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
             return data?.url ?? data?.localPath ?? null;
@@ -149,9 +153,10 @@ export default function ProdutoItem() {
 
         try {
             let produtoId = produto.id;
+            const isEdicao = !!produto.id && produto.id > 0;
 
             // Criar ou atualizar produto
-            if (!produto.id || produto.id <= 0) {
+            if (!isEdicao) {
                 updatedProduto.tipo = 'SIMPLES';
                 updatedProduto.status = true;
                 updatedProduto.empresaId = user.empresaSelecionada;
@@ -173,9 +178,10 @@ export default function ProdutoItem() {
 
             // Upload de imagens dos itens de grupo que tiverem temporaryImage
             if (produto.grupoAdicionais?.length) {
-                for (const grupo of produto.grupoAdicionais) {
-                    if (!grupo.itens?.length) continue;
-                    for (const item of grupo.itens) {
+                for (const vinculo of produto.grupoAdicionais) {
+                    const itens = vinculo.grupoAdicional?.itens;
+                    if (!itens?.length) continue;
+                    for (const item of itens) {
                         if (!item.temporaryImage) continue;
                         const newUrl = await uploadImagemItemGrupoAsync(item.temporaryImage, item.id, user.empresaSelecionada);
                         if (newUrl) {
@@ -186,6 +192,8 @@ export default function ProdutoItem() {
                 }
             }
 
+            router.push('/produto');
+
         } catch (err) {
             toast.error('Erro ao salvar produto');
         } finally {
@@ -193,13 +201,42 @@ export default function ProdutoItem() {
         }
     };
 
-    const handleNewGrupo = (response?: IProdutoGrupo) => {
-        setModalGrupo(false);
+    const handleVincularGrupo = (grupoSelecionado?: IGrupoAdicional) => {
         setModalSelectGrupo(false);
-        if (response) {
-            response.idProduto = produto.idProduto;
-            response.produtoId = produto.id;
-            addOrUpdateGrupo(response, indexGrupo);
+        if (!grupoSelecionado) return;
+
+        // Evita vincular o mesmo grupo duas vezes
+        const jaVinculado = produto.grupoAdicionais?.some(
+            (v) => v.grupoAdicionalId
+             === grupoSelecionado.id
+        );
+        if (jaVinculado) {
+            toast.warn('Esse grupo já está vinculado ao produto.');
+            return;
+        }
+
+        const vinculo: IProdutoGrupoAdicional = {
+            id: 0,
+            idProdutoGrupoAdicional: 0,
+            idProduto: produto.idProduto,
+            produtoId: produto.id,
+            idGrupoAdicional: grupoSelecionado.idGrupoAdicional,
+            grupoAdicionalId: grupoSelecionado.id,
+            empresaId: user.empresaSelecionada,
+            lastChange: new Date(),
+            needChange: true,
+            grupoAdicional: grupoSelecionado,
+        };
+
+        addOrUpdateGrupo(vinculo, -1);
+    };
+
+    const handleEditGrupo = (vinculo: IProdutoGrupoAdicional) => {
+        // Edição do conteúdo do grupo (nome, min/max, itens) agora é feita na
+        // tela própria do Grupo Adicional, já que ele é compartilhado entre produtos.
+        const id = vinculo.grupoAdicionalId ?? vinculo.grupoAdicional?.id;
+        if (id) {
+            router.push(`/grupos-adicionais/${id}`);
         }
     };
 
@@ -249,17 +286,8 @@ export default function ProdutoItem() {
                             grupoAdicionais={produto.grupoAdicionais}
                             onAddMateriaPrima={() => setModalMp(true)}
                             onRemoveMateriaPrima={removeMateriaPrima}
-                            onVincularGrupo={() => {
-                                setModalSelectGrupo(true);
-                            }}
-                            onAddGrupo={() => {
-                                setIndexGrupo(-1);
-                                setModalGrupo(true);
-                            }}
-                            onEditGrupo={(index) => {
-                                setIndexGrupo(index);
-                                setModalGrupo(true);
-                            }}
+                            onVincularGrupo={() => setModalSelectGrupo(true)}
+                            onEditGrupo={handleEditGrupo}
                             onDeleteGrupo={removeGrupo}
                         />
                     </Tab>
@@ -285,18 +313,10 @@ export default function ProdutoItem() {
                 />
             )}
 
-            {modalGrupo && (
-                <NovoGrupo
-                    isOpen={modalGrupo}
-                    grupoEditado={indexGrupo < 0 ? undefined : produto.grupoAdicionais[indexGrupo]}
-                    setClose={handleNewGrupo}
-                />
-            )}
-             {modalSelectGrupo && (
+            {modalSelectGrupo && (
                 <SelectProdutoGrupo
-                    produtoId={produto?.id ?? 0}
                     empresa={user?.empresaSelecionada}
-                    setClose={handleNewGrupo}
+                    setClose={handleVincularGrupo}
                 />
             )}
         </div>

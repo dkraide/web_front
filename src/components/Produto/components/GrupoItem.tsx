@@ -1,22 +1,28 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import CustomButton from '@/components/ui/Buttons';
-import IProdutoGrupo from '@/interfaces/IProdutoGrupo';
+import IProdutoGrupoAdicional from '@/interfaces/IProdutoGrupoAdicional';
 import styles from '../styles.module.scss';
 
 interface GrupoItemProps {
-    grupo: IProdutoGrupo;
+    vinculo: IProdutoGrupoAdicional;
     onEdit: () => void;
     onDelete?: () => void;
 }
 
-export default function GrupoItem({ grupo, onEdit, onDelete }: GrupoItemProps) {
+export default function GrupoItem({ vinculo, onEdit, onDelete }: GrupoItemProps) {
+    const grupo = vinculo.grupoAdicional;
+
     const handleDelete = (e: React.MouseEvent) => {
         e.stopPropagation(); // Evita que dispare o onEdit
         if (onDelete) {
             onDelete();
         }
     };
+
+    if (!grupo) {
+        return null;
+    }
 
     return (
         <div onClick={onEdit} className={styles.grupo}>
