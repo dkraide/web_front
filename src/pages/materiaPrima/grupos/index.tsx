@@ -17,7 +17,9 @@
 // import IGrupoAdicional from '@/interfaces/IGrupoAdicional';
 // import CadastroGrupoForm from '@/components/Modals/MateriaPrima/Grupo/CadastroGrupoForm';
 
-
+ export default function Page() {
+    return (<></>)
+ }
 // export default function Grupos() {
 //     const [loading, setLoading] = useState(true)
 //     const [classes, setClasses] = useState<IGrupoAdicional[]>([])
