@@ -194,7 +194,7 @@ export default function SideBar({ children, ...props }) {
                 </Sidebar>
                 <main  {...props} className={styles['main-panel']}>
                     {children}
-                    {/* {!user.isPdv && <EdnaChat empresaId={user.empresaSelecionada} />} */}
+                    {!user.isPdv && <EdnaChat empresaId={user.empresaSelecionada} />}
                 </main>
             </div>
         </div>
