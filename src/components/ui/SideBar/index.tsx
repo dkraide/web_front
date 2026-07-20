@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './styles.module.scss';
 import { useContext, useEffect, useState } from 'react';
-import { faBars, faChartSimple, faMoneyBill, faCalculator, faPercent, faBox, faCashRegister, faUtensils, faPowerOff, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faChartSimple, faMoneyBill, faCalculator, faPercent, faBox, faCashRegister, faUtensils, faPowerOff, faUser, faComments } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '@/contexts/AuthContext';
 import IUsuario from '@/interfaces/IUsuario';
 import { api } from '@/services/apiClient';
@@ -149,7 +149,7 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem href={'/promocao/tabelaPreco'}> Tabela de Preco</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCalculator} color={'var(--main)'} />} label="Financeiro">
-                                     <MenuItem href={'/financeiro'}>Minhas Faturas {bgNew()}</MenuItem>
+                                    <MenuItem href={'/financeiro'}>Minhas Faturas {bgNew()}</MenuItem>
                                     <MenuItem href={'/motivoLancamento'}>Motivo de Lancamento</MenuItem>
                                     <MenuItem href={'/despesa'}>Despesas</MenuItem>
                                     <MenuItem href={'/entrada'}>Entradas</MenuItem>
@@ -187,6 +187,10 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem href={'/menudigital/horarios'}>Configuração</MenuItem>
                                     <MenuItem href={'/menudigital/empresa'}>Empresa</MenuItem>
                                     <MenuItem href={'/menudigital/cardapio'}>Cardápios</MenuItem>
+                                </SubMenu>
+                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faComments} color={'var(--main)'} />} label="Integrações">
+                                    <MenuItem href={'/whatsapp'}>WhatsApp {bgNew()}</MenuItem>
+                                    {/* <MenuItem href={'/ifood'}>IFood {bgNew()}</MenuItem> */}
                                 </SubMenu>
                             </div>
                         )}
