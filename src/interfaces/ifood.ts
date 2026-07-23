@@ -1,34 +1,11 @@
 export interface IFoodIntegracaoStatus {
   empresaId: number;
-  merchantId: string | null;
-  status: 0 | 1 | 2 | 3; // 0=Pendente, 1=Ativo, 2=Erro, 3=Revogado
-  expiresAt: string | null;
-  tokenValido: boolean;
+  merchantId: string;
+  status: "Pendente" | "Ativo" | "Erro";
 }
 
-export interface IFoodUserCode {
-  verificationUrl: string;
-  authorizationCodeVerifier: string;
-}
-
-export interface IFoodAutorizarDto {
-  authorizationCode: string; // verifier fica no backend agora
-}
-export interface IFoodIntegracaoStatus {
-  empresaId: number;
-  merchantId: string | null;
-  status: 0 | 1 | 2 | 3;
-  expiresAt: string | null;
-  tokenValido: boolean;
-}
-
-export interface IFoodAutorizarDto {
-  authorizationCode: string;
-}
-
-export interface IFoodUserCode {
-  verificationUrl: string;
-  authorizationCodeVerifier: string;
+export interface IFoodCriarIntegracaoDto {
+  merchantId: string;
 }
 
 export interface IFoodMerchant {

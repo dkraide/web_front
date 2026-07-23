@@ -18,14 +18,32 @@ export function useImageUpload() {
         };
     }, [imagePreview]);
 
-    const handleImageChange = (file: File) => {
-        if (imagePreview) {
-            URL.revokeObjectURL(imagePreview);
-        }
+    const MIN_WIDTH = 600;
+    const MIN_HEIGHT = 450;
 
-        setImageFile(file);
-        setImagePreview(URL.createObjectURL(file));
-        setHasNewImage(true);
+    const handleImageChange = (file: File) => {
+        const objectUrl = URL.createObjectURL(file);
+        const img = new Image();
+        img.onload = () => {
+            if (img.width < MIN_WIDTH || img.height < MIN_HEIGHT) {
+                toast.error(`Resolução mínima: ${MIN_WIDTH}x${MIN_HEIGHT}px. Imagem enviada: ${img.width}x${img.height}px.`);
+                URL.revokeObjectURL(objectUrl);
+                return;
+            }
+
+            if (imagePreview) {
+                URL.revokeObjectURL(imagePreview);
+            }
+
+            setImageFile(file);
+            setImagePreview(objectUrl);
+            setHasNewImage(true);
+        };
+        img.onerror = () => {
+            toast.error('Não foi possível ler a imagem selecionada.');
+            URL.revokeObjectURL(objectUrl);
+        };
+        img.src = objectUrl;
     };
 
     const uploadImagemAsync = async (produtoId: number): Promise<string | null> => {
@@ -48,7 +66,7 @@ export function useImageUpload() {
             return data.localPath;
         } catch (err) {
             const error = err as AxiosError;
-            toast.error(`Erro ao enviar imagem: ${error.response.data}`);
+            toast.error(`Erro ao enviar imagem: ${error.response?.data ?? error.message}`);
             return null;
         }
     };

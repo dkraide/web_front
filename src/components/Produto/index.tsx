@@ -79,7 +79,7 @@ export default function ProdutoItem() {
                 setValue('cod', c.toString());
             });
         }
-    }, [produto]);
+    }, [produto, loading]);
 
     // Upload de imagem de item de grupo adicional.
     // OBS: os itens agora pertencem ao GrupoAdicional compartilhado, não mais
@@ -173,6 +173,10 @@ export default function ProdutoItem() {
                 const newLocalPath = await uploadImagemAsync(produtoId);
                 if (newLocalPath) {
                     setProduto({ ...updatedProduto, id: produtoId, localPath: newLocalPath });
+                } else {
+                    setProduto({ ...updatedProduto, id: produtoId });
+                    setLoading(false);
+                    return;
                 }
             }
 
