@@ -41,9 +41,7 @@ export function useProdutoData() {
 
         loadUser();
 
-        if (!id) {
-            loadCod();
-        } else {
+        if (id) {
             api.get(`/Produto/Select?id=${id}`).then(({ data }) => {
                 console.log('produto carregado', data);
                 setProduto(data);

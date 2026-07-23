@@ -146,6 +146,8 @@ export interface IFoodItemDaCategoria {
   additionalInformation?: string | null;
   externalCode?: string | null;
   status: string;
+  /** Ex: DEFAULT, COMBO_V2. Só vem preenchido quando o item é carregado via listarItensDaCategoria. */
+  type?: string | null;
   productId: string;
   index: number;
   imagePath?: string | null;
@@ -253,6 +255,9 @@ export interface IFoodOptionGroupRef {
   id: string;
   min: number;
   max: number;
+  index?: number;
+  /** Só usado em combos (COMBO_V2). "MAIN" no grupo principal; omitido nos demais. */
+  associationType?: string;
 }
 
 export interface IFoodProdutoFlat {
@@ -485,23 +490,19 @@ export interface IFoodExternalCodePorCatalogo {
   catalogContext: string;
 }
 
-export interface IFoodEditarPrecoItemRequest {
-  itemId: string;
-  price?: IFoodPreco | null;
-  priceByCatalog?: IFoodPrecoPorCatalogo[] | null;
-}
-
-export interface IFoodEditarStatusItemRequest {
-  itemId: string;
-  /** Ex: AVAILABLE, UNAVAILABLE */
+export interface IFoodItemEditarContextModifier {
+  catalogContext: string;
   status?: string | null;
-  statusByCatalog?: IFoodStatusPorCatalogo[] | null;
+  price?: IFoodPreco | null;
+  externalCode?: string | null;
 }
 
-export interface IFoodEditarExternalCodeItemRequest {
-  itemId: string;
+/** Edição parcial de item. Substitui os antigos editarPrecoItem/editarStatusItem/editarExternalCodeItem. */
+export interface IFoodEditarItemRequest {
+  status?: string | null;
+  price?: IFoodPreco | null;
   externalCode?: string | null;
-  externalCodeByCatalog?: IFoodExternalCodePorCatalogo[] | null;
+  contextModifiers?: IFoodItemEditarContextModifier[] | null;
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

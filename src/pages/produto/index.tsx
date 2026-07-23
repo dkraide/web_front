@@ -99,7 +99,7 @@ export default function Produto() {
             await api
                 .post(`/Produto/${id}/UploadImagem`, form, { headers: { 'Content-Type': 'multipart/form-data' } })
                 .then(() => loadData())
-                .catch(() => { toast.error('Erro ao tentar salvar imagem.'); setLoading(false) })
+                .catch((ex) => { toast.error('Erro ao tentar salvar imagem.' + ex.response?.data || ex.message); setLoading(false) })
         }
     }
 

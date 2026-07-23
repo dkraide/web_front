@@ -23,6 +23,9 @@ export  default function SelectTributacao({width, selected, setSelected, error}:
            api.get(`/Tributacao/List?empresaId=${res?.empresaSelecionada}`)
            .then(({data}: AxiosResponse) => {
                    setFormas(data);
+                   if (!selected && data.length > 0) {
+                       setSelected(data[0]);
+                   }
            })
            .catch((err: AxiosError) => {
                toast.error(`Erro ao buscar Grupo de Material ${err.message}`)

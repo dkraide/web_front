@@ -1,54 +1,60 @@
 import { api } from "./apiClient";
 import {
-  IFoodAutorizarDto,
   IFoodAtualizarHorariosDto,
   IFoodCriarInterrupcaoDto,
+  IFoodCriarIntegracaoDto,
   IFoodHorario,
   IFoodIntegracaoStatus,
   IFoodInterrupcao,
   IFoodMerchant,
   IFoodStatusLoja,
-  IFoodUserCode,
 } from "../interfaces/ifood";
 
 type ApiResult<T> = { sucesso: boolean; dados: T; erro: string };
 
 export const ifoodService = {
-  
-  // Auth
-  async getStatus(empresaId: number) {
-    const { data } = await api.get<ApiResult<IFoodIntegracaoStatus>>(
+
+  // Merchants disponíveis no app centralizado
+  async listarMerchantsDisponiveis() {
+    const { data } = await api.get<ApiResult<IFoodMerchant[]>>(
+      `/ifood/merchants`
+    );
+    return data;
+  },
+
+  async obterMerchant(merchantId: string) {
+    const { data } = await api.get<ApiResult<IFoodMerchant>>(
+      `/ifood/merchants/${merchantId}`
+    );
+    return data;
+  },
+
+  // Integrações por empresa
+  async listarIntegracoes(empresaId: number) {
+    const { data } = await api.get<ApiResult<IFoodIntegracaoStatus[]>>(
       `/ifood/empresas/${empresaId}/integracoes`
     );
     return data;
   },
 
-  async iniciarAutorizacao(empresaId: number) {
-    const { data } = await api.post<ApiResult<IFoodUserCode>>(
-      `/ifood/empresas/${empresaId}/iniciar`
-    );
-    return data;
-  },
-
-  async autorizar(empresaId: number, dto: IFoodAutorizarDto) {
+  async adicionarIntegracao(empresaId: number, dto: IFoodCriarIntegracaoDto) {
     const { data } = await api.post<ApiResult<IFoodIntegracaoStatus>>(
-      `/ifood/empresas/${empresaId}/autorizar`,
+      `/ifood/empresas/${empresaId}/integracoes`,
       dto
     );
     return data;
   },
 
-  async revogar(empresaId: number) {
-    const { data } = await api.delete<ApiResult<object>>(
-      `/ifood/empresas/${empresaId}`
+  async verificarIntegracao(empresaId: number, merchantId: string) {
+    const { data } = await api.post<ApiResult<IFoodIntegracaoStatus>>(
+      `/ifood/empresas/${empresaId}/integracoes/${merchantId}/verificar`
     );
     return data;
   },
 
-  // Merchant
-  async getMerchant(empresaId: number) {
-    const { data } = await api.get<ApiResult<IFoodMerchant>>(
-      `/ifood/empresas/${empresaId}/merchant`
+  async removerIntegracao(empresaId: number, merchantId: string) {
+    const { data } = await api.delete<ApiResult<object>>(
+      `/ifood/empresas/${empresaId}/integracoes/${merchantId}`
     );
     return data;
   },
@@ -99,17 +105,4 @@ export const ifoodService = {
     );
     return data;
   },
-  async listarMerchants(empresaId: number) {
-    const { data } = await api.get<ApiResult<IFoodMerchant[]>>(
-        `/ifood/empresas/${empresaId}/merchants`
-    );
-    return data;
-},
-
-async vincularMerchant(empresaId: number, merchantId: string) {
-    const { data } = await api.post<ApiResult<IFoodIntegracaoStatus>>(
-        `/ifood/empresas/${empresaId}/merchants/${merchantId}/vincular`
-    );
-    return data;
-},
 };

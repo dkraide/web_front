@@ -1,5 +1,5 @@
-// styles.module.scss — IFoodProdutoPage v2
-// Usa as variáveis reais do projeto: --white, --dark-900, --main, --background, --danger
+// styles.module.scss — IFoodComboPage
+// Compartilha o mesmo padrão visual da tela de produto (mesmas variáveis reais).
 
 // ─── Loading ──────────────────────────────────────────────────────────────────
 
@@ -175,40 +175,11 @@
   color: var(--dark-900);
   margin: 0;
 }
-.cardTituloOpt {
-  font-weight: 400;
-  color: #999;
-  font-size: 13px;
-}
 .cardDesc {
   font-size: 12px;
   color: #888;
   margin: -8px 0 0;
   line-height: 1.5;
-}
-
-// ─── Grid informações (2 colunas) ─────────────────────────────────────────────
-
-.infoGrid {
-  display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 16px;
-  align-items: start;
-
-  @media (max-width: 900px) {
-    grid-template-columns: 1fr;
-  }
-}
-
-.infoEsquerda {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.infoDireita {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
 }
 
 // ─── Campos ───────────────────────────────────────────────────────────────────
@@ -231,12 +202,6 @@
   color: #666;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-}
-.labelOpt {
-  font-weight: 400;
-  text-transform: none;
-  color: #bbb;
-  letter-spacing: 0;
 }
 
 .input,
@@ -277,30 +242,10 @@
   &:focus { border-color: var(--main); }
 }
 
-.selectSm {
-  @extend .select;
-  width: 130px;
-  font-size: 12px;
-  padding: 7px 28px 7px 10px;
-}
-
-.fieldBottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.charCount {
-  font-size: 11px;
-  color: #bbb;
-}
 .fieldHint {
   font-size: 11px;
   color: #aaa;
   line-height: 1.4;
-}
-.erro {
-  font-size: 12px;
-  color: var(--danger);
 }
 
 .inputPrefix {
@@ -389,10 +334,7 @@
   font-size: 13px;
   font-weight: 500;
   transition: border-color 0.15s, color 0.15s;
-  &:hover {
-    border-color: var(--main);
-    color: var(--main);
-  }
+  &:hover { border-color: var(--main); color: var(--main); }
 }
 .btnUploadDica {
   font-size: 11px;
@@ -400,51 +342,7 @@
   font-weight: 400;
 }
 
-// ─── Classificações ───────────────────────────────────────────────────────────
-
-.classificacaoSection {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  &:not(:last-child) {
-    padding-bottom: 14px;
-    border-bottom: 1px solid #f5f5f5;
-  }
-}
-.classificacaoLabel {
-  font-size: 11px;
-  font-weight: 700;
-  color: #888;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.tagsRow {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.tagChip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 10px;
-  border-radius: 99px;
-  border: 1px solid #e0e0e0;
-  background: var(--white);
-  font-size: 12px;
-  color: #555;
-  cursor: pointer;
-  transition: all 0.12s;
-  &:hover { border-color: var(--main); color: var(--main); }
-}
-.tagChipAtivo {
-  border-color: var(--main);
-  background: var(--main);
-  color: var(--white);
-  &:hover { opacity: 0.85; }
-}
-
-// ─── Complementos — header da aba ─────────────────────────────────────────────
+// ─── Grupos — header da aba ────────────────────────────────────────────────────
 
 .complementosHeader {
   display: flex;
@@ -508,7 +406,7 @@
   gap: 10px;
 }
 
-// ─── Grupo inline ─────────────────────────────────────────────────────────────
+// ─── Grupo inline (combo) ──────────────────────────────────────────────────────
 
 .grupoInline {
   background: var(--white);
@@ -517,6 +415,10 @@
   overflow: hidden;
   transition: border-color 0.15s;
   &:focus-within { border-color: #ccc; }
+}
+.grupoInlinePrincipal {
+  border-color: var(--main);
+  border-width: 2px;
 }
 
 .grupoInlineHeader {
@@ -543,13 +445,16 @@
 .grupoInlineHeaderLeft {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
   min-width: 0;
 }
 .grupoInlineNomePreview {
   font-size: 13px;
   font-weight: 600;
   color: var(--dark-900);
+  display: flex;
+  align-items: center;
+  gap: 8px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -562,6 +467,20 @@
 .grupoInlineMeta {
   font-size: 11px;
   color: #888;
+}
+
+.badgePrincipal {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--main);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  flex-shrink: 0;
 }
 
 .grupoInlineBtnRemover {
@@ -587,9 +506,9 @@
 }
 
 .grupoInlineRow2 {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 12px;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
 }
 
 .grupoInlineRow3 {
@@ -599,89 +518,33 @@
   flex-wrap: wrap;
 }
 
+.principalToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dark-900);
+  cursor: pointer;
+  white-space: nowrap;
+  padding-bottom: 9px;
+
+  input { accent-color: var(--main); cursor: pointer; }
+  span { display: flex; align-items: center; gap: 4px; }
+}
+
 .grupoDivider {
   height: 1px;
   background: #f0f0f0;
   margin: 0 -16px;
 }
 
-// ─── Linhas de complemento ────────────────────────────────────────────────────
+// ─── Produtos dentro do grupo ──────────────────────────────────────────────────
 
 .compList {
   display: flex;
   flex-direction: column;
   gap: 6px;
-}
-
-.compRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.compInputNome {
-  flex: 1;
-  padding: 8px 10px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  font-size: 13px;
-  color: var(--dark-900);
-  background: var(--white);
-  outline: none;
-  font-family: inherit;
-  transition: border-color 0.15s;
-  &:focus { border-color: var(--main); }
-  &::placeholder { color: #ccc; }
-}
-
-.compPrecoWrapper {
-  display: flex;
-  align-items: center;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  overflow: hidden;
-  flex-shrink: 0;
-  width: 110px;
-  transition: border-color 0.15s;
-  &:focus-within { border-color: var(--main); }
-}
-.compPrecoPrefix {
-  padding: 0 7px;
-  font-size: 12px;
-  color: #888;
-  background: #fafafa;
-  border-right: 1px solid #e0e0e0;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-.compInputPreco {
-  flex: 1;
-  padding: 8px 7px;
-  border: none;
-  outline: none;
-  font-size: 13px;
-  color: var(--dark-900);
-  background: transparent;
-  font-family: inherit;
-  min-width: 0;
-  &::placeholder { color: #ccc; }
-}
-
-.compBtnRemover {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 7px;
-  border: 1px solid #e0e0e0;
-  background: var(--white);
-  color: #ccc;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background 0.12s, color 0.12s, border-color 0.12s;
-  &:hover { background: #fef2f2; color: var(--danger); border-color: #fecaca; }
 }
 
 .compVazio {
@@ -690,6 +553,59 @@
   padding: 6px 0;
   margin: 0;
   font-style: italic;
+}
+
+.produtoComboRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 1px solid #f0f0f0;
+  border-radius: 8px;
+}
+.produtoComboImagem {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.produtoComboImagemPlaceholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #f0f0f0;
+  flex-shrink: 0;
+}
+.produtoComboNome {
+  flex: 1;
+  font-size: 13px;
+  color: var(--dark-900);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.produtoComboPreco {
+  font-size: 12px;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.compBtnRemover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid #e0e0e0;
+  background: var(--white);
+  color: #ccc;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  &:hover { background: #fef2f2; color: var(--danger); border-color: #fecaca; }
 }
 
 .btnAdicionarComp {
@@ -722,14 +638,83 @@
   color: #888;
   cursor: pointer;
   transition: border-color 0.12s, color 0.12s, background 0.12s;
-  &:hover {
-    border-color: var(--main);
-    color: var(--main);
-    background: #fff5f7;
-  }
+  &:hover { border-color: var(--main); color: var(--main); background: #fff5f7; }
 }
 
-// ─── Disponibilidade ──────────────────────────────────────────────────────────
+// ─── Preço / desconto ───────────────────────────────────────────────────────────
+
+.precoFixoPainel {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+  background: #fafafa;
+  border: 1px solid #f0f0f0;
+  border-radius: 10px;
+}
+
+.sugestaoPreco {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: #888;
+  flex-wrap: wrap;
+}
+
+.btnUsarSugestao {
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--main);
+  background: none;
+  color: var(--main);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  &:hover { background: var(--main); color: var(--white); }
+}
+
+.precoFinalBox {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--main);
+  border-radius: 8px;
+  color: var(--white);
+}
+.precoFinalLabel {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.precoFinalValores {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.precoFinalRiscado {
+  font-size: 13px;
+  text-decoration: line-through;
+  opacity: 0.7;
+}
+.precoFinalValor {
+  font-size: 18px;
+  font-weight: 700;
+}
+.precoFinalBadge {
+  padding: 2px 8px;
+  border-radius: 99px;
+  background: var(--white);
+  color: var(--main);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+// ─── Disponibilidade (idêntico ao produto) ─────────────────────────────────────
 
 .dispOpcoes {
   border: 1px solid #e0e0e0;
@@ -867,4 +852,183 @@
   cursor: pointer;
   transition: border-color 0.12s, color 0.12s;
   &:hover { border-color: var(--main); color: var(--main); }
+}
+
+// ─── Modal de seleção de produtos ──────────────────────────────────────────────
+
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+.modalProdutos {
+  background: var(--white);
+  border-radius: 12px;
+  width: 480px;
+  max-width: 92vw;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.modalProdutosHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+
+  h3 { font-size: 15px; font-weight: 700; color: var(--dark-900); margin: 0; }
+}
+.modalFechar {
+  background: none;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  color: #999;
+  cursor: pointer;
+  &:hover { color: var(--dark-900); }
+}
+
+.buscaWrapper {
+  position: relative;
+  margin: 14px 20px 0;
+}
+.buscaIcon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaa;
+}
+.buscaInput {
+  width: 100%;
+  padding: 9px 12px 9px 34px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  &:focus { border-color: var(--main); }
+}
+
+.modalProdutosLista {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.semItens {
+  font-size: 13px;
+  color: #999;
+  text-align: center;
+  padding: 24px 0;
+}
+
+.produtoGrupoCategoria {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.produtoGrupoCategoriaNome {
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.produtoOpcaoRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover { background: var(--background); }
+
+  input[type="checkbox"] { accent-color: var(--main); cursor: pointer; flex-shrink: 0; }
+}
+.produtoOpcaoDesabilitada {
+  opacity: 0.45;
+  cursor: not-allowed;
+  &:hover { background: none; }
+}
+.produtoOpcaoImagem {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.produtoOpcaoImagemPlaceholder {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: #f0f0f0;
+  flex-shrink: 0;
+}
+.produtoOpcaoNome {
+  flex: 1;
+  font-size: 13px;
+  color: var(--dark-900);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.produtoOpcaoPreco {
+  font-size: 12px;
+  color: #888;
+  flex-shrink: 0;
+}
+
+.modalProdutosFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  border-top: 1px solid #f0f0f0;
+}
+.selecionadosCount {
+  font-size: 12px;
+  color: #888;
+}
+.formActions {
+  display: flex;
+  gap: 10px;
+}
+.btnCancelarModal {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background: var(--white);
+  color: var(--dark-900);
+  font-size: 13px;
+  cursor: pointer;
+  &:hover { background: var(--background); }
+}
+.btnAgruparModal {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: var(--main);
+  color: var(--white);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  &:hover:not(:disabled) { opacity: 0.85; }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
 }

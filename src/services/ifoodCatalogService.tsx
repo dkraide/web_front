@@ -11,14 +11,12 @@ import type {
   IFoodCriarPizzaRequest,
   IFoodCriarProdutoRequest,
   IFoodEditarCategoriaRequest,
-  IFoodEditarExternalCodeItemRequest,
   IFoodEditarExternalCodeOpcaoRequest,
+  IFoodEditarItemRequest,
   IFoodEditarNomeGrupoComplementoRequest,
-  IFoodEditarPrecoItemRequest,
   IFoodEditarPrecoOpcaoRequest,
   IFoodEditarProdutoRequest,
   IFoodEditarStatusGrupoComplementoRequest,
-  IFoodEditarStatusItemRequest,
   IFoodEditarStatusOpcaoRequest,
   IFoodEstoqueProduto,
   IFoodEstoqueProdutoResumo,
@@ -259,37 +257,17 @@ export const ifoodCatalogService = {
     return data;
   },
 
-  /** Edita o preço de um item. Suporta preços por contexto de catálogo. */
-  async editarPrecoItem(
+  /**
+   * Edita parcialmente um item (status, preço, externalCode ou combinações).
+   * Substitui os antigos editarPrecoItem/editarStatusItem/editarExternalCodeItem.
+   */
+  async editarItem(
     empresaId: number,
-    request: IFoodEditarPrecoItemRequest
-  ) {
-    const { data } = await api.patch<ApiResult<IFoodEditarPrecoItemRequest>>(
-      `${BASE(empresaId)}/itens/preco`,
-      request
-    );
-    return data;
-  },
-
-  /** Edita o status de um item. Suporta status por contexto de catálogo. */
-  async editarStatusItem(
-    empresaId: number,
-    request: IFoodEditarStatusItemRequest
+    itemId: string,
+    request: IFoodEditarItemRequest
   ) {
     const { data } = await api.patch<ApiResult<object>>(
-      `${BASE(empresaId)}/itens/status`,
-      request
-    );
-    return data;
-  },
-
-  /** Edita o código externo de um item. Suporta códigos por contexto de catálogo. */
-  async editarExternalCodeItem(
-    empresaId: number,
-    request: IFoodEditarExternalCodeItemRequest
-  ) {
-    const { data } = await api.patch<ApiResult<object>>(
-      `${BASE(empresaId)}/itens/externalCode`,
+      `${BASE(empresaId)}/itens/${itemId}`,
       request
     );
     return data;

@@ -18,6 +18,7 @@ import type {
   IFoodCustomizationModifier
 } from "../../../interfaces/ifoodCatalog";
 import { parseVinculo } from "../../../interfaces/ifoodCatalog";
+import { humanizarErro } from "@/utils/ifoodApiUtils";
 import { AuthContext } from "@/contexts/AuthContext";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "@/components/Modals/Base/Index";
@@ -106,6 +107,9 @@ export default function IFoodCatalogoPage() {
 
   function isPizza(cat: IFoodCategoriaDetalhe): boolean {
     return cat.template === "PIZZA";
+  }
+  function isCombo(item: IFoodItemDaCategoria): boolean {
+    return item.type === "COMBO_V2";
   }
   function grupoSabores(item: IFoodItemDaCategoria) {
     return item.optionGroups?.find(g =>
@@ -591,14 +595,13 @@ export default function IFoodCatalogoPage() {
     setMenuAberto(null);
     try {
       const novoStatus = item.status === "AVAILABLE" ? "UNAVAILABLE" : "AVAILABLE";
-      const result = await ifoodCatalogService.editarStatusItem(empresaId, {
-        itemId: item.id,
+      const result = await ifoodCatalogService.editarItem(empresaId, item.id, {
         status: novoStatus,
       });
       if (result.sucesso) {
         atualizarItemNaLista(item.id, { status: novoStatus });
       } else {
-        toast.error(result.erro ?? "Erro ao alterar status do item.");
+        toast.error(humanizarErro(result.erro));
       }
     } finally {
       setTogglingStatus(null);
@@ -623,8 +626,7 @@ export default function IFoodCatalogoPage() {
         value: parseFloat(form.value),
         originalValue: form.originalValue ? parseFloat(form.originalValue) : undefined,
       };
-      const result = await ifoodCatalogService.editarPrecoItem(empresaId, {
-        itemId: itemSelecionado.id,
+      const result = await ifoodCatalogService.editarItem(empresaId, itemSelecionado.id, {
         price: novoPreco,
       });
       if (result.sucesso) {
@@ -640,8 +642,7 @@ export default function IFoodCatalogoPage() {
   }
 
   async function onVinculadoItem(itemId: string, externalCode: string) {
-    const result = await ifoodCatalogService.editarExternalCodeItem(empresaId, {
-      itemId,
+    const result = await ifoodCatalogService.editarItem(empresaId, itemId, {
       externalCode,
     });
     if (result.sucesso) {
@@ -690,10 +691,42 @@ export default function IFoodCatalogoPage() {
       if (result.sucesso) {
         setCategorias(result.dados);
         setCategoriasAbertas(new Set(result.dados.map(c => c.id)));
+        result.dados
+          .filter(cat => cat.template !== "PIZZA" && cat.items && cat.items.length > 0)
+          .forEach(cat => enriquecerStatusECategoria(cat.id));
       }
     } finally {
       setLoadingCategorias(false);
     }
+  }
+
+  /**
+   * O endpoint em bloco (includeItems=true) retorna o status "cadastral" do item,
+   * que nem sempre reflete se ele está pausado de verdade — isso fica em
+   * contextModifiers[catalogContext=DEFAULT].status no endpoint por categoria.
+   * Busca isso em paralelo e corrige o status/type de cada item já renderizado.
+   */
+  async function enriquecerStatusECategoria(categoriaId: string) {
+    try {
+      const result = await ifoodCatalogService.listarItensDaCategoria(empresaId, categoriaId);
+      if (!result.sucesso) return;
+      const { items } = result.dados;
+
+      setCategorias(prev => prev.map(cat => {
+        if (cat.id !== categoriaId) return cat;
+        return {
+          ...cat,
+          items: cat.items?.map(item => {
+            const flat = items.find(i => i.id === item.id);
+            if (!flat) return item;
+            const statusReal = flat.contextModifiers?.find(
+              cm => cm.catalogContext === "DEFAULT"
+            )?.status ?? flat.status;
+            return { ...item, status: statusReal, type: flat.type };
+          }),
+        };
+      }));
+    } catch { }
   }
 
   async function carregarProdutos() {
@@ -854,7 +887,10 @@ export default function IFoodCatalogoPage() {
                     </CustomButton>
                   ) : (
                     <>
-                      <CustomButton typeButton="outline-main" size="sm" onClick={() => { }}>
+                      <CustomButton typeButton="outline-main" size="sm"
+                        onClick={() => router.push(
+                          `/ifood/catalogo/combos?catalogId=${catalogoAtivo}&categoryId=${cat.id}`
+                        )}>
                         Criar combo
                       </CustomButton>
                       <CustomButton typeButton="outline-main" size="sm" onClick={() => { }}>
@@ -1129,7 +1165,9 @@ export default function IFoodCatalogoPage() {
                                   </span>
                                 )}
                                 <div className={styles.itemTags}>
-                                  <span className={styles.tagOferta}>Oferta Simples</span>
+                                  <span className={styles.tagOferta}>
+                                    {isCombo(item) ? "Combo" : "Oferta Simples"}
+                                  </span>
                                   {item.description && (
                                     <span className={styles.itemDesc}>{item.description}</span>
                                   )}
@@ -1181,7 +1219,8 @@ export default function IFoodCatalogoPage() {
                                       </button>
                                       <button className={styles.dropdownItem}
                                         onClick={() => {
-                                          router.push(`/ifood/catalogo/produto?catalogId=${catalogoAtivo}&itemId=${item.id}`);
+                                          const rota = isCombo(item) ? "combos" : "produto";
+                                          router.push(`/ifood/catalogo/${rota}?catalogId=${catalogoAtivo}&itemId=${item.id}`);
                                           setMenuAberto(null);
                                         }}>
                                         <FiEdit2 size={13} /> Editar item
