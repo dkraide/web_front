@@ -6,7 +6,7 @@ import { useRouter } from "next/router";
 import {
   FiArrowLeft, FiUpload, FiPlus, FiTrash2,
   FiCheck, FiLoader, FiAlertCircle, FiChevronDown,
-  FiChevronUp, FiSave,
+  FiChevronUp, FiSave, FiImage, FiEye, FiEyeOff,
 } from "react-icons/fi";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
@@ -44,6 +44,9 @@ interface ComplementoForm {
   id: string;
   nome: string;
   preco: number;
+  status: "AVAILABLE" | "UNAVAILABLE";
+  imagePath: string | null;    // caminho já salvo (ou url) da imagem
+  imagemBase64: string | null; // nova imagem a subir no salvar
   // só para itens já existentes no iFood
   optionId?: string;
   productId?: string;
@@ -140,8 +143,48 @@ function ComplementoRow({
   onChange: (patch: Partial<ComplementoForm>) => void;
   onRemove: () => void;
 }) {
+  const fotoRef = useRef<HTMLInputElement>(null);
+  const previewImg = comp.imagemBase64
+    ? `data:image/*;base64,${comp.imagemBase64}`
+    : comp.imagePath;
+
+  function handleFoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      const res = reader.result as string;
+      onChange({ imagemBase64: res.split(",")[1], imagePath: res });
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  }
+
+  const indisponivel = comp.status === "UNAVAILABLE";
+
   return (
     <div className={styles.compRow}>
+      {/* Foto */}
+      <input
+        ref={fotoRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleFoto}
+      />
+      <button
+        type="button"
+        className={styles.compFotoBtn}
+        onClick={() => fotoRef.current?.click()}
+        title={previewImg ? "Alterar foto" : "Adicionar foto"}
+      >
+        {previewImg ? (
+          <img src={previewImg} alt="" className={styles.compFotoImg} />
+        ) : (
+          <FiImage size={15} />
+        )}
+      </button>
+
       <input
         className={styles.compInputNome}
         placeholder="Nome do complemento"
@@ -160,6 +203,18 @@ function ComplementoRow({
           onChange={e => onChange({ preco: parseFloat(e.target.value) || 0 })}
         />
       </div>
+
+      {/* Status */}
+      <button
+        type="button"
+        className={`${styles.compStatusBtn} ${indisponivel ? styles.compStatusOff : styles.compStatusOn}`}
+        onClick={() => onChange({ status: indisponivel ? "AVAILABLE" : "UNAVAILABLE" })}
+        title={indisponivel ? "Indisponível — clique para ativar" : "Disponível — clique para pausar"}
+      >
+        {indisponivel ? <FiEyeOff size={14} /> : <FiEye size={14} />}
+        <span>{indisponivel ? "Pausado" : "Ativo"}</span>
+      </button>
+
       <button
         className={styles.compBtnRemover}
         onClick={onRemove}
@@ -186,7 +241,7 @@ function GrupoInline({
     onUpdate({
       complementos: [
         ...grupo.complementos,
-        { id: crypto.randomUUID(), nome: "", preco: 0 },
+        { id: crypto.randomUUID(), nome: "", preco: 0, status: "AVAILABLE", imagePath: null, imagemBase64: null },
       ],
     });
   }
@@ -441,6 +496,9 @@ export default function IFoodProdutoPage() {
           return {
             id: optId, nome: prod?.name ?? "",
             preco: opt?.price?.value ?? 0,
+            status: opt?.status === "UNAVAILABLE" ? "UNAVAILABLE" : "AVAILABLE",
+            imagePath: prod?.imagePath ?? null,
+            imagemBase64: null,
             optionId: opt?.id, productId: opt?.productId,
           };
         }),
@@ -578,9 +636,20 @@ export default function IFoodProdutoPage() {
         if (!comp.nome.trim()) continue; // ignora linhas vazias
         const compProductId = comp.productId ?? crypto.randomUUID();
         const optionId      = comp.optionId  ?? comp.id;
+
+        // Resolve imagem do complemento
+        let compImagePath: string | null = null;
+        if (comp.imagemBase64) {
+          const up = await withRetry(() => ifoodCatalogService.uploadImagem(empresaId, comp.imagemBase64!));
+          if (!up.sucesso) { setErros([humanizarErro(up.erro)]); return null; }
+          compImagePath = up.dados.imagePath;
+        } else if (comp.imagePath && !comp.imagePath.startsWith("data:")) {
+          compImagePath = comp.imagePath;
+        }
+
         optionIds.push(optionId);
         options.push({
-          id: optionId, status: "AVAILABLE",
+          id: optionId, status: comp.status,
           index: grupo.complementos.indexOf(comp),
           productId: compProductId,
           price: { value: comp.preco, originalValue: null },
@@ -589,7 +658,7 @@ export default function IFoodProdutoPage() {
         products.push({
           id: compProductId, name: comp.nome,
           description: null, additionalInformation: null,
-          externalCode: null, imagePath: null, ean: null,
+          externalCode: null, imagePath: compImagePath, ean: null,
           serving: null, dietaryRestrictions: null,
           tags: null, quantity: null, optionGroups: null,
         });

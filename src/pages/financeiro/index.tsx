@@ -5,6 +5,7 @@ import { MdPix } from 'react-icons/md';
 import { QRCodeSVG } from 'qrcode.react';
 import styles from './styles.module.scss';
 import { apiFinanceiro, PagamentoPixResultDto, PagamentoPixAtivoDto } from '@/services/apiFinanceiro';
+import { canSSRAuth } from '@/utils/CanSSRAuth';
 
 interface Duplicata {
     id: number;
@@ -494,3 +495,11 @@ export default function Financeiro() {
         </div>
     );
 }
+
+export const getServerSideProps = canSSRAuth(async (ctx) => {
+  return {
+    props: {
+
+    }
+  }
+})

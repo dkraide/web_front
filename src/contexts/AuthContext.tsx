@@ -35,9 +35,8 @@ type AuthProviderProps = {
 export const AuthContext = createContext({} as AuthContextData)
 
 
-export function signOut (){
+export function signOut (redirectTo?: string){
     try{
-        console.log('caiu aqui');
         destroyCookie(undefined, '@web_front.token', {
             path: '/'
         });
@@ -48,7 +47,11 @@ export function signOut (){
             path: '/'
         });
         sessionStorage.removeItem('user');
-        window.location.href = "/";
+        // Se veio de um 401, leva para o login preservando a rota tentada.
+        const destino = redirectTo
+            ? `/login?redirect=${encodeURIComponent(redirectTo)}`
+            : "/";
+        window.location.href = destino;
     }catch{
        console.log('erro ao deslogar');
     }
@@ -89,9 +92,14 @@ export function AuthProvider({children}: AuthProviderProps){
             path: "/" //quais caminhos terao acesso aos cookies
          });
          api.defaults.headers['Authorization'] = `Bearer ${token}`;
-         window.location.reload();
          toast.success('Logado com sucesso')
-         Router.push('/dashboard');
+         // Se o usuário foi mandado ao login por um 401, volta para a rota que tentava acessar.
+         const params = new URLSearchParams(window.location.search);
+         const redirect = params.get('redirect');
+         const destino = redirect && redirect.startsWith('/') && !redirect.startsWith('//')
+            ? redirect
+            : '/dashboard';
+         window.location.href = destino;
         }catch(err: any){
             console.log(err);
          toast.error(`Erro ao Acessar: ${err.toString()}`);

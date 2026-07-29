@@ -6,7 +6,7 @@ import {
     FiClock, FiActivity, FiRefreshCw, FiPhoneCall, FiBook
 } from "react-icons/fi";
 import { ifoodService } from "../../services/ifoodService";
-import { IFoodIntegracaoStatus } from "../../interfaces/ifood";
+import { IFoodIntegracaoStatus, IFoodMerchant } from "../../interfaces/ifood";
 import styles from "./styles.module.scss";
 import { LabelGroup } from "@/components/ui/LabelGroup";
 import CustomButton from "@/components/ui/Buttons";
@@ -19,12 +19,25 @@ const STATUS_LABEL: Record<IFoodIntegracaoStatus["status"], string> = {
     Erro: "Erro",
 };
 
+const TIPO_LABEL: Record<string, string> = {
+    RESTAURANT: "Restaurante",
+    GROCERY: "Mercado",
+    STORE: "Loja"
+};
+
+function formatarEndereco(a: IFoodMerchant["address"]): string | null {
+    if (!a) return null;
+    const rua = [a.street, a.number].filter(Boolean).join(", ");
+    const partes = [rua, a.district, a.city, a.state, a.postalCode].filter(Boolean);
+    return partes.length > 0 ? partes.join(" · ") : null;
+}
+
 export default function IFoodPage() {
     const router = useRouter();
     const { getUser } = useContext(AuthContext);
     const [empresaId, setEmpresaId] = useState<number>(0);
     const [integracao, setIntegracao] = useState<IFoodIntegracaoStatus | null>(null);
-    const [lojaNome, setLojaNome] = useState<string | null>(null);
+    const [merchant, setMerchant] = useState<IFoodMerchant | null>(null);
     const [carregando, setCarregando] = useState(true);
     const [verificando, setVerificando] = useState(false);
     const [loadingRemover, setLoadingRemover] = useState(false);
@@ -44,8 +57,8 @@ export default function IFoodPage() {
             const result = await ifoodService.listarIntegracoes(empresaId);
             const atual = result.sucesso && result.dados.length > 0 ? result.dados[0] : null;
             setIntegracao(atual);
-            setLojaNome(null);
-            if (atual) carregarNomeLoja(atual.merchantId);
+            setMerchant(null);
+            if (atual) carregarMerchant(atual.merchantId);
         } catch {
             setIntegracao(null);
         } finally {
@@ -53,10 +66,10 @@ export default function IFoodPage() {
         }
     }
 
-    async function carregarNomeLoja(merchantId: string) {
+    async function carregarMerchant(merchantId: string) {
         try {
             const result = await ifoodService.obterMerchant(merchantId);
-            if (result.sucesso) setLojaNome(result.dados.name);
+            if (result.sucesso) setMerchant(result.dados);
         } catch { }
     }
 
@@ -69,7 +82,7 @@ export default function IFoodPage() {
                 setIntegracao(result.dados);
                 if (result.dados.status === "Ativo") {
                     toast.success("Loja conectada ao iFood com sucesso!");
-                    carregarNomeLoja(result.dados.merchantId);
+                    carregarMerchant(result.dados.merchantId);
                 } else {
                     toast.info("Ainda aguardando a confirmação da loja no iFood.");
                 }
@@ -90,7 +103,7 @@ export default function IFoodPage() {
             const result = await ifoodService.removerIntegracao(empresaId, integracao.merchantId);
             if (result.sucesso) {
                 setIntegracao(null);
-                setLojaNome(null);
+                setMerchant(null);
                 setModalRemover(false);
                 toast.success("Integração removida.");
             } else {
@@ -120,7 +133,7 @@ export default function IFoodPage() {
                         <p className={styles.semIntegracao}>Carregando...</p>
                     ) : integracao ? (
                         <div className={styles.infoGrid}>
-                            <LabelGroup title="Loja" value={lojaNome ?? "—"} width="220px" />
+                            <LabelGroup title="Loja" value={merchant?.name ?? "—"} width="220px" />
                             <LabelGroup title="Merchant ID" value={integracao.merchantId} width="220px" />
                             <LabelGroup title="Status" value={STATUS_LABEL[integracao.status]} width="160px" />
                         </div>
@@ -200,6 +213,50 @@ export default function IFoodPage() {
                     )}
                 </div>
             </div>
+
+            {integracao && merchant && (
+                <div className={styles.card}>
+                    <div className={styles.cardHeader}>
+                        <span className={styles.cardTitle}>Detalhes da loja</span>
+                    </div>
+                    <div className={styles.cardBody}>
+                        <div className={styles.infoGrid}>
+                            <LabelGroup title="Nome da loja" value={merchant.name || "—"} width="220px" />
+                            <LabelGroup
+                                title="Categoria"
+                                value={merchant.type ? (TIPO_LABEL[merchant.type] ?? merchant.type) : "—"}
+                                width="160px"
+                            />
+                            <LabelGroup title="ID da loja" value={merchant.id || integracao.merchantId} width="280px" />
+                        </div>
+
+                        <div className={styles.detalheBloco}>
+                            <LabelGroup
+                                title="Descrição"
+                                value={merchant.description || "—"}
+                                width="100%"
+                            />
+                        </div>
+
+                        <div className={styles.detalheBloco}>
+                            <LabelGroup
+                                title="Endereço"
+                                value={formatarEndereco(merchant.address) ?? "—"}
+                                width="100%"
+                            />
+                            {merchant.address && (
+                                <div className={styles.infoGrid} style={{ marginTop: 12 }}>
+                                    <LabelGroup title="Cidade" value={merchant.address.city ?? "—"} width="160px" />
+                                    <LabelGroup title="Estado" value={merchant.address.state ?? "—"} width="120px" />
+                                    <LabelGroup title="Bairro" value={merchant.address.district ?? "—"} width="160px" />
+                                    <LabelGroup title="CEP" value={merchant.address.postalCode ?? "—"} width="120px" />
+                                    <LabelGroup title="País" value={merchant.address.country ?? "—"} width="100px" />
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <BaseModal
                 isOpen={modalRemover}
