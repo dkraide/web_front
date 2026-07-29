@@ -21,7 +21,9 @@ import type {
   IFoodEstoqueProduto,
   IFoodEstoqueProdutoResumo,
   IFoodExcluirEstoqueBatchRequest,
+  IFoodAssociarGrupoProdutoRequest,
   IFoodGrupoComplemento,
+  IFoodGrupoComplementoEnriquecido,
   IFoodGrupoComplementoResumo,
   IFoodImagemUpload,
   IFoodItensDaCategoria,
@@ -31,6 +33,7 @@ import type {
   IFoodProduto,
   IFoodResultadoBatch,
   IFoodSalvarEstoqueRequest,
+  IFoodSalvarGrupoComplementoRequest,
   IFoodSalvarItemDto,
 } from "../interfaces/ifoodCatalog";
 
@@ -291,6 +294,43 @@ export const ifoodCatalogService = {
     return data;
   },
 
+  /**
+   * Lista os grupos de complementos enriquecidos com o tipo (optionGroupType) e os
+   * produtos vinculados, derivados do catálogo. Use para filtrar grupos de pizza e
+   * exibir só grupos em uso.
+   */
+  async listarGruposComplementosEnriquecido(empresaId: number) {
+    const { data } = await api.get<ApiResult<IFoodGrupoComplementoEnriquecido[]>>(
+      `${BASE(empresaId)}/grupos-complementos-enriquecido`
+    );
+    return data;
+  },
+
+  /** Retorna um único grupo de complementos com suas opções. */
+  async obterGrupoComplemento(
+    empresaId: number,
+    optionGroupId: string,
+    catalogContext?: string | null
+  ) {
+    const { data } = await api.get<ApiResult<IFoodGrupoComplemento>>(
+      `${BASE(empresaId)}/grupos-complementos/${optionGroupId}`,
+      { params: catalogContext ? { catalogContext } : undefined }
+    );
+    return data;
+  },
+
+  /** Cria um grupo de complementos standalone (fora do cadastro de item). */
+  async criarGrupoComplemento(
+    empresaId: number,
+    request: IFoodSalvarGrupoComplementoRequest
+  ) {
+    const { data } = await api.post<ApiResult<IFoodGrupoComplemento>>(
+      `${BASE(empresaId)}/grupos-complementos`,
+      request
+    );
+    return data;
+  },
+
   /** Edita o nome de um grupo de complementos. */
   async editarNomeGrupoComplemento(
     empresaId: number,
@@ -321,6 +361,20 @@ export const ifoodCatalogService = {
   async excluirGrupoComplemento(empresaId: number, optionGroupId: string) {
     const { data } = await api.delete<ApiResult<object>>(
       `${BASE(empresaId)}/grupos-complementos/${optionGroupId}`
+    );
+    return data;
+  },
+
+  /** Associa um grupo de complementos a um produto (min/máx e ordem de exibição). */
+  async associarGrupoComplementoAoProduto(
+    empresaId: number,
+    optionGroupId: string,
+    productId: string,
+    request: IFoodAssociarGrupoProdutoRequest
+  ) {
+    const { data } = await api.post<ApiResult<object>>(
+      `${BASE(empresaId)}/grupos-complementos/${optionGroupId}/produtos/${productId}`,
+      request
     );
     return data;
   },
