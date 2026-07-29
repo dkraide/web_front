@@ -13,15 +13,18 @@ export function canSSRAuth<P>(fn: GetServerSideProps<P>) {
 
         const cookies = parseCookies(ctx);
 
+        // Rota que o usuário tentava acessar, para voltar após o login.
+        const loginComRedirect = `/login?redirect=${encodeURIComponent(ctx.resolvedUrl)}`;
+
         const token = cookies['@web_front.token'];
         if (!token) {
-            return { redirect: { destination: '/', permanent: false } }
+            return { redirect: { destination: loginComRedirect, permanent: false } }
         }
         var u = JSON.parse(cookies['@web_front.user']) as IUsuario;
         if (!token) {
             return {
                 redirect: {
-                    destination: '/',
+                    destination: loginComRedirect,
                     permanent: false
                 }
             }
@@ -54,7 +57,7 @@ export function canSSRAuth<P>(fn: GetServerSideProps<P>) {
 
                 return {
                     redirect: {
-                        destination: '/',
+                        destination: loginComRedirect,
                         permanent: false
                     }
                 }

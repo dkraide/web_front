@@ -20,8 +20,13 @@ export function setupAPIClient(ctx = undefined) {
         return response;
     }, (error: AxiosError) => {
         if (error.response?.status === 401) {
-            if (typeof window !== undefined) {
-                signOut();
+            if (typeof window !== "undefined") {
+                // Preserva a rota que o usuário tentava acessar (exceto raiz/login).
+                const atual = window.location.pathname + window.location.search;
+                const rota = atual && atual !== "/" && !atual.startsWith("/login")
+                    ? atual
+                    : undefined;
+                signOut(rota);
             } else {
                 return Promise.reject(new AuthTokenError())
             }
