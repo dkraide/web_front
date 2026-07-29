@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 import {
     FiCheckCircle, FiXCircle, FiAlertCircle,
-    FiClock, FiActivity, FiRefreshCw, FiPhoneCall, FiBook
+    FiClock, FiActivity, FiRefreshCw, FiPhoneCall, FiBook, FiLayers
 } from "react-icons/fi";
 import { ifoodService } from "../../services/ifoodService";
 import { IFoodIntegracaoStatus, IFoodMerchant } from "../../interfaces/ifood";
@@ -153,6 +153,12 @@ export default function IFoodPage() {
                                     onClick={() => router.push("/ifood/catalogo")}
                                 >
                                     <FiBook size={14} /> Cardápio
+                                </button>
+                                <button
+                                    className={styles.linkButton}
+                                    onClick={() => router.push("/ifood/complementos")}
+                                >
+                                    <FiLayers size={14} /> Complementos
                                 </button>
                                 <button
                                     className={styles.linkButton}

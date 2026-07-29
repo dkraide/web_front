@@ -544,6 +544,60 @@ export interface IFoodEditarStatusGrupoComplementoRequest {
   status: string;
 }
 
+/** Opção (complemento) criada inline junto com um grupo standalone. */
+export interface IFoodOpcaoGrupoInlineRequest {
+  name: string;
+  /** Ex: AVAILABLE, UNAVAILABLE */
+  status: string;
+  price: number;
+  description?: string | null;
+  externalCode?: string | null;
+  imagePath?: string | null;
+}
+
+/**
+ * Payload para criação de um grupo de complementos standalone (fora do cadastro de item).
+ * No catálogo v2 o grupo carrega só nome + status + opções; min/máx e tipo são definidos
+ * na associação do grupo a cada produto.
+ */
+export interface IFoodSalvarGrupoComplementoRequest {
+  name: string;
+  /** Ex: AVAILABLE, UNAVAILABLE */
+  status: string;
+  options: IFoodOpcaoGrupoInlineRequest[];
+}
+
+/** Produto vinculado a um grupo de complementos (derivado do catálogo). */
+export interface IFoodProdutoVinculadoGrupo {
+  productId: string;
+  name: string;
+  min: number;
+  max: number;
+  index: number;
+}
+
+/**
+ * Grupo de complementos enriquecido com o tipo (optionGroupType) e os produtos vinculados,
+ * derivados do catálogo. Usado para filtrar grupos de pizza e exibir só grupos em uso.
+ */
+export interface IFoodGrupoComplementoEnriquecido {
+  id: string;
+  name: string;
+  externalCode?: string | null;
+  status: string;
+  /** Ex: DEFAULT, SIZE, CRUST, EDGE, TOPPING. Null se não encontrado no catálogo. */
+  optionGroupType?: string | null;
+  options?: IFoodOpcaoDoGrupo[] | null;
+  linkedProducts: IFoodProdutoVinculadoGrupo[];
+}
+
+/** Parâmetros da associação de um grupo de complementos a um produto. */
+export interface IFoodAssociarGrupoProdutoRequest {
+  min: number;
+  max: number;
+  index: number;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // #region Opções
 // ─────────────────────────────────────────────────────────────────────────────
