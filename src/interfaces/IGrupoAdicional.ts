@@ -7,6 +7,10 @@ export default interface IGrupoAdicional {
     id: number;
     empresaId: number;
     tipo: 'PADRAO' | 'BORDA' | 'TAMANHO' | 'SABOR' | 'MASSA';
+    // Regra de preço do grupo quando há mais de um item escolhido (pizza
+    // meio-a-meio): SOMAR (soma os valores), MAIOR (cobra o mais caro) ou
+    // MEDIA (soma ÷ qtd de porções). Ausente = SOMAR no backend.
+    baseCalculo?: 'SOMAR' | 'MAIOR' | 'MEDIA';
     descricao: string;
     status: boolean;
     minimo: number;

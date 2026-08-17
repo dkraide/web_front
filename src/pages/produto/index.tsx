@@ -8,7 +8,7 @@ import KRDTable, { KRDColumn } from '@/components/ui/KRDTable'
 import { toast } from 'react-toastify'
 import CustomButton from '@/components/ui/Buttons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faBoxes, faRobot, faPizzaSlice, faUtensils, faBox, faNetworkWired, faSlidersH, faFileExcel } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faBoxes, faRobot, faPizzaSlice, faUtensils, faBox, faNetworkWired, faSlidersH, faFileExcel, faCamera } from '@fortawesome/free-solid-svg-icons'
 import IUsuario from '@/interfaces/IUsuario'
 import IProduto from '@/interfaces/IProduto'
 import ProdutoForm from '@/components/Modals/Produto'
@@ -19,6 +19,9 @@ import { ExportToExcel, searchHelper } from '@/utils/functions'
 import NovoProdutoForm from '@/components/Modals/Produto/NovoProdutoForm'
 import EstoqueForm from '@/components/Modals/Produto/EstoqueForm'
 import CreateFromIAForm from '@/components/Modals/Produto/CreateFromIAForm'
+import SelectClasseMaterial from '@/components/Selects/SelectClasseMaterial'
+import SelectStatus from '@/components/Selects/SelectStatus'
+import IClasseMaterial from '@/interfaces/IClasseMaterial'
 import { useRouter } from 'next/router'
 
 type SearchProps = {
@@ -42,6 +45,13 @@ export default function Produto() {
         ajuste: false,
         viewEstoque: 0,
     })
+
+    // Filtros opcionais (opt-in): so aplicam quando o respectivo checkbox esta ligado,
+    // preservando o comportamento padrao de listar todos os produtos.
+    const [filtrarClasse, setFiltrarClasse] = useState(false)
+    const [filtroClasse, setFiltroClasse] = useState<IClasseMaterial>()
+    const [filtrarStatus, setFiltrarStatus] = useState(false)
+    const [filtroStatus, setFiltroStatus] = useState(true)
 
     const { innerWidth } = useWindowSize()
     const mobile = !!innerWidth && innerWidth < 600
@@ -74,9 +84,12 @@ export default function Produto() {
     }
 
     function getFiltered() {
-        return list.filter(p =>
-            searchHelper(search.str, `${p.nome} ${p.cod} ${p.id}`)
-        )
+        return list.filter(p => {
+            if (!searchHelper(search.str, `${p.nome} ${p.cod} ${p.id}`)) return false
+            if (filtrarClasse && filtroClasse && p.classeMaterialId !== filtroClasse.id) return false
+            if (filtrarStatus && p.status !== filtroStatus) return false
+            return true
+        })
     }
 
     const handleEdit = (produto: IProduto) => {
@@ -250,6 +263,10 @@ export default function Produto() {
                         <FontAwesomeIcon icon={faRobot} />
                         Cadastrar com I.A
                     </button>
+                    <button className={`${styles.actionBtn} ${styles.actionBtnIa}`} onClick={() => { window.location.href = '/produto/novo/cardapio' }}>
+                        <FontAwesomeIcon icon={faCamera} />
+                        Criar por foto do cardápio
+                    </button>
                     <button className={styles.actionBtn} onClick={() => { window.location.href = '/produto/item' }}>
                         <FontAwesomeIcon icon={faBox} />
                         Novo produto
@@ -288,6 +305,50 @@ export default function Produto() {
                         {getFiltered().length} produto{getFiltered().length !== 1 ? 's' : ''}
                     </span>
                 )}
+            </div>
+
+            {/* Filtros opcionais */}
+            <div className={styles.filterBar}>
+                <div className={styles.filterItem}>
+                    <label className={styles.filterToggle}>
+                        <input
+                            type="checkbox"
+                            checked={filtrarClasse}
+                            onChange={e => setFiltrarClasse(e.target.checked)}
+                        />
+                        Filtrar por grupo
+                    </label>
+                    {filtrarClasse && (
+                        <div className={styles.filterControl}>
+                            <SelectClasseMaterial
+                                width="220px"
+                                empresaId={user?.empresaSelecionada}
+                                selected={filtroClasse?.id ?? 0}
+                                setSelected={c => setFiltroClasse(c)}
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <div className={styles.filterItem}>
+                    <label className={styles.filterToggle}>
+                        <input
+                            type="checkbox"
+                            checked={filtrarStatus}
+                            onChange={e => setFiltrarStatus(e.target.checked)}
+                        />
+                        Filtrar por status
+                    </label>
+                    {filtrarStatus && (
+                        <div className={styles.filterControl}>
+                            <SelectStatus
+                                width="160px"
+                                selected={filtroStatus}
+                                setSelected={s => setFiltroStatus(s)}
+                            />
+                        </div>
+                    )}
+                </div>
             </div>
 
             <hr className={styles.divider} />

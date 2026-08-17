@@ -143,14 +143,14 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem href={'/ingredientes'}>Ingredientes</MenuItem>
                                     <MenuItem href={'/ingredientes/estoque'}>Estoque</MenuItem>
                                 </SubMenu>
-                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promocoes">
-                                    <MenuItem href={'/promocao/atacado'}> Promocao</MenuItem>
+                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promoções">
+                                    <MenuItem href={'/promocao/atacado'}> Promoção</MenuItem>
                                     <MenuItem href={'/promocao/combo'}> Combos</MenuItem>
-                                    <MenuItem href={'/promocao/tabelaPreco'}> Tabela de Preco</MenuItem>
+                                    <MenuItem href={'/promocao/tabelaPreco'}> Tabela de Preço</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCalculator} color={'var(--main)'} />} label="Financeiro">
                                     <MenuItem href={'/financeiro'}>Minhas Faturas {bgNew()}</MenuItem>
-                                    <MenuItem href={'/motivoLancamento'}>Motivo de Lancamento</MenuItem>
+                                    <MenuItem href={'/motivoLancamento'}>Motivo de Lançamento</MenuItem>
                                     <MenuItem href={'/despesa'}>Despesas</MenuItem>
                                     <MenuItem href={'/entrada'}>Entradas</MenuItem>
                                 </SubMenu>
@@ -159,14 +159,14 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem href={'/venda'}>Vendas</MenuItem>
                                     <MenuItem href={'/arquivosxml'}>Arquivos XML</MenuItem>
                                 </SubMenu>
-                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faChartSimple} color={'var(--main)'} />} label="Relatorios">
+                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faChartSimple} color={'var(--main)'} />} label="Relatórios">
                                     <MenuItem href={'/relatorio/resumo'}>Resumo {bgNew()} </MenuItem>
                                     <MenuItem href={'/relatorio/classe'}>Por Classe</MenuItem>
                                     <MenuItem href={'/relatorio/dia'}>Por Dia</MenuItem>
                                     <MenuItem href={'/relatorio/horario'}>Por Horário </MenuItem>
                                     <MenuItem href={'/relatorio/formaPagamento'}>Por Forma</MenuItem>
                                     <MenuItem href={'/relatorio/produto'}>Por Produto</MenuItem>
-                                    <MenuItem href={'/relatorio/usuario'}>Por Usuario</MenuItem>
+                                    <MenuItem href={'/relatorio/usuario'}>Por Usuário</MenuItem>
                                     <MenuItem href={'/relatorio/demonstrativo'}>Demonstrativo</MenuItem>
                                     <MenuItem href={'/relatorio/vendacusto'}>Venda/Custo </MenuItem>
                                     <MenuItem href={'/relatorio/FechamentoCaixa'}>Fechamento</MenuItem>
@@ -175,13 +175,14 @@ export default function SideBar({ children, ...props }) {
                                 <SubMenu icon={<FontAwesomeIcon icon={faUser} color={'var(--main)'} />} label="Clientes"
                                     rootStyles={subMenuStyle}>
                                     <MenuItem href={'/cliente'}>Clientes</MenuItem>
-                                    <MenuItem href={'/cliente/premio'}>Premios</MenuItem>
+                                    <MenuItem href={'/cliente/premio'}>Prêmios</MenuItem>
                                     <MenuItem href={'/cliente/pontos'}>Pontos</MenuItem>
+                                    <MenuItem href={'/cliente/cupons'}>Cupons</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
                                     <MenuItem href={'/pdv/formaPagamento'}>Formas de Pagamento</MenuItem>
-                                    <MenuItem href={'/pdv/usuario'}>Usuarios</MenuItem>
-                                    <MenuItem href={'/pdv/configuracao'}>Configuracao</MenuItem>
+                                    <MenuItem href={'/pdv/usuario'}>Usuários</MenuItem>
+                                    <MenuItem href={'/pdv/configuracao'}>Configuração</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
                                     <MenuItem href={'/menudigital/horarios'}>Configuração</MenuItem>
