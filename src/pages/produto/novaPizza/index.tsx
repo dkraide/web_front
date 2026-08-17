@@ -24,14 +24,32 @@ import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
 import Loading from '@/components/Loading';
 
-// Os 4 grupos que uma pizza sempre possui. Nesta tela o usuario faz apenas
+// Os 5 grupos que uma pizza sempre possui. Nesta tela o usuario faz apenas
 // CRUD dos ITENS de cada um desses grupos (o vinculo N:N pizza<->grupo e o
 // proprio grupo sao criados/atualizados junto no salvamento).
-type TipoGrupo = 'MASSA' | 'TAMANHO' | 'BORDA' | 'SABOR';
+type TipoGrupo = 'MASSA' | 'TAMANHO' | 'BORDA' | 'SABOR' | 'COMPLEMENTO';
+
+// Todos os grupos padrao de uma pizza, na ordem em que aparecem nas abas.
+const TIPOS_GRUPO: TipoGrupo[] = ['MASSA', 'TAMANHO', 'BORDA', 'SABOR', 'COMPLEMENTO'];
+
+// Grupos em que o preco do item varia por TAMANHO (usam a colecao `precos`,
+// um preco por tamanho, e nao o campo `valor` unico). SABOR sempre foi assim;
+// BORDA e COMPLEMENTO passaram a funcionar do mesmo jeito.
+const TIPOS_POR_TAMANHO: TipoGrupo[] = ['SABOR', 'BORDA', 'COMPLEMENTO'];
+
+// IMPORTANTE — identidade por id de NUVEM.
+// No mundo web/nuvem tudo se relaciona pelo `id` (PK nuvem, string GUID) de item
+// e preco; os campos `id*` (idGrupoAdicionalItem, idGrupoAdicionalItemPreco,
+// idGrupoAdicional...) sao ids LOCAIS do PDV winforms e ficam vazios em registro
+// criado aqui (o PDV os preenche quando o cadastro desce). Por isso geramos o
+// GUID de nuvem no cadastro e os precos apontam para o tamanho pelo `id` de nuvem
+// (grupoAdicionalItemRelacaoId), que e o campo que PDV Web e menu digital leem.
 
 const emptyItem = (empresaId: number): IGrupoAdicionalItem => ({
-    id: '',
-    idGrupoAdicionalItem: uuidv4(),
+    // PK nuvem gerada no cadastro web (string GUID). O id local (winforms) fica
+    // vazio ate o PDV criar o registro correspondente.
+    id: uuidv4(),
+    idGrupoAdicionalItem: '',
     idGrupoAdicional: 0,
     grupoAdicionalId: 0,
     materiaPrima: null as any,
@@ -83,6 +101,40 @@ const novoVinculo = (grupo: IGrupoAdicional, empresaId: number): IProdutoGrupoAd
     grupoAdicional: grupo,
 });
 
+// Preco de um item (SABOR/BORDA/COMPLEMENTO) para um tamanho. Relacao feita
+// pelos ids de NUVEM: grupoAdicionalItemId = id do item dono; grupoAdicionalItemRelacaoId
+// = id do item de TAMANHO. Os campos locais (id*) ficam vazios no cadastro web.
+const novoPreco = (
+    empresaId: number,
+    itemId: string,
+    tamanhoId: string,
+): IGrupoAdicionalItemPreco => ({
+    id: uuidv4(),
+    idGrupoAdicionalItemPreco: '',
+    idGrupoAdicionalItem: '',
+    grupoAdicionalItemId: itemId,
+    idGrupoAdicionalItemRelacao: '',
+    grupoAdicionalItemRelacaoId: tamanhoId,
+    // valor = INTEIRO (pizza toda); valorFracionado = aplicado a um sabor só.
+    // Só o COMPLEMENTO edita o fracionado; nos demais grupos fica 0.
+    valor: 0,
+    valorFracionado: 0,
+    lastChange: new Date(),
+    needChange: true,
+    empresaId,
+});
+
+// Cria um item ja com um preco (zerado) para cada tamanho informado — usado
+// pelos grupos por-tamanho (SABOR, BORDA, COMPLEMENTO).
+const novoItemComPrecos = (
+    empresaId: number,
+    tamanhos: IGrupoAdicionalItem[],
+): IGrupoAdicionalItem => {
+    const item = { ...emptyItem(empresaId), nome: '' };
+    item.precos = tamanhos.map((t) => novoPreco(empresaId, item.id, t.id));
+    return item;
+};
+
 // Grupos padrao de uma pizza nova (espelha frmCadastroPizza do PDV).
 const gruposPadrao = (empresaId: number): IProdutoGrupoAdicional[] => {
     const massa = emptyGrupo('MASSA', 'Massas', 1, 1, empresaId, [
@@ -93,6 +145,8 @@ const gruposPadrao = (empresaId: number): IProdutoGrupoAdicional[] => {
         { ...emptyItem(empresaId), nome: 'Média (6 Pedaços)', qtdSabores: 2 },
         { ...emptyItem(empresaId), nome: 'Grande (8 Pedaços)', qtdSabores: 2 },
     ]);
+    // BORDA agora tem preco por tamanho: o item padrao "Sem Borda" recebe um
+    // preco (0) para cada tamanho na normalizacao (garantirPrecos).
     const borda = emptyGrupo('BORDA', 'Bordas', 1, 1, empresaId, [
         { ...emptyItem(empresaId), nome: 'Sem Borda' },
     ]);
@@ -100,12 +154,16 @@ const gruposPadrao = (empresaId: number): IProdutoGrupoAdicional[] => {
     // Pizza meio-a-meio: por padrão divide o preço pela qtd de sabores (média),
     // preservando o comportamento histórico. O usuário troca na aba de sabores.
     sabor.baseCalculo = 'MEDIA';
+    // COMPLEMENTO: opcional e de multipla escolha (min 0 / max 0 = ilimitado);
+    // igual a BORDA, o preco de cada complemento varia por tamanho.
+    const complemento = emptyGrupo('COMPLEMENTO', 'Complementos', 0, 0, empresaId, []);
 
     return [
         novoVinculo(massa, empresaId),
         novoVinculo(tamanho, empresaId),
         novoVinculo(borda, empresaId),
         novoVinculo(sabor, empresaId),
+        novoVinculo(complemento, empresaId),
     ];
 };
 
@@ -134,10 +192,33 @@ export default function NovaPizza() {
             });
     };
 
-    // Garante que os 4 grupos existam no vinculo (util ao editar pizzas antigas).
+    // Colapsa grupos duplicados do mesmo tipo (ex.: pizzas antigas com dois
+    // grupos SABOR). Sem isso, updateGrupo (que escreve em TODOS os vinculos do
+    // tipo) acaba colocando o mesmo item — mesmo `id` de nuvem — em mais de um
+    // grupo, e o EF estoura no save ("another instance with the key value ...
+    // is already being tracked"). Mantem um canonico por tipo: prefere ativo e
+    // com itens. Os vinculos descartados sao removidos no save (limpeza).
+    const dedupGruposPorTipo = (p: IProduto): IProduto => {
+        const score = (v: IProdutoGrupoAdicional) =>
+            (v.grupoAdicional?.status !== false ? 2 : 0) +
+            ((v.grupoAdicional?.itens?.length ?? 0) > 0 ? 1 : 0);
+
+        const canonico = new Map<string, IProdutoGrupoAdicional>();
+        for (const v of p.grupoAdicionais ?? []) {
+            const tipo = v.grupoAdicional?.tipo;
+            if (!tipo) continue;
+            const atual = canonico.get(tipo);
+            if (!atual || score(v) > score(atual)) canonico.set(tipo, v);
+        }
+        p.grupoAdicionais = Array.from(canonico.values());
+        return p;
+    };
+
+    // Garante que os 5 grupos existam no vinculo (util ao editar pizzas antigas).
     const garantirGrupos = (p: IProduto): IProduto => {
+        dedupGruposPorTipo(p);
         const empresaId = p.empresaId;
-        (['MASSA', 'TAMANHO', 'BORDA', 'SABOR'] as TipoGrupo[]).forEach((tipo) => {
+        TIPOS_GRUPO.forEach((tipo) => {
             const existe = p.grupoAdicionais?.some((v) => v.grupoAdicional?.tipo === tipo);
             if (!existe) {
                 const padrao = gruposPadrao(empresaId).find((v) => v.grupoAdicional?.tipo === tipo)!;
@@ -151,6 +232,49 @@ export default function NovaPizza() {
                 ? { ...v, grupoAdicional: { ...v.grupoAdicional, baseCalculo: 'MEDIA' as const } }
                 : v,
         );
+        return garantirPrecos(p);
+    };
+
+    // Normaliza os grupos por-tamanho: cada item precisa ter exatamente um preco
+    // por tamanho existente, relacionado pelo id de NUVEM do tamanho. Precos
+    // antigos que so tinham a relacao local sao migrados: preenchem o campo nuvem
+    // (grupoAdicionalItemRelacaoId) a partir do tamanho correspondente.
+    const garantirPrecos = (p: IProduto): IProduto => {
+        const tamanhos =
+            p.grupoAdicionais?.find((v) => v.grupoAdicional?.tipo === 'TAMANHO')?.grupoAdicional
+                ?.itens ?? [];
+
+        p.grupoAdicionais = (p.grupoAdicionais ?? []).map((v) => {
+            const g = v.grupoAdicional;
+            if (!g || !TIPOS_POR_TAMANHO.includes(g.tipo as TipoGrupo)) return v;
+
+            const itens = (g.itens ?? []).map((item) => {
+                const precos = tamanhos.map((t) => {
+                    // Casa pelo id de nuvem do tamanho; fallback pelo id local
+                    // (migra precos antigos que só tinham a relacao local).
+                    const existente = (item.precos ?? []).find(
+                        (pr) =>
+                            (!!pr.grupoAdicionalItemRelacaoId && pr.grupoAdicionalItemRelacaoId === t.id) ||
+                            (!!pr.idGrupoAdicionalItemRelacao &&
+                                !!t.idGrupoAdicionalItem &&
+                                pr.idGrupoAdicionalItemRelacao === t.idGrupoAdicionalItem),
+                    );
+                    if (existente) {
+                        // Garante as FKs de nuvem preenchidas (migra registro antigo).
+                        return {
+                            ...existente,
+                            grupoAdicionalItemId: existente.grupoAdicionalItemId || item.id,
+                            grupoAdicionalItemRelacaoId: existente.grupoAdicionalItemRelacaoId || t.id,
+                        };
+                    }
+                    // Sem preco para esse tamanho: cria um. Para migrar bordas
+                    // antigas (valor unico), semeia com o `valor` do item.
+                    return { ...novoPreco(p.empresaId, item.id, t.id), valor: item.valor ?? 0 };
+                });
+                return { ...item, precos };
+            });
+            return { ...v, grupoAdicional: { ...g, itens } };
+        });
         return p;
     };
 
@@ -167,7 +291,7 @@ export default function NovaPizza() {
             empresaId: u.empresaSelecionada,
             grupoAdicionais: gruposPadrao(u.empresaSelecionada),
         } as IProduto;
-        setPizza(p);
+        setPizza(garantirPrecos(p));
     };
 
     const carregarPizza = async (pizzaId: number) => {
@@ -215,6 +339,7 @@ export default function NovaPizza() {
         updateGrupo(tipo, (g) => ({ ...g, itens }));
 
     // ── itens: alteracao de campo ────────────────────────────
+    // itemId aqui e o `id` de NUVEM do item (chave estavel na UI).
     const onChangeItem = (
         tipo: TipoGrupo,
         itemId: string,
@@ -223,28 +348,29 @@ export default function NovaPizza() {
     ) => {
         setItens(
             tipo,
-            getItems(tipo).map((it) =>
-                it.idGrupoAdicionalItem === itemId ? { ...it, [field]: value } : it,
-            ),
+            getItems(tipo).map((it) => (it.id === itemId ? { ...it, [field]: value } : it)),
         );
     };
 
     const removeItem = (tipo: TipoGrupo, itemId: string) => {
         setItens(
             tipo,
-            getItems(tipo).filter((it) => it.idGrupoAdicionalItem !== itemId),
+            getItems(tipo).filter((it) => it.id !== itemId),
         );
-        // Ao remover um tamanho, tira os precos correspondentes de cada sabor.
+        // Ao remover um tamanho, tira os precos correspondentes de cada item
+        // dos grupos por-tamanho (sabor, borda, complemento).
         if (tipo === 'TAMANHO') {
-            updateGrupo('SABOR', (g) => ({
-                ...g,
-                itens: (g.itens ?? []).map((sabor) => ({
-                    ...sabor,
-                    precos: (sabor.precos ?? []).filter(
-                        (p) => p.idGrupoAdicionalItemRelacao !== itemId,
-                    ),
+            TIPOS_POR_TAMANHO.forEach((t) =>
+                updateGrupo(t, (g) => ({
+                    ...g,
+                    itens: (g.itens ?? []).map((item) => ({
+                        ...item,
+                        precos: (item.precos ?? []).filter(
+                            (p) => p.grupoAdicionalItemRelacaoId !== itemId,
+                        ),
+                    })),
                 })),
-            }));
+            );
         }
     };
 
@@ -253,68 +379,62 @@ export default function NovaPizza() {
         if (!pizza) return;
         const novo = { ...emptyItem(pizza.empresaId), nome: '' };
         setItens('TAMANHO', [...getItems('TAMANHO'), novo]);
-        // Cada sabor existente ganha um preco (0) para o novo tamanho.
-        updateGrupo('SABOR', (g) => ({
-            ...g,
-            itens: (g.itens ?? []).map((sabor) => ({
-                ...sabor,
-                precos: [...(sabor.precos ?? []), novoPreco(pizza.empresaId, sabor.idGrupoAdicionalItem, novo.idGrupoAdicionalItem)],
+        // Cada item dos grupos por-tamanho ganha um preco (0) para o novo tamanho.
+        TIPOS_POR_TAMANHO.forEach((t) =>
+            updateGrupo(t, (g) => ({
+                ...g,
+                itens: (g.itens ?? []).map((item) => ({
+                    ...item,
+                    precos: [...(item.precos ?? []), novoPreco(pizza.empresaId, item.id, novo.id)],
+                })),
             })),
-        }));
+        );
     };
 
-    // ── sabor ────────────────────────────────────────────────
-    const novoPreco = (
-        empresaId: number,
-        saborItemId: string,
-        tamanhoItemId: string,
-    ): IGrupoAdicionalItemPreco => ({
-        id: '',
-        idGrupoAdicionalItemPreco: uuidv4(),
-        idGrupoAdicionalItem: saborItemId,
-        grupoAdicionalItemId: '',
-        idGrupoAdicionalItemRelacao: tamanhoItemId,
-        grupoAdicionalItemRelacaoId: '',
-        valor: 0,
-        lastChange: new Date(),
-        needChange: true,
-        empresaId,
-    });
-
-    const novoSabor = () => {
+    // ── itens por-tamanho (sabor / borda / complemento) ──────
+    const novoItemPorTamanho = (tipo: TipoGrupo) => {
         if (!pizza) return;
         const tamanhos = getItems('TAMANHO');
         if (tamanhos.length === 0) {
-            toast.error('Cadastre ao menos um tamanho antes de criar sabores.');
+            toast.error('Cadastre ao menos um tamanho antes.');
             return;
         }
-        const sabor = { ...emptyItem(pizza.empresaId), nome: '' };
-        sabor.precos = tamanhos.map((t) =>
-            novoPreco(pizza.empresaId, sabor.idGrupoAdicionalItem, t.idGrupoAdicionalItem),
-        );
-        setItens('SABOR', [...getItems('SABOR'), sabor]);
+        setItens(tipo, [...getItems(tipo), novoItemComPrecos(pizza.empresaId, tamanhos)]);
     };
 
-    const getPreco = (sabor: IGrupoAdicionalItem, tamanhoItemId: string): number => {
-        const p = sabor.precos?.find((x) => x.idGrupoAdicionalItemRelacao === tamanhoItemId);
-        return p?.valor ?? 0;
+    // preco do item para um tamanho (relacao pelo id de nuvem do tamanho).
+    // campo: 'valor' = INTEIRO (padrao); 'valorFracionado' = aplicado a um sabor.
+    type CampoPreco = 'valor' | 'valorFracionado';
+    const getPreco = (
+        item: IGrupoAdicionalItem,
+        tamanhoId: string,
+        campo: CampoPreco = 'valor',
+    ): number => {
+        const p = item.precos?.find((x) => x.grupoAdicionalItemRelacaoId === tamanhoId);
+        return (campo === 'valorFracionado' ? p?.valorFracionado : p?.valor) ?? 0;
     };
 
-    const onChangePreco = (saborItemId: string, tamanhoItemId: string, valor: number) => {
-        updateGrupo('SABOR', (g) => ({
+    const onChangePreco = (
+        tipo: TipoGrupo,
+        itemId: string,
+        tamanhoId: string,
+        valor: number,
+        campo: CampoPreco = 'valor',
+    ) => {
+        updateGrupo(tipo, (g) => ({
             ...g,
-            itens: (g.itens ?? []).map((sabor) => {
-                if (sabor.idGrupoAdicionalItem !== saborItemId) return sabor;
-                const existe = sabor.precos?.some((p) => p.idGrupoAdicionalItemRelacao === tamanhoItemId);
+            itens: (g.itens ?? []).map((item) => {
+                if (item.id !== itemId) return item;
+                const existe = item.precos?.some((p) => p.grupoAdicionalItemRelacaoId === tamanhoId);
                 const precos = existe
-                    ? sabor.precos.map((p) =>
-                          p.idGrupoAdicionalItemRelacao === tamanhoItemId ? { ...p, valor } : p,
+                    ? item.precos.map((p) =>
+                          p.grupoAdicionalItemRelacaoId === tamanhoId ? { ...p, [campo]: valor } : p,
                       )
                     : [
-                          ...(sabor.precos ?? []),
-                          { ...novoPreco(g.empresaId, saborItemId, tamanhoItemId), valor },
+                          ...(item.precos ?? []),
+                          { ...novoPreco(g.empresaId, itemId, tamanhoId), [campo]: valor },
                       ];
-                return { ...sabor, precos };
+                return { ...item, precos };
             }),
         }));
     };
@@ -335,10 +455,21 @@ export default function NovaPizza() {
             if (!sabor.nome || sabor.nome.trim().length === 0)
                 return 'Existe sabor sem nome.';
             for (const t of tamanhos) {
-                const preco = sabor.precos?.find((p) => p.idGrupoAdicionalItemRelacao === t.idGrupoAdicionalItem);
+                const preco = sabor.precos?.find((p) => p.grupoAdicionalItemRelacaoId === t.id);
                 if (!preco || preco.valor <= 0)
                     return `Sabor "${sabor.nome}" sem preço para o tamanho "${t.nome}".`;
             }
+        }
+
+        // Borda e complemento: preco pode ser 0 (ex.: "Sem Borda"), mas nao
+        // pode existir item sem nome.
+        for (const item of getItems('BORDA')) {
+            if (!item.nome || item.nome.trim().length === 0)
+                return 'Existe borda sem nome.';
+        }
+        for (const item of getItems('COMPLEMENTO')) {
+            if (!item.nome || item.nome.trim().length === 0)
+                return 'Existe complemento sem nome.';
         }
         return null;
     };
@@ -392,99 +523,123 @@ export default function NovaPizza() {
 
     // ── linhas de item ───────────────────────────────────────
     const LinhaTamanho = (item: IGrupoAdicionalItem, canRemove: boolean) => (
-        <div className={styles.row} key={item.idGrupoAdicionalItem}>
+        <div className={styles.row} key={item.id}>
             <InputGroup
                 width="45%"
                 title="Nome do tamanho"
                 value={item.nome}
-                onChange={(e) => onChangeItem('TAMANHO', item.idGrupoAdicionalItem, 'nome', e.currentTarget.value)}
+                onChange={(e) => onChangeItem('TAMANHO', item.id, 'nome', e.currentTarget.value)}
             />
             <InputGroup
                 type="number"
                 width="25%"
                 title="Qtd. sabores"
                 value={item.qtdSabores ?? 0}
-                onChange={(e) => onChangeItem('TAMANHO', item.idGrupoAdicionalItem, 'qtdSabores', fGetNumber(e.currentTarget.value))}
+                onChange={(e) => onChangeItem('TAMANHO', item.id, 'qtdSabores', fGetNumber(e.currentTarget.value))}
             />
             <div className={styles.statusCell}>
                 <Switch
                     onColor="#fc4f6b"
                     checked={item.status}
-                    onChange={(v) => onChangeItem('TAMANHO', item.idGrupoAdicionalItem, 'status', v)}
+                    onChange={(v) => onChangeItem('TAMANHO', item.id, 'status', v)}
                 />
             </div>
             {canRemove && (
-                <CustomButton onClick={() => removeItem('TAMANHO', item.idGrupoAdicionalItem)} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton="outline-main">
+                <CustomButton onClick={() => removeItem('TAMANHO', item.id)} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton="outline-main">
                     <FontAwesomeIcon icon={faTrash} />
                 </CustomButton>
             )}
         </div>
     );
 
-    const LinhaValor = (tipo: 'MASSA' | 'BORDA', item: IGrupoAdicionalItem, canRemove: boolean) => (
-        <div className={styles.row} key={item.idGrupoAdicionalItem}>
+    // MASSA continua com um valor unico por item.
+    const LinhaValor = (tipo: 'MASSA', item: IGrupoAdicionalItem, canRemove: boolean) => (
+        <div className={styles.row} key={item.id}>
             <InputGroup
                 width="45%"
-                title={tipo === 'MASSA' ? 'Nome da massa' : 'Nome da borda'}
+                title="Nome da massa"
                 value={item.nome}
-                onChange={(e) => onChangeItem(tipo, item.idGrupoAdicionalItem, 'nome', e.currentTarget.value)}
+                onChange={(e) => onChangeItem(tipo, item.id, 'nome', e.currentTarget.value)}
             />
             <InputGroup
                 type="number"
                 width="25%"
                 title="Preço"
                 value={item.valor}
-                onChange={(e) => onChangeItem(tipo, item.idGrupoAdicionalItem, 'valor', fGetNumber(e.currentTarget.value))}
+                onChange={(e) => onChangeItem(tipo, item.id, 'valor', fGetNumber(e.currentTarget.value))}
             />
             <div className={styles.statusCell}>
                 <Switch
                     onColor="#fc4f6b"
                     checked={item.status}
-                    onChange={(v) => onChangeItem(tipo, item.idGrupoAdicionalItem, 'status', v)}
+                    onChange={(v) => onChangeItem(tipo, item.id, 'status', v)}
                 />
             </div>
             {canRemove && (
-                <CustomButton onClick={() => removeItem(tipo, item.idGrupoAdicionalItem)} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton="outline-main">
+                <CustomButton onClick={() => removeItem(tipo, item.id)} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton="outline-main">
                     <FontAwesomeIcon icon={faTrash} />
                 </CustomButton>
             )}
         </div>
     );
 
-    const LinhaSabor = (item: IGrupoAdicionalItem) => {
+    // Linha de item com preco por tamanho — usada por SABOR, BORDA e COMPLEMENTO.
+    // comFracionado (COMPLEMENTO): alem do valor INTEIRO (pizza toda), mostra um
+    // segundo campo por tamanho com o valor FRACIONADO (aplicado a um sabor só).
+    const LinhaPorTamanho = (
+        tipo: TipoGrupo,
+        item: IGrupoAdicionalItem,
+        labelNome: string,
+        canRemove: boolean,
+        comFracionado = false,
+    ) => {
         const tamanhos = getItems('TAMANHO');
         return (
-            <div className={styles.saborRow} key={item.idGrupoAdicionalItem}>
+            <div className={styles.saborRow} key={item.id}>
                 <div className={styles.row}>
                     <InputGroup
                         width="45%"
-                        title="Nome do sabor"
+                        title={labelNome}
                         value={item.nome}
-                        onChange={(e) => onChangeItem('SABOR', item.idGrupoAdicionalItem, 'nome', e.currentTarget.value)}
+                        onChange={(e) => onChangeItem(tipo, item.id, 'nome', e.currentTarget.value)}
                     />
                     <div className={styles.statusCell}>
                         <Switch
                             onColor="#fc4f6b"
                             checked={item.status}
-                            onChange={(v) => onChangeItem('SABOR', item.idGrupoAdicionalItem, 'status', v)}
+                            onChange={(v) => onChangeItem(tipo, item.id, 'status', v)}
                         />
                     </div>
-                    <CustomButton onClick={() => removeItem('SABOR', item.idGrupoAdicionalItem)} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton="outline-main">
-                        <FontAwesomeIcon icon={faTrash} />
-                    </CustomButton>
+                    {canRemove && (
+                        <CustomButton onClick={() => removeItem(tipo, item.id)} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton="outline-main">
+                            <FontAwesomeIcon icon={faTrash} />
+                        </CustomButton>
+                    )}
                 </div>
                 <div className={styles.row}>
                     {tamanhos.map((t) => (
-                        <InputGroup
-                            key={t.idGrupoAdicionalItem}
-                            type="number"
-                            width="150px"
-                            title={`Preço - ${t.nome || 'Tamanho'}`}
-                            value={getPreco(item, t.idGrupoAdicionalItem)}
-                            onChange={(e) =>
-                                onChangePreco(item.idGrupoAdicionalItem, t.idGrupoAdicionalItem, fGetNumber(e.currentTarget.value))
-                            }
-                        />
+                        <div key={t.id} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <InputGroup
+                                type="number"
+                                width="150px"
+                                title={comFracionado ? `Inteira - ${t.nome || 'Tamanho'}` : `Preço - ${t.nome || 'Tamanho'}`}
+                                value={getPreco(item, t.id)}
+                                onChange={(e) =>
+                                    onChangePreco(tipo, item.id, t.id, fGetNumber(e.currentTarget.value))
+                                }
+                            />
+                            {comFracionado && (
+                                <InputGroup
+                                    type="number"
+                                    width="150px"
+                                    title={`Fracionada - ${t.nome || 'Tamanho'}`}
+                                    value={getPreco(item, t.id, 'valorFracionado')}
+                                    onChange={(e) =>
+                                        onChangePreco(tipo, item.id, t.id, fGetNumber(e.currentTarget.value), 'valorFracionado')
+                                    }
+                                />
+                            )}
+                        </div>
                     ))}
                 </div>
                 <hr />
@@ -549,8 +704,8 @@ export default function NovaPizza() {
 
                     <Tab eventKey="borda" title="Bordas">
                         <div className={styles.contentTab}>
-                            {getItems('BORDA').map((item) => LinhaValor('BORDA', item, getItems('BORDA').length > 1))}
-                            <CustomButton onClick={() => setItens('BORDA', [...getItems('BORDA'), { ...emptyItem(pizza.empresaId), nome: '' }])} style={{ width: '300px' }} typeButton="main">
+                            {getItems('BORDA').map((item) => LinhaPorTamanho('BORDA', item, 'Nome da borda', getItems('BORDA').length > 1))}
+                            <CustomButton onClick={() => novoItemPorTamanho('BORDA')} style={{ width: '300px' }} typeButton="main">
                                 Adicionar Borda
                             </CustomButton>
                         </div>
@@ -569,9 +724,18 @@ export default function NovaPizza() {
                                 ]}
                                 setSelected={(v) => updateGrupo('SABOR', (g) => ({ ...g, baseCalculo: v }))}
                             />
-                            {getItems('SABOR').map((item) => LinhaSabor(item))}
-                            <CustomButton onClick={novoSabor} style={{ width: '300px' }} typeButton="main">
+                            {getItems('SABOR').map((item) => LinhaPorTamanho('SABOR', item, 'Nome do sabor', true))}
+                            <CustomButton onClick={() => novoItemPorTamanho('SABOR')} style={{ width: '300px' }} typeButton="main">
                                 Adicionar Sabor
+                            </CustomButton>
+                        </div>
+                    </Tab>
+
+                    <Tab eventKey="complemento" title="Complementos">
+                        <div className={styles.contentTab}>
+                            {getItems('COMPLEMENTO').map((item) => LinhaPorTamanho('COMPLEMENTO', item, 'Nome do complemento', true, true))}
+                            <CustomButton onClick={() => novoItemPorTamanho('COMPLEMENTO')} style={{ width: '300px' }} typeButton="main">
+                                Adicionar Complemento
                             </CustomButton>
                         </div>
                     </Tab>

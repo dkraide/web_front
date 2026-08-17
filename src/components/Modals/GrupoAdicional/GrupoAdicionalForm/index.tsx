@@ -29,7 +29,7 @@ interface props {
     setClose: (res?: boolean) => void;
 }
 
-const TIPOS = ['PADRAO', 'BORDA', 'TAMANHO', 'SABOR', 'MASSA'];
+const TIPOS = ['PADRAO', 'BORDA', 'TAMANHO', 'SABOR', 'MASSA', 'COMPLEMENTO'];
 
 const emptyItem = (): IGrupoAdicionalItem => ({
     id: '',
