@@ -30,3 +30,19 @@
     padding: 10px;
 }
 
+.statusCell{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    min-height: 40px;
+}
+
+.saborRow{
+    width: 100%;
+
+    hr{
+        margin: 10px 0;
+    }
+}
+

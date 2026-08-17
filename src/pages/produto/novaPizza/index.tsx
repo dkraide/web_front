@@ -1,532 +1,587 @@
-// import { Tab, Tabs } from 'react-bootstrap';
-// import styles from './styles.module.scss';
-// import { useContext, useEffect, useState } from 'react';
-// import _ from 'lodash';
-// import { InputGroup } from '@/components/ui/InputGroup';
-// import { v4 as uuidv4 } from 'uuid';
-// import IProduto from '@/interfaces/IProduto';
-// import CustomButton from '@/components/ui/Buttons';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faTrash } from '@fortawesome/free-solid-svg-icons';
-// import Switch from "react-switch";
-// import { fGetNumber } from '@/utils/functions';
-// import SelectClasseMaterial from '@/components/Selects/SelectClasseMaterial';
-// import SelectTributacao from '@/components/Selects/SelectTributacao';
-// import { api } from '@/services/apiClient';
-// import IUsuario from '@/interfaces/IUsuario';
-// import { AuthContext } from '@/contexts/AuthContext';
-// import { AxiosResponse } from 'axios';
-// import { toast } from 'react-toastify';
-// import { useRouter } from 'next/router';
+import { Tab, Tabs } from 'react-bootstrap';
+import styles from './styles.module.scss';
+import { useContext, useEffect, useState } from 'react';
+import _ from 'lodash';
+import { InputGroup } from '@/components/ui/InputGroup';
+import { v4 as uuidv4 } from 'uuid';
+import IProduto from '@/interfaces/IProduto';
+import IProdutoGrupoAdicional from '@/interfaces/IProdutoGrupoAdicional';
+import IGrupoAdicional from '@/interfaces/IGrupoAdicional';
+import { IGrupoAdicionalItem, IGrupoAdicionalItemPreco } from '@/interfaces/IGrupoAdicionalItem';
+import CustomButton from '@/components/ui/Buttons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import Switch from 'react-switch';
+import { fGetNumber } from '@/utils/functions';
+import SelectClasseMaterial from '@/components/Selects/SelectClasseMaterial';
+import SelectTributacao from '@/components/Selects/SelectTributacao';
+import { SelectBase } from '@/components/Selects/SelectBase';
+import { api } from '@/services/apiClient';
+import IUsuario from '@/interfaces/IUsuario';
+import { AuthContext } from '@/contexts/AuthContext';
+import { AxiosError, AxiosResponse } from 'axios';
+import { toast } from 'react-toastify';
+import { useRouter } from 'next/router';
+import Loading from '@/components/Loading';
 
-// export default function NovaPizza() {
-//     const [pizza, setPizza] = useState<IProduto>();
-//     const [user, setUser] = useState<IUsuario>();
-//     const { getUser } = useContext(AuthContext)
-//     const router = useRouter();
-//     const { id } = router.query;
+// Os 4 grupos que uma pizza sempre possui. Nesta tela o usuario faz apenas
+// CRUD dos ITENS de cada um desses grupos (o vinculo N:N pizza<->grupo e o
+// proprio grupo sao criados/atualizados junto no salvamento).
+type TipoGrupo = 'MASSA' | 'TAMANHO' | 'BORDA' | 'SABOR';
 
-//     const loadUser = async () => {
-//         var u: any;
-//         if (!user) {
-//             var res = await getUser();
-//             setUser(res);
-//             u = res;
-//             return u;
-//         } else {
-//             return user;
-//         }
-//     }
+const emptyItem = (empresaId: number): IGrupoAdicionalItem => ({
+    id: '',
+    idGrupoAdicionalItem: uuidv4(),
+    idGrupoAdicional: 0,
+    grupoAdicionalId: 0,
+    materiaPrima: null as any,
+    idMateriaPrima: 0,
+    materiaPrimaId: 0,
+    nome: '',
+    descricao: '',
+    valor: 0,
+    qtdSabores: 0,
+    status: true,
+    precos: [],
+    empresaId,
+    lastChange: new Date(),
+    needChange: true,
+});
 
-//     const loadCod = async () => {
-//         var u = await loadUser();
-//         var cod = await api.get(`/Produto/NextCod?empresaId=${u.empresaSelecionada}`)
-//             .then(({ data }: AxiosResponse<number>) => {
-//                 return data;
-//             })
-//             .catch((err) => {
-//                 toast.error(`Erro ao buscar codigo. ${err.message}`);
-//                 return 0;
-//             });
-//         return cod;
-//     }
+const emptyGrupo = (
+    tipo: TipoGrupo,
+    descricao: string,
+    minimo: number,
+    maximo: number,
+    empresaId: number,
+    itens: IGrupoAdicionalItem[] = [],
+): IGrupoAdicional => ({
+    keetaId: uuidv4(),
+    idGrupoAdicional: 0,
+    id: 0,
+    empresaId,
+    tipo,
+    descricao,
+    status: true,
+    minimo,
+    maximo,
+    itens,
+    lastChange: new Date(),
+    needChange: true,
+});
 
-//     useEffect(() => {
-//         if(!router.isReady){
-//             return;
-//         }
-//         if(!id){
-//             const inicializarPizza = (): IProduto => ({
-//                 bloqueiaEstoque: false,
-//                 idProduto: 0,
-//                 id: 0,
-//                 nome: 'Pizza Salgada',
-//                 valorCompra: 0,
-//                 cod: 0,
-//                 valor: 0,
-//                 quantidade: 0,
-//                 status: true,
-//                 unidadeCompra: '',
-//                 tributacao: {} as any, // Ajuste conforme sua implementação de ITributacao
-//                 idTributacao: 0,
-//                 materiaPrimas: [],
-//                 tamanhos: [],
-//                 fornecedores: [],
-//                 grupoAdicionais: [
-//                     {
-//                         idGrupoAdicional: 0,
-//                         id: 0,
-//                         idProduto: 0,
-//                         produtoId: 0,
-//                         empresaId: 0,
-//                         produto: {} as any, // Ajuste conforme sua implementação de IProduto
-//                         tipo: 'MASSA',
-//                         descricao: 'Grupo de massas',
-//                         status: true,
-//                         minimo: 1,
-//                         maximo: 1,
-//                         itens: [
-//                             {
-//                                 id: uuidv4(),
-//                                 idProdutoGrupoItem: uuidv4(),
-//                                 idProdutoGrupo: 0,
-//                                 produtoGrupoId: 0,
-//                                 produtoGrupo: {} as any, // Ajuste conforme sua implementação de IProdutoGrupo
-//                                 materiaPrima: {} as any, // Ajuste conforme sua implementação de IMateriaPrima
-//                                 idMateriaPrima: 0,
-//                                 materiaPrimaId: 0,
-//                                 nome: 'Tradicional',
-//                                 descricao: 'Massa tradicional',
-//                                 valor: 0,
-//                                 qtdSabores: 0,
-//                                 status: true,
-//                                 precos: [],
-//                             },
-//                         ],
-//                     },
-//                     {
-//                         idGrupoAdicional: 0,
-//                         id: 0,
-//                         idProduto: 0,
-//                         produtoId: 0,
-//                         empresaId: 0,
-//                         produto: {} as any,
-//                         tipo: 'TAMANHO',
-//                         descricao: 'Grupo de tamanhos',
-//                         status: true,
-//                         minimo: 1,
-//                         maximo: 1,
-//                         itens: [
-//                             {
-//                                 id: uuidv4(),
-//                                 idProdutoGrupoItem: uuidv4(),
-//                                 idProdutoGrupo: 0,
-//                                 produtoGrupoId: 0,
-//                                 produtoGrupo: {} as any,
-//                                 materiaPrima: {} as any,
-//                                 idMateriaPrima: 0,
-//                                 materiaPrimaId: 0,
-//                                 nome: 'Pequena',
-//                                 descricao: 'Tamanho pequeno',
-//                                 valor: 0,
-//                                 qtdSabores: 2,
-//                                 status: true,
-//                                 precos: [],
-//                             },
-//                             {
-//                                 id: uuidv4(),
-//                                 idProdutoGrupoItem: uuidv4(),
-//                                 idProdutoGrupo: 0,
-//                                 produtoGrupoId: 0,
-//                                 produtoGrupo: {} as any,
-//                                 materiaPrima: {} as any,
-//                                 idMateriaPrima: 0,
-//                                 materiaPrimaId: 0,
-//                                 nome: 'Média',
-//                                 descricao: 'Tamanho médio',
-//                                 valor: 0,
-//                                 qtdSabores: 3,
-//                                 status: true,
-//                                 precos: [],
-//                             },
-//                         ],
-//                     },
-//                     {
-//                         idProdutoGrupo: 0,
-//                         id: 0,
-//                         idProduto: 0,
-//                         produtoId: 0,
-//                         empresaId: 0,
-//                         produto: {} as any, // Ajuste conforme sua implementação de IProduto
-//                         tipo: 'BORDA',
-//                         descricao: 'Bordas',
-//                         status: true,
-//                         minimo: 1,
-//                         maximo: 1,
-//                         itens: [
-//                             {
-//                                 id: uuidv4(),
-//                                 idProdutoGrupoItem: uuidv4(),
-//                                 idProdutoGrupo: 0,
-//                                 produtoGrupoId: 0,
-//                                 produtoGrupo: {} as any, // Ajuste conforme sua implementação de IProdutoGrupo
-//                                 materiaPrima: {} as any, // Ajuste conforme sua implementação de IMateriaPrima
-//                                 idMateriaPrima: 0,
-//                                 materiaPrimaId: 0,
-//                                 nome: 'Sem borda',
-//                                 descricao: 'Sem borda',
-//                                 valor: 0,
-//                                 qtdSabores: 0,
-//                                 status: true,
-//                                 precos: [],
-//                             },
-//                         ],
-//                     },
-//                     {
-//                         idProdutoGrupo: 0,
-//                         id: 0,
-//                         idProduto: 0,
-//                         produtoId: 0,
-//                         empresaId: 0,
-//                         produto: {} as any, // Ajuste conforme sua implementação de IProduto
-//                         tipo: 'SABOR',
-//                         descricao: 'Sabores',
-//                         status: true,
-//                         minimo: 1,
-//                         maximo: 1,
-//                         itens: [],
-//                     },
-//                 ],
-//                 codBarras: [],
-//                 classeMaterial: {} as any, // Ajuste conforme sua implementação de IClasseMaterial
-//                 idClasseMaterial: 0,
-//                 quantidadeMinima: 0,
-//                 empresaId: 0,
-//                 classeMaterialId: 0,
-//                 tributacaoId: 0,
-//                 lastChange: new Date(),
-//                 localCriacao: '',
-//                 custoTotal: 0,
-//                 codigoFornecedor: '',
-//                 multiplicadorFornecedor: 0,
-//                 localPath: '',
-//                 getCustoMateriaPrima: false,
-//                 ultimaConferencia: new Date(),
-//                 valorUnitarioSemImposto: 0,
-//                 aliqICMSFornecedor: 0,
-//                 aliqICMSSTFornecedor: 0,
-//                 aliqFCPFornecedor: 0,
-//                 aliqMVAFornecedor: 0,
-//                 tipo: 'PIZZA',
-//                 posicao: 0,
-//                 visivelMenu: false,
-//                 promocoes: [],
-//                 descricao: '',
-//                 isConferencia: false,
-//                 imagem: undefined,
-//             });
-//             setTimeout(async () => {
-//                 var cod = await loadCod();
-//                 var p = inicializarPizza();
-//                 p.cod = cod;
-//                 setPizza(p);
-//                 loadCod();
-//             })
-//         }else{
-//             api.get(`/Produto/Select?id=${id}`).then(({data}) => {
-//                 setPizza(data);
-//             });
-//         }
-      
-//     }, [router.isReady]);
+const novoVinculo = (grupo: IGrupoAdicional, empresaId: number): IProdutoGrupoAdicional => ({
+    id: 0,
+    idProdutoGrupoAdicional: 0,
+    idProduto: 0,
+    produtoId: 0,
+    idGrupoAdicional: 0,
+    grupoAdicionalId: 0,
+    empresaId,
+    lastChange: new Date(),
+    needChange: true,
+    grupoAdicional: grupo,
+});
 
-//     const onChangeText = (item: IProdutoGrupoItem, newValue: string, tipoGrupo: string, field: string) => {
-//         if (!pizza) return;
-//         const indexGrupo = _.findIndex(pizza.grupoAdicionais, (p) => p.tipo === tipoGrupo);
-//         const indexItem = _.findIndex(pizza.grupoAdicionais[indexGrupo].itens, (p) => p.id === item.id);
+// Grupos padrao de uma pizza nova (espelha frmCadastroPizza do PDV).
+const gruposPadrao = (empresaId: number): IProdutoGrupoAdicional[] => {
+    const massa = emptyGrupo('MASSA', 'Massas', 1, 1, empresaId, [
+        { ...emptyItem(empresaId), nome: 'Tradicional' },
+    ]);
+    const tamanho = emptyGrupo('TAMANHO', 'Tamanhos', 1, 1, empresaId, [
+        { ...emptyItem(empresaId), nome: 'Pequeno (4 Pedaços)', qtdSabores: 1 },
+        { ...emptyItem(empresaId), nome: 'Média (6 Pedaços)', qtdSabores: 2 },
+        { ...emptyItem(empresaId), nome: 'Grande (8 Pedaços)', qtdSabores: 2 },
+    ]);
+    const borda = emptyGrupo('BORDA', 'Bordas', 1, 1, empresaId, [
+        { ...emptyItem(empresaId), nome: 'Sem Borda' },
+    ]);
+    const sabor = emptyGrupo('SABOR', 'Sabores', 1, 2, empresaId, []);
+    // Pizza meio-a-meio: por padrão divide o preço pela qtd de sabores (média),
+    // preservando o comportamento histórico. O usuário troca na aba de sabores.
+    sabor.baseCalculo = 'MEDIA';
 
-//         // Ajusta o tipo do campo dinamicamente
-//         const parsedValue =
-//             field === 'status' ? newValue === 'true' : field === 'valor' ? parseFloat(newValue) : newValue;
+    return [
+        novoVinculo(massa, empresaId),
+        novoVinculo(tamanho, empresaId),
+        novoVinculo(borda, empresaId),
+        novoVinculo(sabor, empresaId),
+    ];
+};
 
-//         pizza.grupoAdicionais[indexGrupo].itens[indexItem][field] = parsedValue;
-//         setPizza({ ...pizza });
-//     };
+export default function NovaPizza() {
+    const [pizza, setPizza] = useState<IProduto>();
+    const [user, setUser] = useState<IUsuario>();
+    const [saving, setSaving] = useState(false);
+    const { getUser } = useContext(AuthContext);
+    const router = useRouter();
+    const { id } = router.query;
 
-//     const ItemTamanho = (item: IProdutoGrupoItem, canRemove: boolean) => {
-//         return (
-//             <div className={styles.row}>
-//                 <InputGroup
-//                     width="30%"
-//                     title="Nome do tamanho"
-//                     value={item.nome}
-//                     onChange={(e) => onChangeText(item, e.currentTarget.value, 'TAMANHO', 'nome')}
-//                 />
-//                 <InputGroup
-//                     type="number"
-//                     width="30%"
-//                     title="Qtd. pedaços"
-//                     value={item.qtdSabores || 0}
-//                     onChange={(e) => onChangeText(item, e.currentTarget.value, 'TAMANHO', 'qtdSabores')}
-//                 />
-//                 {canRemove && <CustomButton onClick={() => { RemoveItem('TAMANHO', item.id) }} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton={'outline-main'}><FontAwesomeIcon icon={faTrash} /></CustomButton>}
-//             </div>
-//         );
-//     };
-//     const ItemMassa = (item: IProdutoGrupoItem, canRemove: boolean) => {
-//         return (
-//             <div className={styles.row}>
-//                 <InputGroup
-//                     width="30%"
-//                     title="Nome da Massa"
-//                     value={item.nome}
-//                     onChange={(e) => onChangeText(item, e.currentTarget.value, 'MASSA', 'nome')}
-//                 />
-//                 <InputGroup
-//                     type="number"
-//                     width="30%"
-//                     title="Preço"
-//                     value={item.valor.toString()}
-//                     onChange={(e) => onChangeText(item, e.currentTarget.value, 'MASSA', 'valor')}
-//                 />
-//                 <Switch onColor={'#fc4f6b'} onChange={(e) => { onChangeText(item, e.toString(), 'MASSA', 'status') }} checked={item.status} />
-//                 {canRemove && <CustomButton onClick={() => { RemoveItem('MASSA', item.id) }} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton={'outline-main'}><FontAwesomeIcon icon={faTrash} /></CustomButton>}
-//             </div>
-//         );
-//     };
+    const loadUser = async (): Promise<IUsuario> => {
+        if (user) return user;
+        const res = await getUser();
+        setUser(res);
+        return res;
+    };
 
-//     const onChangePreco = (item: IProdutoGrupoItemPreco, value: string) => {
-//         var grupo = _.findIndex(pizza.grupoAdicionais, p => p.tipo == "SABOR");
-//         var sabor = _.findIndex(pizza.grupoAdicionais[grupo].itens, p => p.id == item.produtoGrupoItemId);
-//         var preco = _.findIndex(pizza.grupoAdicionais[grupo].itens[sabor].precos, p => p.id == item.id);
-//         if(preco < 0){
-//             item.valor = parseFloat(value);
-//             pizza.grupoAdicionais[grupo].itens[sabor].precos.push(item);
-//             setPizza({ ...pizza });
-//         }else{
-//             pizza.grupoAdicionais[grupo].itens[sabor].precos[preco].valor = parseFloat(value);
-//             setPizza({ ...pizza });
-//         }
-//     }
-//     const ItemSabor = (item: IProdutoGrupoItem) => {
-//         const { itens } = (pizza.grupoAdicionais[_.findIndex(pizza.grupoAdicionais, p => p.tipo == "TAMANHO")]);
+    const loadCod = async (empresaId: number): Promise<number> => {
+        return api
+            .get(`/Produto/NextCod?EmpresaId=${empresaId}`)
+            .then(({ data }: AxiosResponse<number>) => data)
+            .catch((err) => {
+                toast.error(`Erro ao buscar código. ${err.message}`);
+                return 0;
+            });
+    };
 
-//         function getPreco(tamanho: IProdutoGrupoItem) {
-//             var index = _.findIndex(item.precos, p => p.produtogrupoitemrelacaoId == tamanho.id);
-//             if (index < 0) {
-//                 return 0;
-//             } else {
-//                 return item.precos[index].valor;
-//             }
-//         }
-//         function getObjectPreco(tamanho:IProdutoGrupoItem){
-//             var index = _.findIndex(item.precos, p => p.produtogrupoitemrelacaoId == tamanho.id);
-//             if (index < 0) {
-//                 return {
-//                     id: uuidv4(),
-//                     idProdutoGrupoItem: null,
-//                     idProdutoGrupoItemPreco: null,
-//                     idProdutogrupoitemrelacao: null,
-//                     produtoGrupoItemId: item.id,
-//                     produtogrupoitemrelacaoId: tamanho.id,
-//                     valor: 0
+    // Garante que os 4 grupos existam no vinculo (util ao editar pizzas antigas).
+    const garantirGrupos = (p: IProduto): IProduto => {
+        const empresaId = p.empresaId;
+        (['MASSA', 'TAMANHO', 'BORDA', 'SABOR'] as TipoGrupo[]).forEach((tipo) => {
+            const existe = p.grupoAdicionais?.some((v) => v.grupoAdicional?.tipo === tipo);
+            if (!existe) {
+                const padrao = gruposPadrao(empresaId).find((v) => v.grupoAdicional?.tipo === tipo)!;
+                p.grupoAdicionais = [...(p.grupoAdicionais ?? []), padrao];
+            }
+        });
+        // Registros antigos podem vir sem baseCalculo no grupo SABOR — assume
+        // MEDIA (comportamento histórico) pra o seletor e o payload não ficarem vazios.
+        p.grupoAdicionais = (p.grupoAdicionais ?? []).map((v) =>
+            v.grupoAdicional?.tipo === 'SABOR' && !v.grupoAdicional.baseCalculo
+                ? { ...v, grupoAdicional: { ...v.grupoAdicional, baseCalculo: 'MEDIA' as const } }
+                : v,
+        );
+        return p;
+    };
 
-//                 } as IProdutoGrupoItemPreco;
-//             } else {
-//                 return item.precos[index];
-//             }
-//         }
-//         return (
-//             <div className={styles.row}>
-//                 <InputGroup
-//                     width="30%"
-//                     title={"Nome do Sabor"}
-//                     value={item.nome}
-//                     onChange={(e) => onChangeText(item, e.currentTarget.value, 'SABOR', 'nome')}
-//                 />
-//                 {itens.map((tamanho) => {
-//                     return (
-//                         <InputGroup
-//                             type="number"
-//                             width="150px"
-//                             title={tamanho.nome}
-//                             value={getPreco(tamanho)}
-//                             onChange={(e) => onChangePreco(getObjectPreco(tamanho), e.currentTarget.value)}
-//                         />
-//                     )
-//                 })}
-//                 {/* {item.precos?.map((preco) => ItemSaborPreco(preco))} */}
-//                 <div style={{ width: '100%' }}>
-//                     <hr />
-//                 </div>
-//             </div>
-//         )
-//     }
-//     const ItemBorda = (item: IProdutoGrupoItem, canRemove: boolean) => {
-//         return (
-//             <div className={styles.row}>
-//                 <InputGroup
-//                     width="30%"
-//                     title="Nome da Borda"
-//                     value={item.nome}
-//                     onChange={(e) => onChangeText(item, e.currentTarget.value, 'BORDA', 'nome')}
-//                 />
-//                 <InputGroup
-//                     type="number"
-//                     width="30%"
-//                     title="Preço"
-//                     value={item.valor.toString()}
-//                     onChange={(e) => onChangeText(item, e.currentTarget.value, 'BORDA', 'valor')}
-//                 />
-//                 <Switch onColor={'#fc4f6b'} onChange={(e) => { onChangeText(item, e.toString(), 'BORDA', 'status') }} checked={item.status} />
-//                 {canRemove && <CustomButton onClick={() => { RemoveItem('BORDA', item.id) }} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton={'outline-main'}><FontAwesomeIcon icon={faTrash} /></CustomButton>}
-//             </div>
-//         );
-//     };
-//     const NewItem = (tipoGrupo: string) => {
-//         const indexGrupo = pizza?.grupoAdicionais.findIndex((g) => g.tipo === tipoGrupo);
-//         if (!pizza?.grupoAdicionais[indexGrupo].itens) {
-//             pizza.grupoAdicionais[indexGrupo].itens = [] as IProdutoGrupoItem[];
-//         }
-//         pizza.grupoAdicionais[indexGrupo].itens.push({
-//             id: uuidv4(),
-//             idProdutoGrupoItem: uuidv4(),
-//             idProdutoGrupo: 0,
-//             produtoGrupoId: 0,
-//             produtoGrupo: {} as any, // Ajuste conforme sua implementação de IProdutoGrupo
-//             materiaPrima: {} as any, // Ajuste conforme sua implementação de IMateriaPrima
-//             idMateriaPrima: 0,
-//             materiaPrimaId: 0,
-//             nome: '',
-//             descricao: '',
-//             valor: 0,
-//             qtdSabores: 0,
-//             status: true,
-//             precos: [],
-//         });
-//         setPizza({ ...pizza });
-//     }
-//     const NewSabor = () => {
-//         var item = {
-//             id: uuidv4(),
-//             idProdutoGrupoItem: uuidv4(),
-//             idProdutoGrupo: 0,
-//             produtoGrupoId: 0,
-//             produtoGrupo: {} as any, // Ajuste conforme sua implementação de IProdutoGrupo
-//             materiaPrima: {} as any, // Ajuste conforme sua implementação de IMateriaPrima
-//             idMateriaPrima: 0,
-//             materiaPrimaId: 0,
-//             nome: '',
-//             descricao: '',
-//             valor: 0,
-//             qtdSabores: 0,
-//             status: true,
-//             precos: [],
-//         } as IProdutoGrupoItem;
+    const novaPizza = async () => {
+        const u = await loadUser();
+        const cod = await loadCod(u.empresaSelecionada);
+        const p: IProduto = {
+            idProduto: 0,
+            id: 0,
+            nome: 'Pizza Salgada',
+            cod,
+            tipo: 'PIZZA',
+            status: true,
+            empresaId: u.empresaSelecionada,
+            grupoAdicionais: gruposPadrao(u.empresaSelecionada),
+        } as IProduto;
+        setPizza(p);
+    };
 
-//         const tamIndex = _.findIndex(pizza.grupoAdicionais, p => p.tipo == "TAMANHO");
-//         if (!pizza.grupoAdicionais[tamIndex] || pizza.grupoAdicionais[tamIndex].itens.length <= 0) {
-//             toast.error(`Adicione ao menos um tamanho`);
-//             return;
-//         }
-//         pizza.grupoAdicionais[tamIndex].itens.map((tamanho) => {
-//             item.precos.push({
-//                 id: uuidv4(),
-//                 idProdutoGrupoItem: null,
-//                 idProdutoGrupoItemPreco: null,
-//                 produtoGrupoItemId: item.id,
-//                 produtogrupoitemrelacaoId: tamanho.id,
-//                 valor: 0
-//             } as IProdutoGrupoItemPreco);
-//         });
+    const carregarPizza = async (pizzaId: number) => {
+        const u = await loadUser();
+        api.get(`/v2/Produto/${pizzaId}?EmpresaId=${u.empresaSelecionada}`)
+            .then(({ data }: AxiosResponse<IProduto>) => {
+                setPizza(garantirGrupos(data));
+            })
+            .catch((err: AxiosError) => {
+                toast.error(`Erro ao carregar pizza. ${err.response?.data || err.message}`);
+            });
+    };
 
-//         var sabIndex = _.findIndex(pizza.grupoAdicionais, p => p.tipo == 'SABOR');
-//         pizza.grupoAdicionais[sabIndex].itens.push(item);
-//         setPizza({ ...pizza });
-//     }
-//     const RemoveItem = (tipoGrupo: string, itemId: string) => {
-//         const indexGrupo = pizza?.grupoAdicionais.findIndex((g) => g.tipo === tipoGrupo);
-//         const indexItem = _.findIndex(pizza.grupoAdicionais[indexGrupo].itens, p => p.id == itemId);
-//         var newArray = pizza.grupoAdicionais[indexGrupo].itens.splice(indexItem, 1);
-//         //  pizza.grupoAdicionais[indexGrupo].itens = newArray;
-//         setPizza({ ...pizza });
-//     }
-//     const getItems = (tipoGrupo: string): IProdutoGrupoItem[] => {
-//         const grupo = pizza?.grupoAdicionais.find((g) => g.tipo === tipoGrupo);
-//         return grupo?.itens || [];
-//     };
+    useEffect(() => {
+        if (!router.isReady) return;
+        if (id) {
+            carregarPizza(fGetNumber(id as string));
+        } else {
+            novaPizza();
+        }
+    }, [router.isReady]);
 
+    // ── acesso aos grupos ────────────────────────────────────
+    const getVinculo = (tipo: TipoGrupo) =>
+        pizza?.grupoAdicionais?.find((v) => v.grupoAdicional?.tipo === tipo);
 
-//     const onSubmit = async () => {
-      
-//         if(!pizza.id || pizza.id <= 0){
-//             pizza.tipo = "PIZZA";
-//             pizza.status = true;
-//             pizza.empresaId = user.empresaSelecionada;
-//             await api.post(`/Produto/Create`, pizza).then(({data}) => {
-//                 toast.success(`sucesso rapaz`);
-//             }).catch((err) => {
-//                 toast.error(`ERRO rapaz`);
-//             })
+    const getGrupo = (tipo: TipoGrupo): IGrupoAdicional | undefined => getVinculo(tipo)?.grupoAdicional;
 
-//         }else{
-//             await api.put(`/Produto/UpdateProduct`, pizza).then(({data}) => {
-//                 toast.success(`sucesso rapaz`);
-//             }).catch((err) => {
-//                 toast.error(`ERRO rapaz`);
-//             })
-//         }
-//     }
+    const getItems = (tipo: TipoGrupo): IGrupoAdicionalItem[] => getGrupo(tipo)?.itens ?? [];
 
-//     if (!pizza) {
-//         return <></>;
-//     }
-//     return (
-//         <div className={styles.container}>
-//             <div className={styles.tabs}>
-//                 <h3>Nova Pizza</h3>
-//                 <Tabs defaultActiveKey="produto" id="uncontrolled-tab-example" variant={'underline'} justify={false} fill>
-//                     <Tab eventKey="produto" title="Detalhes">
-//                         <div className={styles.row}>
-//                             <InputGroup width={'10%'} title={'Cod'} value={pizza.cod} onChange={((v) => { setPizza({ ...pizza, cod: fGetNumber(v.currentTarget.value) }) })} />
-//                             <InputGroup width={'80%'} title={'Nome'} value={pizza.nome} onChange={((v) => { setPizza({ ...pizza, nome: v.currentTarget.value }) })} />
-//                             <div style={{ width: '10%', display: 'flex', justifyContent: 'flex-end' }}>
-//                                 <Switch onColor={'#fc4f6b'} onChange={(e) => { setPizza({ ...pizza, status: e }) }} checked={pizza.status} />
-//                             </div>
-//                             <SelectClasseMaterial selected={pizza.classeMaterialId} setSelected={(v) => { setPizza({ ...pizza, classeMaterialId: v.id, idClasseMaterial: v.idClasseMaterial }) }} />
-//                             <SelectTributacao selected={pizza.tributacaoId} setSelected={(v) => { setPizza({ ...pizza, tributacaoId: v.id, idTributacao: v.idTributacao }) }} />
-//                         </div>
-//                     </Tab>
-//                     <Tab className={styles.tab} eventKey="tamanho" title="Tamanho">
-//                         <div className={styles.contentTab}>
-//                             {getItems('TAMANHO').map((item) => ItemTamanho(item, getItems('TAMANHO').length > 1))}
-//                             <CustomButton onClick={() => { NewItem('TAMANHO') }} style={{ width: '300px' }} typeButton={'main'}> Adicionar Tamanho</CustomButton>
-//                         </div>
-//                     </Tab>
-//                     <Tab eventKey="massa" title="Massa">
-//                         <div className="row">
-//                             {getItems('MASSA').map((item) => ItemMassa(item, getItems('MASSA').length > 1))}
-//                             <CustomButton onClick={() => { NewItem('MASSA') }} style={{ width: '300px' }} typeButton={'main'}> Adicionar Massa</CustomButton>
-//                         </div>
-//                     </Tab>
-//                     <Tab eventKey="borda" title="Borda">
-//                         <div className="row">{getItems('BORDA').map((item) => ItemBorda(item, getItems('BORDA').length > 1))}</div>
-//                         <CustomButton onClick={() => { NewItem('BORDA') }} style={{ width: '300px' }} typeButton={'main'}> Adicionar Borda</CustomButton>
-//                     </Tab>
-//                     <Tab eventKey="sabor" title="Sabores">
-//                         <div className="row">{getItems('SABOR').map((item) => ItemSabor(item))}</div>
-//                         <CustomButton onClick={() => { NewSabor() }} style={{ width: '300px' }} typeButton={'main'}> Adicionar Sabor</CustomButton>
-//                     </Tab>
-//                 </Tabs>
-//             </div>
-//             <div className={styles.buttons}>
-//                 <CustomButton onClick={onSubmit}>Cadastrar</CustomButton>
+    // Atualiza o grupo de um tipo aplicando um "mutator" imutavel.
+    const updateGrupo = (tipo: TipoGrupo, fn: (g: IGrupoAdicional) => IGrupoAdicional) => {
+        setPizza((prev) => {
+            if (!prev) return prev;
+            const grupoAdicionais = prev.grupoAdicionais.map((v) =>
+                v.grupoAdicional?.tipo === tipo
+                    ? { ...v, grupoAdicional: fn(v.grupoAdicional!) }
+                    : v,
+            );
+            return { ...prev, grupoAdicionais };
+        });
+    };
 
-//             </div>
-//         </div>
-//     );
-// }
+    const setItens = (tipo: TipoGrupo, itens: IGrupoAdicionalItem[]) =>
+        updateGrupo(tipo, (g) => ({ ...g, itens }));
 
- export default function Page() {
-    return (<></>)
- }
+    // ── itens: alteracao de campo ────────────────────────────
+    const onChangeItem = (
+        tipo: TipoGrupo,
+        itemId: string,
+        field: keyof IGrupoAdicionalItem,
+        value: string | number | boolean,
+    ) => {
+        setItens(
+            tipo,
+            getItems(tipo).map((it) =>
+                it.idGrupoAdicionalItem === itemId ? { ...it, [field]: value } : it,
+            ),
+        );
+    };
+
+    const removeItem = (tipo: TipoGrupo, itemId: string) => {
+        setItens(
+            tipo,
+            getItems(tipo).filter((it) => it.idGrupoAdicionalItem !== itemId),
+        );
+        // Ao remover um tamanho, tira os precos correspondentes de cada sabor.
+        if (tipo === 'TAMANHO') {
+            updateGrupo('SABOR', (g) => ({
+                ...g,
+                itens: (g.itens ?? []).map((sabor) => ({
+                    ...sabor,
+                    precos: (sabor.precos ?? []).filter(
+                        (p) => p.idGrupoAdicionalItemRelacao !== itemId,
+                    ),
+                })),
+            }));
+        }
+    };
+
+    // ── tamanho ──────────────────────────────────────────────
+    const novoTamanho = () => {
+        if (!pizza) return;
+        const novo = { ...emptyItem(pizza.empresaId), nome: '' };
+        setItens('TAMANHO', [...getItems('TAMANHO'), novo]);
+        // Cada sabor existente ganha um preco (0) para o novo tamanho.
+        updateGrupo('SABOR', (g) => ({
+            ...g,
+            itens: (g.itens ?? []).map((sabor) => ({
+                ...sabor,
+                precos: [...(sabor.precos ?? []), novoPreco(pizza.empresaId, sabor.idGrupoAdicionalItem, novo.idGrupoAdicionalItem)],
+            })),
+        }));
+    };
+
+    // ── sabor ────────────────────────────────────────────────
+    const novoPreco = (
+        empresaId: number,
+        saborItemId: string,
+        tamanhoItemId: string,
+    ): IGrupoAdicionalItemPreco => ({
+        id: '',
+        idGrupoAdicionalItemPreco: uuidv4(),
+        idGrupoAdicionalItem: saborItemId,
+        grupoAdicionalItemId: '',
+        idGrupoAdicionalItemRelacao: tamanhoItemId,
+        grupoAdicionalItemRelacaoId: '',
+        valor: 0,
+        lastChange: new Date(),
+        needChange: true,
+        empresaId,
+    });
+
+    const novoSabor = () => {
+        if (!pizza) return;
+        const tamanhos = getItems('TAMANHO');
+        if (tamanhos.length === 0) {
+            toast.error('Cadastre ao menos um tamanho antes de criar sabores.');
+            return;
+        }
+        const sabor = { ...emptyItem(pizza.empresaId), nome: '' };
+        sabor.precos = tamanhos.map((t) =>
+            novoPreco(pizza.empresaId, sabor.idGrupoAdicionalItem, t.idGrupoAdicionalItem),
+        );
+        setItens('SABOR', [...getItems('SABOR'), sabor]);
+    };
+
+    const getPreco = (sabor: IGrupoAdicionalItem, tamanhoItemId: string): number => {
+        const p = sabor.precos?.find((x) => x.idGrupoAdicionalItemRelacao === tamanhoItemId);
+        return p?.valor ?? 0;
+    };
+
+    const onChangePreco = (saborItemId: string, tamanhoItemId: string, valor: number) => {
+        updateGrupo('SABOR', (g) => ({
+            ...g,
+            itens: (g.itens ?? []).map((sabor) => {
+                if (sabor.idGrupoAdicionalItem !== saborItemId) return sabor;
+                const existe = sabor.precos?.some((p) => p.idGrupoAdicionalItemRelacao === tamanhoItemId);
+                const precos = existe
+                    ? sabor.precos.map((p) =>
+                          p.idGrupoAdicionalItemRelacao === tamanhoItemId ? { ...p, valor } : p,
+                      )
+                    : [
+                          ...(sabor.precos ?? []),
+                          { ...novoPreco(g.empresaId, saborItemId, tamanhoItemId), valor },
+                      ];
+                return { ...sabor, precos };
+            }),
+        }));
+    };
+
+    // ── validacao ────────────────────────────────────────────
+    const validar = (): string | null => {
+        if (!pizza) return 'Pizza não carregada';
+        if (!pizza.nome || pizza.nome.trim().length < 2) return 'Informe o nome da pizza.';
+        if (!pizza.classeMaterialId) return 'Selecione uma classe de material.';
+
+        const tamanhos = getItems('TAMANHO');
+        if (tamanhos.length === 0) return 'Cadastre ao menos um tamanho.';
+
+        const sabores = getItems('SABOR');
+        if (sabores.length === 0) return 'Cadastre ao menos um sabor.';
+
+        for (const sabor of sabores) {
+            if (!sabor.nome || sabor.nome.trim().length === 0)
+                return 'Existe sabor sem nome.';
+            for (const t of tamanhos) {
+                const preco = sabor.precos?.find((p) => p.idGrupoAdicionalItemRelacao === t.idGrupoAdicionalItem);
+                if (!preco || preco.valor <= 0)
+                    return `Sabor "${sabor.nome}" sem preço para o tamanho "${t.nome}".`;
+            }
+        }
+        return null;
+    };
+
+    // ── salvar ───────────────────────────────────────────────
+    const onSubmit = async () => {
+        const erro = validar();
+        if (erro) {
+            toast.error(erro);
+            return;
+        }
+        if (!pizza || !user) return;
+
+        setSaving(true);
+        try {
+            const empresaId = user.empresaSelecionada;
+
+            // O backend (ProdutoService) grava a pizza completa numa unica operacao:
+            // quando tipo == PIZZA persiste tambem os grupos, itens e precos e depois
+            // o vinculo N:N. Basta enviar o objeto aninhado.
+            const payload: IProduto = {
+                ...pizza,
+                tipo: 'PIZZA',
+                empresaId,
+                classeMaterial: undefined as any,
+                tributacao: undefined as any,
+                grupoAdicionais: pizza.grupoAdicionais.map((v) => ({
+                    ...v,
+                    empresaId,
+                    grupoAdicional: v.grupoAdicional
+                        ? { ...v.grupoAdicional, empresaId }
+                        : v.grupoAdicional,
+                })),
+            };
+
+            if (!pizza.id || pizza.id <= 0) {
+                await api.post(`/v2/Produto?EmpresaId=${empresaId}`, payload);
+            } else {
+                await api.put(`/v2/Produto?EmpresaId=${empresaId}`, payload);
+            }
+
+            toast.success('Pizza salva com sucesso!');
+            router.push('/produto');
+        } catch (err) {
+            const e = err as AxiosError;
+            toast.error(`Erro ao salvar pizza. ${e.response?.data || e.message}`);
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // ── linhas de item ───────────────────────────────────────
+    const LinhaTamanho = (item: IGrupoAdicionalItem, canRemove: boolean) => (
+        <div className={styles.row} key={item.idGrupoAdicionalItem}>
+            <InputGroup
+                width="45%"
+                title="Nome do tamanho"
+                value={item.nome}
+                onChange={(e) => onChangeItem('TAMANHO', item.idGrupoAdicionalItem, 'nome', e.currentTarget.value)}
+            />
+            <InputGroup
+                type="number"
+                width="25%"
+                title="Qtd. sabores"
+                value={item.qtdSabores ?? 0}
+                onChange={(e) => onChangeItem('TAMANHO', item.idGrupoAdicionalItem, 'qtdSabores', fGetNumber(e.currentTarget.value))}
+            />
+            <div className={styles.statusCell}>
+                <Switch
+                    onColor="#fc4f6b"
+                    checked={item.status}
+                    onChange={(v) => onChangeItem('TAMANHO', item.idGrupoAdicionalItem, 'status', v)}
+                />
+            </div>
+            {canRemove && (
+                <CustomButton onClick={() => removeItem('TAMANHO', item.idGrupoAdicionalItem)} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton="outline-main">
+                    <FontAwesomeIcon icon={faTrash} />
+                </CustomButton>
+            )}
+        </div>
+    );
+
+    const LinhaValor = (tipo: 'MASSA' | 'BORDA', item: IGrupoAdicionalItem, canRemove: boolean) => (
+        <div className={styles.row} key={item.idGrupoAdicionalItem}>
+            <InputGroup
+                width="45%"
+                title={tipo === 'MASSA' ? 'Nome da massa' : 'Nome da borda'}
+                value={item.nome}
+                onChange={(e) => onChangeItem(tipo, item.idGrupoAdicionalItem, 'nome', e.currentTarget.value)}
+            />
+            <InputGroup
+                type="number"
+                width="25%"
+                title="Preço"
+                value={item.valor}
+                onChange={(e) => onChangeItem(tipo, item.idGrupoAdicionalItem, 'valor', fGetNumber(e.currentTarget.value))}
+            />
+            <div className={styles.statusCell}>
+                <Switch
+                    onColor="#fc4f6b"
+                    checked={item.status}
+                    onChange={(v) => onChangeItem(tipo, item.idGrupoAdicionalItem, 'status', v)}
+                />
+            </div>
+            {canRemove && (
+                <CustomButton onClick={() => removeItem(tipo, item.idGrupoAdicionalItem)} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton="outline-main">
+                    <FontAwesomeIcon icon={faTrash} />
+                </CustomButton>
+            )}
+        </div>
+    );
+
+    const LinhaSabor = (item: IGrupoAdicionalItem) => {
+        const tamanhos = getItems('TAMANHO');
+        return (
+            <div className={styles.saborRow} key={item.idGrupoAdicionalItem}>
+                <div className={styles.row}>
+                    <InputGroup
+                        width="45%"
+                        title="Nome do sabor"
+                        value={item.nome}
+                        onChange={(e) => onChangeItem('SABOR', item.idGrupoAdicionalItem, 'nome', e.currentTarget.value)}
+                    />
+                    <div className={styles.statusCell}>
+                        <Switch
+                            onColor="#fc4f6b"
+                            checked={item.status}
+                            onChange={(v) => onChangeItem('SABOR', item.idGrupoAdicionalItem, 'status', v)}
+                        />
+                    </div>
+                    <CustomButton onClick={() => removeItem('SABOR', item.idGrupoAdicionalItem)} style={{ marginLeft: 10, height: 40, width: 40 }} typeButton="outline-main">
+                        <FontAwesomeIcon icon={faTrash} />
+                    </CustomButton>
+                </div>
+                <div className={styles.row}>
+                    {tamanhos.map((t) => (
+                        <InputGroup
+                            key={t.idGrupoAdicionalItem}
+                            type="number"
+                            width="150px"
+                            title={`Preço - ${t.nome || 'Tamanho'}`}
+                            value={getPreco(item, t.idGrupoAdicionalItem)}
+                            onChange={(e) =>
+                                onChangePreco(item.idGrupoAdicionalItem, t.idGrupoAdicionalItem, fGetNumber(e.currentTarget.value))
+                            }
+                        />
+                    ))}
+                </div>
+                <hr />
+            </div>
+        );
+    };
+
+    if (!pizza) {
+        return <Loading />;
+    }
+
+    return (
+        <div className={styles.container}>
+            <div className={styles.tabs}>
+                <h3>{pizza.id > 0 ? 'Editar Pizza' : 'Nova Pizza'}</h3>
+                <Tabs defaultActiveKey="produto" id="pizza-tabs" variant="underline" fill>
+                    <Tab eventKey="produto" title="Detalhes">
+                        <div className={styles.row}>
+                            <InputGroup
+                                width="10%"
+                                title="Cod"
+                                value={pizza.cod}
+                                onChange={(v) => setPizza({ ...pizza, cod: fGetNumber(v.currentTarget.value) })}
+                            />
+                            <InputGroup
+                                width="70%"
+                                title="Nome"
+                                value={pizza.nome}
+                                onChange={(v) => setPizza({ ...pizza, nome: v.currentTarget.value })}
+                            />
+                            <div className={styles.statusCell}>
+                                <Switch onColor="#fc4f6b" checked={pizza.status} onChange={(e) => setPizza({ ...pizza, status: e })} />
+                            </div>
+                            <SelectClasseMaterial
+                                selected={pizza.classeMaterialId}
+                                setSelected={(v) => setPizza({ ...pizza, classeMaterialId: v!.id, idClasseMaterial: v!.idClasseMaterial })}
+                            />
+                            <SelectTributacao
+                                selected={pizza.tributacaoId}
+                                setSelected={(v) => setPizza({ ...pizza, tributacaoId: v.id, idTributacao: v.idTributacao })}
+                            />
+                        </div>
+                    </Tab>
+
+                    <Tab eventKey="tamanho" title="Tamanhos">
+                        <div className={styles.contentTab}>
+                            {getItems('TAMANHO').map((item) => LinhaTamanho(item, getItems('TAMANHO').length > 1))}
+                            <CustomButton onClick={novoTamanho} style={{ width: '300px' }} typeButton="main">
+                                Adicionar Tamanho
+                            </CustomButton>
+                        </div>
+                    </Tab>
+
+                    <Tab eventKey="massa" title="Massas">
+                        <div className={styles.contentTab}>
+                            {getItems('MASSA').map((item) => LinhaValor('MASSA', item, getItems('MASSA').length > 1))}
+                            <CustomButton onClick={() => setItens('MASSA', [...getItems('MASSA'), { ...emptyItem(pizza.empresaId), nome: '' }])} style={{ width: '300px' }} typeButton="main">
+                                Adicionar Massa
+                            </CustomButton>
+                        </div>
+                    </Tab>
+
+                    <Tab eventKey="borda" title="Bordas">
+                        <div className={styles.contentTab}>
+                            {getItems('BORDA').map((item) => LinhaValor('BORDA', item, getItems('BORDA').length > 1))}
+                            <CustomButton onClick={() => setItens('BORDA', [...getItems('BORDA'), { ...emptyItem(pizza.empresaId), nome: '' }])} style={{ width: '300px' }} typeButton="main">
+                                Adicionar Borda
+                            </CustomButton>
+                        </div>
+                    </Tab>
+
+                    <Tab eventKey="sabor" title="Sabores">
+                        <div className={styles.contentTab}>
+                            <SelectBase
+                                width="380px"
+                                title="Preço da pizza meio a meio (mais de um sabor)"
+                                selected={getGrupo('SABOR')?.baseCalculo ?? 'MEDIA'}
+                                datas={[
+                                    { value: 'MEDIA', label: 'Média (soma dividida pela qtd de sabores)' },
+                                    { value: 'MAIOR', label: 'Maior valor (cobra o sabor mais caro)' },
+                                    { value: 'SOMAR', label: 'Somar (soma o valor dos sabores)' },
+                                ]}
+                                setSelected={(v) => updateGrupo('SABOR', (g) => ({ ...g, baseCalculo: v }))}
+                            />
+                            {getItems('SABOR').map((item) => LinhaSabor(item))}
+                            <CustomButton onClick={novoSabor} style={{ width: '300px' }} typeButton="main">
+                                Adicionar Sabor
+                            </CustomButton>
+                        </div>
+                    </Tab>
+                </Tabs>
+            </div>
+            <div className={styles.buttons}>
+                <CustomButton onClick={onSubmit} loading={saving}>
+                    {pizza.id > 0 ? 'Salvar' : 'Cadastrar'}
+                </CustomButton>
+            </div>
+        </div>
+    );
+}

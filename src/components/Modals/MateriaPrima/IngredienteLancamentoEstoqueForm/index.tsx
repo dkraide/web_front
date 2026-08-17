@@ -113,7 +113,7 @@ export default function IngredienteLancamentoEstoqueForm({ user, isOpen, id, set
         } else {
             lancamento.empresaId = user.empresaSelecionada;
             lancamento.isProduto = false;
-            await api.post(`LancamentoEstoque/CreateIngredientes`, lancamento)
+            await api.post(`v2/LancamentoEstoque/${user.empresaSelecionada}/Create`, lancamento)
                 .then(({ data }: AxiosResponse) => {
                     toast.success(`Lancamento cadastrado com sucesso!`);
                     setClose(true);

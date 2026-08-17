@@ -505,6 +505,21 @@ export interface IFoodEditarItemRequest {
   contextModifiers?: IFoodItemEditarContextModifier[] | null;
 }
 
+/** PATCH /items/price — endpoint dedicado de preço de item. */
+export interface IFoodEditarPrecoItemRequest {
+  itemId: string;
+  price: IFoodPreco;
+  priceByCatalog?: IFoodPrecoPorCatalogo[] | null;
+}
+
+/** PATCH /items/status — endpoint dedicado de status (pausar/ativar) de item. */
+export interface IFoodEditarStatusItemRequest {
+  itemId: string;
+  /** Ex: AVAILABLE, UNAVAILABLE */
+  status: string;
+  statusByCatalog?: IFoodStatusPorCatalogo[] | null;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // #region Grupos de Complementos
 // ─────────────────────────────────────────────────────────────────────────────

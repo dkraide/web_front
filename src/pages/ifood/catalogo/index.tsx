@@ -595,7 +595,8 @@ export default function IFoodCatalogoPage() {
     setMenuAberto(null);
     try {
       const novoStatus = item.status === "AVAILABLE" ? "UNAVAILABLE" : "AVAILABLE";
-      const result = await ifoodCatalogService.editarItem(empresaId, item.id, {
+      const result = await ifoodCatalogService.editarStatusItem(empresaId, {
+        itemId: item.id,
         status: novoStatus,
       });
       if (result.sucesso) {
@@ -626,7 +627,8 @@ export default function IFoodCatalogoPage() {
         value: parseFloat(form.value),
         originalValue: form.originalValue ? parseFloat(form.originalValue) : undefined,
       };
-      const result = await ifoodCatalogService.editarItem(empresaId, itemSelecionado.id, {
+      const result = await ifoodCatalogService.editarPrecoItem(empresaId, {
+        itemId: itemSelecionado.id,
         price: novoPreco,
       });
       if (result.sucesso) {

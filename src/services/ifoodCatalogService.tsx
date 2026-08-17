@@ -13,6 +13,8 @@ import type {
   IFoodEditarCategoriaRequest,
   IFoodEditarExternalCodeOpcaoRequest,
   IFoodEditarItemRequest,
+  IFoodEditarPrecoItemRequest,
+  IFoodEditarStatusItemRequest,
   IFoodEditarNomeGrupoComplementoRequest,
   IFoodEditarPrecoOpcaoRequest,
   IFoodEditarProdutoRequest,
@@ -271,6 +273,30 @@ export const ifoodCatalogService = {
   ) {
     const { data } = await api.patch<ApiResult<object>>(
       `${BASE(empresaId)}/itens/${itemId}`,
+      request
+    );
+    return data;
+  },
+
+  /**
+   * Altera apenas o preço de um item via endpoint dedicado PATCH /items/price do iFood.
+   * (o backend roteia para /itens/preco).
+   */
+  async editarPrecoItem(empresaId: number, request: IFoodEditarPrecoItemRequest) {
+    const { data } = await api.patch<ApiResult<object>>(
+      `${BASE(empresaId)}/itens/preco`,
+      request
+    );
+    return data;
+  },
+
+  /**
+   * Altera apenas o status (pausar/ativar) de um item via endpoint dedicado
+   * PATCH /items/status do iFood (o backend roteia para /itens/status).
+   */
+  async editarStatusItem(empresaId: number, request: IFoodEditarStatusItemRequest) {
+    const { data } = await api.patch<ApiResult<object>>(
+      `${BASE(empresaId)}/itens/status`,
       request
     );
     return data;

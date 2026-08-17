@@ -161,7 +161,7 @@ export default function IngredientesEstoqueCadastroXml(){
             } as ILancamentoEstoqueProduto
         });
 
-        return await api.post(`/LancamentoEstoque/CreateIngredientes`, obj).then(({data}: AxiosResponse) => {
+        return await api.post(`/v2/LancamentoEstoque/${user.empresaSelecionada}/Create`, obj).then(({data}: AxiosResponse) => {
             toast.success(`Sucesso ao criar lançamento de Estoque`);
             document.location.href = `/ingredientes/estoque`;
             return true;
