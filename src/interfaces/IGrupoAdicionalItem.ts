@@ -30,7 +30,10 @@ export interface IGrupoAdicionalItemPreco {
     grupoAdicionalItemId: string;
     idGrupoAdicionalItemRelacao: string;
     grupoAdicionalItemRelacaoId: string;
+    // valor "inteiro" (pizza inteira); valorFracionado = aplicado a um sabor só.
+    // Só o COMPLEMENTO usa o fracionado; nos demais fica 0/ausente.
     valor: number;
+    valorFracionado?: number;
     lastChange: Date;
     needChange: boolean;
     empresaId: number;

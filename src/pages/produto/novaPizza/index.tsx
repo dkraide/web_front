@@ -115,7 +115,10 @@ const novoPreco = (
     grupoAdicionalItemId: itemId,
     idGrupoAdicionalItemRelacao: '',
     grupoAdicionalItemRelacaoId: tamanhoId,
+    // valor = INTEIRO (pizza toda); valorFracionado = aplicado a um sabor só.
+    // Só o COMPLEMENTO edita o fracionado; nos demais grupos fica 0.
     valor: 0,
+    valorFracionado: 0,
     lastChange: new Date(),
     needChange: true,
     empresaId,
@@ -400,9 +403,15 @@ export default function NovaPizza() {
     };
 
     // preco do item para um tamanho (relacao pelo id de nuvem do tamanho).
-    const getPreco = (item: IGrupoAdicionalItem, tamanhoId: string): number => {
+    // campo: 'valor' = INTEIRO (padrao); 'valorFracionado' = aplicado a um sabor.
+    type CampoPreco = 'valor' | 'valorFracionado';
+    const getPreco = (
+        item: IGrupoAdicionalItem,
+        tamanhoId: string,
+        campo: CampoPreco = 'valor',
+    ): number => {
         const p = item.precos?.find((x) => x.grupoAdicionalItemRelacaoId === tamanhoId);
-        return p?.valor ?? 0;
+        return (campo === 'valorFracionado' ? p?.valorFracionado : p?.valor) ?? 0;
     };
 
     const onChangePreco = (
@@ -410,6 +419,7 @@ export default function NovaPizza() {
         itemId: string,
         tamanhoId: string,
         valor: number,
+        campo: CampoPreco = 'valor',
     ) => {
         updateGrupo(tipo, (g) => ({
             ...g,
@@ -418,11 +428,11 @@ export default function NovaPizza() {
                 const existe = item.precos?.some((p) => p.grupoAdicionalItemRelacaoId === tamanhoId);
                 const precos = existe
                     ? item.precos.map((p) =>
-                          p.grupoAdicionalItemRelacaoId === tamanhoId ? { ...p, valor } : p,
+                          p.grupoAdicionalItemRelacaoId === tamanhoId ? { ...p, [campo]: valor } : p,
                       )
                     : [
                           ...(item.precos ?? []),
-                          { ...novoPreco(g.empresaId, itemId, tamanhoId), valor },
+                          { ...novoPreco(g.empresaId, itemId, tamanhoId), [campo]: valor },
                       ];
                 return { ...item, precos };
             }),
@@ -574,11 +584,14 @@ export default function NovaPizza() {
     );
 
     // Linha de item com preco por tamanho — usada por SABOR, BORDA e COMPLEMENTO.
+    // comFracionado (COMPLEMENTO): alem do valor INTEIRO (pizza toda), mostra um
+    // segundo campo por tamanho com o valor FRACIONADO (aplicado a um sabor só).
     const LinhaPorTamanho = (
         tipo: TipoGrupo,
         item: IGrupoAdicionalItem,
         labelNome: string,
         canRemove: boolean,
+        comFracionado = false,
     ) => {
         const tamanhos = getItems('TAMANHO');
         return (
@@ -605,16 +618,28 @@ export default function NovaPizza() {
                 </div>
                 <div className={styles.row}>
                     {tamanhos.map((t) => (
-                        <InputGroup
-                            key={t.id}
-                            type="number"
-                            width="150px"
-                            title={`Preço - ${t.nome || 'Tamanho'}`}
-                            value={getPreco(item, t.id)}
-                            onChange={(e) =>
-                                onChangePreco(tipo, item.id, t.id, fGetNumber(e.currentTarget.value))
-                            }
-                        />
+                        <div key={t.id} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <InputGroup
+                                type="number"
+                                width="150px"
+                                title={comFracionado ? `Inteira - ${t.nome || 'Tamanho'}` : `Preço - ${t.nome || 'Tamanho'}`}
+                                value={getPreco(item, t.id)}
+                                onChange={(e) =>
+                                    onChangePreco(tipo, item.id, t.id, fGetNumber(e.currentTarget.value))
+                                }
+                            />
+                            {comFracionado && (
+                                <InputGroup
+                                    type="number"
+                                    width="150px"
+                                    title={`Fracionada - ${t.nome || 'Tamanho'}`}
+                                    value={getPreco(item, t.id, 'valorFracionado')}
+                                    onChange={(e) =>
+                                        onChangePreco(tipo, item.id, t.id, fGetNumber(e.currentTarget.value), 'valorFracionado')
+                                    }
+                                />
+                            )}
+                        </div>
                     ))}
                 </div>
                 <hr />
@@ -708,7 +733,7 @@ export default function NovaPizza() {
 
                     <Tab eventKey="complemento" title="Complementos">
                         <div className={styles.contentTab}>
-                            {getItems('COMPLEMENTO').map((item) => LinhaPorTamanho('COMPLEMENTO', item, 'Nome do complemento', true))}
+                            {getItems('COMPLEMENTO').map((item) => LinhaPorTamanho('COMPLEMENTO', item, 'Nome do complemento', true, true))}
                             <CustomButton onClick={() => novoItemPorTamanho('COMPLEMENTO')} style={{ width: '300px' }} typeButton="main">
                                 Adicionar Complemento
                             </CustomButton>
