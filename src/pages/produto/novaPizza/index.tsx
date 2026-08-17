@@ -299,6 +299,7 @@ export default function NovaPizza() {
         api.get(`/v2/Produto/${pizzaId}?EmpresaId=${u.empresaSelecionada}`)
             .then(({ data }: AxiosResponse<IProduto>) => {
                 setPizza(garantirGrupos(data));
+                console.log(data);
             })
             .catch((err: AxiosError) => {
                 toast.error(`Erro ao carregar pizza. ${err.response?.data || err.message}`);

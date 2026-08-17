@@ -33,16 +33,62 @@ export interface IProdutoCardapioIA {
     gruposAdicionais: string[]
 }
 
+// ── Pizzas ──────────────────────────────────────────────────────────
+// Cada IPizzaCardapioIA vira um Produto Tipo="PIZZA" com os 4 grupos
+// obrigatorios (TAMANHO, MASSA, SABOR, BORDA). Espelha PizzaCardapioIA.cs.
+
+export interface IPrecoTamanhoIA {
+    tamanho: string // casa com ITamanhoIA.nome
+    valor: number
+}
+
+export interface ITamanhoIA {
+    nome: string
+    qtdSabores: number
+}
+
+export interface IMassaIA {
+    nome: string
+    valor: number
+}
+
+export interface IBordaIA {
+    nome: string
+    precos: IPrecoTamanhoIA[]
+}
+
+export interface ISaborIA {
+    nome: string
+    descricao: string
+    precos: IPrecoTamanhoIA[]
+}
+
+export interface IPizzaCardapioIA {
+    nome: string
+    classe: string
+    doce: boolean
+    ncm: string
+    cfop: string
+    csosn: string
+    tamanhos: ITamanhoIA[]
+    massas: IMassaIA[]
+    bordas: IBordaIA[]
+    sabores: ISaborIA[]
+}
+
 export interface ICardapioIA {
     tipoDetectado: string
+    erro?: string
     classes: string[]
     gruposAdicionais: IGrupoAdicionalIA[]
     produtos: IProdutoCardapioIA[]
+    pizzas: IPizzaCardapioIA[]
 }
 
 export interface ICriarCardapioResultado {
     total: number
     produtos: { id: number; cod: number; nome: string }[]
+    pizzas?: { id: number; cod: number; nome: string; sabores: number }[]
     classes: number
     tributacoes: number
     materiasPrimas: number
