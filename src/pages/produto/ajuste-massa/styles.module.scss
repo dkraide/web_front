@@ -1,0 +1,343 @@
+.container {
+    padding: 16px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin: 0;
+}
+
+.backBtn {
+    background: none;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+}
+
+.backBtn:hover {
+    color: #000;
+}
+
+/* ── Card genérico ───────────────────────────────────────── */
+.card {
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.cardHeader {
+    padding: 12px 16px;
+    background: #f7f7f9;
+    border-bottom: 1px solid #ececec;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cardHeader h5 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.cardHint {
+    font-size: 0.8rem;
+    color: #888;
+    font-weight: 400;
+}
+
+.cardBody {
+    padding: 16px;
+}
+
+/* ── Ajuste por classe (topo) ────────────────────────────── */
+.classeForm {
+    display: flex;
+    align-items: flex-end;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.classeField {
+    display: flex;
+    flex-direction: column;
+    min-width: 220px;
+}
+
+.classeField > span {
+    font-size: 0.78rem;
+    color: #777;
+    margin-bottom: 2px;
+}
+
+.warning {
+    margin-top: 12px;
+    font-size: 0.82rem;
+    color: #8a6d00;
+    background: #fff8e1;
+    border: 1px solid #ffe6a0;
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+/* ── Grade Excel ─────────────────────────────────────────── */
+.gridToolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.tableWrap {
+    overflow-x: auto;
+    max-height: 62vh;
+    overflow-y: auto;
+    border-top: 1px solid #ececec;
+}
+
+table.grid {
+    border-collapse: separate;
+    border-spacing: 0;
+    width: 100%;
+    font-size: 0.83rem;
+}
+
+table.grid thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #f2f3f5;
+    color: #444;
+    font-weight: 600;
+    text-align: left;
+    padding: 8px 8px;
+    border-bottom: 1px solid #dcdcdc;
+    white-space: nowrap;
+}
+
+table.grid tbody td {
+    padding: 4px 6px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
+}
+
+table.grid tbody tr:hover td {
+    background: #fafbff;
+}
+
+table.grid tbody tr.dirty td {
+    background: #fffdf3;
+}
+
+table.grid tbody tr.newRow td {
+    background: #f2fff5;
+}
+
+.cellInput {
+    width: 100%;
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 5px 6px;
+    border-radius: 6px;
+    font-size: 0.83rem;
+    color: #222;
+}
+
+.cellInput:focus {
+    outline: none;
+    border-color: #4285F4;
+    background: #fff;
+}
+
+.cellInput.right {
+    text-align: right;
+}
+
+.cellSelect {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    padding: 5px 6px;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    color: #222;
+    cursor: pointer;
+}
+
+.colCod { width: 80px; }
+.colNome { min-width: 220px; }
+.colMoney { width: 120px; }
+.colStatus { width: 110px; }
+.colRel { min-width: 250px; }
+.colCod2 { min-width: 200px; }
+
+/* Célula relacional: [+] [select] [editar] + detalhes */
+.relCell {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.relRow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.iconBtn {
+    flex: 0 0 auto;
+    width: 26px;
+    height: 26px;
+    border: 1px solid #e0e0e0;
+    background: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #555;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+}
+
+.iconBtn:hover {
+    background: #f0f4ff;
+    border-color: #4285F4;
+    color: #4285F4;
+}
+
+.iconBtn.add:hover {
+    background: #eefaf0;
+    border-color: #01875f;
+    color: #01875f;
+}
+
+.tribDetails {
+    font-size: 0.68rem;
+    color: #999;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding-left: 2px;
+}
+
+.tribDetails b {
+    color: #666;
+    font-weight: 600;
+}
+
+/* Código de barras */
+.codbarrasCell {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    min-width: 200px;
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #eef1f6;
+    border-radius: 12px;
+    padding: 2px 4px 2px 8px;
+    font-size: 0.75rem;
+    color: #333;
+}
+
+.chip button {
+    border: none;
+    background: #d7dce6;
+    color: #555;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    line-height: 1;
+    font-size: 0.62rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chip button:hover {
+    background: #e57373;
+    color: #fff;
+}
+
+.codbarrasInput {
+    width: 90px;
+    border: 1px dashed #cfcfcf;
+    background: #fff;
+    padding: 3px 6px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.codbarrasInput:focus {
+    outline: none;
+    border-color: #4285F4;
+}
+
+.rowActions {
+    width: 40px;
+    text-align: center;
+}
+
+.removeRowBtn {
+    border: none;
+    background: none;
+    color: #c25;
+    cursor: pointer;
+    font-size: 0.8rem;
+    opacity: 0.6;
+}
+
+.removeRowBtn:hover {
+    opacity: 1;
+}
+
+.saveBar {
+    position: sticky;
+    bottom: 0;
+    background: #fff;
+    border-top: 1px solid #ececec;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.dirtyCount {
+    font-size: 0.82rem;
+    color: #777;
+    margin-right: auto;
+}
+
+.loading {
+    padding: 40px;
+    text-align: center;
+    color: #888;
+}

@@ -12,7 +12,6 @@ import { faEdit, faBoxes, faRobot, faPizzaSlice, faUtensils, faBox, faNetworkWir
 import IUsuario from '@/interfaces/IUsuario'
 import IProduto from '@/interfaces/IProduto'
 import ProdutoForm from '@/components/Modals/Produto'
-import AjusteEmMassa from '@/components/Modals/Produto/AjusteEmMassa'
 import { useWindowSize } from 'rooks'
 import ProdutoMobile from '@/components/Mobile/Pages/Produto/ProdutoMobile'
 import { ExportToExcel, searchHelper } from '@/utils/functions'
@@ -279,7 +278,7 @@ export default function Produto() {
                         <FontAwesomeIcon icon={faUtensils} />
                         Novo prato
                     </button>
-                    <button className={styles.actionBtn} onClick={() => setSearch(prev => ({ ...prev, ajuste: true }))}>
+                    <button className={styles.actionBtn} onClick={() => router.push('/produto/ajuste-massa')}>
                         <FontAwesomeIcon icon={faSlidersH} />
                         Ajuste massa
                     </button>
@@ -374,12 +373,6 @@ export default function Produto() {
                     isOpen
                     id={search.edit}
                     setClose={v => { if (v) loadData(); setSearch(prev => ({ ...prev, edit: -1 })) }}
-                />
-            )}
-            {search.ajuste && (
-                <AjusteEmMassa
-                    isOpen
-                    setClose={v => { if (v) loadData(); setSearch(prev => ({ ...prev, ajuste: false })) }}
                 />
             )}
             {search.viewEstoque > 0 && (
