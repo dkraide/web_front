@@ -42,10 +42,13 @@ export  const  SelectBaseRef = forwardRef<SelectInstance<dataProps>, selectProps
         styles={{
         control: (base) => ({
             ...base,
-        })
-    }} 
-    noOptionsMessage={(v) => <label>Nenhum item Encontrado</label>} 
-    options={datas} 
+        }),
+        menuPortal: (base) => ({ ...base, zIndex: 9999 })
+    }}
+    noOptionsMessage={(v) => <label>Nenhum item Encontrado</label>}
+    options={datas}
+    menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+    menuPosition="fixed"
     onChange={(e) => {setSelected(e.value);
     }}
      />
@@ -80,11 +83,14 @@ export function SelectBase({error, id, maxTitleSize, width, datas, selected, tit
             },
           })}
         styles={{
-    }} 
-    noOptionsMessage={(v) => <label>Nenhum item Encontrado</label>} 
-    options={datas} 
+        menuPortal: (base) => ({ ...base, zIndex: 9999 })
+    }}
+    menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
+    menuPosition="fixed"
+    noOptionsMessage={(v) => <label>Nenhum item Encontrado</label>}
+    options={datas}
     onChange={(e) => {setSelected(e.value);
-    
+
     }} />
     </div>
 } 

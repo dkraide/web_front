@@ -6,7 +6,6 @@ import { canSSRGuest } from '../../utils/CanSSRGuest';
 import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
-import { fGetNumber, fGetOnlyNumber } from '@/utils/functions';
 import CustomButton from '@/components/ui/Buttons';
 
 
@@ -15,9 +14,7 @@ export default function Login() {
   const { signIn } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [empresa, setEmpresa] = useState('');
   const [loading, setLoading] = useState(false);
-  const [isPDV, setIsPDV] = useState(false);
 
   async function handleLogin(event: FormEvent) {
     event.preventDefault();
@@ -30,7 +27,6 @@ export default function Login() {
     let data = {
       userName: email,
       password: password,
-      empresa: fGetNumber(empresa)
     }
     await signIn(data);
     setLoading(false);
@@ -62,30 +58,14 @@ export default function Login() {
                 onChange={(e) => { setPassword(e.target.value) }}
               />
             </FloatingLabel>
-            <Form.Check // prettier-ignore
-              checked={isPDV}
-              type="switch"
-              id="custom-switch"
-              label="Usuario PDV"
-              onChange={(v) => setIsPDV(!isPDV)}
-            />
-            {isPDV && (
-              <FloatingLabel
-                controlId="floatingInput"
-                label="Empresa"
-                className="mb-3"
-              >
-                <Form.Control placeholder="Digite o CNPJ da Empresa"
-                  value={empresa}
-                  onChange={(e) => { setEmpresa(e.target.value) }}
-                />
-              </FloatingLabel>
-            )}
             <CustomButton typeButton="main" type={'submit'} style={{ padding: '10px', height: 'auto' }}>{loading ? <Spinner animation="border" /> : <>Entrar</>}</CustomButton>
             <hr />
             <CustomButton onClick={() => {
                window.location.href = '/acessoRemoto';
             }} typeButton="main" type={'button'} style={{ padding: '10px', height: 'auto' }}>Baixar acesso remoto</CustomButton>
+            <CustomButton onClick={() => {
+               window.location.href = '/baixe-app';
+            }} typeButton="main" type={'button'} style={{ padding: '10px', height: 'auto', marginTop: '10px' }}>Baixar nosso app</CustomButton>
           </form>
         </div>
       </div>

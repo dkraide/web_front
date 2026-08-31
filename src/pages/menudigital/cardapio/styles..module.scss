@@ -1,131 +1,451 @@
 .container {
-    background-color: white;
-    height: 100%;
-    width: 100%;
-    padding: 10px;
-}
-.menu{
-    display: flex;
-    flex-direction: row;
-}
-
-.categoria {
-    margin-top: 10px;
-    width: 100%;
-    padding: 5px;
-    border: solid 1pt #d0cfcf;
-    border-radius: 5px;
-    transition: all 0.2s;
-
-    &:hover {
-        cursor: pointer;
-        background-color: rgba(127, 244, 176, 0.3);
-        border: solid 1pt  rgba(201, 255, 186, 0.3);
-    }
-
-    .status {
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    .name{
-        font-weight: 500;
-        font-size: 15px;
-    }
-
+  padding: 24px;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: var(--white);
+  min-height: 100%;
 }
 
-.categoriaSelecionada{
-       background-color: rgba(127, 244, 176, 0.3);
-        border: solid 1pt  rgba(201, 255, 186, 0.3);
+// ─── Header ───────────────────────────────────────────────────────────────────
+.topBar {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
-
-.categoriaInfo,
-.produtoInfo {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 10px;
-
-    img {
-        height: 50px;
-        width: 50px;
-        cursor: pointer;
-        transition: all 0.2s;
-
-        &:hover {
-            height: 52px;
-            width: 52px;
-        }
-    }
-
-    span {
-        font-weight: 700;
-        width: 80%;
-        margin-left: 10px;
-        color: #474747;
-        cursor: pointer;
-        transition: all 0.2s;
-
-        &:hover {
-            font-weight: 800;
-        }
-    }
-
+.titulo {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--dark-900);
+  margin: 0;
 }
 
-.produtos {
-    padding: 10px 15px;
-    width: 100%;
+.subtitulo {
+  font-size: 13px;
+  color: #888;
+  margin: 0;
 }
 
-.produto {
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-    border-bottom: solid 1pt #dedbdb;
-    transition: background-color 0.2s;
-    &:hover{
-        background-color: rgba(127, 244, 176, 0.3);
-        border: solid 1pt  rgba(201, 255, 186, 0.3);
-    }
+// ─── Filtros ──────────────────────────────────────────────────────────────────
+.filtros {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
-.informations {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: 15px;
+.buscaWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 200px;
+  background: var(--white);
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 8px 12px;
+
+  &:focus-within { border-color: var(--dark-900); }
 }
 
-.information {
-    display: flex;
-    flex-direction: column;
+.buscaIcon { color: #888; flex-shrink: 0; }
 
-    span {
-        font-size: 13px;
-    }
+.buscaInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 13px;
+  background: transparent;
+  color: var(--dark-900);
 
-    label {
-        font-weight: bold;
-        font-size: 15px;
-    }
+  &::placeholder { color: #aaa; }
 }
 
-.buttons {
-    display: flex;
-    gap: 10px;
+.categoriaSelect {
+  padding: 8px 36px 8px 12px;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 13px;
+  background: var(--white);
+  color: var(--dark-900);
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  min-width: 200px;
+
+  &:focus { outline: none; border-color: var(--dark-900); }
 }
 
-
-
-.categorias {
-    padding: 5px;
-    width: 20%;
-    max-width: 250px;
-    height: 100%;
-    border-right: solid 1pt #f0f0f0f0;
+// ─── Lista de categorias ──────────────────────────────────────────────────────
+.categoriasList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
-.items{
-    width: 80%;
+
+.categoriaCard {
+  background: var(--white);
+  border-radius: 12px;
+  border: 1px solid #e8e8e8;
+  overflow: visible;
+}
+
+.categoriaHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 8px;
+}
+
+.categoriaHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+}
+
+.categoriaNomeBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  min-width: 0;
+}
+
+.categoriaNome {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--dark-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.categoriaCount {
+  font-size: 13px;
+  color: #888;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+.categoriaHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+// ─── Botões de ícone ──────────────────────────────────────────────────────────
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: var(--white);
+  color: var(--dark-900);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+
+  &:hover { background: var(--background, #f5f5f5); }
+  &:disabled { opacity: 0.4; cursor: not-allowed; }
+}
+
+.iconBtnAtivo {
+  color: var(--green, #16a34a);
+  border-color: rgba(34, 197, 94, 0.3);
+}
+
+.iconBtnPausado {
+  color: #d97706;
+  border-color: rgba(217, 119, 6, 0.3);
+  background: rgba(217, 119, 6, 0.06);
+}
+
+// ─── Itens ────────────────────────────────────────────────────────────────────
+.itensList {
+  display: flex;
+  flex-direction: column;
+}
+
+.semItens {
+  padding: 16px 18px;
+  font-size: 12px;
+  color: #aaa;
+  margin: 0;
+}
+
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f5f5f5;
+  transition: background 0.15s;
+
+  &:last-child { border-bottom: none; }
+  &:hover { background: #fafafa; }
+}
+
+.itemPausado {
+  opacity: 0.55;
+}
+
+.itemImagem {
+  width: 56px;
+  height: 56px;
+  border-radius: 8px;
+  object-fit: cover;
+  flex-shrink: 0;
+  background: #f0f0f0;
+}
+
+.itemInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.itemNome {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--dark-900);
+}
+
+.itemDesc {
+  font-size: 12px;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.itemAcoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+// ─── Preços ───────────────────────────────────────────────────────────────────
+.precos {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.precoBloco {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  line-height: 1.2;
+}
+
+.precoValor {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-900);
+  white-space: nowrap;
+}
+
+.precoLabel {
+  font-size: 10px;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+// ─── Botão complementos ───────────────────────────────────────────────────────
+.btnComplementos {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #e0e0e0;
+  background: var(--white);
+  font-size: 12px;
+  color: var(--dark-900);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s;
+
+  &:hover { background: var(--background, #f5f5f5); }
+  &:disabled { opacity: 0.5; cursor: wait; }
+}
+
+.btnComplementosAtivo {
+  background: var(--dark-900);
+  color: var(--white);
+  border-color: var(--dark-900);
+
+  .complementosBadge {
+    background: var(--white);
+    color: var(--dark-900);
+  }
+}
+
+.complementosBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 9px;
+  background: var(--dark-900);
+  color: var(--white);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+// ─── Complementos expandidos ──────────────────────────────────────────────────
+.complementosBox {
+  background: #f8f8f8;
+  border-top: 1px solid #eee;
+  padding: 6px 18px 12px 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.complementosLoading {
+  padding: 14px 0;
+  font-size: 12px;
+  color: #888;
+}
+
+.grupoCard {
+  background: var(--white);
+  border: 1px solid #ececec;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.grupoHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #fbfbfb;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.grupoNome {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--dark-900);
+}
+
+.grupoMeta {
+  font-size: 11px;
+  color: #999;
+  white-space: nowrap;
+}
+
+.tipoBadge {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 2px 7px;
+  border-radius: 10px;
+  background: #eef1f4;
+  color: #64748b;
+}
+
+.grupoHeaderRight {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.grupoItens {
+  display: flex;
+  flex-direction: column;
+}
+
+.grupoItemRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f5f5f5;
+
+  &:last-child { border-bottom: none; }
+}
+
+.grupoItemInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.grupoItemNome {
+  font-size: 13px;
+  color: var(--dark-900);
+}
+
+.grupoItemDesc {
+  font-size: 11px;
+  color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.grupoItemValor {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  white-space: nowrap;
+}
+
+.grupoSemItens {
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+// ─── Chip de status ───────────────────────────────────────────────────────────
+.statusChip {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+
+.statusAtivo {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.statusPausado {
+  background: rgba(217, 119, 6, 0.12);
+  color: #d97706;
+}
+
+.semDados {
+  font-size: 13px;
+  color: #888;
+  padding: 24px 0;
+  text-align: center;
 }
