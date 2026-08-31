@@ -43,7 +43,7 @@ export  const  SelectBaseRef = forwardRef<SelectInstance<dataProps>, selectProps
         control: (base) => ({
             ...base,
         }),
-        menuPortal: (base) => ({ ...base, zIndex: 9999 })
+        menuPortal: (base) => ({ ...base, zIndex: 9999 } as any)
     }}
     noOptionsMessage={(v) => <label>Nenhum item Encontrado</label>}
     options={datas}
@@ -83,7 +83,7 @@ export function SelectBase({error, id, maxTitleSize, width, datas, selected, tit
             },
           })}
         styles={{
-        menuPortal: (base) => ({ ...base, zIndex: 9999 })
+        menuPortal: (base) => ({ ...base, zIndex: 9999 } as any)
     }}
     menuPortalTarget={typeof document !== 'undefined' ? document.body : undefined}
     menuPosition="fixed"
