@@ -8,7 +8,7 @@ import KRDTable, { KRDColumn } from '@/components/ui/KRDTable'
 import { toast } from 'react-toastify'
 import CustomButton from '@/components/ui/Buttons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faEdit, faBoxes, faRobot, faPizzaSlice, faUtensils, faBox, faNetworkWired, faSlidersH, faFileExcel, faCamera } from '@fortawesome/free-solid-svg-icons'
+import { faEdit, faBoxes, faRobot, faPizzaSlice, faUtensils, faBox, faNetworkWired, faSlidersH, faFileExcel, faCamera, faTshirt } from '@fortawesome/free-solid-svg-icons'
 import IUsuario from '@/interfaces/IUsuario'
 import IProduto from '@/interfaces/IProduto'
 import ProdutoForm from '@/components/Modals/Produto'
@@ -55,6 +55,12 @@ export default function Produto() {
     const { innerWidth } = useWindowSize()
     const mobile = !!innerWidth && innerWidth < 600
 
+    // Ramo da empresa: oculta acoes que nao servem ao tipo. Sem valor (sessao
+    // antiga / empresa nao migrada) cai em PADRAO, que so mostra o universal.
+    const tipoSistema = user?.tipoSistema ?? 'PADRAO'
+    const isRestaurante = tipoSistema === 'RESTAURANTE'
+    const isLojaRoupa = tipoSistema === 'LOJA_ROUPA'
+
     useEffect(() => {
         loadData()
         if (router.isReady && router.query?.query) {
@@ -94,6 +100,7 @@ export default function Produto() {
     const handleEdit = (produto: IProduto) => {
         if (produto.tipo === 'PIZZA') { window.location.href = `/produto/novaPizza?id=${produto.id}`; return }
         if (produto.tipo === 'PRATO') { window.location.href = `/produto/novoPrato?id=${produto.id}`; return }
+        if (produto.tipo === 'ROUPA') { window.location.href = `/produto/novaRoupa?id=${produto.id}`; return }
         window.location.href = `/produto/item?id=${produto.id}`
     }
 
@@ -262,22 +269,34 @@ export default function Produto() {
                         <FontAwesomeIcon icon={faRobot} />
                         Cadastrar com I.A
                     </button>
-                    <button className={`${styles.actionBtn} ${styles.actionBtnIa}`} onClick={() => { window.location.href = '/produto/novo/cardapio' }}>
-                        <FontAwesomeIcon icon={faCamera} />
-                        Criar por foto do cardápio
-                    </button>
+                    {isRestaurante && (
+                        <button className={`${styles.actionBtn} ${styles.actionBtnIa}`} onClick={() => { window.location.href = '/produto/novo/cardapio' }}>
+                            <FontAwesomeIcon icon={faCamera} />
+                            Criar por foto do cardápio
+                        </button>
+                    )}
                     <button className={styles.actionBtn} onClick={() => { window.location.href = '/produto/item' }}>
                         <FontAwesomeIcon icon={faBox} />
                         Novo produto
                     </button>
-                    <button className={styles.actionBtn} onClick={() => { window.location.href = '/produto/novaPizza' }}>
-                        <FontAwesomeIcon icon={faPizzaSlice} />
-                        Nova pizza
-                    </button>
-                    <button className={styles.actionBtn} onClick={() => { window.location.href = '/produto/novoPrato' }}>
-                        <FontAwesomeIcon icon={faUtensils} />
-                        Novo prato
-                    </button>
+                    {isRestaurante && (
+                        <button className={styles.actionBtn} onClick={() => { window.location.href = '/produto/novaPizza' }}>
+                            <FontAwesomeIcon icon={faPizzaSlice} />
+                            Nova pizza
+                        </button>
+                    )}
+                    {isRestaurante && (
+                        <button className={styles.actionBtn} onClick={() => { window.location.href = '/produto/novoPrato' }}>
+                            <FontAwesomeIcon icon={faUtensils} />
+                            Novo prato
+                        </button>
+                    )}
+                    {isLojaRoupa && (
+                        <button className={styles.actionBtn} onClick={() => { window.location.href = '/produto/novaRoupa' }}>
+                            <FontAwesomeIcon icon={faTshirt} />
+                            Nova roupa
+                        </button>
+                    )}
                     <button className={styles.actionBtn} onClick={() => router.push('/produto/ajuste-massa')}>
                         <FontAwesomeIcon icon={faSlidersH} />
                         Ajuste massa

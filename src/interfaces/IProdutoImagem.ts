@@ -1,18 +1,12 @@
-export default interface IProdutoImagem{
+export default interface IProdutoImagem {
      id: number
      idProdutoImagem: number
      idProduto: number
      produtoId: number
-     idClasseMaterial: number
-     classeMaterialId: number
-     imagem: any
-     promocaoId: number
-     idPromocao: number
-     idCombo: number
-     comboId: number
-     idMateriaPrima: number
-     materiaPrimaId: number
      empresaId: number
+     // URL da imagem hospedada (krdpic) e ordem dentro da galeria do produto.
+     localPath: string
+     posicao: number
      imagemString: string
      isEnviado: boolean
      localOnline: string

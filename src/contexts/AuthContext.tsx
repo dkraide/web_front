@@ -71,13 +71,14 @@ export function AuthProvider({children}: AuthProviderProps){
              password,
              empresaId: empresa
           });
-          const {token,  nome,empresaId, empresas, caixa, isContador} =  response.data;
+          const {token,  nome,empresaId, empresas, caixa, isContador, tipoSistema} =  response.data;
           var user = {
                nome,
                isContador,
                empresaSelecionada: empresaId,
                isPdv,
                usuarioCaixa: caixa,
+               tipoSistema,
           }
           setCookie(undefined, '@web_front.token',   token, {
              maxAge: 60 * 60 * 24 * 30, //expirar em 1 mes,
