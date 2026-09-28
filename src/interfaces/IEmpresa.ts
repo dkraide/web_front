@@ -32,4 +32,6 @@ export default interface IEmpresa{
          isMatriz: boolean
          usuarioContador: string
          usuarioSuperVisor: string
+         // Ramo do sistema: oculta telas/acoes que nao servem ao tipo da empresa.
+         tipoSistema?: 'PADRAO' | 'RESTAURANTE' | 'LOJA_ROUPA'
 }

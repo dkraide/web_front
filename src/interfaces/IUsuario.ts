@@ -11,4 +11,6 @@ export default interface IUsuario{
     isPdv: boolean
     usuarioCaixa?: IUsuarioCaixa
     isContador: boolean
+    // Ramo da empresa selecionada: controla quais telas/acoes aparecem no front.
+    tipoSistema?: 'PADRAO' | 'RESTAURANTE' | 'LOJA_ROUPA'
 }
