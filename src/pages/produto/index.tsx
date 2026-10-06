@@ -107,7 +107,7 @@ export default function Produto() {
     function setImage(id: number) {
         const input = document.createElement('input')
         input.type = 'file'
-        input.accept = 'image/png, image/jpeg'
+        input.accept = 'image/png, image/jpeg, image/webp'
         input.click()
         input.onchange = async (e: Event) => {
             const target = e.target as HTMLInputElement
