@@ -362,6 +362,25 @@ $font:        'DM Sans', 'Segoe UI', sans-serif;
   background: rgba(237, 206, 95, 0.04) !important;
 }
 
+.rowInativo {
+  box-shadow: inset 3px 0 0 var(--danger);
+  background: rgba(220, 53, 69, 0.08) !important;
+}
+
+.alertaInativo {
+  background: rgba(220, 53, 69, 0.1);
+  border-color: rgba(220, 53, 69, 0.5);
+  color: var(--danger);
+}
+
+.msgInativo {
+  display: block;
+  margin-top: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--danger);
+}
+
 // ── Mobile card layout ────────────────────────────────────
 @media (max-width: 680px) {
   .tableWrapper {
