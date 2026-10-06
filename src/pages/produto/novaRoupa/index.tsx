@@ -449,7 +449,7 @@ export default function NovaRoupa() {
                                 <input
                                     ref={fileInputRef}
                                     type="file"
-                                    accept="image/png, image/jpeg"
+                                    accept="image/png, image/jpeg, image/webp"
                                     style={{ display: 'none' }}
                                     onChange={onImageSelected}
                                 />
