@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import styles from './styles.module.scss';
 import { useContext, useEffect, useState } from 'react';
-import { faBars, faChartSimple, faMoneyBill, faCalculator, faPercent, faBox, faCashRegister, faUtensils, faPowerOff, faUser, faComments } from '@fortawesome/free-solid-svg-icons';
+import { faBars, faChartSimple, faMoneyBill, faCalculator, faPercent, faBox, faCashRegister, faUtensils, faPowerOff, faUser, faComments, faShirt } from '@fortawesome/free-solid-svg-icons';
 import { AuthContext } from '@/contexts/AuthContext';
 import IUsuario from '@/interfaces/IUsuario';
 import { api } from '@/services/apiClient';
@@ -138,11 +138,13 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem href={'/estoqueLancamento'}>Lançamento de estoque</MenuItem>
                                     <MenuItem href={'/estoque/conferenciaEstoque'}>Conferência</MenuItem>
                                 </SubMenu>
-                                <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Ingredientes"
-                                    rootStyles={subMenuStyle}>
-                                    <MenuItem href={'/ingredientes'}>Ingredientes</MenuItem>
-                                    <MenuItem href={'/ingredientes/estoque'}>Estoque</MenuItem>
-                                </SubMenu>
+                                {user.tipoSistema !== 'LOJA_ROUPA' && (
+                                    <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Ingredientes"
+                                        rootStyles={subMenuStyle}>
+                                        <MenuItem href={'/ingredientes'}>Ingredientes</MenuItem>
+                                        <MenuItem href={'/ingredientes/estoque'}>Estoque</MenuItem>
+                                    </SubMenu>
+                                )}
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promoções">
                                     <MenuItem href={'/promocao/atacado'}> Promoção</MenuItem>
                                     <MenuItem href={'/promocao/combo'}> Combos</MenuItem>
@@ -184,11 +186,18 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem href={'/pdv/usuario'}>Usuários</MenuItem>
                                     <MenuItem href={'/pdv/configuracao'}>Configuração</MenuItem>
                                 </SubMenu>
-                                <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
-                                    <MenuItem href={'/menudigital/horarios'}>Configuração</MenuItem>
-                                    <MenuItem href={'/menudigital/empresa'}>Empresa</MenuItem>
-                                    <MenuItem href={'/menudigital/cardapio'}>Cardápios</MenuItem>
-                                </SubMenu>
+                                {user.tipoSistema !== 'LOJA_ROUPA' && (
+                                    <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
+                                        <MenuItem href={'/menudigital/horarios'}>Configuração</MenuItem>
+                                        <MenuItem href={'/menudigital/empresa'}>Empresa</MenuItem>
+                                        <MenuItem href={'/menudigital/cardapio'}>Cardápios</MenuItem>
+                                    </SubMenu>
+                                )}
+                                {user.tipoSistema === 'LOJA_ROUPA' && (
+                                    <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faShirt} color={'var(--main)'} />} label="Site da Loja">
+                                        <MenuItem href={'/modas'}>Editor do site {bgNew()}</MenuItem>
+                                    </SubMenu>
+                                )}
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faComments} color={'var(--main)'} />} label="Integrações">
                                     <MenuItem href={'/whatsapp'}>WhatsApp {bgNew()}</MenuItem>
                                     {/* <MenuItem href={'/ifood'}>IFood {bgNew()}</MenuItem> */}

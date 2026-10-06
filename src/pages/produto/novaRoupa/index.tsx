@@ -24,6 +24,7 @@ import IGrupoAdicional from '@/interfaces/IGrupoAdicional';
 import IProdutoGrupoAdicional from '@/interfaces/IProdutoGrupoAdicional';
 import { IGrupoAdicionalItem } from '@/interfaces/IGrupoAdicionalItem';
 import IProdutoImagem from '@/interfaces/IProdutoImagem';
+import GradeEstoque from '@/components/Roupa/GradeEstoque';
 
 // Uma roupa tem dois grupos: COR (nome + hex) e TAMANHO (nome + valor).
 // Reaproveitamos o mesmo fluxo aninhado da pizza — o backend, ao ver
@@ -128,6 +129,10 @@ export default function NovaRoupa() {
 
     const [codigoBarras, setCodigoBarras] = useState('');
 
+    // Aba ativa (controlada: apos cadastrar abrimos a aba Estoque) e contador p/ recarregar a grade.
+    const [aba, setAba] = useState('item');
+    const [gradeKey, setGradeKey] = useState(0);
+
     const fileInputRef = useRef<HTMLInputElement>(null);
     const { getUser } = useContext(AuthContext);
     const router = useRouter();
@@ -173,6 +178,7 @@ export default function NovaRoupa() {
             cod,
             tipo: 'ROUPA',
             status: true,
+            visivelMenu: true,
             unidadeCompra: 'UN',
             quantidade: 0,
             valorCompra: 0,
@@ -347,6 +353,8 @@ export default function NovaRoupa() {
                 tipo: 'ROUPA',
                 empresaId,
                 valor: precoBase,
+                // O estoque e controlado por variante (aba Estoque); nunca enviar estoque inicial aqui.
+                quantidade: isEdicao ? roupa.quantidade : 0,
                 classeMaterial: undefined as any,
                 tributacao: undefined as any,
                 grupoAdicionais: grupos,
@@ -374,8 +382,17 @@ export default function NovaRoupa() {
                 await api.delete(`/Produto/${produtoId}/imagem/${imagemId}`).catch(() => null);
             }
 
-            toast.success(isEdicao ? 'Roupa atualizada com sucesso!' : 'Roupa cadastrada com sucesso!');
-            router.push('/produto');
+            if (!isEdicao) {
+                // Recem-cadastrada: as variantes ja foram geradas; abre a aba Estoque para informar as quantidades.
+                toast.success('Roupa cadastrada! Informe o estoque de cada variante.');
+                await carregarRoupa(produtoId);
+                router.replace({ pathname: router.pathname, query: { id: produtoId } }, undefined, { shallow: true });
+                setGradeKey((k) => k + 1);
+                setAba('estoque');
+            } else {
+                toast.success('Roupa atualizada com sucesso!');
+                router.push('/produto');
+            }
         } catch (err) {
             const e = err as AxiosError;
             toast.error(`Erro ao salvar roupa. ${e.response?.data || e.message}`);
@@ -400,7 +417,7 @@ export default function NovaRoupa() {
 
             <div className={styles.tabs}>
                 <h3>{isEdicao ? 'Editar Roupa' : 'Nova Roupa'}</h3>
-                <Tabs defaultActiveKey="item" id="roupa-tabs" variant="underline" fill>
+                <Tabs activeKey={aba} onSelect={(k) => setAba(k || 'item')} id="roupa-tabs" variant="underline" fill>
                     {/* ── Aba Item ───────────────────────────────────── */}
                     <Tab eventKey="item" title="Item">
                         <div className={styles.contentTab}>
@@ -460,6 +477,14 @@ export default function NovaRoupa() {
                                         onChange={(e) => setRoupa({ ...roupa, status: e })}
                                     />
                                 </div>
+                                <div className={styles.statusCell}>
+                                    <label style={{ marginRight: 8 }}>Visível no site</label>
+                                    <Switch
+                                        onColor="#fc4f6b"
+                                        checked={!!roupa.visivelMenu}
+                                        onChange={(e) => setRoupa({ ...roupa, visivelMenu: e })}
+                                    />
+                                </div>
                             </div>
 
                             <div className={styles.row}>
@@ -492,15 +517,9 @@ export default function NovaRoupa() {
                                     value={roupa.valorCompra}
                                     onChange={(v) => setRoupa({ ...roupa, valorCompra: fGetNumber(v.currentTarget.value) })}
                                 />
-                                <InputGroup
-                                    type="number"
-                                    width="30%"
-                                    title={isEdicao ? 'Estoque (ajuste pela tela de estoque)' : 'Estoque inicial'}
-                                    value={roupa.quantidade}
-                                    disabled={isEdicao}
-                                    readOnly={isEdicao}
-                                    onChange={(v) => setRoupa({ ...roupa, quantidade: fGetNumber(v.currentTarget.value) })}
-                                />
+                                <span style={{ color: '#64748b', fontSize: 13, alignSelf: 'center' }}>
+                                    O estoque é controlado por cor e tamanho, na aba “Estoque”.
+                                </span>
                             </div>
 
                             {/* Códigos de barras */}
@@ -639,6 +658,15 @@ export default function NovaRoupa() {
                             </CustomButton>
                         </div>
                     </Tab>
+
+                    {/* ── Aba Estoque (variantes cor x tamanho) ──────── */}
+                    {isEdicao && (
+                        <Tab eventKey="estoque" title="Estoque">
+                            <div className={styles.contentTab}>
+                                <GradeEstoque produtoId={roupa.id} recarregar={gradeKey} />
+                            </div>
+                        </Tab>
+                    )}
                 </Tabs>
             </div>
 
