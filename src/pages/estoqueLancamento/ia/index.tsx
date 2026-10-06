@@ -185,6 +185,7 @@ export default function LancamentoEstoqueIA() {
   }
 
   const semVinculo = itens.filter((i) => !i.produto);
+  const inativos = itens.filter((i) => i.produto && i.produto.status === false);
   const totalItens = _.sumBy(itens, (i) => i.item.qCom * (i.item.multiplicador || 1));
   const totalValor = _.sumBy(itens, (i) => i.item.qCom * i.item.vUnCom);
 
@@ -207,6 +208,10 @@ export default function LancamentoEstoqueIA() {
   async function handleFinalizar() {
     if (semVinculo.length > 0) {
       setShowVinculoModal(true);
+      return;
+    }
+    if (inativos.length > 0) {
+      toast.error('Existem produtos vinculados que estão inativos. Troque o vínculo por um produto ativo.');
       return;
     }
     setSubmitting(true);
@@ -386,6 +391,17 @@ export default function LancamentoEstoqueIA() {
             </div>
           )}
 
+          {inativos.length > 0 && (
+            <div className={`${styles.alertaBanner} ${styles.alertaInativo}`}>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
+              </svg>
+              <span>
+                <strong>{inativos.length} produto(s)</strong> vinculado(s) estão inativos. Vincule um produto ativo antes de finalizar.
+              </span>
+            </div>
+          )}
+
           {/* desktop table */}
           <div className={styles.tableWrapper}>
             <table className={styles.table}>
@@ -401,7 +417,7 @@ export default function LancamentoEstoqueIA() {
               </thead>
               <tbody>
                 {itens.map((item, idx) => (
-                  <tr key={idx} className={!item.produto ? styles.rowSemVinculo : ''}>
+                  <tr key={idx} className={!item.produto ? styles.rowSemVinculo : item.produto.status === false ? styles.rowInativo : ''}>
                     <td data-label="Produto IA">
                       <span className={styles.codProd}>{item.item.cProd}</span>
                       <span className={styles.nomeProd}>{item.item.xProd}</span>
@@ -416,6 +432,11 @@ export default function LancamentoEstoqueIA() {
                         <button className={styles.btnVincular} onClick={() => setProdModal(idx)}>
                           Vincular produto
                         </button>
+                      )}
+                      {item.produto && item.produto.status === false && (
+                        <span className={styles.msgInativo}>
+                          Produto inativo — vincule um produto ativo
+                        </span>
                       )}
                     </td>
                     <td data-label="Custo Un.">
@@ -576,6 +597,7 @@ export default function LancamentoEstoqueIA() {
         <SelectProdutoModal
           isOpen={prodModal >= 0}
           selectedId={0}
+          includeInativos={false}
           setClose={(v) => {
             if (v) selectProduto(v);
             else setProdModal(-1);
