@@ -196,6 +196,9 @@ export default function SideBar({ children, ...props }) {
                                 {user.tipoSistema === 'LOJA_ROUPA' && (
                                     <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faShirt} color={'var(--main)'} />} label="Site da Loja">
                                         <MenuItem href={'/modas'}>Editor do site {bgNew()}</MenuItem>
+                                        <MenuItem href={'/modas/analytics'}>Indicadores {bgNew()}</MenuItem>
+                                        <MenuItem href={'/modas/relatorio'}>Relatório de peças {bgNew()}</MenuItem>
+                                        <MenuItem href={'/modas/inscritos'}>Newsletter {bgNew()}</MenuItem>
                                     </SubMenu>
                                 )}
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faComments} color={'var(--main)'} />} label="Integrações">

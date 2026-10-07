@@ -17,8 +17,8 @@ export const LINK_OPCOES: { valor: ModasLinkTipo; rotulo: string }[] = [
 ];
 
 const DESTINO_DICA: Partial<Record<ModasLinkTipo, string>> = {
-    categoria: 'Código/slug da categoria',
-    colecao: 'Código/slug da coleção',
+    categoria: 'Nome ou código da categoria',
+    colecao: 'Nome da categoria que forma a coleção (ou código)',
     pagina: 'Slug da página (aba Rodapé e páginas)',
     url: 'https://…',
 };
