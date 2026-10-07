@@ -99,7 +99,7 @@ function EditorSecao({ s, set }: { s: IModasSecao; set: SetSecao }) {
                         ]}
                         onChange={(v) => set((x) => { x.origem = v; })} />
                     {(s.origem === 'categoria' || s.origem === 'colecao') && (
-                        <Txt label={s.origem === 'categoria' ? 'Categoria (código/slug)' : 'Coleção (código/slug)'} value={s.origemId} onChange={(v) => set((x) => { x.origemId = v; })} />
+                        <Txt label={s.origem === 'categoria' ? 'Categoria (nome ou código)' : 'Coleção (nome da categoria ou código)'} value={s.origemId} onChange={(v) => set((x) => { x.origemId = v; })} />
                     )}
                     {s.origem === 'manual' && (
                         <Txt label="Códigos dos produtos (separados por vírgula)" value={s.produtoIds.join(', ')}

@@ -1,4 +1,5 @@
-import { Area, Grupo, Linha, Num, Sel, Sw, Txt } from '../fields';
+import { uid } from '@/utils/modasSite';
+import { Area, Grupo, Linha, Lista, Num, Sel, Sw, Txt } from '../fields';
 import { TabProps } from '../common';
 
 export default function CatalogoTab({ site, update }: TabProps) {
@@ -82,6 +83,35 @@ export default function CatalogoTab({ site, update }: TabProps) {
                 <Sw label="Aceitar cartão (maquininha)" value={k.aceitaCartao} onChange={(v) => update((d) => { d.checkout.aceitaCartao = v; })} />
                 <Txt label="Mensagem na retirada" dica="Ex.: Retire de seg a sáb, das 9h às 18h." value={k.mensagemRetirada} onChange={(v) => update((d) => { d.checkout.mensagemRetirada = v; })} />
                 <Txt label="Mensagem de pedido confirmado" value={k.mensagemConfirmacao} onChange={(v) => update((d) => { d.checkout.mensagemConfirmacao = v; })} />
+            </Grupo>
+
+            <Grupo titulo="Zonas de entrega (por CEP)" aberto={false}>
+                <p style={{ fontSize: 13, opacity: 0.75, margin: '0 0 8px' }}>
+                    Sem nenhuma zona, vale a taxa única acima para qualquer CEP. Com zonas, o site só entrega nos CEPs
+                    listados (quem estiver fora pode escolher retirar na loja). Cada zona tem taxa e prazo próprios.
+                    Se um CEP cair em mais de uma zona, vale a primeira da lista.
+                </p>
+                <Lista
+                    itens={k.zonasEntrega ?? []}
+                    onChange={(zonas) => update((d) => { d.checkout.zonasEntrega = zonas; })}
+                    novo={() => ({ id: uid(), nome: 'Zona', cepInicial: '', cepFinal: '', taxa: 0, prazo: '' })}
+                    titulo={(z) => `${z.nome} — R$ ${Number(z.taxa).toFixed(2).replace('.', ',')}`}
+                    render={(z, setZ) => (
+                        <>
+                            <Txt label="Nome da zona" value={z.nome} onChange={(v) => setZ({ nome: v })} />
+                            <Linha>
+                                <Txt label="CEP inicial" placeholder="13000000" value={z.cepInicial}
+                                    onChange={(v) => setZ({ cepInicial: v.replace(/\D/g, '').slice(0, 8) })} />
+                                <Txt label="CEP final" placeholder="13099999" value={z.cepFinal}
+                                    onChange={(v) => setZ({ cepFinal: v.replace(/\D/g, '').slice(0, 8) })} />
+                            </Linha>
+                            <Linha>
+                                <Num label="Taxa (R$)" min={0} step={1} value={z.taxa} onChange={(v) => setZ({ taxa: v })} />
+                                <Txt label="Prazo" placeholder="1 a 2 dias úteis" value={z.prazo} onChange={(v) => setZ({ prazo: v })} />
+                            </Linha>
+                        </>
+                    )}
+                />
             </Grupo>
         </>
     );

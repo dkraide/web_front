@@ -150,6 +150,7 @@ export function criarSitePadrao(nomeLoja = ''): IModasSite {
             mensagemRetirada: '', mensagemConfirmacao: 'Pedido recebido! Avisaremos você pelo WhatsApp.',
             pedidoMinimo: 0, permitirCupom: true, finalizarPeloWhatsapp: false,
             taxaEntrega: 0, freteGratisAcima: 0, aceitaPix: true, aceitaDinheiro: true, aceitaCartao: true,
+            zonasEntrega: [],
         },
         rodape: {
             colunas: [], redes: [], mostrarLogo: true, mostrarContato: true, mostrarFormasPagamento: true,

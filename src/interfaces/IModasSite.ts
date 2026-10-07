@@ -298,6 +298,16 @@ export interface IModasProduto {
     mostrarCompartilhar: boolean;
 }
 
+/** Faixa de CEP atendida na entrega, com taxa e prazo próprios. Sem nenhuma zona vale a taxa única do checkout. */
+export interface IModasZonaEntrega {
+    id: string;
+    nome: string;
+    cepInicial: string;   // 8 digitos
+    cepFinal: string;     // 8 digitos
+    taxa: number;         // R$
+    prazo: string;        // texto livre, ex.: "1 a 2 dias úteis"
+}
+
 export interface IModasCheckout {
     permitirEntrega: boolean;
     permitirRetirada: boolean;
@@ -313,6 +323,7 @@ export interface IModasCheckout {
     aceitaPix: boolean;
     aceitaDinheiro: boolean;
     aceitaCartao: boolean;      // maquininha na entrega/retirada (nao ha pagamento online)
+    zonasEntrega: IModasZonaEntrega[]; // vazio = taxa unica; com zonas, so entrega nos CEPs listados
 }
 
 // ── Rodape / paginas / SEO ──────────────────────────────────────────────────
