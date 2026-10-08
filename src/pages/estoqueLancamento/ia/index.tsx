@@ -138,12 +138,25 @@ export default function LancamentoEstoqueIA() {
   }
 
   function mergeItens(prev: ItemIA[], incoming: ItemIA[]): ItemIA[] {
-    const map = new Map(prev.map((p) => [p.item.cProd, p]));
+    // cProd vazio/"0" não identifica o produto (a IA devolve "0" quando não há código),
+    // então nesses casos a chave passa a ser o nome.
+    const keyOf = (i: ItemIA) => {
+      const cod = (i.item.cProd ?? '').trim();
+      return cod && cod !== '0'
+        ? `c:${cod}`
+        : `x:${(i.item.xProd ?? '').trim().toUpperCase()}`;
+    };
+    const map = new Map(prev.map((p) => [keyOf(p), p]));
     incoming.forEach((i) => {
-      if (map.has(i.item.cProd)) {
-        map.get(i.item.cProd)!.item.qCom += i.item.qCom;
+      const key = keyOf(i);
+      const existing = map.get(key);
+      if (existing) {
+        map.set(key, {
+          ...existing,
+          item: { ...existing.item, qCom: existing.item.qCom + i.item.qCom },
+        });
       } else {
-        map.set(i.item.cProd, i);
+        map.set(key, i);
       }
     });
     return Array.from(map.values());
