@@ -1,0 +1,122 @@
+.container{
+    padding: 5px;
+}
+.boxSearch{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: flex-end;
+    margin-bottom: 10px;
+    button{
+        height: 38px;
+    }
+}
+.field{
+    display: flex;
+    flex-direction: column;
+    min-width: 170px;
+    label{
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+    select{
+        height: 38px;
+        border: 1px solid var(--gray-300, #ced4da);
+        border-radius: 5px;
+        padding: 0 8px;
+        background: var(--white, #fff);
+    }
+}
+.fieldCliente{
+    display: flex;
+    flex-direction: column;
+    min-width: 260px;
+    label{
+        font-size: 12px;
+        font-weight: bold;
+        margin-bottom: 2px;
+    }
+}
+.kpis{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+}
+.kpi{
+    background: var(--white, #fff);
+    border-radius: 8px;
+    padding: 12px 14px;
+    border-left: 5px solid var(--kpi-color, #999);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+    .kpiTitle{
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .5px;
+        opacity: .7;
+    }
+    .kpiValue{
+        font-size: 22px;
+        font-weight: bold;
+    }
+    .kpiSub{
+        font-size: 12px;
+        opacity: .7;
+    }
+}
+.aviso{
+    background: #fff4e5;
+    border: 1px solid #f0c27b;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+.setor{
+    margin-top: 28px;
+    h5{
+        border-bottom: 2px solid var(--main, #333);
+        padding-bottom: 4px;
+        margin-bottom: 4px;
+    }
+    .setorDesc{
+        font-size: 13px;
+        opacity: .7;
+        margin-bottom: 10px;
+    }
+}
+.charts{
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 14px;
+    margin-bottom: 14px;
+    @media (max-width: 900px){
+        grid-template-columns: 1fr;
+    }
+}
+.card{
+    background: var(--white, #fff);
+    border-radius: 8px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+    min-width: 0;
+    .cardTitle{
+        font-size: 14px;
+        font-weight: bold;
+        margin-bottom: 6px;
+    }
+}
+.vazio{
+    padding: 40px 0;
+    text-align: center;
+    opacity: .6;
+}
+.badge{
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #fff;
+}

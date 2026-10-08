@@ -7,6 +7,7 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
 import CustomButton from '@/components/ui/Buttons';
+import Header from '@/components/LandingPage/Header';
 
 
 export default function Login() {
@@ -33,8 +34,8 @@ export default function Login() {
   }
   return (
     <>
-
-      <div className={styles.containerCenter}>
+      <Header />
+      <div className={styles.containerCenter} style={{ paddingTop: '4rem' }}>
         <div className={styles.login}>
           <form onSubmit={handleLogin}>
             <img style={{ marginBottom: '0px' }} src={'/krd_logo.png'} width={'500px'} height={'200px'} />
@@ -64,7 +65,7 @@ export default function Login() {
                window.location.href = '/acessoRemoto';
             }} typeButton="main" type={'button'} style={{ padding: '10px', height: 'auto' }}>Baixar acesso remoto</CustomButton>
             <CustomButton onClick={() => {
-               window.location.href = '/baixe-app';
+               window.location.href = '/downloads#aplicativo';
             }} typeButton="main" type={'button'} style={{ padding: '10px', height: 'auto', marginTop: '10px' }}>Baixar nosso app</CustomButton>
           </form>
         </div>

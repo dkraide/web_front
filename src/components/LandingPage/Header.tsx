@@ -3,13 +3,22 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, Phone } from 'lucide-react'
+import { useRouter } from 'next/router'
+import { Menu, X, Download } from 'lucide-react'
 import CustomButton from '../ui/Buttons'
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const router = useRouter()
+  const isHome = router.pathname === '/'
 
   const scrollToSection = (sectionId: string) => {
+    // Fora da home as seções não existem: volta para a home já na âncora.
+    if (!isHome) {
+      setIsMenuOpen(false)
+      router.push(`/#${sectionId}`)
+      return
+    }
     const element = document.getElementById(sectionId)
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' })
@@ -18,7 +27,8 @@ export default function Header() {
   }
 
   return (
-    <header className="header">
+    // --background só é um HSL válido dentro de .min-h-screen (home); fixamos aqui para o Header funcionar em qualquer página.
+    <header className="header" style={{ ['--background' as string]: '222.2 84% 4.9%' }}>
       <div className="header__container">
         <Link href="/" className="header__logo">
           <Image 
@@ -46,20 +56,20 @@ export default function Header() {
           >
             Teste Grátis
           </a>
-          <a 
-            href="https://wa.me/5519971037836"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/downloads"
             className="btn btn--cta btn--sm header__btn-hide-mobile"
           >
-            <Phone size={16} />
-            WhatsApp
-          </a>
-          <CustomButton onClick={() => {
-            window.location.href = '/login'
-          }}>
-            Area Cliente
-          </CustomButton>
+            <Download size={16} />
+            Downloads
+          </Link>
+          {router.pathname !== '/login' && (
+            <CustomButton onClick={() => {
+              window.location.href = '/login'
+            }}>
+              Area Cliente
+            </CustomButton>
+          )}
         </div>
 
         <button 
@@ -87,15 +97,13 @@ export default function Header() {
             >
               Teste Grátis
             </a>
-            <a 
-              href="https://wa.me/5519971037836"
-              target="_blank"
-              rel="noopener noreferrer"
+            <Link
+              href="/downloads"
               className="btn btn--cta btn--base w-full"
             >
-              <Phone size={16} />
-              WhatsApp
-            </a>
+              <Download size={16} />
+              Downloads
+            </Link>
           </div>
         </div>
       )}

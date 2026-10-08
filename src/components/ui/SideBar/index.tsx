@@ -160,6 +160,7 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem href={'/movimentoCaixa'}>Caixas</MenuItem>
                                     <MenuItem href={'/venda'}>Vendas</MenuItem>
                                     <MenuItem href={'/arquivosxml'}>Arquivos XML</MenuItem>
+                                    <MenuItem href={'/recebiveis'}>Recebíveis</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faChartSimple} color={'var(--main)'} />} label="Relatórios">
                                     <MenuItem href={'/relatorio/resumo'}>Resumo {bgNew()} </MenuItem>

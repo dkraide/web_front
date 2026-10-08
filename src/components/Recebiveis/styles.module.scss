@@ -1,0 +1,94 @@
+.lista{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+.vazio{
+    padding: 30px 0;
+    text-align: center;
+    opacity: .6;
+}
+.verMais{
+    border: 1px dashed var(--main, #333);
+    background: transparent;
+    border-radius: 8px;
+    padding: 10px;
+    font-weight: bold;
+    cursor: pointer;
+}
+.card{
+    background: var(--white, #fff);
+    border-radius: 8px;
+    padding: 10px 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+    border-left: 4px solid var(--card-color, #bbb);
+}
+.cardTop{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+}
+.cardNome{
+    font-weight: bold;
+    font-size: 14px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+.cardValor{
+    font-weight: bold;
+    font-size: 15px;
+    white-space: nowrap;
+}
+.cardSub{
+    font-size: 12px;
+    opacity: .7;
+    margin-top: 2px;
+}
+.barra{
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: #e5e7eb;
+    margin: 8px 0 6px;
+}
+.legenda{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 12px;
+    font-size: 12px;
+    span{
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    i{
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+    }
+}
+.dados{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px 12px;
+    font-size: 12px;
+    margin-top: 8px;
+    b{
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        opacity: .6;
+        font-weight: normal;
+    }
+}
+.badge{
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: bold;
+    color: #fff;
+    white-space: nowrap;
+}
