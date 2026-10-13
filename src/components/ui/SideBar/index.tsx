@@ -192,6 +192,7 @@ export default function SideBar({ children, ...props }) {
                                         <MenuItem href={'/menudigital/horarios'}>Configuração</MenuItem>
                                         <MenuItem href={'/menudigital/empresa'}>Empresa</MenuItem>
                                         <MenuItem href={'/menudigital/cardapio'}>Cardápios</MenuItem>
+                                        <MenuItem href={'/menudigital/pagamento'}>Pagamento {bgNew()}</MenuItem>
                                     </SubMenu>
                                 )}
                                 {user.tipoSistema === 'LOJA_ROUPA' && (
