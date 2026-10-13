@@ -192,6 +192,7 @@ export default function SideBar({ children, ...props }) {
                                         <MenuItem href={'/menudigital/horarios'}>Configuração</MenuItem>
                                         <MenuItem href={'/menudigital/empresa'}>Empresa</MenuItem>
                                         <MenuItem href={'/menudigital/cardapio'}>Cardápios</MenuItem>
+                                        <MenuItem href={'/menudigital/pagamento'}>Pagamento {bgNew()}</MenuItem>
                                     </SubMenu>
                                 )}
                                 {user.tipoSistema === 'LOJA_ROUPA' && (
@@ -204,7 +205,7 @@ export default function SideBar({ children, ...props }) {
                                 )}
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faComments} color={'var(--main)'} />} label="Integrações">
                                     <MenuItem href={'/whatsapp'}>WhatsApp {bgNew()}</MenuItem>
-                                    {/* <MenuItem href={'/ifood'}>IFood {bgNew()}</MenuItem> */}
+                                  {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem href={'/ifood'}>IFood {bgNew()}</MenuItem> } 
                                 </SubMenu>
                             </div>
                         )}
