@@ -204,7 +204,7 @@ export default function SideBar({ children, ...props }) {
                                 )}
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faComments} color={'var(--main)'} />} label="Integrações">
                                     <MenuItem href={'/whatsapp'}>WhatsApp {bgNew()}</MenuItem>
-                                    {/* <MenuItem href={'/ifood'}>IFood {bgNew()}</MenuItem> */}
+                                  {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem href={'/ifood'}>IFood {bgNew()}</MenuItem> } 
                                 </SubMenu>
                             </div>
                         )}
