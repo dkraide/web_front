@@ -9,6 +9,7 @@ import styles from "./styles.module.scss";
 
 const PROVEDORES: { value: PixProvider; label: string }[] = [
     { value: "MERCADO_PAGO", label: "Mercado Pago" },
+    { value: "PAGBANK", label: "PagBank" },
 ];
 
 export default function PagamentoMenuDigital() {
@@ -26,6 +27,10 @@ export default function PagamentoMenuDigital() {
     const [accessToken, setAccessToken] = useState("");
     const [webhookSecret, setWebhookSecret] = useState("");
     const [emailPadrao, setEmailPadrao] = useState("");
+    const [extras, setExtras] = useState<Record<string, string>>({});
+
+    const ehPagBank = provider === "PAGBANK";
+    const setExtra = (chave: string, valor: string) => setExtras((e) => ({ ...e, [chave]: valor }));
 
     useEffect(() => {
         (async () => {
@@ -45,6 +50,7 @@ export default function PagamentoMenuDigital() {
         setAtivo(data.ativo);
         setProvider(data.provider ?? "MERCADO_PAGO");
         setEmailPadrao(data.emailPadrao ?? "");
+        setExtras(data.extras ?? {});
         setAccessToken("");
         setWebhookSecret("");
     }
@@ -69,7 +75,11 @@ export default function PagamentoMenuDigital() {
             return;
         }
         if (ativo && !emailPadrao.trim()) {
-            toast.warn("Informe um e-mail padrão: o Mercado Pago exige e-mail do pagador.");
+            toast.warn(`Informe um e-mail padrão: o ${providerLabel} exige e-mail do pagador.`);
+            return;
+        }
+        if (ativo && ehPagBank && (extras.DocumentoPadrao ?? "").replace(/\D/g, "").length < 11) {
+            toast.warn("Informe o CPF/CNPJ padrão do pagador: o PagBank exige documento na cobrança.");
             return;
         }
 
@@ -83,7 +93,7 @@ export default function PagamentoMenuDigital() {
                 webhookSecret: webhookSecret.trim() || undefined,
                 emailPadrao: emailPadrao.trim() || undefined,
                 expiracaoMinutos: config.expiracaoMinutos || 30,
-                extras: config.extras,
+                extras,
             });
             aplicar(salvo);
             toast.success("Configuração de pagamento salva!");
@@ -108,6 +118,7 @@ export default function PagamentoMenuDigital() {
                 empresaId,
                 provider,
                 accessToken: accessToken.trim() || undefined,
+                extras,
             }));
         } catch (err: any) {
             toast.error(`Erro ao testar. ${err.response?.data || err.message}`);
@@ -174,6 +185,32 @@ export default function PagamentoMenuDigital() {
                                 <small>Novos bancos serão adicionados aqui.</small>
                             </div>
 
+                            {ehPagBank && (
+                                <div className={styles.field}>
+                                    <label>Ambiente</label>
+                                    <select
+                                        value={extras.Ambiente === "SANDBOX" ? "SANDBOX" : "PRODUCAO"}
+                                        onChange={(e) => setExtra("Ambiente", e.target.value)}
+                                    >
+                                        <option value="PRODUCAO">Produção</option>
+                                        <option value="SANDBOX">Sandbox (testes)</option>
+                                    </select>
+                                    <small>O token de sandbox só funciona no sandbox, e o de produção só em produção.</small>
+                                </div>
+                            )}
+
+                            {ehPagBank && (
+                                <div className={styles.field}>
+                                    <label>CPF/CNPJ padrão do pagador</label>
+                                    <input
+                                        value={extras.DocumentoPadrao ?? ""}
+                                        placeholder="CNPJ ou CPF da empresa"
+                                        onChange={(e) => setExtra("DocumentoPadrao", e.target.value)}
+                                    />
+                                    <small>Usado quando o cliente não informa um CPF válido no pedido.</small>
+                                </div>
+                            )}
+
                             <div className={styles.field}>
                                 <label>E-mail padrão do pagador</label>
                                 <input
@@ -199,11 +236,21 @@ export default function PagamentoMenuDigital() {
                                     onChange={(e) => setAccessToken(e.target.value)}
                                 />
                                 <small>
-                                    No Mercado Pago: <b>Seu negócio → Configurações → Credenciais</b> (use o Access Token
-                                    de produção). Ele fica criptografado e nunca é exibido novamente.
+                                    {ehPagBank ? (
+                                        <>
+                                            No PagBank: <b>Conta → Integrações → Gerar token</b> (token da API de Pagamentos).
+                                        </>
+                                    ) : (
+                                        <>
+                                            No Mercado Pago: <b>Seu negócio → Configurações → Credenciais</b> (use o Access Token
+                                            de produção).
+                                        </>
+                                    )}{" "}
+                                    Ele fica criptografado e nunca é exibido novamente.
                                 </small>
                             </div>
 
+                            {!ehPagBank && (
                             <div className={`${styles.field} ${styles.full}`}>
                                 <label>Assinatura secreta do webhook</label>
                                 <input
@@ -221,6 +268,7 @@ export default function PagamentoMenuDigital() {
                                     Recomendado: valida que a confirmação de pagamento veio mesmo do {providerLabel}.
                                 </small>
                             </div>
+                            )}
                         </div>
                     )}
                 </div>
@@ -260,18 +308,26 @@ export default function PagamentoMenuDigital() {
                     <span className={styles.cardTitle}>Configurar o webhook no {providerLabel}</span>
                 </div>
                 <div className={styles.cardBody}>
-                    <ol className={styles.steps}>
-                        <li>
-                            Acesse o painel <b>Mercado Pago Developers → Suas integrações</b> e abra a sua aplicação.
-                        </li>
-                        <li>
-                            Em <b>Webhooks → Configurar notificações</b>, cole a URL abaixo (modo produção) e marque
-                            o evento <b>Pagamentos</b>.
-                        </li>
-                        <li>
-                            Copie a <b>Assinatura secreta</b> gerada e cole no campo acima.
-                        </li>
-                    </ol>
+                    {ehPagBank ? (
+                        <p className={styles.muted}>
+                            No PagBank <b>não é preciso cadastrar o webhook</b>: a URL abaixo é enviada automaticamente em
+                            cada cobrança e a autenticidade é validada com o seu token. Ela só precisa estar acessível
+                            pela internet (configure <code>Pix__PublicBaseUrl</code> no servidor).
+                        </p>
+                    ) : (
+                        <ol className={styles.steps}>
+                            <li>
+                                Acesse o painel <b>Mercado Pago Developers → Suas integrações</b> e abra a sua aplicação.
+                            </li>
+                            <li>
+                                Em <b>Webhooks → Configurar notificações</b>, cole a URL abaixo (modo produção) e marque
+                                o evento <b>Pagamentos</b>.
+                            </li>
+                            <li>
+                                Copie a <b>Assinatura secreta</b> gerada e cole no campo acima.
+                            </li>
+                        </ol>
+                    )}
 
                     <div className={styles.urlBox}>
                         <input readOnly value={config?.webhookUrl ?? ""} onFocus={(e) => e.target.select()} />

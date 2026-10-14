@@ -21,7 +21,7 @@ export const pixService = {
   },
 
   /** Testa o token digitado (ou o salvo, se vazio) sem gravar nem cobrar nada. */
-  async testarConexao(dto: { empresaId: number; provider: string; accessToken?: string }) {
+  async testarConexao(dto: { empresaId: number; provider: string; accessToken?: string; extras?: Record<string, string> }) {
     const { data } = await api.post<IPixTesteConexao>(`/v2/PixConfiguracao/Testar`, dto);
     return data;
   },

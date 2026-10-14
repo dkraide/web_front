@@ -1,4 +1,4 @@
-export type PixProvider = 'MERCADO_PAGO';
+export type PixProvider = 'MERCADO_PAGO' | 'PAGBANK';
 
 export interface IPixConfiguracao {
   empresaId: number;

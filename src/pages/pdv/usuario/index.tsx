@@ -58,7 +58,7 @@ export default function UsuarioPage() {
 
     function getFiltered() {
         return list.filter(u =>
-            searchHelper(search.str, `${u.nome} ${u.login} ${u.id}`)
+            searchHelper(search.str, `${u.nome} ${u.login} ${u.id} ${u.empresaId}`)
         )
     }
 
@@ -76,6 +76,12 @@ export default function UsuarioPage() {
                 </button>
             ),
             width: '48px',
+        },
+        {
+            name: 'Cód. Empresa',
+            selector: row => row.empresaId,
+            sortable: true,
+            width: '130px',
         },
         {
             name: 'Nome',

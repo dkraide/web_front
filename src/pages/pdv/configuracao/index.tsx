@@ -49,11 +49,11 @@ export default function Configuracao() {
         return <></>
     }
     return (
-        <>
+        <div className={styles.page}>
             <ConfiguracaoNFCE handleSubmit={handleSubmit} setValue={setValue} register={register} errors={errors} user={user} />
             <ConfiguracaoEmpresa getValues={getValues} handleSubmit={handleSubmit} setValue={setValue} register={register} errors={errors} user={user} />
 
-        </>
+        </div>
     )
 
 
@@ -107,6 +107,7 @@ const ConfiguracaoNFCE = ({ handleSubmit, user, register, errors, setValue }: pr
             api.put(`ConfigNFCE/SetCertificado`, formData, { headers: { "Content-Type": 'multipart/form-data' } })
                 .then(({ data }: AxiosResponse) => {
                     setValue('fileName', files[0].name)
+                    setConfig({ ...config, fileName: files[0].name })
                     toast.success(`Certificado enviado com sucesso!`);
                 }).catch((err: AxiosError) => {
                     toast.error(`Erro ao enviar certificado`);
@@ -115,10 +116,22 @@ const ConfiguracaoNFCE = ({ handleSubmit, user, register, errors, setValue }: pr
 
     }
     const onSubmit = async (data: any) => {
-        config.certSenha = data.certSenha;
-        config.serieNf = fGetNumber(data.serie);
-        config.numeracaoNf = fGetNumber(data.nnf);
-        api.put(`ConfigNFCE/Update`, config)
+        // Busca a config atual: o certificado enviado via SetCertificado não está no state carregado no mount
+        const atual: IWebService = await api.get(`/ConfigNFCE/Select?empresaId=${user.empresaSelecionada}`)
+            .then(({ data }: AxiosResponse) => data)
+            .catch(() => config);
+        const novo = {
+            ...atual,
+            certSenha: data.certSenha,
+            serieNf: fGetNumber(data.serie),
+            numeracaoNf: fGetNumber(data.nnfNfe),
+            numeracaoNfce: fGetNumber(data.nnfNfce),
+            isHomologacao: Number(data.isHomologacao),
+            idCsc: data.idCsc,
+            csc: data.csc,
+        };
+        setConfig(novo);
+        api.put(`ConfigNFCE/Update`, novo)
             .then(({ data }: AxiosResponse) => {
                 toast.success(`objeto cadastrado com sucesso!`);
             })
@@ -131,15 +144,59 @@ const ConfiguracaoNFCE = ({ handleSubmit, user, register, errors, setValue }: pr
 
     return (
         <div className={styles.container}>
-            <h5>Configuracao NFC-e / NF-e</h5>
-            <CustomButton onClick={getFile} style={{ width: '20%', height: '40px' }} typeButton={'dark'}>Carregar Arquivo</CustomButton>
-            <InputForm readOnly={true} width={'50%'} title={'Arquivo .pfx'} register={register} errors={errors} inputName={'fileName'} defaultValue={config.fileName || 'Nenhum arquivo selecionado'} />
-            <InputForm width={'30%'} title={'Senha Certificado'} register={register} errors={errors} inputName={'certSenha'} defaultValue={config.certSenha} />
-            <InputForm width={'30%'} title={'Nnf'} register={register} errors={errors} inputName={'nnf'} defaultValue={config.numeracaoNf} />
-            <InputForm width={'30%'} title={'Serie'} register={register} errors={errors} inputName={'serie'} defaultValue={config.serieNf} />
-            <InputForm width={'30%'} title={'Codigo CSC'} register={register} errors={errors} inputName={'idCsc'} defaultValue={config.idCsc} />
-            <InputForm width={'30%'} title={'Numero CSC'} register={register} errors={errors} inputName={'csc'} defaultValue={config.csc} />
-            <CustomButton typeButton={'dark'} style={{ width: '30%', height: '40px' }} onClick={() => { handleSubmit(onSubmit)() }}>Confirmar</CustomButton>
+            <h5>
+                Configuração NFC-e / NF-e
+                <span className={config.isHomologacao ? styles.badgeHomolog : styles.badgeProducao}>
+                    {config.isHomologacao ? 'Homologação' : 'Produção'}
+                </span>
+            </h5>
+
+            <div className={styles.section}>
+                <h6>Ambiente</h6>
+                <div className={styles.grid}>
+                    <div className={styles.selectGroup} style={{ width: '33%', minWidth: 200 }}>
+                        <label>Ambiente de emissão</label>
+                        <select {...register('isHomologacao', {
+                            onChange: (e: any) => setConfig({ ...config, isHomologacao: Number(e.target.value) })
+                        })} defaultValue={config.isHomologacao ? '1' : '0'}>
+                            <option value="1">Homologação (testes)</option>
+                            <option value="0">Produção</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div className={styles.section}>
+                <h6>Certificado digital</h6>
+                <div className={styles.certRow}>
+                    <InputForm readOnly={true} width={'100%'} title={'Arquivo .pfx'} register={register} errors={errors} inputName={'fileName'} defaultValue={config.fileName || 'Nenhum arquivo selecionado'} />
+                    <CustomButton onClick={getFile} style={{ width: '200px', height: '38px', marginBottom: '4px' }} typeButton={'dark'}>Carregar arquivo</CustomButton>
+                </div>
+                <div className={styles.grid}>
+                    <InputForm width={'33%'} title={'Senha do certificado'} type="password" autoComplete="new-password" placeholder={config.fileName ? 'Deixe em branco para manter a atual' : ''} register={register} errors={errors} inputName={'certSenha'} defaultValue="" />
+                </div>
+            </div>
+
+            <div className={styles.section}>
+                <h6>Numeração</h6>
+                <div className={styles.grid}>
+                    <InputForm width={'33%'} title={'Série'} register={register} errors={errors} inputName={'serie'} defaultValue={config.serieNf} />
+                    <InputForm width={'33%'} title={'Próx. número NFC-e'} register={register} errors={errors} inputName={'nnfNfce'} defaultValue={config.numeracaoNfce} />
+                    <InputForm width={'33%'} title={'Próx. número NF-e'} register={register} errors={errors} inputName={'nnfNfe'} defaultValue={config.numeracaoNf} />
+                </div>
+            </div>
+
+            <div className={styles.section}>
+                <h6>CSC (NFC-e)</h6>
+                <div className={styles.grid}>
+                    <InputForm width={'33%'} title={'ID do CSC'} register={register} errors={errors} inputName={'idCsc'} defaultValue={config.idCsc} />
+                    <InputForm width={'67%'} title={'Código CSC'} register={register} errors={errors} inputName={'csc'} defaultValue={config.csc} />
+                </div>
+            </div>
+
+            <div className={styles.button}>
+                <CustomButton typeButton={'dark'} style={{ width: '200px', height: '40px' }} onClick={() => { handleSubmit(onSubmit)() }}>Confirmar</CustomButton>
+            </div>
         </div>
     )
 }
