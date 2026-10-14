@@ -21,6 +21,7 @@ export default interface IWebService{
      timeOut: number
      diretorioSchemas: string
      numeracaoNf: number
+     numeracaoNfce: number
      serieNf: number
      idCsc: string
      csc: string
