@@ -94,6 +94,14 @@ export default function ProdutoMenuDigital({
                     control={control}
                     error={errors.valorKeeta?.message?.toString()}
                 />
+                <KRDInput
+                    placeholder="99Food"
+                    width="150px"
+                    label="99Food"
+                    name="valor99"
+                    control={control}
+                    error={errors.valor99?.message?.toString()}
+                />
             </div>
 
             <SuitableDiet

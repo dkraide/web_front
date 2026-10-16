@@ -15,6 +15,8 @@ import { useCodigoBarras } from './hooks/useCodigoBarras';
 import { useMateriaPrima } from './hooks/useMateriaPrima';
 import { useGrupoAdicionais } from './hooks/useGrupoAdicionais';
 import { useImageUpload } from './hooks/useImageUpload';
+import MidiaGaleria from './MidiaGaleria';
+import { useMidiaGaleria } from './MidiaGaleria/useMidiaGaleria';
 import ProdutoDetalhes from './components/ProdutoDetalhes';
 import ProdutoMenuDigital from './components/ProdutoMenuDigital';
 import ProdutoGrupos from './components/ProdutoGrupos';
@@ -29,6 +31,8 @@ export default function ProdutoItem() {
     const [modalMp, setModalMp] = useState(false);
 
     const { imagePreview, handleImageChange, uploadImagemAsync, hasNewImage } = useImageUpload();
+    // Galeria de mídias extra (imagem/gif/vídeo), além da foto principal.
+    const galeria = useMidiaGaleria();
 
     const {
         register,
@@ -49,6 +53,7 @@ export default function ProdutoItem() {
             quantidadeMinima: 0,
             valorCompra: 0,
             valorKeeta: 0,
+            valor99: 0,
             multiplicadorFornecedor: 1,
             posicao: 0,
             nome: '',
@@ -61,6 +66,14 @@ export default function ProdutoItem() {
     const { addCodigo, removeCodigo } = useCodigoBarras(produto, setProduto);
     const { addMp, removeMateriaPrima } = useMateriaPrima(produto, setProduto, user);
     const { addOrUpdateGrupo, removeGrupo } = useGrupoAdicionais(produto, setProduto);
+
+    // Edição: carrega a galeria de mídias do produto (uma vez por produto).
+    useEffect(() => {
+        if (produto?.id) {
+            galeria.carregar(produto.id).catch(() => toast.error('Erro ao carregar as mídias do produto.'));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [produto?.id]);
 
     useEffect(() => {
         if (!produto || loading) {
@@ -148,6 +161,7 @@ export default function ProdutoItem() {
             valor: data.valor,
             valorCompra: data.valorCompra,
             valorKeeta: data.valorKeeta,
+            valor99: data.valor99,
             visivelMenu: data.visivelMenu,
         };
 
@@ -179,6 +193,9 @@ export default function ProdutoItem() {
                     return;
                 }
             }
+
+            // Galeria de mídias (N por produto)
+            if (produtoId) await galeria.salvar(produtoId);
 
             // Upload de imagens dos itens de grupo que tiverem temporaryImage
             if (produto.grupoAdicionais?.length) {
@@ -270,6 +287,12 @@ export default function ProdutoItem() {
                             onImageChange={handleImageChange}
                             onAddCodigo={handleAddCodigo}
                             onRemoveCodigo={removeCodigo}
+                        />
+                        <MidiaGaleria
+                            midias={galeria.midias}
+                            onAdd={galeria.adicionar}
+                            onRemove={galeria.remover}
+                            onMove={galeria.mover}
                         />
                     </Tab>
 

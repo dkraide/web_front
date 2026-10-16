@@ -1,9 +1,9 @@
 import { Tab, Tabs } from 'react-bootstrap';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Switch from 'react-switch';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faTrash, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import { useRouter } from 'next/router';
@@ -23,24 +23,14 @@ import ICodBarras from '@/interfaces/ICodBarras';
 import IGrupoAdicional from '@/interfaces/IGrupoAdicional';
 import IProdutoGrupoAdicional from '@/interfaces/IProdutoGrupoAdicional';
 import { IGrupoAdicionalItem } from '@/interfaces/IGrupoAdicionalItem';
-import IProdutoImagem from '@/interfaces/IProdutoImagem';
+import MidiaGaleria from '@/components/Produto/MidiaGaleria';
+import { useMidiaGaleria } from '@/components/Produto/MidiaGaleria/useMidiaGaleria';
 import GradeEstoque from '@/components/Roupa/GradeEstoque';
 
 // Uma roupa tem dois grupos: COR (nome + hex) e TAMANHO (nome + valor).
 // Reaproveitamos o mesmo fluxo aninhado da pizza — o backend, ao ver
 // tipo == 'ROUPA', persiste os grupos/itens junto e depois o vinculo N:N.
 type TipoGrupoRoupa = 'COR' | 'TAMANHO';
-
-const LIMITE_IMAGENS = 6;
-
-// Imagem da galeria. Existente = tem id + localPath; nova = tem file + preview blob.
-type RoupaImagem = {
-    key: string;
-    id?: number;
-    localPath?: string;
-    file?: File;
-    preview: string;
-};
 
 const emptyItem = (empresaId: number): IGrupoAdicionalItem => ({
     id: uuidv4(),
@@ -99,25 +89,13 @@ const gruposPadrao = (empresaId: number): IProdutoGrupoAdicional[] => [
     novoVinculo(emptyGrupo('TAMANHO', 'Tamanhos', empresaId, []), empresaId),
 ];
 
-// Converte um File em base64 puro (sem o prefixo data:...;base64,), que o
-// Newtonsoft do backend desserializa direto para byte[].
-const fileToBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve((reader.result as string).split(',')[1]);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-
 export default function NovaRoupa() {
     const [roupa, setRoupa] = useState<IProduto>();
     const [user, setUser] = useState<IUsuario>();
     const [saving, setSaving] = useState(false);
 
-    // Galeria: novas imagens ficam em blob e sobem só depois de salvar o produto.
-    const [imagens, setImagens] = useState<RoupaImagem[]>([]);
-    // Ids de imagens existentes marcadas para apagar (aplicado no salvar).
-    const [removidas, setRemovidas] = useState<number[]>([]);
+    // Galeria de mídias (imagem/gif/vídeo): novas ficam em blob e sobem só depois de salvar o produto.
+    const galeria = useMidiaGaleria();
 
     // Tamanho: valor único para todos ou um valor por tamanho.
     const [valorUnico, setValorUnico] = useState(true);
@@ -133,7 +111,6 @@ export default function NovaRoupa() {
     const [aba, setAba] = useState('item');
     const [gradeKey, setGradeKey] = useState(0);
 
-    const fileInputRef = useRef<HTMLInputElement>(null);
     const { getUser } = useContext(AuthContext);
     const router = useRouter();
     const { id } = router.query;
@@ -205,16 +182,8 @@ export default function NovaRoupa() {
                 setValorUnicoValor(todosIguais ? tamanhos[0].valor : 0);
             }
 
-            // Carrega a galeria de imagens.
-            const { data: imgs } = await api.get<IProdutoImagem[]>(`/Produto/${roupaId}/imagem`);
-            setImagens(
-                (imgs ?? []).map((i) => ({
-                    key: `srv-${i.id}`,
-                    id: i.id,
-                    localPath: i.localPath,
-                    preview: i.localPath,
-                })),
-            );
+            // Carrega a galeria de mídias.
+            await galeria.carregar(roupaId);
         } catch (err) {
             const e = err as AxiosError;
             toast.error(`Erro ao carregar roupa. ${e.response?.data || e.message}`);
@@ -226,16 +195,6 @@ export default function NovaRoupa() {
         if (id) carregarRoupa(fGetNumber(id as string));
         else novaRoupa();
     }, [router.isReady]);
-
-    // Limpa os object URLs das imagens novas ao desmontar.
-    useEffect(() => {
-        return () => {
-            imagens.forEach((i) => {
-                if (i.file) URL.revokeObjectURL(i.preview);
-            });
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     // ── grupos (COR / TAMANHO) ───────────────────────────────
     const getGrupo = (tipo: TipoGrupoRoupa): IGrupoAdicional | undefined =>
@@ -287,27 +246,6 @@ export default function NovaRoupa() {
 
     const removeTamanho = (itemId: string) =>
         setItens('TAMANHO', getItems('TAMANHO').filter((t) => t.id !== itemId));
-
-    // ── imagens ──────────────────────────────────────────────
-    const onPickImage = () => fileInputRef.current?.click();
-
-    const onImageSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        e.target.value = ''; // permite re-selecionar o mesmo arquivo
-        if (!file) return;
-        if (imagens.length >= LIMITE_IMAGENS) {
-            toast.warn(`Máximo de ${LIMITE_IMAGENS} imagens.`);
-            return;
-        }
-        const preview = URL.createObjectURL(file);
-        setImagens((prev) => [...prev, { key: uuidv4(), file, preview }]);
-    };
-
-    const removeImagem = (img: RoupaImagem) => {
-        if (img.id) setRemovidas((prev) => [...prev, img.id!]); // existente: apaga no salvar
-        if (img.file) URL.revokeObjectURL(img.preview);
-        setImagens((prev) => prev.filter((i) => i.key !== img.key));
-    };
 
     // ── validação ────────────────────────────────────────────
     const validar = (): string | null => {
@@ -370,17 +308,8 @@ export default function NovaRoupa() {
                 await api.put(`/v2/Produto?EmpresaId=${empresaId}`, payload);
             }
 
-            // 2) Sobe as imagens novas (posicao 0 = backend anexa no fim da galeria).
-            for (const img of imagens) {
-                if (!img.file) continue;
-                const base64 = await fileToBase64(img.file);
-                await api.post(`/Produto/${produtoId}/imagem`, { imagem: base64, posicao: 0 });
-            }
-
-            // 3) Apaga as imagens existentes que foram removidas.
-            for (const imagemId of removidas) {
-                await api.delete(`/Produto/${produtoId}/imagem/${imagemId}`).catch(() => null);
-            }
+            // 2) Aplica a galeria: apaga removidas, sobe as novas e grava a ordem.
+            await galeria.salvar(produtoId);
 
             if (!isEdicao) {
                 // Recem-cadastrada: as variantes ja foram geradas; abre a aba Estoque para informar as quantidades.
@@ -421,39 +350,12 @@ export default function NovaRoupa() {
                     {/* ── Aba Item ───────────────────────────────────── */}
                     <Tab eventKey="item" title="Item">
                         <div className={styles.contentTab}>
-                            {/* Carrossel de imagens */}
-                            <div className={styles.carrossel}>
-                                {imagens.map((img) => (
-                                    <div className={styles.imgCard} key={img.key}>
-                                        <img
-                                            src={img.preview}
-                                            onError={(e) => { e.currentTarget.src = '/nopic.png'; }}
-                                            alt="imagem da roupa"
-                                        />
-                                        <button
-                                            type="button"
-                                            className={styles.removeImg}
-                                            onClick={() => removeImagem(img)}
-                                            title="Remover imagem"
-                                        >
-                                            <FontAwesomeIcon icon={faTimes} />
-                                        </button>
-                                    </div>
-                                ))}
-                                {imagens.length < LIMITE_IMAGENS && (
-                                    <button type="button" className={styles.addImg} onClick={onPickImage}>
-                                        <FontAwesomeIcon icon={faPlus} />
-                                        Adicionar imagem
-                                    </button>
-                                )}
-                                <input
-                                    ref={fileInputRef}
-                                    type="file"
-                                    accept="image/png, image/jpeg, image/webp"
-                                    style={{ display: 'none' }}
-                                    onChange={onImageSelected}
-                                />
-                            </div>
+                            <MidiaGaleria
+                                midias={galeria.midias}
+                                onAdd={galeria.adicionar}
+                                onRemove={galeria.remover}
+                                onMove={galeria.mover}
+                            />
 
                             {/* Informações */}
                             <div className={styles.row}>

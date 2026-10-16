@@ -132,6 +132,7 @@ export default function SideBar({ children, ...props }) {
                                     rootStyles={subMenuStyle}>
                                     <MenuItem href={'/produto'}>Produtos</MenuItem>
                                     <MenuItem href={'/classeMaterial'}>Classes</MenuItem>
+                                    <MenuItem href={'/setorestoque'}>Setores de estoque (NFC)</MenuItem>
                                     <MenuItem href={'/grupo-adicional'}>Grupos de Compl.</MenuItem>
                                     <MenuItem href={'/tributacao'}>Tributações</MenuItem>
                                     <MenuItem href={'/estoque'}>Estoque</MenuItem>
@@ -206,6 +207,7 @@ export default function SideBar({ children, ...props }) {
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faComments} color={'var(--main)'} />} label="Integrações">
                                     <MenuItem href={'/whatsapp'}>WhatsApp {bgNew()}</MenuItem>
                                   {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem href={'/ifood'}>IFood {bgNew()}</MenuItem> } 
+                                  {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem href={'/food99'}>99Food {bgNew()}</MenuItem> } 
                                 </SubMenu>
                             </div>
                         )}

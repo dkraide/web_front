@@ -1,0 +1,109 @@
+.container {
+  padding: 1.25rem;
+  background: var(--background);
+  min-height: 100%;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--dark-900);
+  margin: 0 0 1rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.switchCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-bottom: 8px;
+}
+
+.buttons {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 20px;
+}
+
+.urlBox {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px dashed #d4cef8;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 13px;
+
+  code {
+    word-break: break-all;
+    color: #534ab7;
+  }
+}
+
+.sectionTitle {
+  font-weight: 600;
+  margin: 8px 0;
+}
+
+.addRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.vazio {
+  color: #999;
+}
+
+.lista {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+.pos {
+  width: 24px;
+  color: #9a8d9e;
+  font-size: 12px;
+}
+
+.nome {
+  flex: 1;
+}
+
+.valor {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.iconBtn {
+  border: none;
+  background: transparent;
+  color: var(--main);
+  cursor: pointer;
+  padding: 4px 8px;
+
+  &:disabled {
+    opacity: 0.25;
+    cursor: default;
+  }
+}
