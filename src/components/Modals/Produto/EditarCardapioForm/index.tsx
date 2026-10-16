@@ -54,6 +54,7 @@ export function EditarCardapioForm({ item, setClose }: props) {
             calories: `${data.calories} ${tipoCal}`,
             valor: fGetNumber(data.valor),
             valorKeeta: fGetNumber(data.valorKeeta),
+            valor99: fGetNumber(data.valor99),
         };
         console.log(updatedProduto)
         await api.put(`/produto/UpdateProduct`, updatedProduto).then((data) => {
@@ -85,6 +86,7 @@ export function EditarCardapioForm({ item, setClose }: props) {
                         <b>Precos</b>
                         <InputForm placeholder={'Menu Digital'} defaultValue={produto.valor} width={'150px'} title={'Menu Digital'} errors={errors} inputName={"valor"} register={register} />
                         <InputForm placeholder={'Keeta'} defaultValue={produto.valorKeeta} width={'150px'} title={'Keeta'} errors={errors} inputName={"valorKeeta"} register={register} />
+                        <InputForm placeholder={'99Food (vazio = igual ao Menu Digital)'} defaultValue={produto.valor99} width={'150px'} title={'99Food'} errors={errors} inputName={"valor99"} register={register} />
 
                     </div>
                     <SuitableDietComponent value={produto.suitableDiet} onChange={(r) => setProduto({ ...produto, suitableDiet: r })} />

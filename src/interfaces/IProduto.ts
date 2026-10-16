@@ -35,6 +35,8 @@ export default interface IProduto{
          codigoFornecedor: string
          multiplicadorFornecedor: number
          localPath: string
+         // Primeira midia da galeria (so vem em /Produto/List, quando nao ha foto principal)
+         capaMidia?: string
          getCustoMateriaPrima: boolean
          ultimaConferencia: Date
          valorUnitarioSemImposto: number
@@ -57,4 +59,5 @@ export default interface IProduto{
          isAlcoholic?: boolean
          serving?: number
          valorKeeta?: number
+         valor99?: number
 }

@@ -19,7 +19,6 @@ type props = {
     produtos: IProduto[]
     user: IUsuario
     loadData: () => void
-    handleNovoPrato: () => void
     handleNovaPizza: () => void
 }
 
@@ -34,7 +33,7 @@ type searchProps = {
     status?: boolean
 }
 
-export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizza, handleNovoPrato }: props) {
+export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizza }: props) {
     const [list, setList] = useState<groupped[]>([])
     const [search, setSearch] = useState<searchProps>({ str: '', status: true })
     const [formSearch, setFormSearch] = useState(false)
@@ -100,7 +99,7 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
                 <div className={styles.desc} style={{width: '100%'}}>
                     <span className={styles.nome}>{produto.cod} - {produto.nome}</span>
                     <div className={styles.pic}>
-                        <PictureBox height={'90%'} size={'100%'} url={produto.localPath} />
+                        <PictureBox height={'90%'} size={'100%'} url={produto.localPath || produto.capaMidia} />
                     </div>
                     <div className={styles.desc}>
                         <span className={styles.estoque}>Estoque <br /><b>{produto.quantidade} {produto.unidadeCompra}</b></span>
@@ -137,7 +136,6 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
             <div className={styles.buttons}>
                 <CustomButton style={{ width: '30%' }} typeButton={'dark'} onClick={() => { setEdit(0) }} >Novo Produto</CustomButton>
                 <CustomButton style={{ width: '30%' }} typeButton={'dark'} onClick={handleNovaPizza}  >Nova Pizza</CustomButton>
-                <CustomButton style={{ width: '30%' }} typeButton={'dark'} onClick={handleNovoPrato}   >Novo Prato</CustomButton>
             </div>
             <hr />
             <InputGroup title={'Pesquisar'} value={search?.str} onChange={({ currentTarget }) => { setSearch({ ...search, str: currentTarget.value }) }} />

@@ -42,6 +42,10 @@ export default function SelectCampoProduto({ title, width, selected, setSelected
         {
             value: 7,
             nome: 'ValorKeeta'
+        },
+        {
+            value: 8,
+            nome: 'Valor99'
         }];
         setFormas(res);
     }

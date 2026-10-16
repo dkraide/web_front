@@ -42,6 +42,7 @@ export const productSchema = z.object({
   descricaoNutricional: z.string().optional().nullable(),
   serving: optionalNumberFromInput(),
   valorKeeta: optionalNumberFromInput(),
+  valor99: optionalNumberFromInput(),
   calories: z.string().optional().nullable(),
   posicao: optionalNumberFromInput(),
   visivelMenu: z.boolean().default(true)
