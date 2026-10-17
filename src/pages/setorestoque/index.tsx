@@ -48,7 +48,7 @@ export default function SetoresEstoque() {
         }
     }
 
-    const filtered = list.filter(s => searchHelper(search, `${s.nome} ${s.slug} ${s.id}`))
+    const filtered = list.filter(s => searchHelper(search, `${s.nome} ${s.id}`))
 
     const columns: KRDColumn<ISetorEstoque>[] = [
         {
@@ -61,7 +61,7 @@ export default function SetoresEstoque() {
             width: '48px',
         },
         { name: 'Nome', selector: s => s.nome, sortable: true },
-        { name: 'Identificador (URL)', selector: s => s.slug, sortable: true },
+        { name: 'Código (link)', selector: s => s.id, sortable: true, width: '110px' },
         { name: 'Produtos', selector: s => s.quantidadeProdutos, sortable: true, width: '100px', right: true },
         {
             name: 'Status',

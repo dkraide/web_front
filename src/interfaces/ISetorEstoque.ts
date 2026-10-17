@@ -1,9 +1,9 @@
+import { ISetorProdutoView } from './ISetorPublico'
+
 export default interface ISetorEstoque {
      id: number
      nome: string
      descricao?: string
-     // Identificador na URL publica (unico por empresa)
-     slug: string
      status: boolean
      dataCadastro?: string
      quantidadeProdutos?: number
@@ -11,12 +11,10 @@ export default interface ISetorEstoque {
      produtos?: ISetorEstoqueProduto[]
 }
 
-export interface ISetorEstoqueProduto {
+// Produto dentro do setor (vinculo): inclui o que a vitrine mostra (midias, descricao...).
+export interface ISetorEstoqueProduto extends ISetorProdutoView {
      id: number
-     produtoId: number
      posicao: number
-     nome: string
      cod: number
-     valor: number
      status: boolean
 }

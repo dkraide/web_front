@@ -4,7 +4,7 @@ import { AxiosError } from 'axios'
 import { toast } from 'react-toastify'
 import Switch from 'react-switch'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowUp, faArrowDown, faTrash, faCopy } from '@fortawesome/free-solid-svg-icons'
+import { faArrowUp, faArrowDown, faTrash, faCopy, faEye, faFilm } from '@fortawesome/free-solid-svg-icons'
 import styles from './styles.module.scss'
 import { api } from '@/services/apiClient'
 import { AuthContext } from '@/contexts/AuthContext'
@@ -12,10 +12,16 @@ import { InputGroup } from '@/components/ui/InputGroup'
 import CustomButton from '@/components/ui/Buttons'
 import Loading from '@/components/Loading'
 import SelectProduto from '@/components/Selects/SelectProduto'
+import { StoryViewer } from '@/components/Setor/Vitrine/StoryViewer'
+import { brl, capaDoProduto, slidesDoProduto } from '@/components/Setor/Vitrine/media'
 import IUsuario from '@/interfaces/IUsuario'
 import IProduto from '@/interfaces/IProduto'
 import ISetorEstoque, { ISetorEstoqueProduto } from '@/interfaces/ISetorEstoque'
 import { fGetNumber } from '@/utils/functions'
+
+// Base do link gravado na tag: a vitrine e servida pelo proprio web_front (krdsystem.com).
+// NEXT_PUBLIC_VITRINE_URL permite trocar a base por ambiente.
+const BASE_VITRINE = (process.env.NEXT_PUBLIC_VITRINE_URL ?? 'https://krdsystem.com').replace(/\/$/, '')
 
 export default function EditarSetorEstoque() {
     const router = useRouter()
@@ -24,9 +30,11 @@ export default function EditarSetorEstoque() {
     const [saving, setSaving] = useState(false)
     const [carregado, setCarregado] = useState(false)
 
-    const [setor, setSetor] = useState<ISetorEstoque>({ id: 0, nome: '', descricao: '', slug: '', status: true })
+    const [setor, setSetor] = useState<ISetorEstoque>({ id: 0, nome: '', descricao: '', status: true })
     const [produtos, setProdutos] = useState<ISetorEstoqueProduto[]>([])
     const [selecionado, setSelecionado] = useState<IProduto>()
+    // Indice do produto aberto na previa (null = previa fechada)
+    const [previa, setPrevia] = useState<number | null>(null)
 
     const isEdicao = setor.id > 0
     // O backend confere se a empresa é do usuário logado.
@@ -59,7 +67,7 @@ export default function EditarSetorEstoque() {
         if (!setor.nome.trim()) { toast.error('Informe o nome do setor.'); return }
         setSaving(true)
         try {
-            const body = { nome: setor.nome, descricao: setor.descricao, slug: setor.slug, status: setor.status }
+            const body = { nome: setor.nome, descricao: setor.descricao, status: setor.status }
             if (isEdicao) {
                 await api.put(`/SetorEstoque/${setor.id}${q}`, body)
                 toast.success('Setor atualizado.')
@@ -94,6 +102,7 @@ export default function EditarSetorEstoque() {
     const remover = async (p: ISetorEstoqueProduto) => {
         try {
             await api.delete(`/SetorEstoque/${setor.id}/produto/${p.produtoId}${q}`)
+            setPrevia(null)
             await carregar(setor.id)
         } catch (err) {
             const e = err as AxiosError
@@ -109,6 +118,7 @@ export default function EditarSetorEstoque() {
         nova[index] = nova[j]
         nova[j] = tmp
         setProdutos(nova) // otimista
+        if (previa === index) setPrevia(j)
         try {
             await api.put(`/SetorEstoque/${setor.id}/produto/ordem${q}`, nova.map(p => p.produtoId))
         } catch (err) {
@@ -118,9 +128,8 @@ export default function EditarSetorEstoque() {
         }
     }
 
-    const urlPublica = isEdicao && setor.empresaSlug
-        ? `${api.defaults.baseURL?.replace(/\/$/, '')}/SetorEstoque/publico/${setor.empresaSlug}/${setor.slug}`
-        : ''
+    // Link gravado na tag: slug da loja + id do setor.
+    const urlPublica = isEdicao && setor.empresaSlug ? `${BASE_VITRINE}/vitrine/${setor.empresaSlug}/${setor.id}` : ''
 
     if (!carregado) return <Loading />
 
@@ -128,89 +137,150 @@ export default function EditarSetorEstoque() {
         <div className={styles.container}>
             <h4 className={styles.title}>{isEdicao ? 'Editar setor' : 'Novo setor'}</h4>
 
-            <div className={styles.row}>
-                <InputGroup
-                    width="40%"
-                    title="Nome"
-                    value={setor.nome}
-                    onChange={e => setSetor({ ...setor, nome: e.currentTarget.value })}
-                />
-                <InputGroup
-                    width="30%"
-                    title="Identificador na URL (opcional)"
-                    value={setor.slug}
-                    placeholder="gerado a partir do nome"
-                    onChange={e => setSetor({ ...setor, slug: e.currentTarget.value })}
-                />
-                <div className={styles.switchCell}>
-                    <label>Ativo</label>
-                    <Switch onColor="#fc4f6b" checked={setor.status} onChange={v => setSetor({ ...setor, status: v })} />
-                </div>
-            </div>
-            <div className={styles.row}>
-                <InputGroup
-                    width="100%"
-                    title="Descrição"
-                    value={setor.descricao ?? ''}
-                    onChange={e => setSetor({ ...setor, descricao: e.currentTarget.value })}
-                />
-            </div>
-
-            <div className={styles.buttons}>
-                <CustomButton onClick={salvar} loading={saving}>{isEdicao ? 'Salvar' : 'Cadastrar'}</CustomButton>
-                <CustomButton typeButton="outline-main" onClick={() => router.push('/setorestoque')}>Voltar</CustomButton>
-            </div>
-
-            {isEdicao && (
-                <>
-                    {urlPublica && (
-                        <div className={styles.urlBox}>
-                            <span>Endereço do setor (gravar na tag NFC):</span>
-                            <code>{urlPublica}</code>
-                            <button
-                                type="button"
-                                className={styles.iconBtn}
-                                title="Copiar"
-                                onClick={() => { navigator.clipboard.writeText(urlPublica); toast.success('Copiado!') }}
-                            >
-                                <FontAwesomeIcon icon={faCopy} />
-                            </button>
-                        </div>
-                    )}
-
-                    <div className={styles.sectionTitle}>Produtos do setor</div>
-                    <div className={styles.addRow}>
-                        <SelectProduto
-                            width="420px"
-                            empresaId={user?.empresaSelecionada}
-                            selected={selecionado?.id ?? 0}
-                            setSelected={setSelecionado}
-                            ignore={produtos.map(p => p.produtoId)}
+            <div className={styles.layout}>
+                {/* ── Coluna esquerda: dados + produtos ── */}
+                <div className={styles.main}>
+                    <div className={styles.row}>
+                        <InputGroup
+                            width="60%"
+                            title="Nome"
+                            value={setor.nome}
+                            onChange={e => setSetor({ ...setor, nome: e.currentTarget.value })}
                         />
-                        <CustomButton style={{ height: 40 }} onClick={adicionar}>Adicionar</CustomButton>
+                        <div className={styles.switchCell}>
+                            <label>Ativo</label>
+                            <Switch onColor="#fc4f6b" checked={setor.status} onChange={v => setSetor({ ...setor, status: v })} />
+                        </div>
+                    </div>
+                    <div className={styles.row}>
+                        <InputGroup
+                            width="100%"
+                            title="Descrição"
+                            value={setor.descricao ?? ''}
+                            onChange={e => setSetor({ ...setor, descricao: e.currentTarget.value })}
+                        />
                     </div>
 
-                    {produtos.length === 0 && <p className={styles.vazio}>Nenhum produto neste setor.</p>}
-                    <ol className={styles.lista}>
-                        {produtos.map((p, i) => (
-                            <li key={p.id}>
-                                <span className={styles.pos}>{i + 1}</span>
-                                <span className={styles.nome}>{p.cod} - {p.nome}</span>
-                                <span className={styles.valor}>R$ {p.valor?.toFixed(2)}</span>
-                                <button className={styles.iconBtn} disabled={i === 0} onClick={() => mover(i, -1)} title="Subir">
-                                    <FontAwesomeIcon icon={faArrowUp} />
-                                </button>
-                                <button className={styles.iconBtn} disabled={i === produtos.length - 1} onClick={() => mover(i, 1)} title="Descer">
-                                    <FontAwesomeIcon icon={faArrowDown} />
-                                </button>
-                                <button className={styles.iconBtn} onClick={() => remover(p)} title="Remover do setor">
-                                    <FontAwesomeIcon icon={faTrash} />
-                                </button>
-                            </li>
-                        ))}
-                    </ol>
-                </>
-            )}
+                    <div className={styles.buttons}>
+                        <CustomButton onClick={salvar} loading={saving}>{isEdicao ? 'Salvar' : 'Cadastrar'}</CustomButton>
+                        <CustomButton typeButton="outline-main" onClick={() => router.push('/setorestoque')}>Voltar</CustomButton>
+                    </div>
+
+                    {isEdicao && (
+                        <>
+                            {urlPublica && (
+                                <div className={styles.urlBox}>
+                                    <span>Endereço do setor (gravar na tag NFC):</span>
+                                    <code>{urlPublica}</code>
+                                    <button
+                                        type="button"
+                                        className={styles.iconBtn}
+                                        title="Copiar"
+                                        onClick={() => { navigator.clipboard.writeText(urlPublica); toast.success('Copiado!') }}
+                                    >
+                                        <FontAwesomeIcon icon={faCopy} />
+                                    </button>
+                                </div>
+                            )}
+
+                            <div className={styles.sectionTitle}>Produtos do setor</div>
+                            <div className={styles.addRow}>
+                                <SelectProduto
+                                    width="420px"
+                                    empresaId={user?.empresaSelecionada}
+                                    selected={selecionado?.id ?? 0}
+                                    setSelected={setSelecionado}
+                                    ignore={produtos.map(p => p.produtoId)}
+                                />
+                                <CustomButton style={{ height: 40 }} onClick={adicionar}>Adicionar</CustomButton>
+                            </div>
+
+                            {produtos.length === 0 && <p className={styles.vazio}>Nenhum produto neste setor.</p>}
+                            <ol className={styles.lista}>
+                                {produtos.map((p, i) => {
+                                    const capa = capaDoProduto(p)
+                                    const slides = slidesDoProduto(p)
+                                    return (
+                                        <li
+                                            key={p.id}
+                                            className={`${styles.item} ${previa === i ? styles.itemAtivo : ''} ${p.status ? '' : styles.inativo}`}
+                                            onClick={() => setPrevia(i)}
+                                        >
+                                            <span className={styles.pos}>{i + 1}</span>
+
+                                            <div className={styles.capa}>
+                                                {capa?.tipo === 'VIDEO' ? (
+                                                    <video src={capa.url} muted playsInline preload="metadata" />
+                                                ) : capa ? (
+                                                    <img src={capa.url} alt={p.nome} />
+                                                ) : (
+                                                    <span className={styles.semFoto}>sem foto</span>
+                                                )}
+                                            </div>
+
+                                            <div className={styles.dados}>
+                                                <div className={styles.nome}>
+                                                    <span className={styles.cod}>{p.cod}</span> {p.nome}
+                                                    {!p.status && <span className={styles.tagInativo}>inativo</span>}
+                                                </div>
+                                                <div className={styles.valor}>{brl(p.valor)}</div>
+                                                {slides.length > 0 ? (
+                                                    <div className={styles.midias}>
+                                                        {slides.slice(0, 6).map((s, k) => (
+                                                            <span key={k} className={styles.miniatura}>
+                                                                {s.tipo === 'VIDEO' ? (
+                                                                    <span className={styles.miniVideo}><FontAwesomeIcon icon={faFilm} /></span>
+                                                                ) : (
+                                                                    <img src={s.url} alt="" />
+                                                                )}
+                                                            </span>
+                                                        ))}
+                                                        {slides.length > 6 && <span className={styles.mais}>+{slides.length - 6}</span>}
+                                                    </div>
+                                                ) : (
+                                                    <div className={styles.semMidias}>Sem mídias — cadastre no produto</div>
+                                                )}
+                                            </div>
+
+                                            <div className={styles.acoes} onClick={e => e.stopPropagation()}>
+                                                <button className={styles.iconBtn} onClick={() => setPrevia(i)} title="Pré-visualizar">
+                                                    <FontAwesomeIcon icon={faEye} />
+                                                </button>
+                                                <button className={styles.iconBtn} disabled={i === 0} onClick={() => mover(i, -1)} title="Subir">
+                                                    <FontAwesomeIcon icon={faArrowUp} />
+                                                </button>
+                                                <button className={styles.iconBtn} disabled={i === produtos.length - 1} onClick={() => mover(i, 1)} title="Descer">
+                                                    <FontAwesomeIcon icon={faArrowDown} />
+                                                </button>
+                                                <button className={styles.iconBtn} onClick={() => remover(p)} title="Remover do setor">
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
+                                            </div>
+                                        </li>
+                                    )
+                                })}
+                            </ol>
+                        </>
+                    )}
+                </div>
+
+                {/* ── Coluna direita: prévia (como o cliente vê na tag) ── */}
+                {isEdicao && (
+                    <aside className={styles.previaCol}>
+                        <div className={styles.previaTitulo}>Pré-visualização</div>
+                        <div className={styles.celular}>
+                            {previa !== null && produtos[previa] ? (
+                                <StoryViewer embedded produtos={produtos} inicial={previa} />
+                            ) : (
+                                <div className={styles.previaVazia}>
+                                    <FontAwesomeIcon icon={faEye} />
+                                    Clique em um produto da lista para ver como o cliente verá.
+                                </div>
+                            )}
+                        </div>
+                    </aside>
+                )}
+            </div>
         </div>
     )
 }

@@ -11,6 +11,64 @@
   margin: 0 0 1rem;
 }
 
+// ── Layout em duas colunas: formulário/lista | prévia ───
+.layout {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+.main {
+  flex: 1;
+  min-width: 0;
+}
+
+.previaCol {
+  position: sticky;
+  top: 80px;
+  flex: 0 0 320px;
+}
+
+.previaTitulo {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #9a8d9e;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+// Moldura de celular para a prévia da vitrine
+.celular {
+  position: relative;
+  width: 320px;
+  height: 600px;
+  border-radius: 32px;
+  border: 8px solid #1f1f1f;
+  background: #000;
+  overflow: hidden;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+}
+
+.previaVazia {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 13px;
+
+  svg {
+    font-size: 28px;
+  }
+}
+
 .row {
   display: flex;
   flex-wrap: wrap;
@@ -66,33 +124,151 @@
   color: #999;
 }
 
+// ── Lista de produtos ────────────────────────────────────
 .lista {
   list-style: none;
   padding: 0;
   margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
 
-  li {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 10px;
-    border-bottom: 1px solid #eee;
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #ece7ee;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+  &:hover {
+    border-color: #d9cfe0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   }
 }
 
+.itemAtivo {
+  border-color: var(--main, #fc4f6b);
+  box-shadow: 0 0 0 2px rgba(252, 79, 107, 0.15);
+}
+
+.inativo {
+  opacity: 0.6;
+}
+
 .pos {
-  width: 24px;
+  width: 22px;
+  text-align: center;
   color: #9a8d9e;
   font-size: 12px;
+  font-weight: 600;
+}
+
+.capa {
+  flex: 0 0 64px;
+  height: 96px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f1eef3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  img,
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.semFoto {
+  font-size: 10px;
+  color: #aaa;
+}
+
+.dados {
+  flex: 1;
+  min-width: 0;
 }
 
 .nome {
-  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--dark-900);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cod {
+  color: #9a8d9e;
+  font-weight: 500;
+  margin-right: 4px;
+}
+
+.tagInativo {
+  margin-left: 8px;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 1px 6px;
+  border-radius: 8px;
+  background: #f1f1f1;
+  color: #777;
 }
 
 .valor {
-  color: #64748b;
   font-size: 13px;
+  color: #64748b;
+  margin: 2px 0 6px;
+}
+
+.midias {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.miniatura {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #f1eef3;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.miniVideo {
+  color: #6b5b7a;
+  font-size: 13px;
+}
+
+.mais {
+  font-size: 11px;
+  color: #9a8d9e;
+  margin-left: 2px;
+}
+
+.semMidias {
+  font-size: 11px;
+  color: #b0a6b4;
+}
+
+.acoes {
+  display: flex;
+  gap: 2px;
 }
 
 .iconBtn {
@@ -105,5 +281,16 @@
   &:disabled {
     opacity: 0.25;
     cursor: default;
+  }
+}
+
+@media (max-width: 1100px) {
+  .layout {
+    flex-direction: column;
+  }
+
+  .previaCol {
+    position: static;
+    align-self: center;
   }
 }
