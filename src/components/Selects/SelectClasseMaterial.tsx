@@ -13,9 +13,11 @@ interface selProps{
     width?: string;
     empresaId?: number
     error?: string
+    /** Adiciona a opção "GERAL" (id 0) e não auto-seleciona o primeiro item. */
+    allowAll?: boolean
 }
 
-export  default function SelectClasseMaterial({empresaId, width, selected, setSelected, error}: selProps){
+export  default function SelectClasseMaterial({empresaId, width, selected, setSelected, error, allowAll}: selProps){
     const [formas, setFormas] = useState<IClasseMaterial[]>([]);
     const {getUser} = useContext(AuthContext);
     const loadFormas = async () => {
@@ -23,7 +25,7 @@ export  default function SelectClasseMaterial({empresaId, width, selected, setSe
            api.get(`/ClasseMaterial/List?EmpresaId=${empresaId || res?.empresaSelecionada}`)
            .then(({data}: AxiosResponse) => {
                    setFormas(data);
-                   if (!selected && data.length > 0) {
+                   if (!allowAll && !selected && data.length > 0) {
                        setSelected(data[0]);
                    }
            })
@@ -35,7 +37,7 @@ export  default function SelectClasseMaterial({empresaId, width, selected, setSe
         loadFormas();
     }, []);
     function getData() {
-        var data = [] as any[];
+        var data = (allowAll ? [{ value: '0', label: 'GERAL' }] : []) as any[];
         formas.map((forma) => {
             var x = {
                 value: forma.id.toString(),
@@ -47,6 +49,10 @@ export  default function SelectClasseMaterial({empresaId, width, selected, setSe
     }
 
     function onSelect(value: any) {
+        if (allowAll && value == 0) {
+            setSelected({ id: 0, nomeClasse: 'GERAL' } as IClasseMaterial);
+            return;
+        }
         var index = _.findIndex(formas, p => p.id == value);
         if (index >= 0) {
             setSelected(formas[index]);
