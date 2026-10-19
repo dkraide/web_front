@@ -186,6 +186,7 @@ export default function SideBar({ children, ...props }) {
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
                                     <MenuItem href={'/pdv/formaPagamento'}>Formas de Pagamento</MenuItem>
                                     <MenuItem href={'/pdv/usuario'}>Usuários</MenuItem>
+                                    <MenuItem href={'/tarefas'}>Tarefas programadas</MenuItem>
                                     <MenuItem href={'/pdv/configuracao'}>Configuração</MenuItem>
                                 </SubMenu>
                                 {user.tipoSistema !== 'LOJA_ROUPA' && (

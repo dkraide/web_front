@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext, useEffect, useRef, useState } from 'react'
 import styles from './styles.module.scss'
 import { api } from '@/services/apiClient'
 import { AuthContext } from '@/contexts/AuthContext'
@@ -36,6 +36,12 @@ export default function Produto() {
 
     const [loading, setLoading] = useState(true)
     const [list, setList] = useState<IProduto[]>([])
+    const [total, setTotal] = useState(0)
+    const [page, setPage] = useState(1)
+    const [perPage, setPerPage] = useState(15)
+    const [sort, setSort] = useState<{ key: string; desc: boolean } | null>(null)
+    const [debouncedStr, setDebouncedStr] = useState('')
+    const reqId = useRef(0)
     const [user, setUser] = useState<IUsuario>()
     const [modalIa, setModalIa] = useState(false)
     const [search, setSearch] = useState<SearchProps>({
@@ -47,10 +53,8 @@ export default function Produto() {
 
     // Filtros opcionais (opt-in): so aplicam quando o respectivo checkbox esta ligado,
     // preservando o comportamento padrao de listar todos os produtos.
-    const [filtrarClasse, setFiltrarClasse] = useState(false)
     const [filtroClasse, setFiltroClasse] = useState<IClasseMaterial>()
-    const [filtrarStatus, setFiltrarStatus] = useState(false)
-    const [filtroStatus, setFiltroStatus] = useState(true)
+    const [filtroStatus, setFiltroStatus] = useState<boolean | undefined>(undefined)
 
     const { innerWidth } = useWindowSize()
     const mobile = !!innerWidth && innerWidth < 600
@@ -62,11 +66,31 @@ export default function Produto() {
     const isLojaRoupa = tipoSistema === 'LOJA_ROUPA'
 
     useEffect(() => {
-        loadData()
         if (router.isReady && router.query?.query) {
             setSearch(prev => ({ ...prev, str: router.query.query as string }))
         }
     }, [router.isReady])
+
+    // Debounce da busca para nao disparar uma requisicao por tecla.
+    useEffect(() => {
+        const t = setTimeout(() => setDebouncedStr(search.str), 350)
+        return () => clearTimeout(t)
+    }, [search.str])
+
+    // Qualquer mudanca de filtro volta para a primeira pagina.
+    useEffect(() => { setPage(1) }, [debouncedStr, filtroClasse, filtroStatus, mobile])
+
+    useEffect(() => {
+        if (!router.isReady) return
+        loadData()
+    }, [router.isReady, page, perPage, sort, debouncedStr, filtroClasse, filtroStatus, mobile])
+
+    const buildFilters = () => {
+        const params: Record<string, string | number | boolean> = {}
+        if (filtroClasse && filtroClasse.id > 0) params.classeId = filtroClasse.id
+        if (filtroStatus !== undefined) params.status = filtroStatus
+        return params
+    }
 
     const loadData = async () => {
         let u = user
@@ -75,26 +99,39 @@ export default function Produto() {
             setUser(res)
             u = res
         }
+        const id = ++reqId.current
+        setLoading(true)
         try {
-            const { data } = await api.get<IProduto[]>(
-                `/Produto/List?empresaId=${u.empresaSelecionada}`
-            )
-            setList(data)
+            if (mobile) {
+                // Layout mobile agrupa por classe e precisa da lista completa.
+                const { data } = await api.get<IProduto[]>('/Produto/List', {
+                    params: { empresaId: u.empresaSelecionada, ...buildFilters() },
+                })
+                if (id !== reqId.current) return
+                setList(data)
+                setTotal(data.length)
+            } else {
+                const { data } = await api.get<{ items: IProduto[]; total: number }>('/Produto/ListPaged', {
+                    params: {
+                        empresaId: u.empresaSelecionada,
+                        page,
+                        pageSize: perPage,
+                        search: debouncedStr || undefined,
+                        sort: sort?.key,
+                        desc: sort?.desc ?? false,
+                        ...buildFilters(),
+                    },
+                })
+                if (id !== reqId.current) return
+                setList(data.items)
+                setTotal(data.total)
+            }
         } catch (err) {
             const e = err as AxiosError
             toast.error(`Erro ao carregar dados. ${e.response?.data || e.message}`)
         } finally {
-            setLoading(false)
+            if (id === reqId.current) setLoading(false)
         }
-    }
-
-    function getFiltered() {
-        return list.filter(p => {
-            if (!searchHelper(search.str, `${p.nome} ${p.cod} ${p.id}`)) return false
-            if (filtrarClasse && filtroClasse && p.classeMaterialId !== filtroClasse.id) return false
-            if (filtrarStatus && p.status !== filtroStatus) return false
-            return true
-        })
     }
 
     const handleEdit = (produto: IProduto) => {
@@ -121,7 +158,19 @@ export default function Produto() {
         }
     }
 
-    const handleExcel = () => {
+    const handleExcel = async () => {
+        if (!user) return
+        let all: IProduto[] = []
+        try {
+            const { data } = await api.get<IProduto[]>('/Produto/List', {
+                params: { empresaId: user.empresaSelecionada, ...buildFilters() },
+            })
+            all = data.filter(p => searchHelper(search.str, `${p.nome} ${p.cod} ${p.id}`))
+        } catch (err) {
+            const e = err as AxiosError
+            toast.error(`Erro ao exportar. ${e.response?.data || e.message}`)
+            return
+        }
         const cols = [
             { label: 'Cod', key: 'cod' },
             { label: 'Nome', key: 'nome' },
@@ -132,7 +181,7 @@ export default function Produto() {
             { label: 'Lucro', key: 'lucro' },
             { label: 'Markup', key: 'markup' },
         ]
-        const data = getFiltered().map(p => ({
+        const data = all.map(p => ({
             cod: p.cod,
             nome: p.nome,
             quantidade: p.quantidade,
@@ -173,12 +222,14 @@ export default function Produto() {
             name: 'Cód',
             selector: row => row.cod,
             sortable: true,
+            sortKey: 'cod',
             width: '70px',
         },
         {
             name: 'Nome',
             selector: row => row.nome,
             sortable: true,
+            sortKey: 'nome',
         },
         {
             name: 'Estoque',
@@ -192,6 +243,7 @@ export default function Produto() {
                 </button>
             ),
             sortable: true,
+            sortKey: 'quantidade',
             width: '80px',
             right: true,
         },
@@ -200,6 +252,7 @@ export default function Produto() {
             selector: row => row.valorCompra,
             cell: row => `R$ ${row.valorCompra?.toFixed(2)}`,
             sortable: true,
+            sortKey: 'valorCompra',
             right: true,
         },
         {
@@ -207,6 +260,7 @@ export default function Produto() {
             selector: row => row.valor,
             cell: row => `R$ ${row.valor?.toFixed(2)}`,
             sortable: true,
+            sortKey: 'valor',
             right: true,
         },
         {
@@ -218,6 +272,7 @@ export default function Produto() {
                 </span>
             ),
             sortable: true,
+            sortKey: 'status',
             width: '80px',
         },
         {
@@ -232,6 +287,7 @@ export default function Produto() {
                 )
             },
             sortable: true,
+            sortKey: 'lucro',
             right: true,
         },
         {
@@ -242,6 +298,7 @@ export default function Produto() {
                 return <span className={styles.badgeNeutro}>{mk.toFixed(1)}%</span>
             },
             sortable: true,
+            sortKey: 'markup',
             right: true,
         },
     ]
@@ -315,64 +372,45 @@ export default function Produto() {
                         onChange={e => setSearch(prev => ({ ...prev, str: e.target.value }))}
                     />
                 </div>
+                <div className={styles.filterControl}>
+                    <SelectClasseMaterial
+                        allowAll
+                        width="220px"
+                        empresaId={user?.empresaSelecionada}
+                        selected={filtroClasse?.id ?? 0}
+                        setSelected={c => setFiltroClasse(c)}
+                    />
+                </div>
+                <div className={styles.filterControl}>
+                    <SelectStatus
+                        allowAll
+                        width="160px"
+                        selected={filtroStatus}
+                        setSelected={s => setFiltroStatus(s)}
+                    />
+                </div>
                 {!loading && (
                     <span className={styles.counter}>
-                        {getFiltered().length} produto{getFiltered().length !== 1 ? 's' : ''}
+                        {total} produto{total !== 1 ? 's' : ''}
                     </span>
                 )}
-            </div>
-
-            {/* Filtros opcionais */}
-            <div className={styles.filterBar}>
-                <div className={styles.filterItem}>
-                    <label className={styles.filterToggle}>
-                        <input
-                            type="checkbox"
-                            checked={filtrarClasse}
-                            onChange={e => setFiltrarClasse(e.target.checked)}
-                        />
-                        Filtrar por grupo
-                    </label>
-                    {filtrarClasse && (
-                        <div className={styles.filterControl}>
-                            <SelectClasseMaterial
-                                width="220px"
-                                empresaId={user?.empresaSelecionada}
-                                selected={filtroClasse?.id ?? 0}
-                                setSelected={c => setFiltroClasse(c)}
-                            />
-                        </div>
-                    )}
-                </div>
-
-                <div className={styles.filterItem}>
-                    <label className={styles.filterToggle}>
-                        <input
-                            type="checkbox"
-                            checked={filtrarStatus}
-                            onChange={e => setFiltrarStatus(e.target.checked)}
-                        />
-                        Filtrar por status
-                    </label>
-                    {filtrarStatus && (
-                        <div className={styles.filterControl}>
-                            <SelectStatus
-                                width="160px"
-                                selected={filtroStatus}
-                                setSelected={s => setFiltroStatus(s)}
-                            />
-                        </div>
-                    )}
-                </div>
             </div>
 
             <hr className={styles.divider} />
 
             <KRDTable<IProduto>
                 columns={columns}
-                data={getFiltered()}
+                data={list}
                 loading={loading}
-                paginationPerPage={15}
+                serverSide={{
+                    total,
+                    page,
+                    perPage,
+                    sort,
+                    onPageChange: setPage,
+                    onPerPageChange: setPerPage,
+                    onSortChange: setSort,
+                }}
             />
 
             {/* Modals */}

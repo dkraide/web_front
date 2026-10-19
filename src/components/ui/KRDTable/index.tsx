@@ -12,6 +12,18 @@ interface KRDTableProps<T = unknown> {
   handleChangeSelected?: (data: T[]) => void
   expandableComponent?: (row: T) => ReactNode
   emptyMessage?: string
+  /** Paginação/ordenação no servidor: `data` já é apenas a página atual. */
+  serverSide?: KRDServerSide
+}
+
+export interface KRDServerSide {
+  total: number
+  page: number
+  perPage: number
+  sort?: { key: string; desc: boolean } | null
+  onPageChange: (page: number) => void
+  onPerPageChange: (perPage: number) => void
+  onSortChange: (sort: { key: string; desc: boolean } | null) => void
 }
 
 export interface KRDColumn<T = unknown> {
@@ -19,11 +31,13 @@ export interface KRDColumn<T = unknown> {
   selector?: (row: T) => string | number
   cell?: (row: T) => ReactNode
   sortable?: boolean
+  /** Chave de ordenação enviada ao servidor (modo serverSide). */
+  sortKey?: string
   width?: string
   right?: boolean
 }
 
-const PAGE_OPTIONS = [5, 10, 15, 20, 25, 35, 50]
+const PAGE_OPTIONS = [5, 10, 15, 20, 25, 35, 50, 100]
 
 export default function KRDTable<T = unknown>({
   columns,
@@ -35,16 +49,24 @@ export default function KRDTable<T = unknown>({
   handleChangeSelected,
   expandableComponent,
   emptyMessage = "Sem itens para serem exibidos.",
+  serverSide,
 }: KRDTableProps<T>) {
-  const [currentPage, setCurrentPage]       = useState(1)
-  const [perPage, setPerPage]               = useState(paginationPerPage)
+  const [localPage, setLocalPage]           = useState(1)
+  const [localPerPage, setLocalPerPage]     = useState(paginationPerPage)
+  const currentPage = serverSide ? serverSide.page : localPage
+  const perPage     = serverSide ? serverSide.perPage : localPerPage
+  const setCurrentPage = (v: number | ((p: number) => number)) => {
+    const next = typeof v === "function" ? v(currentPage) : v
+    if (serverSide) serverSide.onPageChange(next)
+    else setLocalPage(next)
+  }
   const [selectedRows, setSelectedRows]     = useState<Set<number>>(new Set())
   const [expandedRows, setExpandedRows]     = useState<Set<number>>(new Set())
   const [sortConfig, setSortConfig]         = useState<{ col: number; dir: "asc" | "desc" } | null>(null)
   const [selectAll, setSelectAll]           = useState(false)
 
   const sorted = useMemo(() => {
-    if (!sortConfig) return data
+    if (serverSide || !sortConfig) return data
     const col = columns[sortConfig.col]
     if (!col?.selector) return data
     return [...data].sort((a, b) => {
@@ -54,15 +76,26 @@ export default function KRDTable<T = unknown>({
       if (va > vb) return sortConfig.dir === "asc" ? 1 : -1
       return 0
     })
-  }, [data, sortConfig, columns])
+  }, [data, sortConfig, columns, serverSide])
 
-  const totalPages = Math.ceil(sorted.length / perPage)
-  const pageData   = pagination
+  const totalRows  = serverSide ? serverSide.total : sorted.length
+  const totalPages = Math.ceil(totalRows / perPage)
+  const pageData   = pagination && !serverSide
     ? sorted.slice((currentPage - 1) * perPage, currentPage * perPage)
     : sorted
 
   function toggleSort(idx: number) {
     if (!columns[idx]?.sortable) return
+    if (serverSide) {
+      const key = columns[idx].sortKey
+      if (!key) return
+      const cur = serverSide.sort
+      serverSide.onSortChange(
+        cur?.key !== key ? { key, desc: false } : cur.desc ? null : { key, desc: true }
+      )
+      serverSide.onPageChange(1)
+      return
+    }
     setSortConfig(prev =>
       prev?.col === idx
         ? { col: idx, dir: prev.dir === "asc" ? "desc" : "asc" }
@@ -102,8 +135,13 @@ export default function KRDTable<T = unknown>({
   }
 
   function handlePerPage(val: number) {
-    setPerPage(val)
-    setCurrentPage(1)
+    if (serverSide) {
+      serverSide.onPerPageChange(val)
+      serverSide.onPageChange(1)
+      return
+    }
+    setLocalPerPage(val)
+    setLocalPage(1)
   }
 
   const globalIdx = (localIdx: number) => (currentPage - 1) * perPage + localIdx
@@ -143,9 +181,13 @@ export default function KRDTable<T = unknown>({
                   {col.name}
                   {col.sortable && (
                     <span className={styles.sortIcon}>
-                      {sortConfig?.col === i
-                        ? sortConfig.dir === "asc" ? "↑" : "↓"
-                        : "↕"}
+                      {serverSide
+                        ? serverSide.sort?.key === col.sortKey
+                          ? serverSide.sort?.desc ? "↓" : "↑"
+                          : "↕"
+                        : sortConfig?.col === i
+                          ? sortConfig.dir === "asc" ? "↑" : "↓"
+                          : "↕"}
                     </span>
                   )}
                 </th>
@@ -239,7 +281,7 @@ export default function KRDTable<T = unknown>({
               ))}
             </select>
             <span className={styles.footerLabel}>
-              {sorted.length === 0 ? "0" : `${(currentPage - 1) * perPage + 1}–${Math.min(currentPage * perPage, sorted.length)}`} de {sorted.length}
+              {totalRows === 0 ? "0" : `${(currentPage - 1) * perPage + 1}–${Math.min(currentPage * perPage, totalRows)}`} de {totalRows}
             </span>
           </div>
 
