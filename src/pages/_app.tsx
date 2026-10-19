@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import SideBar from '@/components/ui/SideBar';
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router';
+import AnuncioIfood from '@/components/Modals/AnuncioIfood';
 
 export default function App({ Component, pageProps }: AppProps) {
       const router = useRouter();
@@ -18,6 +19,7 @@ export default function App({ Component, pageProps }: AppProps) {
               <SideBar>
                   <Component {...pageProps} />
                   <ToastContainer autoClose={3000} theme={'dark'}/>
+                  <AnuncioIfood />
               </SideBar>
             </AuthProvider>
       );
