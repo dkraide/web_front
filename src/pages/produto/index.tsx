@@ -294,6 +294,10 @@ export default function Produto() {
                         <FontAwesomeIcon icon={faSlidersH} />
                         Ajuste massa
                     </button>
+                    <button className={styles.actionBtn} onClick={() => router.push('/produto/importar')}>
+                        <FontAwesomeIcon icon={faFileExcel} />
+                        Importar planilha
+                    </button>
                     <button className={styles.actionBtn} onClick={handleExcel}>
                         <FontAwesomeIcon icon={faFileExcel} />
                         Excel
