@@ -1,0 +1,175 @@
+.container {
+    min-height: 100vh;
+    padding: calc(4rem + 40px) 20px 48px; // 4rem = navbar fixa
+    background: linear-gradient(160deg, #1e1e2f 0%, #2d2d44 100%);
+    color: #fff;
+    font-family: 'Poppins', sans-serif;
+}
+
+.content {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.hero {
+    text-align: center;
+    margin-bottom: 28px;
+
+    h1 { font-size: 2rem; font-weight: 700; margin: 0 0 8px; }
+    p { opacity: 0.85; margin: 0; }
+}
+
+.search {
+    position: relative;
+    max-width: 640px;
+    margin: 20px auto 0;
+
+    svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); opacity: 0.6; }
+
+    input {
+        width: 100%;
+        padding: 14px 16px 14px 44px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        font-size: 1rem;
+        outline: none;
+
+        &::placeholder { color: rgba(255, 255, 255, 0.5); }
+        &:focus { border-color: #6c8cff; background: rgba(255, 255, 255, 0.12); }
+    }
+}
+
+.chips {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin: 20px 0 32px;
+}
+
+.chip {
+    padding: 6px 14px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: #fff;
+    font-size: 0.9rem;
+    cursor: pointer;
+
+    small { opacity: 0.6; margin-left: 4px; }
+    &:hover { background: rgba(255, 255, 255, 0.1); }
+}
+
+.chipAtivo {
+    background: #6c8cff;
+    border-color: #6c8cff;
+    color: #0f1020;
+    font-weight: 600;
+
+    small { opacity: 0.8; }
+}
+
+.sistema {
+    margin-bottom: 36px;
+
+    h2 { font-size: 1.3rem; margin: 0 0 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(255, 255, 255, 0.12); }
+}
+
+.modulos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.modulo {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 16px;
+
+    h3 { font-size: 1rem; margin: 0 0 10px; color: #9db4ff; }
+}
+
+.lista { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+
+.item {
+    display: block;
+    padding: 8px 10px;
+    border-radius: 8px;
+    color: #fff;
+    text-decoration: none;
+
+    &:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+    strong { display: flex; align-items: center; gap: 8px; font-weight: 500; font-size: 0.95rem; }
+    span { display: block; font-size: 0.8rem; opacity: 0.65; margin-top: 2px; }
+    svg { flex: none; color: #6c8cff; }
+}
+
+.vazio { text-align: center; opacity: 0.7; padding: 48px 0; }
+
+// ---------- página do tutorial ----------
+.detalhe {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 28px;
+    align-items: start;
+
+    @media (max-width: 900px) { grid-template-columns: 1fr; }
+}
+
+.crumbs {
+    font-size: 0.85rem;
+    opacity: 0.75;
+    margin-bottom: 14px;
+
+    a { color: #9db4ff; text-decoration: none; &:hover { text-decoration: underline; } }
+}
+
+.artigo {
+    background: #fff;
+    color: #1f2230;
+    border-radius: 16px;
+    padding: 28px;
+
+    h1 { font-size: 1.8rem; margin: 0 0 8px; }
+}
+
+.resumo { color: #5b6073; margin: 0 0 20px; }
+
+.video {
+    position: relative;
+    padding-top: 56.25%;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #000;
+    margin-bottom: 24px;
+
+    iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+}
+
+.corpo {
+    line-height: 1.7;
+
+    h2 { font-size: 1.4rem; margin: 28px 0 10px; }
+    h3 { font-size: 1.15rem; margin: 22px 0 8px; }
+    img { max-width: 100%; height: auto; border-radius: 8px; margin: 12px 0; }
+    iframe { max-width: 100%; }
+    ol, ul { padding-left: 1.4rem; }
+    li { margin-bottom: 6px; }
+    blockquote { border-left: 4px solid #6c8cff; background: #f2f5ff; margin: 16px 0; padding: 12px 16px; border-radius: 0 8px 8px 0; }
+    a { color: #3d5fe0; }
+}
+
+.lateral {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    padding: 16px;
+
+    h3 { font-size: 0.95rem; margin: 0 0 10px; color: #9db4ff; }
+}
+
+.atual { background: rgba(108, 140, 255, 0.25); }
