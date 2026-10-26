@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { FaPlayCircle, FaRegFileAlt } from 'react-icons/fa';
-import Header from '@/components/LandingPage/Header';
+import { FaPlayCircle, FaRegFileAlt, FaArrowLeft } from 'react-icons/fa';
+import TutoriaisTopBar from '@/components/TutoriaisTopBar';
 import {
     Tutorial, TutorialResumo, listarTutoriais, nomeSistema, obterTutorial, urlEmbedYoutube,
 } from '@/services/tutorialService';
@@ -39,7 +39,7 @@ export default function TutorialPagina() {
                 {tutorial?.resumo && <meta name="description" content={tutorial.resumo} />}
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
             </Head>
-            <Header />
+            <TutoriaisTopBar />
             <div className={styles.container}>
                 <div className={styles.content}>
                     {erro && (
@@ -52,7 +52,10 @@ export default function TutorialPagina() {
                     {tutorial && (
                         <>
                             <div className={styles.crumbs}>
-                                <Link href="/tutoriais">Tutoriais</Link> › {nomeSistema(tutorial.sistema)} › {tutorial.modulo}
+                                <Link href="/tutoriais" className={styles.voltar}><FaArrowLeft /> Voltar</Link>
+                                <span>
+                                    <Link href="/tutoriais">Tutoriais</Link> › {nomeSistema(tutorial.sistema)} › {tutorial.modulo}
+                                </span>
                             </div>
                             <div className={styles.detalhe}>
                                 <article className={styles.artigo}>
