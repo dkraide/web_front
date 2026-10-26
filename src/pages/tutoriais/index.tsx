@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { FaPlayCircle, FaRegFileAlt, FaSearch } from 'react-icons/fa';
-import Header from '@/components/LandingPage/Header';
+import TutoriaisTopBar from '@/components/TutoriaisTopBar';
 import { TutorialResumo, listarTutoriais, nomeSistema, normalizar } from '@/services/tutorialService';
 import styles from './styles.module.scss';
 
@@ -55,7 +55,7 @@ export default function Tutoriais() {
                 <meta name="description" content="Aprenda a usar o KRD System com tutoriais em vídeo e passo a passo, organizados por sistema e módulo." />
                 <meta name="viewport" content="width=device-width, initial-scale=1" />
             </Head>
-            <Header />
+            <TutoriaisTopBar />
             <div className={styles.container}>
                 <div className={styles.content}>
                     <div className={styles.hero}>
