@@ -1,19 +1,17 @@
-import { useContext, useEffect, useState } from 'react';
+﻿import { useContext, useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import { api } from '@/services/apiClient';
 import { AuthContext } from '@/contexts/AuthContext';
 import { AxiosError, AxiosResponse } from 'axios';
 import { InputGroup } from '@/components/ui/InputGroup';
-import CustomTable from '@/components/ui/CustomTable';
+import KRDTable, { KRDColumn } from '@/components/ui/KRDTable';
 import { toast } from 'react-toastify';
-import CustomButton from '@/components/ui/Buttons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faPlus, faFileExcel, faWandMagicSparkles, faSearch } from '@fortawesome/free-solid-svg-icons';
 import IUsuario from '@/interfaces/IUsuario';
 import IDespesa from '@/interfaces/IDespesa';
 import { compareAsc, endOfMonth, format, startOfMonth } from 'date-fns';
 import DespesaForm from '@/components/Modals/Financeiro/DespesaForm';
-import { Badge } from 'react-bootstrap';
 import BoxInfo from '@/components/ui/BoxInfo';
 import _ from 'lodash';
 import SelectStatusLancamento from '@/components/Selects/SelectStatusLancamento';
@@ -70,7 +68,7 @@ export default function Despesa() {
     }, [])
 
     function getHeaders() {
-        [
+        return [
             { label: "Descricao", key: "descricao" },
             { label: "vencimento", key: "dataVencimento" },
             { label: "Valor", key: "valorTotal" },
@@ -110,68 +108,73 @@ export default function Despesa() {
         setLoading(false);
     }
 
-    const columns = [
+    const columns: KRDColumn<IDespesa>[] = [
+        {
+            name: '',
+            cell: ({ id }) => (
+                <div className={styles.rowActions}>
+                    <button className={styles.editBtn} title="Editar" onClick={() => setEdit(id)}>
+                        <FontAwesomeIcon icon={faEdit} />
+                    </button>
+                    <button className={`${styles.editBtn} ${styles.deleteBtn}`} title="Remover" onClick={() => setDeletar(id)}>
+                        <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                </div>
+            ),
+            width: '90px',
+        },
         {
             name: '#',
             selector: row => row.id,
-            cell: ({ id }: IDespesa) =>
-                <>
-                    <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>
-                    <CustomButton onClick={() => { setDeletar(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faTrash} /></CustomButton>
-                </>,
             sortable: true,
-            width: '10%',
+            width: '70px',
         },
         {
             name: 'Local',
             selector: row => row['idDespesa'] > 0 ? 'SIM' : 'NAO',
             sortable: true,
-            width: '5%',
+            width: '70px',
         },
         {
             name: 'Tipo',
             selector: row => row['tipoDespesa'],
             sortable: true,
-            width: '15%',
         },
         {
-            name: 'Descricao',
-            selector: (row: IDespesa) => row.descricao,
-            cell: (row: IDespesa) => (row.motivoLancamento?.nome || row.descricao).toString(),
+            name: 'Descrição',
+            selector: row => row.descricao,
+            cell: row => (row.motivoLancamento?.nome || row.descricao || '').toString(),
             sortable: true,
-            width: '30%',
         },
         {
-            name: 'Lancamento',
-            selector: row => row.dataLancamento,
+            name: 'Lançamento',
+            selector: row => String(row.dataLancamento),
             cell: row => format(new Date(row.dataLancamento || new Date()), 'dd/MM/yyyy'),
             sortable: true,
-            width: '10%',
         },
         {
             name: 'Vencimento',
-            selector: row => row.dataVencimento,
+            selector: row => String(row.dataVencimento),
             cell: row => format(new Date(row.dataVencimento || new Date()), 'dd/MM/yyyy'),
             sortable: true,
-            width: '10%',
         },
         {
             name: 'Valor',
             selector: row => row.valorTotal,
-            cell: (row: IDespesa) => GetCurrencyBRL(row.valorTotal),
+            cell: row => GetCurrencyBRL(row.valorTotal),
             sortable: true,
-            width: '10%',
+            right: true,
         },
         {
             name: 'Status',
-            selector: row => row.statusLancamento,
-            cell: (row: IDespesa) => <StatusBadge dataVencimento={row.dataVencimento} statusLancamento={row.statusLancamento} />,
+            selector: row => row.statusLancamento ? 1 : 0,
+            cell: row => <StatusBadge dataVencimento={row.dataVencimento} statusLancamento={row.statusLancamento} />,
             sortable: true,
-            width: '10%',
-        }
+            width: '110px',
+        },
     ]
 
- 
+
     const Item = (item: IDespesa) => {
 
         function getStatus(vencimento, status){
@@ -193,56 +196,82 @@ export default function Despesa() {
         )
     }
 
-    if (loading) {
-        return <></>
-    }
+    const emAberto = _.sumBy(list, p => (new Date(p.dataVencimento) < new Date() || p.statusLancamento) ? 0 : p.valorTotal)
+    const pago = _.sumBy(list, p => p.statusLancamento ? p.valorTotal : 0)
+    const vencido = _.sumBy(list, p => (new Date(p.dataVencimento) < new Date() && !p.statusLancamento) ? p.valorTotal : 0)
+    const filtered = getFiltered()
 
     return (
         <div className={styles.container}>
-            <h4>Despesas</h4>
-            <div className={styles.boxSearch}>
-                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Inicio'} width={'20%'} />
-                <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} width={'20%'} />
-                <SelectStatusLancamento width={'30%'} selected={search?.status || 0} setSelected={(v) => { setSearch({ ...search, status: v }) }} />
-                <CustomButton style={{ height: '40px', marginLeft: 10, marginTop: '14px' }} typeButton={'dark'} onClick={loadData}>Pesquisar</CustomButton>
-            </div>
-            <div className={isMobile ? styles.boxSearch : ''}>
-                <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Nova {isMobile && <br />}Despesa</CustomButton>
-                <CustomButton typeButton={'dark'}><CSVLink data={getDataCsv()} headers={getHeaders()} filename={"relatorio_despesa.csv"}>
-                    Download Planilha
-                </CSVLink></CustomButton>
-                <CustomButton typeButton={'dark'} onClick={() => { setDespesaForma(1) }}>
-                    Gerar Despesa por Forma
-                </CustomButton>
-            </div>
-            <div className={isMobile ? styles.box : styles.boxSearch} style={isMobile ? {} : {justifyContent: 'flex-start'}}>
-                <BoxInfo style={{ marginRight: '10px' }} title={'Geral'} value={GetCurrencyBRL(_.sumBy(list, p => p.valorTotal))} />
-                <BoxInfo style={{ marginRight: '10px' }} title={'Em Aberto'} value={GetCurrencyBRL(_.sumBy(list, p => {
-                    if (new Date(p.dataVencimento) < new Date || p.statusLancamento) {
-                        return 0
-                    }
-                    return p.valorTotal;
-                }))} />
-                <BoxInfo style={{ marginRight: '10px' }} title={'Pago'} value={GetCurrencyBRL(_.sumBy(list, p => p.statusLancamento ? p.valorTotal : 0))} />
-                <BoxInfo style={{ marginRight: '10px' }} title={'Vencido'} value={GetCurrencyBRL(_.sumBy(list, p => {
-                    if (new Date(p.dataVencimento) < new Date && !p.statusLancamento) {
-                        return p.valorTotal
-                    }
-                    return 0;
-                }))} />
 
+            {/* Header */}
+            <div className={styles.header}>
+                <h4 className={styles.title}>Despesas</h4>
+                <div className={styles.headerActions}>
+                    <button className={styles.actionBtn} onClick={() => { setEdit(0) }}>
+                        <FontAwesomeIcon icon={faPlus} />
+                        Nova despesa
+                    </button>
+                    <button className={styles.actionBtn} onClick={() => { setDespesaForma(1) }}>
+                        <FontAwesomeIcon icon={faWandMagicSparkles} />
+                        Gerar despesa por forma
+                    </button>
+                    <CSVLink className={styles.actionBtn} data={getDataCsv()} headers={getHeaders()} filename={"relatorio_despesa.csv"}>
+                        <FontAwesomeIcon icon={faFileExcel} />
+                        Planilha
+                    </CSVLink>
+                </div>
             </div>
-            <InputGroup width={'100%'} placeholder={'Filtro'} title={'Pesquisar'} value={search?.filter || ''} onChange={(e) => { setSearch({ ...search, filter: e.target.value }) }} />
-            <hr />
+
+            {/* Resumo */}
+            <div className={styles.stats}>
+                <BoxInfo title={'Geral'} value={GetCurrencyBRL(_.sumBy(list, p => p.valorTotal))} />
+                <BoxInfo title={'Em Aberto'} value={GetCurrencyBRL(emAberto)} />
+                <BoxInfo title={'Pago'} value={GetCurrencyBRL(pago)} />
+                <BoxInfo title={'Vencido'} value={GetCurrencyBRL(vencido)} />
+            </div>
+
+            {/* Filtros + busca */}
+            <div className={styles.searchBar}>
+                <div className={styles.filterControl}>
+                    <InputGroup type={'date'} value={search?.dateIn || ''} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Início'} />
+                </div>
+                <div className={styles.filterControl}>
+                    <InputGroup type={'date'} value={search?.dateFim || ''} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} />
+                </div>
+                <div className={styles.filterControl}>
+                    <SelectStatusLancamento width={'200px'} selected={search?.status || 0} setSelected={(v) => { setSearch({ ...search, status: v }) }} />
+                </div>
+                <button className={styles.actionBtn} style={{ height: 38 }} onClick={loadData}>
+                    <FontAwesomeIcon icon={faSearch} />
+                    Pesquisar
+                </button>
+                <div className={styles.searchInput}>
+                    <InputGroup
+                        placeholder="Filtrar por descrição ou código..."
+                        title=""
+                        value={search?.filter || ''}
+                        onChange={(e) => { setSearch({ ...search, filter: e.target.value }) }}
+                    />
+                </div>
+                {!loading && (
+                    <span className={styles.counter}>
+                        {filtered.length} despesa{filtered.length !== 1 ? 's' : ''}
+                    </span>
+                )}
+            </div>
+
+            <hr className={styles.divider} />
+
             {isMobile ? <>
-            {getFiltered()?.map((item) => Item(item))}
-            </> : <>
-                <CustomTable
+                {filtered.map((item) => Item(item))}
+            </> : (
+                <KRDTable<IDespesa>
                     columns={columns}
-                    data={getFiltered()}
+                    data={filtered}
                     loading={loading}
                 />
-            </>}
+            )}
 
             {(edit >= 0) && <DespesaForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
                 if (v) {
@@ -270,10 +299,10 @@ export default function Despesa() {
 
 const StatusBadge = ({ dataVencimento, statusLancamento }) => {
     if (statusLancamento) {
-        return <Badge style={{ padding: '7px', fontSize: '12px' }} bg={'success'}>PAGO</Badge>
+        return <span className={styles.badgeSuccess}>PAGO</span>
     }
     if (new Date(dataVencimento) < new Date()) {
-        return <Badge style={{ padding: '7px', fontSize: '12px' }} bg={'danger'}>VENCIDO</Badge>
+        return <span className={styles.badgeDanger}>VENCIDO</span>
     }
-    return <Badge style={{ padding: '7px', fontSize: '12px' }} bg={'primary'}>EM ABERTO</Badge>
+    return <span className={styles.badgeNeutro}>EM ABERTO</span>
 }
