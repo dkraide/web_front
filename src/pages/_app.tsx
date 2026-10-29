@@ -7,6 +7,7 @@ import SideBar from '@/components/ui/SideBar';
 import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router';
 import AnuncioIfood from '@/components/Modals/AnuncioIfood';
+import AnuncioTef from '@/components/Modals/AnuncioTef';
 
 export default function App({ Component, pageProps }: AppProps) {
       const router = useRouter();
@@ -20,6 +21,7 @@ export default function App({ Component, pageProps }: AppProps) {
                   <Component {...pageProps} />
                   <ToastContainer autoClose={3000} theme={'dark'}/>
                   <AnuncioIfood />
+                  <AnuncioTef />
               </SideBar>
             </AuthProvider>
       );

@@ -14,6 +14,7 @@ import Image from 'next/image';
 import { useWindowSize } from 'rooks';
 import { Badge } from 'react-bootstrap';
 import EdnaChat from '@/components/EdnaChat';
+import NotificacoesBell from '@/components/NotificacoesBell';
 
 export default function SideBar({ children, ...props }) {
 
@@ -91,6 +92,7 @@ export default function SideBar({ children, ...props }) {
                     }} />
                 </div>
                 <div hidden={innerWidth <= 700} style={{ justifyContent: 'flex-end', marginRight: '10px', display: 'flex', flexDirection: 'row' }}>
+                    <NotificacoesBell />
                     <span style={{ marginRight: '10px' }}>Bem Vindo, <br /><b><a href={'/me'}>{user.nome}</a></b></span>
                     <a className={styles["menu-btn"]} onClick={signOut}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
                 </div>
@@ -207,6 +209,7 @@ export default function SideBar({ children, ...props }) {
                                     </SubMenu>
                                 )}
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faComments} color={'var(--main)'} />} label="Integrações">
+                                    <MenuItem href={'/novidades'}>Novidades {bgNew()}</MenuItem>
                                     <MenuItem href={'/whatsapp'}>WhatsApp {bgNew()}</MenuItem>
                                   {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem href={'/ifood'}>IFood {bgNew()}</MenuItem> } 
                                   {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem href={'/food99'}>99Food {bgNew()}</MenuItem> } 
