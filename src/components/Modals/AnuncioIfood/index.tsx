@@ -24,14 +24,21 @@ export default function AnuncioIfood() {
         if (router.pathname.startsWith('/login') || router.pathname === '/') return
 
         setAberto(true)
+        ;(window as any).__anuncioIfoodAberto = true
         setCookie(undefined, COOKIE_VISTO, '1', {
             maxAge: 60 * 60 * 24 * 365 * 10,
             path: '/',
         })
     }, [router.pathname])
 
+    function fechar() {
+        setAberto(false)
+        ;(window as any).__anuncioIfoodAberto = false
+        window.dispatchEvent(new Event('anuncio-ifood-fechado'))
+    }
+
     return (
-        <KRDBaseModal isOpen={aberto} setClose={() => setAberto(false)} headerOff width={42} height={60}>
+        <KRDBaseModal isOpen={aberto} setClose={fechar} headerOff width={42} height={60}>
             <div className={styles.content}>
                 <span className={styles.badge}>Novidade</span>
                 <h2>Agora temos integração com o iFood!</h2>
@@ -44,8 +51,8 @@ export default function AnuncioIfood() {
                     A integração é <b>gratuita</b>. Entre em contato com o suporte para ativá-la.
                 </p>
                 <div className={styles.actions}>
-                    <button className={styles.secondary} onClick={() => setAberto(false)}>Agora não</button>
-                    <a className={styles.primary} href={SUPORTE_URL} target="_blank" rel="noreferrer" onClick={() => setAberto(false)}>
+                    <button className={styles.secondary} onClick={fechar}>Agora não</button>
+                    <a className={styles.primary} href={SUPORTE_URL} target="_blank" rel="noreferrer" onClick={fechar}>
                         Falar com o suporte
                     </a>
                 </div>
