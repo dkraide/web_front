@@ -52,19 +52,19 @@ export default function RelatorioUsuario() {
     }, [])
 
     const loadData = async () => {
-        var u: any;
+        let u: any;
         if (!user) {
-            var res = await getUser();
+            let res = await getUser();
             setUser(res);
             u = res;
         }
         if (!loading) {
             setLoading(true);
         }
-        var url = '';
+        let url = '';
         if (!search) {
-            var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
-            var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
+            let dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
+            let dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
             url = `/Relatorio/Usuario?vendedor=${usuarioGorjeta}&empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}`
         } else {
             url = `/Relatorio/Usuario?vendedor=${usuarioGorjeta}&empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}`;

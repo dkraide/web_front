@@ -65,7 +65,7 @@ export default function IFoodComplementosPage() {
         );
         setGrupos(visiveis);
       }
-    } catch { } finally {
+    } catch (err) { console.error(err); } finally {
       setLoading(false);
     }
   }
@@ -74,7 +74,7 @@ export default function IFoodComplementosPage() {
     try {
       const r = await materiaPrimaService.getAll(eid);
       if (r) setMaterias(r);
-    } catch { }
+    } catch (err) { console.error(err); }
   }
 
   // ─── Helpers ───────────────────────────────────────────────────────────────

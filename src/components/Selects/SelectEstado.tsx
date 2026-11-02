@@ -32,9 +32,9 @@ export  default function SelectProduto({width, selected, setSelected}: selProps)
         loadFormas();
     }, []);
     function getData() {
-        var data = [] as any[];
+        let data = [] as any[];
         formas.map((forma) => {
-            var x = {
+            let x = {
                 value: forma.sigla,
                 label: forma.nome || ''
             }
@@ -43,7 +43,7 @@ export  default function SelectProduto({width, selected, setSelected}: selProps)
         return data;
     }
     function setSelectedProd(value: any){
-           var index = _.findIndex(formas, p => p.sigla == value);
+           let index = _.findIndex(formas, p => p.sigla == value);
            if(index  >= 0){
                 setSelected(formas[index]);
                 

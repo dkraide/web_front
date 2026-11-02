@@ -11,6 +11,7 @@ import SelectEmpresa from '@/components/Selects/SelectEmpresa';
 import { Menu, MenuItem, Sidebar, SubMenu } from 'react-pro-sidebar';
 import CustomButton from '../Buttons';
 import Image from 'next/image';
+import Link from 'next/link';
 import { useWindowSize } from 'rooks';
 import { Badge } from 'react-bootstrap';
 import EdnaChat from '@/components/EdnaChat';
@@ -23,7 +24,7 @@ export default function SideBar({ children, ...props }) {
     const [collapsed, setCollapsed] = useState(false);
     const [toggled, setToggled] = useState(false);
     const test = async () => {
-        var u = await getUser();
+        let u = await getUser();
         if (u) {
             setUser(u);
             setEmpresa(u.empresaSelecionada);
@@ -75,13 +76,13 @@ export default function SideBar({ children, ...props }) {
         <div className={"container-scroller"}>
             <nav className={[styles["navbar"], styles["default-layout-navbar"], styles["col-lg-12"], styles["p-0"], styles["fixed-top"], styles["d-flex"], styles["flex-row"]].join(' ')}>
                 {(collapsed || isMobile) ? <>
-                    <a href={'/dashboard'} className={styles.center} style={{ width: '40px', cursor: 'pointer' }}>
+                    <Link href={'/dashboard'} className={styles.center} style={{ width: '40px', cursor: 'pointer' }}>
                         <Image src={'/krd_logo_icon.png'} alt={'krd'} width={35} height={35} />
-                    </a>
+                    </Link>
                 </> : <>
-                    <a href={'/dashboard'} className={styles.center} style={{ width: '250px', cursor: 'pointer' }}>
+                    <Link href={'/dashboard'} className={styles.center} style={{ width: '250px', cursor: 'pointer' }}>
                         <Image src={'/krd_logo.png'} alt={'krd'} width={160} height={60} />
-                    </a>
+                    </Link>
                 </>}
                 <div hidden={user?.isContador}>
                     <a className={styles["menu-btn"]} onClick={() => { setCollapsed(!collapsed); setToggled(!toggled) }}><FontAwesomeIcon color={'var(--main)'} icon={faBars} /></a>
@@ -93,8 +94,8 @@ export default function SideBar({ children, ...props }) {
                 </div>
                 <div hidden={innerWidth <= 700} style={{ justifyContent: 'flex-end', marginRight: '10px', display: 'flex', flexDirection: 'row' }}>
                     <NotificacoesBell />
-                    <span style={{ marginRight: '10px' }}>Bem Vindo, <br /><b><a href={'/me'}>{user.nome}</a></b></span>
-                    <a className={styles["menu-btn"]} onClick={signOut}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
+                    <span style={{ marginRight: '10px' }}>Bem Vindo, <br /><b><Link href={'/me'}>{user.nome}</Link></b></span>
+                    <a className={styles["menu-btn"]} onClick={() => signOut()}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
                 </div>
             </nav>
             <div className={[styles["container-fluid"], styles["page-body-wrapper"]].join(' ')}>
@@ -127,92 +128,92 @@ export default function SideBar({ children, ...props }) {
                                         flexWrap: 'wrap',
                                         justifyContent: 'space-between'
                                     }}>
-                                    <span>Bem Vindo, <br /><b><a href={'/me'}>{user.nome}</a></b></span>
-                                    <a className={styles["menu-btn"]} onClick={signOut}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
+                                    <span>Bem Vindo, <br /><b><Link href={'/me'}>{user.nome}</Link></b></span>
+                                    <a className={styles["menu-btn"]} onClick={() => signOut()}><FontAwesomeIcon icon={faPowerOff} color={'var(--main)'} /></a>
                                 </div>
                                 <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Produtos"
                                     rootStyles={subMenuStyle}>
-                                    <MenuItem href={'/produto'}>Produtos</MenuItem>
-                                    <MenuItem href={'/classeMaterial'}>Classes</MenuItem>
-                                    <MenuItem href={'/setorestoque'}>Setores de estoque (NFC)</MenuItem>
-                                    <MenuItem href={'/grupo-adicional'}>Grupos de Compl.</MenuItem>
-                                    <MenuItem href={'/tributacao'}>Tributações</MenuItem>
-                                    <MenuItem href={'/estoque'}>Estoque</MenuItem>
-                                    <MenuItem href={'/estoqueLancamento'}>Lançamento de estoque</MenuItem>
-                                    <MenuItem href={'/estoque/conferenciaEstoque'}>Conferência</MenuItem>
+                                    <MenuItem component={<Link href={'/produto'} />}>Produtos</MenuItem>
+                                    <MenuItem component={<Link href={'/classeMaterial'} />}>Classes</MenuItem>
+                                    <MenuItem component={<Link href={'/setorestoque'} />}>Setores de estoque (NFC)</MenuItem>
+                                    <MenuItem component={<Link href={'/grupo-adicional'} />}>Grupos de Compl.</MenuItem>
+                                    <MenuItem component={<Link href={'/tributacao'} />}>Tributações</MenuItem>
+                                    <MenuItem component={<Link href={'/estoque'} />}>Estoque de produtos</MenuItem>
+                                    <MenuItem component={<Link href={'/estoqueLancamento'} />}>Lançamento de estoque</MenuItem>
+                                    <MenuItem component={<Link href={'/estoque/conferenciaEstoque'} />}>Conferência</MenuItem>
                                 </SubMenu>
                                 {user.tipoSistema !== 'LOJA_ROUPA' && (
                                     <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Ingredientes"
                                         rootStyles={subMenuStyle}>
-                                        <MenuItem href={'/ingredientes'}>Ingredientes</MenuItem>
-                                        <MenuItem href={'/ingredientes/estoque'}>Estoque</MenuItem>
+                                        <MenuItem component={<Link href={'/ingredientes'} />}>Ingredientes</MenuItem>
+                                        <MenuItem component={<Link href={'/ingredientes/estoque'} />}>Estoque de ingredientes</MenuItem>
                                     </SubMenu>
                                 )}
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promoções">
-                                    <MenuItem href={'/promocao/atacado'}> Promoção</MenuItem>
-                                    <MenuItem href={'/promocao/combo'}> Combos</MenuItem>
-                                    <MenuItem href={'/promocao/tabelaPreco'}> Tabela de Preço</MenuItem>
+                                    <MenuItem component={<Link href={'/promocao/atacado'} />}> Promoção</MenuItem>
+                                    <MenuItem component={<Link href={'/promocao/combo'} />}> Combos</MenuItem>
+                                    <MenuItem component={<Link href={'/promocao/tabelaPreco'} />}> Tabela de Preço</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCalculator} color={'var(--main)'} />} label="Financeiro">
-                                    <MenuItem href={'/financeiro'}>Minhas Faturas {bgNew()}</MenuItem>
-                                    <MenuItem href={'/motivoLancamento'}>Motivo de Lançamento</MenuItem>
-                                    <MenuItem href={'/despesa'}>Despesas</MenuItem>
-                                    <MenuItem href={'/entrada'}>Entradas</MenuItem>
+                                    <MenuItem component={<Link href={'/financeiro'} />}>Minhas Faturas {bgNew()}</MenuItem>
+                                    <MenuItem component={<Link href={'/motivoLancamento'} />}>Motivo de Lançamento</MenuItem>
+                                    <MenuItem component={<Link href={'/despesa'} />}>Despesas</MenuItem>
+                                    <MenuItem component={<Link href={'/entrada'} />}>Entradas</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faMoneyBill} color={'var(--main)'} />} label="Vendas">
-                                    <MenuItem href={'/movimentoCaixa'}>Caixas</MenuItem>
-                                    <MenuItem href={'/venda'}>Vendas</MenuItem>
-                                    <MenuItem href={'/arquivosxml'}>Arquivos XML</MenuItem>
-                                    <MenuItem href={'/recebiveis'}>Recebíveis</MenuItem>
+                                    <MenuItem component={<Link href={'/movimentoCaixa'} />}>Caixas</MenuItem>
+                                    <MenuItem component={<Link href={'/venda'} />}>Vendas</MenuItem>
+                                    <MenuItem component={<Link href={'/arquivosxml'} />}>Arquivos XML</MenuItem>
+                                    <MenuItem component={<Link href={'/recebiveis'} />}>Recebíveis</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faChartSimple} color={'var(--main)'} />} label="Relatórios">
-                                    <MenuItem href={'/relatorio/resumo'}>Resumo {bgNew()} </MenuItem>
-                                    <MenuItem href={'/relatorio/classe'}>Por Classe</MenuItem>
-                                    <MenuItem href={'/relatorio/dia'}>Por Dia</MenuItem>
-                                    <MenuItem href={'/relatorio/horario'}>Por Horário </MenuItem>
-                                    <MenuItem href={'/relatorio/formaPagamento'}>Por Forma</MenuItem>
-                                    <MenuItem href={'/relatorio/produto'}>Por Produto</MenuItem>
-                                    <MenuItem href={'/relatorio/usuario'}>Por Usuário</MenuItem>
-                                    <MenuItem href={'/relatorio/demonstrativo'}>Demonstrativo</MenuItem>
-                                    <MenuItem href={'/relatorio/vendacusto'}>Venda/Custo </MenuItem>
-                                    <MenuItem href={'/relatorio/FechamentoCaixa'}>Fechamento</MenuItem>
-                                    <MenuItem href={'/relatorio/estoque'}>Estoque </MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/resumo'} />}>Resumo {bgNew()} </MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/classe'} />}>Por Classe</MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/dia'} />}>Por Dia</MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/horario'} />}>Por Horário </MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/formaPagamento'} />}>Por Forma</MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/produto'} />}>Por Produto</MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/usuario'} />}>Por Usuário</MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/demonstrativo'} />}>Demonstrativo</MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/vendacusto'} />}>Venda/Custo </MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/FechamentoCaixa'} />}>Fechamento</MenuItem>
+                                    <MenuItem component={<Link href={'/relatorio/estoque'} />}>Estoque </MenuItem>
                                 </SubMenu>
                                 <SubMenu icon={<FontAwesomeIcon icon={faUser} color={'var(--main)'} />} label="Clientes"
                                     rootStyles={subMenuStyle}>
-                                    <MenuItem href={'/cliente'}>Clientes</MenuItem>
-                                    <MenuItem href={'/cliente/premio'}>Prêmios</MenuItem>
-                                    <MenuItem href={'/cliente/pontos'}>Pontos</MenuItem>
-                                    <MenuItem href={'/cliente/cupons'}>Cupons</MenuItem>
+                                    <MenuItem component={<Link href={'/cliente'} />}>Clientes</MenuItem>
+                                    <MenuItem component={<Link href={'/cliente/premio'} />}>Prêmios</MenuItem>
+                                    <MenuItem component={<Link href={'/cliente/pontos'} />}>Pontos</MenuItem>
+                                    <MenuItem component={<Link href={'/cliente/cupons'} />}>Cupons</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faCashRegister} color={'var(--main)'} />} label="PDV">
-                                    <MenuItem href={'/pdv/formaPagamento'}>Formas de Pagamento</MenuItem>
-                                    <MenuItem href={'/pdv/usuario'}>Usuários</MenuItem>
-                                    <MenuItem href={'/pdv/automacoes'}>Automações</MenuItem>
-                                    <MenuItem href={'/tarefas'}>Tarefas programadas</MenuItem>
-                                    <MenuItem href={'/pdv/configuracao'}>Configuração</MenuItem>
+                                    <MenuItem component={<Link href={'/pdv/formaPagamento'} />}>Formas de Pagamento</MenuItem>
+                                    <MenuItem component={<Link href={'/pdv/usuario'} />}>Usuários</MenuItem>
+                                    <MenuItem component={<Link href={'/pdv/automacoes'} />}>Automações</MenuItem>
+                                    <MenuItem component={<Link href={'/tarefas'} />}>Tarefas programadas</MenuItem>
+                                    <MenuItem component={<Link href={'/pdv/configuracao'} />}>Configuração</MenuItem>
                                 </SubMenu>
                                 {user.tipoSistema !== 'LOJA_ROUPA' && (
                                     <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faUtensils} color={'var(--main)'} />} label="Menu Digital">
-                                        <MenuItem href={'/menudigital/horarios'}>Configuração</MenuItem>
-                                        <MenuItem href={'/menudigital/empresa'}>Empresa</MenuItem>
-                                        <MenuItem href={'/menudigital/cardapio'}>Cardápios</MenuItem>
-                                        <MenuItem href={'/menudigital/pagamento'}>Pagamento {bgNew()}</MenuItem>
+                                        <MenuItem component={<Link href={'/menudigital/horarios'} />}>Horários</MenuItem>
+                                        <MenuItem component={<Link href={'/menudigital/empresa'} />}>Empresa</MenuItem>
+                                        <MenuItem component={<Link href={'/menudigital/cardapio'} />}>Cardápios</MenuItem>
+                                        <MenuItem component={<Link href={'/menudigital/pagamento'} />}>Pagamento {bgNew()}</MenuItem>
                                     </SubMenu>
                                 )}
                                 {user.tipoSistema === 'LOJA_ROUPA' && (
                                     <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faShirt} color={'var(--main)'} />} label="Site da Loja">
-                                        <MenuItem href={'/modas'}>Editor do site {bgNew()}</MenuItem>
-                                        <MenuItem href={'/modas/analytics'}>Indicadores {bgNew()}</MenuItem>
-                                        <MenuItem href={'/modas/relatorio'}>Relatório de peças {bgNew()}</MenuItem>
-                                        <MenuItem href={'/modas/inscritos'}>Newsletter {bgNew()}</MenuItem>
+                                        <MenuItem component={<Link href={'/modas'} />}>Editor do site {bgNew()}</MenuItem>
+                                        <MenuItem component={<Link href={'/modas/analytics'} />}>Indicadores {bgNew()}</MenuItem>
+                                        <MenuItem component={<Link href={'/modas/relatorio'} />}>Relatório de peças {bgNew()}</MenuItem>
+                                        <MenuItem component={<Link href={'/modas/inscritos'} />}>Newsletter {bgNew()}</MenuItem>
                                     </SubMenu>
                                 )}
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faComments} color={'var(--main)'} />} label="Integrações">
-                                    <MenuItem href={'/novidades'}>Novidades {bgNew()}</MenuItem>
-                                    <MenuItem href={'/whatsapp'}>WhatsApp {bgNew()}</MenuItem>
-                                  {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem href={'/ifood'}>IFood {bgNew()}</MenuItem> } 
-                                  {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem href={'/food99'}>99Food {bgNew()}</MenuItem> } 
+                                    <MenuItem component={<Link href={'/novidades'} />}>Novidades {bgNew()}</MenuItem>
+                                    <MenuItem component={<Link href={'/whatsapp'} />}>WhatsApp {bgNew()}</MenuItem>
+                                  {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem component={<Link href={'/ifood'} />}>IFood {bgNew()}</MenuItem> } 
+                                  {  user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem component={<Link href={'/food99'} />}>99Food {bgNew()}</MenuItem> } 
                                 </SubMenu>
                             </div>
                         )}

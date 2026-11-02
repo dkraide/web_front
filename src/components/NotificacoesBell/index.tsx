@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react'
 import { FaBell, FaGift } from 'react-icons/fa'
 import { NOVIDADES, novidadesNaoVistas } from '@/data/novidades'
@@ -34,7 +35,7 @@ export default function NotificacoesBell() {
             {aberto && (
                 <div className={styles.painel}>
                     <div className={styles.titulo}>Notificações</div>
-                    <a href="/novidades" className={styles.item}>
+                    <Link href="/novidades" className={styles.item}>
                         <span className={styles.icone}><FaGift /></span>
                         <span>
                             <b>Novidades</b>
@@ -43,7 +44,7 @@ export default function NotificacoesBell() {
                             </small>
                         </span>
                         {naoVistas > 0 && <i className={styles.ponto} />}
-                    </a>
+                    </Link>
                 </div>
             )}
         </div>

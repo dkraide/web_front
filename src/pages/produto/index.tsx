@@ -209,7 +209,7 @@ export default function Produto() {
             // Foto principal (cadastro) ou, sem ela, a primeira da galeria de mídias.
             cell: ({ localPath, capaMidia, id }) => (
                 <div className={styles.imgCell} onClick={() => setImage(id)}>
-                    <img
+                    <img alt=""
                         src={localPath || capaMidia || '/nopic.png'}
                         onError={e => { e.currentTarget.src = '/nopic.png' }}
                         className={styles.produtoImg}

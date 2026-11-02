@@ -54,9 +54,9 @@ export default function Pdv() {
 
     async function loadData() {
         setLoading(true);
-        var u: any;
+        let u: any;
         if (!user) {
-            var res = await getUser();
+            let res = await getUser();
             setUser(res);
             u = res;
         }
@@ -78,7 +78,7 @@ export default function Pdv() {
         if (!venda.empresaId) {
             venda.empresaId = user.empresaSelecionada;
         }
-        var model = {
+        let model = {
             venda,
             produto
         }
@@ -96,7 +96,7 @@ export default function Pdv() {
         if (!venda.empresaId) {
             venda.empresaId = user.empresaSelecionada;
         }
-        var model = {
+        let model = {
             venda,
             indexProduto
         }
@@ -116,7 +116,7 @@ export default function Pdv() {
         if (!venda.empresaId) {
             venda.empresaId = user.empresaSelecionada;
         }
-        var model = {
+        let model = {
             venda,
             produto,
             indexProduto

@@ -67,7 +67,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
         if (!totais) {
             return 0;
         }
-        var total = 0;
+        let total = 0;
         totais.map(p => {
             if (p.forma.toUpperCase().includes('DINHEIRO')) {
                 total += p.valor
@@ -79,25 +79,25 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
         if (!obj || !obj.sangrias) {
             return 0;
         }
-        var total = _.sumBy(obj.sangrias, o => o.isSangria ? o.valorMovimento : 0);
+        let total = _.sumBy(obj.sangrias, o => o.isSangria ? o.valorMovimento : 0);
         return total;
     }
     function calculaEntradas() {
         if (!obj || !obj.sangrias) {
             return 0;
         }
-        var total = _.sumBy(obj.sangrias, o => !o.isSangria ? o.valorMovimento : 0);
+        let total = _.sumBy(obj.sangrias, o => !o.isSangria ? o.valorMovimento : 0);
         return total;
     }
     function calculaEsperado() {
-        var sangrias = calcularSangrias();
-        var entradas = calculaEntradas();
-        var vendas = calcularVendas();
-        var resultado = obj.valorDinheiro + vendas + entradas - sangrias;
+        let sangrias = calcularSangrias();
+        let entradas = calculaEntradas();
+        let vendas = calcularVendas();
+        let resultado = obj.valorDinheiro + vendas + entradas - sangrias;
         return resultado;
     }
     function calculaDiferenca() {
-        var resultado = calculaEsperado();
+        let resultado = calculaEsperado();
         return obj.valorDinheiroFinal - resultado;
     }
 

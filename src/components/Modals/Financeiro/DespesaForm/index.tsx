@@ -119,14 +119,14 @@ export default function DespesaForm({ user, isOpen, id, setClose, color }: props
         setSending(false);
     }
     function calculaTotal(){
-        var sub = fGetNumber(getValues("valorSubTotal"));
-        var desconto = fGetNumber(getValues("desconto"));
-        var acrescimo = fGetNumber(getValues("acrescimo"));
+        let sub = fGetNumber(getValues("valorSubTotal"));
+        let desconto = fGetNumber(getValues("desconto"));
+        let acrescimo = fGetNumber(getValues("acrescimo"));
         if(desconto > sub + acrescimo){
              toast.error(`Desconto excessivo.`);
              return;
         }
-        var total = sub -desconto + acrescimo;
+        let total = sub -desconto + acrescimo;
         setValue("valorTotal", total.toFixed(2));
         setValue("acrescimo", acrescimo.toFixed(2));
         setValue("desconto", desconto.toFixed(2));

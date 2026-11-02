@@ -14,8 +14,8 @@ export function CanSSRContador<P>(fn: GetServerSideProps<P>){
         const cookies = parseCookies(ctx);
        
         const token  = cookies['@web_front.token'];
-        var userStr =  cookies['@web_front.user'];
-        var u =  JSON.parse(userStr) as IUsuario;
+        let userStr =  cookies['@web_front.user'];
+        let u =  JSON.parse(userStr) as IUsuario;
         if(!token){
             return{
                 redirect:{

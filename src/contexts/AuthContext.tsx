@@ -60,8 +60,8 @@ export function signOut (redirectTo?: string){
 export function AuthProvider({children}: AuthProviderProps){
     async function signIn({userName, password, empresa}: SignInProps){
         try{
-            var url = '/User/Login';
-            var isPdv = false;
+            let url = '/User/Login';
+            let isPdv = false;
             if(empresa && empresa > 0){
                  url = '/user/LoginPDV',
                  isPdv = true;
@@ -72,7 +72,7 @@ export function AuthProvider({children}: AuthProviderProps){
              empresaId: empresa
           });
           const {token,  nome,empresaId, empresas, caixa, isContador, tipoSistema} =  response.data;
-          var user = {
+          let user = {
                nome,
                isContador,
                empresaSelecionada: empresaId,
@@ -122,8 +122,8 @@ export function AuthProvider({children}: AuthProviderProps){
     }
 
     async function getUser(): Promise<IUsuario | undefined>{
-           var cookies =  parseCookies(undefined);
-           var userStr =  cookies['@web_front.user'];
+           let cookies =  parseCookies(undefined);
+           let userStr =  cookies['@web_front.user'];
            if(!userStr){
                 return undefined;
            }

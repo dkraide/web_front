@@ -29,6 +29,62 @@ interface cancelarProps {
     caixa?: IMovimentoCaixa
     usuario: IUsuarioCaixa
 }
+function VendaDetalhe({ venda, onLoaded }: { venda: IVenda, onLoaded: (v: IVenda) => void }) {
+    const [loading, setLoading] = useState(false);
+    useEffect(() => {
+        if (venda.pagamentos && venda.produtos) return;
+        const getVenda = async () => {
+            setLoading(true);
+            try {
+                const { data } = await api.get<IVenda>(`/Venda/Select?id=${venda.id}`);
+                onLoaded(data);
+            } catch (e) {
+                const err = e as AxiosError;
+                toast.error(`Erro ao buscar vendas. ${err.response?.data || err.message}`);
+            }
+            setLoading(false);
+        };
+        getVenda();
+    }, []);
+
+    if (loading) {
+        return <Spinner title={'Carregando vendas'} />
+    }
+return <div className={styles.detalheVenda}>
+        <div style={{
+            height: '100%', width: '25%', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', padding: '5px',
+            alignItems: 'flex-start', justifyContent: 'flex-start'
+        }}>
+            <LabelGroup width={'50%'} title={'Numero'} value={venda.id} />
+            <LabelGroup width={'50%'} title={'Data'} value={format(new Date(venda.dataVenda), 'dd/MM/yy HH:mm')} />
+            <LabelGroup width={'50%'} title={'Caixa'} value={venda.movimentoCaixaId} />
+            <LabelGroup width={'50%'} title={'Usuario'} value={venda.usuario?.nome} />
+            <LabelGroup width={'50%'} title={'Status'} value={venda.statusVenda ? 'OK' : 'CANCELADA'} />
+            <LabelGroup width={'50%'} title={'NFCE'} value={venda.estd ? 'SIM' : 'NAO'} />
+            {!venda.statusVenda && <LabelGroup width={'100%'} title={'Cancelamento'} value={venda.motivoCancelamento} />}
+            <LabelGroup width={'100%'} title={'Entrega'} value={venda.logradouro.length > 0 ? `${venda.logradouro}, ${venda.numero} - ${venda.bairro}` : '--'} />
+            <LabelGroup width={'100%'} title={'Cliente'} value={venda.cliente ? venda.cliente.nome : '--'} />
+            <LabelGroup width={'50%'} title={'Produtos'} value={`R$ ${venda.valorSubTotal.toFixed(2)}`} />
+            <LabelGroup width={'50%'} title={'Descontos'} value={`R$ ${venda.valorDesconto.toFixed(2)}`} />
+            <LabelGroup width={'50%'} title={'Acrescimos'} value={`R$ ${venda.valorAcrescimo.toFixed(2)}`} />
+            <LabelGroup width={'50%'} title={'Total'} value={`R$ ${venda.valorTotal.toFixed(2)}`} />
+        </div>
+        <div style={{ width: '25%' }}>
+            <ul className={styles.list}>
+                <li><b style={{ width: '70%' }}>Pagamento</b><b style={{ width: '30%' }}>Valor</b></li>
+                {venda?.pagamentos?.map(p => <li key={p.id ?? p.descricao}><label style={{ width: '70%' }}>{[p.descricao]}</label> <label style={{ width: '30%' }}>R${p.valor.toFixed(2)}</label></li>)}
+            </ul>
+        </div>
+        <div style={{ width: '50%' }}>
+            <ul className={styles.list}>
+                <li><b style={{ width: '60%' }}>Produto</b><b style={{ width: '20%' }}>Qntd</b><b style={{ width: '20%' }}>Total</b></li>
+                {venda?.produtos?.map(p => <li key={p.id ?? p.nomeProduto}><label style={{ width: '60%' }}>{[p.nomeProduto]}</label> <label style={{ width: '20%' }}> {p.quantidade.toFixed(2)}</label> <label style={{ width: '20%' }}>R${p.valorTotal.toFixed(2)}</label></li>)}
+            </ul>
+        </div>
+
+    </div>
+}
+
 export default function Vendas({ usuario, caixa, isOpen, setClose }: cancelarProps) {
     const {
         register,
@@ -129,64 +185,8 @@ export default function Vendas({ usuario, caixa, isOpen, setClose }: cancelarPro
         }
     ]
     const vendaDetalhe = (row) => {
-        var index = _.findIndex(vendas, p => p.id == row.data.id);
-        var venda = vendas[index] as IVenda;
-        const [loading, setLoading] = useState(false);
-        useEffect(() => {
-            if (!venda.pagamentos || !venda.produtos) {
-                const getVenda = async () => {
-                    setLoading(true);
-                    await api.get(`/Venda/Select?id=${venda.id}`)
-                        .then(({ data }: AxiosResponse) => {
-                            var index = _.findIndex(vendas, p => p.id == venda.id);
-                            vendas[index] = data;
-                            setVendas(vendas);
-                        }).catch((err: AxiosError) => {
-                            toast.error(`Erro ao buscar vendas. ${err.response?.data || err.message}`);
-
-                        });
-                    setLoading(false);
-                };
-                getVenda();
-            }
-        }, []);
-
-        if (loading) {
-            return <Spinner title={'Carregando vendas'} />
-        }
-        return <div className={styles.detalheVenda}>
-            <div style={{
-                height: '100%', width: '25%', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', padding: '5px',
-                alignItems: 'flex-start', justifyContent: 'flex-start'
-            }}>
-                <LabelGroup width={'50%'} title={'Numero'} value={venda.id} />
-                <LabelGroup width={'50%'} title={'Data'} value={format(new Date(venda.dataVenda), 'dd/MM/yy HH:mm')} />
-                <LabelGroup width={'50%'} title={'Caixa'} value={venda.movimentoCaixaId} />
-                <LabelGroup width={'50%'} title={'Usuario'} value={venda.usuario?.nome} />
-                <LabelGroup width={'50%'} title={'Status'} value={venda.statusVenda ? 'OK' : 'CANCELADA'} />
-                <LabelGroup width={'50%'} title={'NFCE'} value={venda.estd ? 'SIM' : 'NAO'} />
-                {!venda.statusVenda && <LabelGroup width={'100%'} title={'Cancelamento'} value={venda.motivoCancelamento} />}
-                <LabelGroup width={'100%'} title={'Entrega'} value={venda.logradouro.length > 0 ? `${venda.logradouro}, ${venda.numero} - ${venda.bairro}` : '--'} />
-                <LabelGroup width={'100%'} title={'Cliente'} value={venda.cliente ? venda.cliente.nome : '--'} />
-                <LabelGroup width={'50%'} title={'Produtos'} value={`R$ ${venda.valorSubTotal.toFixed(2)}`} />
-                <LabelGroup width={'50%'} title={'Descontos'} value={`R$ ${venda.valorDesconto.toFixed(2)}`} />
-                <LabelGroup width={'50%'} title={'Acrescimos'} value={`R$ ${venda.valorAcrescimo.toFixed(2)}`} />
-                <LabelGroup width={'50%'} title={'Total'} value={`R$ ${venda.valorTotal.toFixed(2)}`} />
-            </div>
-            <div style={{ width: '25%' }}>
-                <ul className={styles.list}>
-                    <li><b style={{ width: '70%' }}>Pagamento</b><b style={{ width: '30%' }}>Valor</b></li>
-                    {venda?.pagamentos?.map(p => <li><label style={{ width: '70%' }}>{[p.descricao]}</label> <label style={{ width: '30%' }}>R${p.valor.toFixed(2)}</label></li>)}
-                </ul>
-            </div>
-            <div style={{ width: '50%' }}>
-                <ul className={styles.list}>
-                    <li><b style={{ width: '60%' }}>Produto</b><b style={{ width: '20%' }}>Qntd</b><b style={{ width: '20%' }}>Total</b></li>
-                    {venda?.produtos?.map(p => <li><label style={{ width: '60%' }}>{[p.nomeProduto]}</label> <label style={{ width: '20%' }}> {p.quantidade.toFixed(2)}</label> <label style={{ width: '20%' }}>R${p.valorTotal.toFixed(2)}</label></li>)}
-                </ul>
-            </div>
-
-        </div>
+        const venda = vendas.find(p => p.id == row.data.id) as IVenda;
+        return <VendaDetalhe venda={venda} onLoaded={(data) => setVendas(prev => prev.map(p => p.id == data.id ? data : p))} />
     }
     if (cancel != undefined) {
         return <CancelarVenda venda={cancel} usuario={usuario} isOpen={cancel != undefined} setClose={(v) => {

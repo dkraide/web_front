@@ -1,14 +1,12 @@
-﻿import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 import styles from './styles.module.scss';
 import { api } from '@/services/apiClient';
-import { AuthContext } from '@/contexts/AuthContext';
 import { AxiosError, AxiosResponse } from 'axios';
 import { InputGroup } from '@/components/ui/InputGroup';
 import KRDTable, { KRDColumn } from '@/components/ui/KRDTable';
 import { toast } from 'react-toastify';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash, faPlus, faFileExcel, faWandMagicSparkles, faSearch } from '@fortawesome/free-solid-svg-icons';
-import IUsuario from '@/interfaces/IUsuario';
 import IDespesa from '@/interfaces/IDespesa';
 import { compareAsc, endOfMonth, format, startOfMonth } from 'date-fns';
 import DespesaForm from '@/components/Modals/Financeiro/DespesaForm';
@@ -16,7 +14,8 @@ import BoxInfo from '@/components/ui/BoxInfo';
 import _ from 'lodash';
 import SelectStatusLancamento from '@/components/Selects/SelectStatusLancamento';
 import { CSVLink } from "react-csv";
-import Confirm from '@/components/Modals/Confirm';
+import { useListaCrud } from '@/hooks/useListaCrud';
+import { useConfirm } from '@/hooks/useConfirm';
 import DespesaFormaForm from '@/components/Modals/Financeiro/DespesaFormaForm';
 import { GetCurrencyBRL } from '@/utils/functions';
 import { isMobile } from 'react-device-detect';
@@ -29,43 +28,20 @@ interface searchProps {
 }
 
 export default function Despesa() {
-    const [loading, setLoading] = useState(true)
-    const [list, setList] = useState<IDespesa[]>([])
-    const { getUser } = useContext(AuthContext)
-    const [search, setSearch] = useState<searchProps>()
+    const [search, setSearch] = useState<searchProps>({
+        dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+        dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd'),
+        status: 0,
+        filter: '',
+    })
+    const { list, loading, reload: loadData, user } = useListaCrud<IDespesa>('/Despesa/List', {
+        status: search.status || 0,
+        dataIn: search.dateIn,
+        dataFim: search.dateFim,
+    })
     const [edit, setEdit] = useState(-1);
     const [despesaForma, setDespesaForma] = useState(0);
-    const [user, setUser] = useState<IUsuario>()
-    const [deletar, setDeletar] = useState(0);
-
-    const loadData = async () => {
-        var u: any;
-        if (!user) {
-            var res = await getUser();
-            setUser(res);
-            u = res;
-        }
-        var url = '';
-        if (!search) {
-            var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
-            var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
-            setSearch({ ...search, dateIn: dateIn, dateFim: dateFim, status: 0 });
-            url = `/Despesa/List?status=${0}&empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}`;
-        } else {
-            url = `/Despesa/List?status=${search.status || 0}&empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}`;
-        }
-        await api
-            .get(url)
-            .then(({ data }: AxiosResponse) => {
-                setList(data);
-            }).catch((err: AxiosError) => {
-                toast.error(`Erro ao carregar dados. ${err.response?.data || err.message}`);
-            });
-        setLoading(false);
-    }
-    useEffect(() => {
-        loadData();
-    }, [])
+    const { confirmar, dialogo } = useConfirm();
 
     function getHeaders() {
         return [
@@ -76,7 +52,7 @@ export default function Despesa() {
         ]
     }
     function getDataCsv() {
-        var res = getFiltered().map((p) => {
+        let res = getFiltered().map((p) => {
             return {
                 descricao: (p.motivoLancamento?.nome || p.descricao).toString(),
                 dataVencimento: format(new Date(p.dataVencimento), 'dd/MM/yyyy'),
@@ -89,23 +65,20 @@ export default function Despesa() {
 
 
     function getFiltered() {
-        var res = list.filter(p => {
-            return (p.descricao + p.id.toString()).toLowerCase().includes(search?.filter?.toLowerCase() || '')
+        let res = list.filter(p => {
+            return (p.descricao + p.id.toString()).toLowerCase().includes(search.filter?.toLowerCase() || '')
         });
         return res;
     }
 
-    async function remover() {
-        setLoading(true);
-        await api.delete(`/Despesa/Delete?Id=${deletar}`)
-            .then((data) => {
-                loadData();
-            })
-            .catch((err) => {
-                toast.error(`Erro ao tentar remover despesa.`);
-
-            });
-        setLoading(false);
+    async function remover(id: number) {
+        try {
+            await api.delete(`/Despesa/Delete?Id=${id}`);
+            loadData();
+        } catch (err) {
+            const e = err as AxiosError;
+            toast.error(`Erro ao tentar remover despesa. ${e.response?.data || e.message}`);
+        }
     }
 
     const columns: KRDColumn<IDespesa>[] = [
@@ -116,7 +89,7 @@ export default function Despesa() {
                     <button className={styles.editBtn} title="Editar" onClick={() => setEdit(id)}>
                         <FontAwesomeIcon icon={faEdit} />
                     </button>
-                    <button className={`${styles.editBtn} ${styles.deleteBtn}`} title="Remover" onClick={() => setDeletar(id)}>
+                    <button className={`${styles.editBtn} ${styles.deleteBtn}`} title="Remover" onClick={() => confirmar('Tem certeza que deseja deletar essa despesa?', () => remover(id))}>
                         <FontAwesomeIcon icon={faTrash} />
                     </button>
                 </div>
@@ -181,8 +154,8 @@ export default function Despesa() {
             if(status){
                 return 'pago'
             }
-            var v = new Date(vencimento);
-            var res = compareAsc(v, new Date())
+            let v = new Date(vencimento);
+            let res = compareAsc(v, new Date())
             return res >= 0 ? 'aberto' : 'vencido'
 
         }
@@ -234,13 +207,13 @@ export default function Despesa() {
             {/* Filtros + busca */}
             <div className={styles.searchBar}>
                 <div className={styles.filterControl}>
-                    <InputGroup type={'date'} value={search?.dateIn || ''} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Início'} />
+                    <InputGroup type={'date'} value={search.dateIn || ''} onChange={(v) => { setSearch({ ...search, dateIn: v.target.value }) }} title={'Início'} />
                 </div>
                 <div className={styles.filterControl}>
-                    <InputGroup type={'date'} value={search?.dateFim || ''} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} />
+                    <InputGroup type={'date'} value={search.dateFim || ''} onChange={(v) => { setSearch({ ...search, dateFim: v.target.value }) }} title={'Final'} />
                 </div>
                 <div className={styles.filterControl}>
-                    <SelectStatusLancamento width={'200px'} selected={search?.status || 0} setSelected={(v) => { setSearch({ ...search, status: v }) }} />
+                    <SelectStatusLancamento width={'200px'} selected={search.status || 0} setSelected={(v) => { setSearch({ ...search, status: v }) }} />
                 </div>
                 <button className={styles.actionBtn} style={{ height: 38 }} onClick={loadData}>
                     <FontAwesomeIcon icon={faSearch} />
@@ -250,7 +223,7 @@ export default function Despesa() {
                     <InputGroup
                         placeholder="Filtrar por descrição ou código..."
                         title=""
-                        value={search?.filter || ''}
+                        value={search.filter || ''}
                         onChange={(e) => { setSearch({ ...search, filter: e.target.value }) }}
                     />
                 </div>
@@ -279,12 +252,7 @@ export default function Despesa() {
                 }
                 setEdit(-1);
             }} />}
-            {(deletar >= 0) && <Confirm message={`Tem certeza que deseja deletar essa despesa?`} isOpen={deletar > 0} setClose={(v) => {
-                if (v) {
-                    remover();
-                }
-                setDeletar(0);
-            }} />}
+            {dialogo}
             {(despesaForma > 0) && <DespesaFormaForm user={user} isOpen={despesaForma > 0} setClose={(v) => {
                 if (v) {
                     loadData();

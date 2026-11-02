@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { parseCookies, setCookie } from 'nookies'
@@ -50,7 +51,7 @@ export default function AnuncioTef() {
                         Quero saber mais
                     </a>
                 </div>
-                <a className={styles.link} href="/novidades" onClick={() => setAberto(false)}>Ver todas as novidades</a>
+                <Link className={styles.link} href="/novidades" onClick={() => setAberto(false)}>Ver todas as novidades</Link>
             </div>
         </KRDBaseModal>
     )

@@ -22,8 +22,8 @@ export default function ClasseMaterialMobile({ list, loadData, user }: props) {
         if (!list) {
             return;
         }
-        var filtered = list.filter((item) => {
-            var str = `${item.idClasseMaterial} ${item.nomeClasse}`.toUpperCase();
+        let filtered = list.filter((item) => {
+            let str = `${item.idClasseMaterial} ${item.nomeClasse}`.toUpperCase();
             return str.includes(search?.toUpperCase());
         })
         setItems(filtered);

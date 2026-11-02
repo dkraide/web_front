@@ -1,131 +1,49 @@
-import { useContext, useEffect, useState } from 'react';
-import styles from './styles.module.scss';
-import { api } from '@/services/apiClient';
-import { AuthContext } from '@/contexts/AuthContext';
-import { AxiosError, AxiosResponse } from 'axios';
-import { InputGroup } from '@/components/ui/InputGroup';
-import CustomTable from '@/components/ui/CustomTable';
-import { toast } from 'react-toastify';
+import { useState } from 'react';
+import CrudPage from '@/components/ui/CrudPage';
 import CustomButton from '@/components/ui/Buttons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import IUsuario from '@/interfaces/IUsuario';
-import IPromocao from '@/interfaces/IPromocao';
+import { KRDColumn } from '@/components/ui/KRDTable';
 import ComboForm from '@/components/Modals/Promocao/ComboForm';
-import ICombo from '@/interfaces/ICombo';
-import { isMobile } from 'react-device-detect';
 import ResultadoCombo from '@/components/Modals/Promocao/ResultadoCombo';
+import ICombo from '@/interfaces/ICombo';
+import { useListaCrud } from '@/hooks/useListaCrud';
 
+const columns: KRDColumn<ICombo>[] = [
+    { name: 'Local', selector: r => r['idCombo'] >= 0 ? 'SIM' : 'NAO', sortable: true, width: '70px' },
+    { name: 'Código', selector: r => r.codigo, sortable: true, width: '110px' },
+    { name: 'Descrição', selector: r => r.descricao, sortable: true },
+    { name: 'Status', selector: r => r.status ? 'Ativo' : 'Inativo', sortable: true, width: '90px' },
+];
 
 export default function Combo() {
-    const [loading, setLoading] = useState(true)
-    const [list, setList] = useState<ICombo[]>([])
-    const { getUser } = useContext(AuthContext)
-    const [search, setSearch] = useState('')
-    const [edit, setEdit] = useState(-1);
-    const [user, setUser] = useState<IUsuario>()
+    const { list, loading, reload, user } = useListaCrud<ICombo>('/Combo/List');
     const [showResultado, setShowResultado] = useState(0);
 
-    const loadData = async () => {
-        var u: any;
-        if (!user) {
-            var res = await getUser();
-            setUser(res);
-            u = res;
-        }
-        await api
-            .get(`/Combo/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
-            .then(({ data }: AxiosResponse) => {
-                setList(data);
-            }).catch((err: AxiosError) => {
-                toast.error(`Erro ao carregar dados. ${err.response?.data || err.message}`);
-            });
-        setLoading(false);
-    }
-    useEffect(() => {
-        loadData();
-    }, [])
-
-    function getFiltered() {
-        var res = list.filter(p => {
-            return (p.codigo + p.descricao + p.id.toString()).toLowerCase().includes(search.toLowerCase())
-        });
-        return res;
-    }
-
-    const columns = [
-        {
-            name: '#',
-            cell: ({ id }: IPromocao) => <>
-                <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>
-                <CustomButton style={{ marginLeft: 5 }} onClick={() => { setShowResultado(id) }} typeButton={'outline-main'}>Resultados</CustomButton></>,
-            sortable: true,
-            width:'20%'
-        },
-        {
-            name: 'Local',
-            selector: row => row['idCombo'] >= 0 ? 'SIM' : 'NAO',
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'Codigo',
-            selector: row => row['codigo'],
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'Descricao',
-            selector: row => row['descricao'],
-            sortable: true,
-        },
-        {
-            name: 'Status',
-            selector: row => row['status'] ? 'Ativo' : 'Inativo',
-            sortable: true,
-            grow: 0
-        }
-    ]
-
-    const Item = (item: ICombo) => {
-        return (
-            <div key={item.id} className={styles.item} onClick={() => { setEdit(item.id) }} >
-                <span className={styles.w60}>Codigo<br /><b>{item.codigo}</b></span>
-                <span className={item.status ? styles.ativo : styles.inativo}>{item.status ? 'ATIVO' : 'INATIVO'}</span>
-                <span className={styles.w100}>Descricao<br /><b>{item.descricao}</b></span>
-            </div>
-        )
-
-    }
-
-    if (loading) {
-        return <></>
-    }
     return (
-        <div className={styles.container}>
-            <h4>Combos</h4>
-            <InputGroup width={isMobile ? '100%' : '50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Novo Combo</CustomButton>
-            <hr />
-            {isMobile ? <>
-                {getFiltered()?.map((item) => Item(item))}
-            </> : <>
-                <CustomTable
-                    columns={columns}
-                    data={getFiltered()}
-                    loading={loading}
-                /></>}
-
-            {(edit >= 0) && <ComboForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if (v) {
-                    loadData();
-                }
-                setEdit(-1);
-            }} />}
-            {(showResultado > 0) && <ResultadoCombo user={user} isOpen={showResultado > 0} comboId={showResultado} setClose={(v) => {
-                setShowResultado(0);
-            }} />}
-
-        </div>
-    )
+        <>
+            <CrudPage<ICombo>
+                title="Combos"
+                newLabel="Novo Combo"
+                list={list}
+                loading={loading}
+                columns={columns}
+                searchText={r => `${r.codigo}${r.descricao}`}
+                onReload={reload}
+                rowActions={r => (
+                    <CustomButton typeButton={'outline-main'} onClick={() => setShowResultado(r.id)}>Resultados</CustomButton>
+                )}
+                renderCard={r => (
+                    <>
+                        <div>Código <b>{r.codigo}</b> · {r.status ? 'ATIVO' : 'INATIVO'}</div>
+                        <div>Descrição <b>{r.descricao}</b></div>
+                    </>
+                )}
+                renderModal={(edit, close) => (
+                    <ComboForm user={user} isOpen id={edit} setClose={close} />
+                )}
+            />
+            {showResultado > 0 && (
+                <ResultadoCombo user={user} isOpen comboId={showResultado} setClose={() => setShowResultado(0)} />
+            )}
+        </>
+    );
 }

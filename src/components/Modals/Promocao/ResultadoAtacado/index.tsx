@@ -13,7 +13,7 @@ import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
-import { GetCurrencyBRL, isMobile, validateString } from "@/utils/functions";
+import { GetCurrencyBRL, validateString } from "@/utils/functions";
 import { endOfMonth, format, startOfMonth } from "date-fns";
 import IVendaProduto from "@/interfaces/IVendaProduto";
 import BoxInfo from "@/components/ui/BoxInfo";
@@ -63,7 +63,6 @@ export default function ResultadoAtacado({ user, isOpen, promocaoId, setClose, c
 
         await api.get(`/Relatorio/Promocao?empresaid=${user.empresaSelecionada}&dataIn=${search.ini}&dataFim=${search.end}&promocaoId=${promocaoId}`).then(({data}) => {
             setItens(data);
-            console.log(data);
         }).catch((err) => {
             toast.error(`Erro ao buscar dados.`)
         })

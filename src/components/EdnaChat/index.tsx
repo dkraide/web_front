@@ -6,6 +6,7 @@ import { api } from '@/services/apiClient';
 import { AxiosError, AxiosResponse } from 'axios';
 import { toast } from 'react-toastify';
 import styles from './styles.module.scss';
+import SafeHtml from '@/components/ui/SafeHtml';
 
 // html só vem preenchido em mensagens da Edna: é o Markdown que ela escreveu já
 // renderizado pelo backend (tabelas de relatório viram <table>). Quando existe,
@@ -311,10 +312,7 @@ export default function EdnaChat({ empresaId }: EdnaChatProps) {
                                                 {/* Seguro: o backend renderiza o Markdown com Markdig +
                                                     DisableHtml(), então HTML/script vindo de dados já
                                                     chega escapado como texto. */}
-                                                <div
-                                                    className={styles.htmlContent}
-                                                    dangerouslySetInnerHTML={{ __html: m.html }}
-                                                />
+                                                <SafeHtml className={styles.htmlContent} html={m.html} />
                                                 {renderBotaoRelatorio(m.texto)}
                                             </>
                                         ) : (

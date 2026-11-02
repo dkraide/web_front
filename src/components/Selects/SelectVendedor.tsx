@@ -18,7 +18,7 @@ export default function SelectProduto({ width, selected, setSelected }: selProps
     const { getUser } = useContext(AuthContext);
     const loadFormas = async () => {
         const res = await getUser();
-        var ret = await api.get(`/Vendedor/List?EmpresaId=${res?.empresaSelecionada}&status=true`)
+        let ret = await api.get(`/Vendedor/List?EmpresaId=${res?.empresaSelecionada}&status=true`)
             .then(({ data }: AxiosResponse<IProduto[]>) => {
                 setFormas(data);
             })
@@ -30,9 +30,9 @@ export default function SelectProduto({ width, selected, setSelected }: selProps
         loadFormas();
     }, []);
     function getData() {
-        var data = [] as any[];
+        let data = [] as any[];
         formas.map((forma) => {
-            var x = {
+            let x = {
                 value: forma.id.toString(),
                 label: `${forma.cod.toString()} - ${forma.nome}` || ''
             }
@@ -41,7 +41,7 @@ export default function SelectProduto({ width, selected, setSelected }: selProps
         return data;
     }
     function setSelectedProd(value: any) {
-        var index = _.findIndex(formas, p => p.id == value);
+        let index = _.findIndex(formas, p => p.id == value);
         if (index >= 0) {
             setSelected(formas[index]);
         }

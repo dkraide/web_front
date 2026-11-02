@@ -9,11 +9,11 @@ interface cancelarProps {
 }
 export default function Confirm({ isOpen, message, setClose}: cancelarProps) {
     return (
-        <BaseModal width={'50%'} height={'30%'} title={'Confirmar'} isOpen={isOpen} setClose={() => {setClose(false)}}>
+        <BaseModal width={'min(560px, 95vw)'} height={'auto'} title={'Confirmar'} isOpen={isOpen} setClose={() => {setClose(false)}}>
             <div className={styles.content}>
             <h3>{message}</h3>
             <div className={styles.button}>
-                <CustomButton typeButton={'danger'} onClick={() => {setClose(false)}}>Cancelar</CustomButton>
+                <CustomButton typeButton={'secondary'} onClick={() => {setClose(false)}}>Cancelar</CustomButton>
                 <CustomButton typeButton={'success'} onClick={() => {setClose(true)}} >Confirmar</CustomButton>
             </div>
             </div>

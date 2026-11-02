@@ -34,7 +34,7 @@ export default function GerarNFCe({isOpen, id, setClose, color }: props) {
 
         setTitle('Gerando nota fiscal...');
         setTimeout(() => {}, 300)
-        var res = await api.post(`/PDV/GerarValidar?vendaid=${id}`)
+        let res = await api.post(`/PDV/GerarValidar?vendaid=${id}`)
         .then(({data}: AxiosResponse<result>) => {
             if(!data.result){
                 toast.error(`Erro ao gerar nota fiscal. ${data.error}`);

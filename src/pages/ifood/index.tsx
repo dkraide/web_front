@@ -70,7 +70,7 @@ export default function IFoodPage() {
         try {
             const result = await ifoodService.obterMerchant(merchantId);
             if (result.sucesso) setMerchant(result.dados);
-        } catch { }
+        } catch (err) { console.error(err); }
     }
 
     async function onVerificar() {

@@ -1,168 +1,75 @@
-import { useContext, useEffect, useState } from 'react';
-import styles from './styles.module.scss';
-import { api } from '@/services/apiClient';
-import { AuthContext } from '@/contexts/AuthContext';
-import { AxiosError, AxiosResponse } from 'axios';
-import { InputGroup } from '@/components/ui/InputGroup';
-import CustomTable from '@/components/ui/CustomTable';
-import { toast } from 'react-toastify';
-import CustomButton from '@/components/ui/Buttons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faEye } from '@fortawesome/free-solid-svg-icons';
-import IUsuario from '@/interfaces/IUsuario';
-import IProduto from '@/interfaces/IProduto';
-import ProdutoForm from '@/components/Modals/Produto';
-import EstoqueForm from '@/components/Modals/Produto/EstoqueForm';
-import BoxInfo from '@/components/ui/BoxInfo';
 import _ from 'lodash';
-import { CSVLink } from "react-csv";
+import { faEye } from '@fortawesome/free-solid-svg-icons';
+import CrudPage from '@/components/ui/CrudPage';
+import CustomButton from '@/components/ui/Buttons';
+import BoxInfo from '@/components/ui/BoxInfo';
+import { KRDColumn } from '@/components/ui/KRDTable';
+import EstoqueForm from '@/components/Modals/Produto/EstoqueForm';
+import IProduto from '@/interfaces/IProduto';
 import { ExportToExcel, GetCurrencyBRL } from '@/utils/functions';
-import UnderConstruction from '@/components/ui/UnderConstruction';
+import { useListaCrud } from '@/hooks/useListaCrud';
 
+const positivo = (n: number) => (n > 0 ? n : 0);
+
+const columns: KRDColumn<IProduto>[] = [
+    { name: 'Cod', selector: r => r.cod, sortable: true, width: '100px' },
+    { name: 'Nome', selector: r => r.nome, sortable: true },
+    { name: 'Estoque', selector: r => r.quantidade, cell: r => r.quantidade.toFixed(2), sortable: true, width: '110px' },
+    { name: 'Estoque Min.', selector: r => r.quantidadeMinima, sortable: true, width: '120px' },
+    { name: 'Custo Un.', selector: r => r.valorCompra, cell: r => GetCurrencyBRL(r.valorCompra), sortable: true, width: '120px' },
+    { name: 'Custo Total', selector: r => r.valorCompra * positivo(r.quantidade), cell: r => GetCurrencyBRL(r.valorCompra * positivo(r.quantidade)), sortable: true, width: '130px' },
+    { name: 'Venda Total', selector: r => r.valor * positivo(r.quantidade), cell: r => GetCurrencyBRL(r.valor * positivo(r.quantidade)), sortable: true, width: '130px' },
+];
+
+const headers = [
+    { label: 'Cod', key: 'cod' },
+    { label: 'Descricao', key: 'nome' },
+    { label: 'Quantidade', key: 'quantidade' },
+    { label: 'Compra', key: 'compra' },
+    { label: 'Venda', key: 'venda' },
+];
+
+function exportarExcel(produtos: IProduto[]) {
+    const data = produtos.map(p => ({
+        cod: p.cod,
+        nome: p.nome,
+        quantidade: p.quantidade,
+        compra: (p.valorCompra * positivo(p.quantidade)).toFixed(2),
+        venda: (p.valor * positivo(p.quantidade)).toFixed(2),
+    }));
+    ExportToExcel(headers, data, 'relatorio_estoque');
+}
 
 export default function Estoque() {
-    const [loading, setLoading] = useState(true)
-    const [list, setList] = useState<IProduto[]>([])
-    const { getUser } = useContext(AuthContext)
-    const [search, setSearch] = useState('')
-    const [edit, setEdit] = useState(-1);
-    const [user, setUser] = useState<IUsuario>()
-
-    const loadData = async () => {
-        var u: any;
-        if (!user) {
-            var res = await getUser();
-            setUser(res);
-            u = res;
-        }
-        await api
-            .get(`/Estoque/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
-            .then(({ data }: AxiosResponse) => {
-                setList(data);
-            }).catch((err: AxiosError) => {
-                toast.error(`Erro ao carregar dados. ${err.response?.data || err.message}`);
-            });
-        setLoading(false);
-    }
-    useEffect(() => {
-        loadData();
-    }, [])
-
-    function getHeaders() {
-        return [
-            { label: "Cod", key: "cod" },
-            { label: "Descricao", key: "nome" },
-            { label: "Quantidade", key: "quantidade" },
-            { label: "Compra", key: "compra" },
-            { label: "Venda", key: "venda" }
-        ]
-    }
-    function getDataCsv() {
-        var res = getFiltered().map((p) => {
-            return {
-                cod: p.cod,
-                descricao: p.nome,
-                quantidade: p.quantidade,
-                compra: (p.valorCompra * (p.quantidade > 0 ? p.quantidade : 0)).toFixed(2),
-                venda: (p.valor * (p.quantidade > 0 ? p.quantidade : 0)).toFixed(2),
-            }
-        });
-        return res;
-    }
-
-    function getFiltered() {
-        var res = list.filter(p => {
-            return (p.nome + p.id.toString()).toLowerCase().includes(search.toLowerCase())
-        });
-        return res;
-    }
-
-    const columns = [
-        {
-            name: '#',
-            cell: ({ id }: IProduto) => <CustomButton onClick={() => { setEdit(id) }} typeButton={'primary'}><FontAwesomeIcon icon={faEye} /></CustomButton>,
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'Cod',
-            selector: row => row['cod'],
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'Nome',
-            selector: row => row['nome'],
-            sortable: true,
-        },
-        {
-            name: 'Estoque',
-            selector: row => row['quantidade'],
-            cell: row => row.quantidade.toFixed(2),
-            sortable: true,
-            width: '10%'
-        },
-        {
-            name: 'Estoque Min.',
-            selector: row => row.quantidadeMinima,
-            sortable: true,
-            width: '10%'
-        },
-        {
-            name: 'Custo Un.',
-            selector: row => row['valorCompra'],
-            cell: row => GetCurrencyBRL(row.valorCompra),
-            sortable: true,
-            width: '10%'
-        },
-        {
-            name: 'Custo Total',
-            selector: row => row['valorCompra'],
-            cell: row => row.quantidade >= 0 ? GetCurrencyBRL(row.valorCompra * row.quantidade) : `R$ 0,00`,
-            sortable: true,
-            width: '10%'
-        },
-        {
-            name: 'Venda Total',
-            selector: row => row['valor'],
-            cell: (row: IProduto) => row.quantidade >= 0 ? GetCurrencyBRL(row.valor * row.quantidade) : `R$ 0,00`,
-            sortable: true,
-            width: '10%'
-        }
-    ]
-
-    const handleExcel = () => {
-        const c = getHeaders();
-        const data = getDataCsv();
-        ExportToExcel(c, data, "relatorio_estoque");
-    }
+    const { list, loading, reload, user } = useListaCrud<IProduto>('/Estoque/List');
 
     return (
-        <div className={styles.container}>
-            <h4>Produtos</h4>
-            <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <hr />
-            <div className={styles.box}>
-                <BoxInfo style={{ marginRight: 10 }} title={'Estoque'} value={_.sumBy(list, x => x.quantidade > 0 ? x.quantidade : 0).toFixed(2)} />
-                <BoxInfo style={{ marginRight: 10 }} title={'Valor'} value={GetCurrencyBRL(_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valor : 0))} />
-                <BoxInfo style={{ marginRight: 10 }} title={'Compra'} value={GetCurrencyBRL(_.sumBy(list, x => x.quantidade > 0 ? x.quantidade * x.valorCompra : 0))} />
-            </div>
-            <hr />
-            <CustomButton style={{ marginBottom: 10 }} typeButton={'dark'} onClick={handleExcel}>Excel</CustomButton>
-            <hr />
-            <CustomTable
-                columns={columns}
-                data={getFiltered()}
-                loading={loading}
-            />
-
-            {(edit >= 0) && <EstoqueForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if (v) {
-                    loadData();
-                }
-                setEdit(-1);
-            }} />}
-
-        </div>
-    )
+        <CrudPage<IProduto>
+            title="Produtos"
+            list={list}
+            loading={loading}
+            columns={columns}
+            searchText={r => r.nome}
+            onReload={reload}
+            editIcon={faEye}
+            editTitle="Ver estoque"
+            extraActions={filtered => (
+                <CustomButton typeButton={'dark'} onClick={() => exportarExcel(filtered)}>Excel</CustomButton>
+            )}
+            summary={<>
+                <BoxInfo title={'Estoque'} value={_.sumBy(list, x => positivo(x.quantidade)).toFixed(2)} />
+                <BoxInfo title={'Valor'} value={GetCurrencyBRL(_.sumBy(list, x => positivo(x.quantidade) * x.valor))} />
+                <BoxInfo title={'Compra'} value={GetCurrencyBRL(_.sumBy(list, x => positivo(x.quantidade) * x.valorCompra))} />
+            </>}
+            renderCard={r => (
+                <>
+                    <div>{r.cod} · <b>{r.nome}</b></div>
+                    <div>Estoque <b>{r.quantidade.toFixed(2)}</b> (mín. {r.quantidadeMinima})</div>
+                </>
+            )}
+            renderModal={(edit, close) => (
+                <EstoqueForm user={user} isOpen id={edit} setClose={close} />
+            )}
+        />
+    );
 }

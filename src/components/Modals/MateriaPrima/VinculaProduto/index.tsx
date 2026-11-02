@@ -39,8 +39,8 @@ export default function VinculeMateriaPrima({user, isOpen, setClose, color }: pr
         if(!mp || !mp.id || mp.id == 0){
             toast.error(`Selecione uma materia prima`);
         }
-        var qntd = fGetNumber(getValues("quantidade"));
-        var obj = {
+        let qntd = fGetNumber(getValues("quantidade"));
+        let obj = {
             qntd,
             mp,
             opcional

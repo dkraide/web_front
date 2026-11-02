@@ -1,3 +1,4 @@
+import { Fragment } from 'react';
 import { ReactNode, useContext, useEffect, useState } from 'react';
 import styles from './styles.module.scss';
 import { api } from '@/services/apiClient';
@@ -37,9 +38,9 @@ export default function Franquia() {
     const [getProduto, setGetProduto] = useState<onSelProduto | undefined>(undefined);
 
     const loadData = async () => {
-        var u: any;
+        let u: any;
         if (!user) {
-            var res = await getUser();
+            let res = await getUser();
             setUser(res);
             u = res;
         }
@@ -70,7 +71,7 @@ export default function Franquia() {
     function getHead(){
         return <thead>
             <tr>
-                {empresas?.map((p) => <th>{p.isMatriz ? '(MATRIZ)' : ''} {p.nomeFantasia}</th>)}
+                {empresas?.map((p) => <th key={p.id}>{p.isMatriz ? '(MATRIZ)' : ''} {p.nomeFantasia}</th>)}
             </tr>
             </thead>
     }
@@ -80,7 +81,7 @@ export default function Franquia() {
             toast.error(`Erro ao buscar matriz`);
             return;
         }
-        var obj = {
+        let obj = {
             matrizId: list[getProduto.matrizIndex].matriz.empresaId,
             classeMaterialMatrizId: list[getProduto.matrizIndex].matriz.id,
             filialId: produto.empresaId,
@@ -90,12 +91,11 @@ export default function Franquia() {
         await api.post(`/ClasseMaterial/VincularMatriz`, obj)
         .then((response) => {
             toast.success('Classe vinculado com sucesso!');
-            var prodIndex = _.findIndex(list[getProduto.matrizIndex].filiais, p => p.id == getProduto.selected);
+            let prodIndex = _.findIndex(list[getProduto.matrizIndex].filiais, p => p.id == getProduto.selected);
             if(prodIndex < 0){
                 list[getProduto.matrizIndex].filiais.push(produto);
             }else{
                 list[getProduto.matrizIndex].filiais[prodIndex] = produto;
-                console.log('caiu aqui');
             }
             setList([...list]);
             setGetProduto(undefined);
@@ -111,15 +111,15 @@ export default function Franquia() {
             <tbody>
                 {list?.map((produto, index) => {
                     return(
-                        <tr>
+                        <tr key={index}>
                             <td>{produto.matriz.nomeClasse}</td>
                             {empresas?.map((empresa) => {
                                 if(empresa.isMatriz){
-                                    return <></>
+                                    return <Fragment key={empresa.id} />
                                 }
-                                var prodFranquia = _.findIndex(produto.filiais, p => p.empresaId == empresa.id);
+                                let prodFranquia = _.findIndex(produto.filiais, p => p.empresaId == empresa.id);
                                 if(prodFranquia >= 0){
-                                            return <td><a href={'#'} onClick={() => {
+                                            return <td key={empresa.id}><a href={'#'} onClick={() => {
                                                 setGetProduto({
                                                     filialId: empresa.id,
                                                     matrizIndex: index,
@@ -127,7 +127,7 @@ export default function Franquia() {
                                                 })
                                             }}>{produto.filiais[prodFranquia].nomeClasse}</a></td>
                                 }else{
-                                    return <td><CustomButton typeButton={'success'} onClick={() => {
+                                    return <td key={empresa.id}><CustomButton typeButton={'success'} onClick={() => {
                                         setGetProduto({
                                             filialId: empresa.id,
                                             matrizIndex: index,

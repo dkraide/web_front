@@ -82,7 +82,7 @@ export default function ProdutoItem() {
         if (produto?.id) {
             let cal = '', tipoCal = '';
             if (produto.calories?.includes(' ')) {
-                var cls = produto.calories.split(' ');
+                let cls = produto.calories.split(' ');
                 cal = cls[0];
                 setTipoCal(cls[1]);
             }

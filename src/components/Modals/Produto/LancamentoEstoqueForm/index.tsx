@@ -89,7 +89,7 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
         if ((!produtos || produtos.length == 0) && ignore.length == 0) {
             return;
         }
-        var list = [];
+        let list = [];
         produtos.map(p => list.push(p.produtoId));
         setProd(undefined);
         setIgnore(list);
@@ -104,14 +104,6 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
         lancamento.idPedido = data.idPedido || 0;
         lancamento.produtos = produtos;
         if (lancamento.id > 0) {
-            // await api.put(`LancamentoEstoque/Update`, lancamento)
-            //     .then(({ data }: AxiosResponse) => {
-            //         toast.success(`Lancamento atualizado com sucesso!`);
-            //         setClose(true);
-            //     })
-            //     .catch((err: AxiosError) => {
-            //         toast.error(`Erro ao atualizar Lancamento. ${err.response?.data}`);
-            //     })
 
         } else {
             lancamento.empresaId = user.empresaSelecionada;
@@ -136,13 +128,13 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
             return;
         }
 
-        var index = _.findIndex(produtos, p => p.produtoId == produtoId);
+        let index = _.findIndex(produtos, p => p.produtoId == produtoId);
         if (index < 0) {
             toast.error(`Erro ao excluir item.`);
         }
         if (produtos[index].id > 0) {
             setSending(true);
-            var res = await api.delete(`/LancamentoEstoque/RemoveItem?id=${produtos[index].id}`)
+            let res = await api.delete(`/LancamentoEstoque/RemoveItem?id=${produtos[index].id}`)
                 .catch((err: AxiosError) => {
                     toast.error(`Erro ao excluir item na nuvem. ${err.response?.data || err.message}`);
                     return false;
@@ -157,7 +149,7 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
 
     }
     function getTotal(isQtd: boolean) {
-        var ret = 0;
+        let ret = 0;
         if (isQtd) {
             ret = _.sumBy(produtos, p => p.quantidade);
         } else {
@@ -171,24 +163,24 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
             toast.error(`Selecione um produto`);
             return;
         }
-        var qntd = fGetNumber(getValues('quantidade'));
+        let qntd = fGetNumber(getValues('quantidade'));
         if (qntd <= 0) {
             toast.error(`Quantidade precisa ser maior que zero`);
             return;
         }
-        var ind = _.findIndex(produtos, p => p.produtoId == prod.id);
+        let ind = _.findIndex(produtos, p => p.produtoId == prod.id);
         if (ind >= 0) {
             toast.error(`Produto ja adicionado ao lancamento`);
             return;
         }
-        var multiplicador = fGetNumber(getValues('multiplicador'));
+        let multiplicador = fGetNumber(getValues('multiplicador'));
 
         if (multiplicador == 0) {
             multiplicador = 1;
         };
         qntd = qntd * multiplicador;
-        var custo = fGetNumber(getValues('custoUnitario'));
-        var obj = {
+        let custo = fGetNumber(getValues('custoUnitario'));
+        let obj = {
             id: 0,
             idLancamentoEstoque: lancamento.idLancamentoEstoque,
             idLancamentoEstoqueProduto: 0,

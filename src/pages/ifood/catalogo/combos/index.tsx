@@ -402,7 +402,7 @@ export default function IFoodComboPage() {
           setCategoriaId(preSelecionada);
         }
       }
-    } catch { }
+    } catch (err) { console.error(err); }
   }
 
   async function carregarItem(eid: number, id: string) {

@@ -37,9 +37,9 @@ export  default function SelectClasseMaterial({empresaId, width, selected, setSe
         loadFormas();
     }, []);
     function getData() {
-        var data = (allowAll ? [{ value: '0', label: 'GERAL' }] : []) as any[];
+        let data = (allowAll ? [{ value: '0', label: 'GERAL' }] : []) as any[];
         formas.map((forma) => {
-            var x = {
+            let x = {
                 value: forma.id.toString(),
                 label: forma.nomeClasse || ''
             }
@@ -53,7 +53,7 @@ export  default function SelectClasseMaterial({empresaId, width, selected, setSe
             setSelected({ id: 0, nomeClasse: 'GERAL' } as IClasseMaterial);
             return;
         }
-        var index = _.findIndex(formas, p => p.id == value);
+        let index = _.findIndex(formas, p => p.id == value);
         if (index >= 0) {
             setSelected(formas[index]);
         }

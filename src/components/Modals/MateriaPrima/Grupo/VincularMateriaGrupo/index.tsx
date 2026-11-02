@@ -24,7 +24,7 @@ export default function VincularMateriaGrupo({ isOpen, setClose }: props) {
             toast.error(`Selecione uma materia prima`);
             return;
         }
-        var v = fGetNumber(valor);
+        let v = fGetNumber(valor);
         setClose(materiaPrima, v);
     }
     return (

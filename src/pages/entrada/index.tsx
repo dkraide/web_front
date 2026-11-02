@@ -1,171 +1,72 @@
-import { useContext, useEffect, useState } from 'react';
-import styles from './styles.module.scss';
-import { api } from '@/services/apiClient';
-import { AuthContext } from '@/contexts/AuthContext';
-import { AxiosError, AxiosResponse } from 'axios';
-import IClasseMaterial from '@/interfaces/IClasseMaterial';
-import { InputGroup } from '@/components/ui/InputGroup';
-import CustomTable from '@/components/ui/CustomTable';
-import { toast } from 'react-toastify';
-import CustomButton from '@/components/ui/Buttons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import IUsuario from '@/interfaces/IUsuario';
-import IDespesa from '@/interfaces/IDespesa';
-import { endOfMonth, format, startOfMonth } from 'date-fns';
-import DespesaForm from '@/components/Modals/Financeiro/DespesaForm';
-import { Badge } from 'react-bootstrap';
-import BoxInfo from '@/components/ui/BoxInfo';
+import { useState } from 'react';
 import _ from 'lodash';
-import IEntrada from '@/interfaces/IEntrada';
+import { Badge } from 'react-bootstrap';
+import { endOfMonth, format, startOfMonth } from 'date-fns';
+import CrudPage from '@/components/ui/CrudPage';
+import CustomButton from '@/components/ui/Buttons';
+import BoxInfo from '@/components/ui/BoxInfo';
+import { InputGroup } from '@/components/ui/InputGroup';
+import { KRDColumn } from '@/components/ui/KRDTable';
 import SelectStatusRecebimento from '@/components/Selects/SelectStatusRecebimento';
-import { GetCurrencyBRL } from '@/utils/functions';
 import EntradaForm from '@/components/Modals/Financeiro/EntradaEditForm';
+import IEntrada from '@/interfaces/IEntrada';
+import { GetCurrencyBRL } from '@/utils/functions';
+import { useListaCrud } from '@/hooks/useListaCrud';
 
-interface searchProps{
-    dateIn: string
-    dateFim: string
-    status: number
-    filter: string
+const dataBR = (d?: Date | string) => format(new Date(d || new Date()), 'dd/MM/yyyy');
+const vencida = (e: IEntrada) => !e.statusRecebimento && new Date(e.dataRecebimento) < new Date();
+
+function StatusBadge({ entrada }: { entrada: IEntrada }) {
+    const estilo = { padding: '7px', fontSize: '12px' };
+    if (entrada.statusRecebimento) return <Badge style={estilo} bg={'success'}>PAGO</Badge>;
+    if (vencida(entrada)) return <Badge style={estilo} bg={'danger'}>VENCIDO</Badge>;
+    return <Badge style={estilo} bg={'primary'}>EM ABERTO</Badge>;
 }
+
+const columns: KRDColumn<IEntrada>[] = [
+    { name: 'Local', selector: r => r['idEntrada'] > 0 ? 'SIM' : 'NAO', sortable: true, width: '70px' },
+    { name: 'Descrição', selector: r => r.descricao, sortable: true },
+    { name: 'Lançamento', selector: r => String(r.dataLancamento), cell: r => dataBR(r.dataLancamento), sortable: true, width: '120px' },
+    { name: 'Recebimento', selector: r => String(r.dataRecebimento), cell: r => r.statusRecebimento ? dataBR(r.dataRecebimento) : '--', sortable: true, width: '130px' },
+    { name: 'Valor', selector: r => r.valorTotal, cell: r => GetCurrencyBRL(r.valorTotal), sortable: true, width: '120px' },
+    { name: 'Status', selector: r => r.statusRecebimento ? 1 : 0, cell: r => <StatusBadge entrada={r} />, sortable: true, width: '120px' },
+];
 
 export default function Entrada() {
-    const [loading, setLoading] = useState(true)
-    const [list, setList] = useState<IEntrada[]>([])
-    const { getUser } = useContext(AuthContext)
-    const [search, setSearch] = useState<searchProps>()
-    const [edit, setEdit] = useState(-1);
-    const [user, setUser] = useState<IUsuario>()
-
-    const loadData = async () => {
-       var u: any;
-       if(!user){
-        var res = await getUser();
-        setUser(res);
-        u = res;
-        }
-        var url = '';
-        if(!search){
-            var dateIn = format(startOfMonth(new Date()), 'yyyy-MM-dd');
-            var dateFim = format(endOfMonth(new Date()), 'yyyy-MM-dd');
-            setSearch({...search, dateIn: dateIn, dateFim: dateFim, status: 0});
-            url = `/Entrada/List?status=${0}&empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${dateIn}&dataFim=${dateFim}`;
-        }else{
-          url = `/Entrada/List?status=${search.status || 0}&empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}`;
-        }
-        await api
-            .get(url)
-            .then(({ data }: AxiosResponse) => {
-                setList(data);
-            }).catch((err: AxiosError) => {
-                toast.error(`Erro ao carregar dados. ${err.response?.data || err.message}`);
-            });
-        setLoading(false);
-    }
-    useEffect(() => {
-        loadData();
-    }, [])
-
-    function getFiltered() {
-        var res = list.filter(p => {
-            return (p.descricao + p.id.toString()).toLowerCase().includes(search?.filter?.toLowerCase() || '')
-        });
-        return res;
-    }
-
-    const columns = [
-        {
-            name: '#',
-            cell: ({ id }: IDespesa) => <CustomButton onClick={() => {setEdit(id)}} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit}/></CustomButton>,
-            sortable: true,
-            width: '10%',
-        },
-        {
-            name: 'Local',
-            selector: row => row['idEntrada'] > 0 ? 'SIM' : 'NAO',
-            sortable: true,
-            width: '10%',
-        },
-        {
-            name: 'Descrição',
-            selector: row => row.descricao,
-            sortable: true,
-            width: '40%',
-        },
-        {
-            name: 'Lancamento',
-            selector: row => row.dataLancamento,
-            cell: row => format(new Date(row.dataLancamento ||  new Date()), 'dd/MM/yyyy'),
-            sortable: true,
-            width: '10%',
-        },
-        {
-            name: 'Recebimento',
-            selector: row => row.dataRecebimento,
-            cell: (row: IEntrada) => row.statusRecebimento ? format(new Date(row.dataRecebimento||  new Date()), 'dd/MM/yyyy') : '--' ,
-            sortable: true,
-            width: '10%',
-        },
-        {
-            name: 'Valor',
-            selector: row => row.valorTotal,
-            cell: (row: IEntrada) => GetCurrencyBRL(row.valorTotal),
-            sortable: true,
-            width: '10%',
-        },
-        {
-            name: 'Status',
-            selector: (row: IEntrada) => <StatusBadge dataRecebimento={row.dataRecebimento} statusLancamento={row.statusRecebimento} />,
-            sortable: true,
-            width: '10%',
-        }
-    ]
+    const [dateIn, setDateIn] = useState(format(startOfMonth(new Date()), 'yyyy-MM-dd'));
+    const [dateFim, setDateFim] = useState(format(endOfMonth(new Date()), 'yyyy-MM-dd'));
+    const [status, setStatus] = useState(0);
+    const { list, loading, reload, user } = useListaCrud<IEntrada>('/Entrada/List', { status, dataIn: dateIn, dataFim: dateFim });
 
     return (
-        <div className={styles.container}>
-            <h4>Entradas</h4>
-            <div className={styles.boxSearch}>
-            <InputGroup minWidth={'275px'} type={'date'} value={search?.dateIn || new Date().toString()} onChange={(v) => {setSearch({...search, dateIn: v.target.value})}}  title={'Inicio'} width={'20%'}/>
-            <InputGroup minWidth={'275px'} type={'date'} value={search?.dateFim || new Date().toString()}  onChange={(v) => {setSearch({...search, dateFim: v.target.value})}}  title={'Final'} width={'20%'}/>
-            <SelectStatusRecebimento width={'30%'} selected={search?.status || 0} setSelected={(v) => {setSearch({...search, status:v })}}/>
-            <CustomButton style={{height: '40px', marginLeft: 10, marginTop: '14px'}} typeButton={'dark'} onClick={loadData}>Pesquisar</CustomButton>
-           <InputGroup width={'100%'} placeholder={'Filtro'} title={'Pesquisar'} value={search?.filter || ''} onChange={(e) => { setSearch({...search, filter: e.target.value}) }} />
-            </div>
-            <CustomButton style={{marginBottom: '10px'}} typeButton={'dark'} onClick={() => {setEdit(0)}}>Nova Entrada</CustomButton>
-           <div className={styles.boxSearch}>
-           <BoxInfo style={{marginRight: '10px'}} title={'Geral'} value={GetCurrencyBRL(_.sumBy(list, p => p.valorTotal))}/>
-           <BoxInfo style={{marginRight: '10px'}} title={'A Receber'} value={GetCurrencyBRL(_.sumBy(list, p => {
-            if(new Date(p.dataRecebimento) < new Date || p.statusRecebimento){
-                 return 0
-            }
-            return p.valorTotal;
-           }))}/>
-           <BoxInfo style={{marginRight: '10px'}} title={'Recebido'} value={`R$ ${_.sumBy(list, p =>  p.statusRecebimento ?  p.valorTotal : 0).toFixed(2)}`}/>
-           </div>
-            <hr/>
-            <CustomTable
-                columns={columns}
-                data={getFiltered()}
-                loading={loading}
-            />
-
-            {(edit >= 0) && <EntradaForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if(v){
-                    loadData();
-                }
-                setEdit(-1);
-            }} />}
-
-        </div>
-    )
-}
-
-const StatusBadge = ({dataRecebimento, statusLancamento}) => {
-    if(statusLancamento){
-        return <Badge style={{padding: '7px', fontSize: '12px'}} bg={'success'}>PAGO</Badge>
-    }
-    if(new Date(dataRecebimento) < new Date()){
-        return <Badge style={{padding: '7px', fontSize: '12px'}} bg={'danger'}>VENCIDO</Badge>
-    }
-    return <Badge style={{padding: '7px', fontSize: '12px'}} bg={'primary'}>EM ABERTO</Badge>
+        <CrudPage<IEntrada>
+            title="Entradas"
+            newLabel="Nova Entrada"
+            list={list}
+            loading={loading}
+            columns={columns}
+            searchText={r => r.descricao}
+            onReload={reload}
+            filters={<>
+                <InputGroup minWidth={'200px'} type={'date'} value={dateIn} onChange={e => setDateIn(e.target.value)} title={'Início'} width={'20%'} />
+                <InputGroup minWidth={'200px'} type={'date'} value={dateFim} onChange={e => setDateFim(e.target.value)} title={'Final'} width={'20%'} />
+                <SelectStatusRecebimento width={'30%'} selected={status} setSelected={setStatus} />
+                <CustomButton typeButton={'dark'} onClick={reload}>Pesquisar</CustomButton>
+            </>}
+            summary={<>
+                <BoxInfo title={'Geral'} value={GetCurrencyBRL(_.sumBy(list, p => p.valorTotal))} />
+                <BoxInfo title={'A Receber'} value={GetCurrencyBRL(_.sumBy(list, p => (p.statusRecebimento || vencida(p)) ? 0 : p.valorTotal))} />
+                <BoxInfo title={'Recebido'} value={GetCurrencyBRL(_.sumBy(list, p => p.statusRecebimento ? p.valorTotal : 0))} />
+            </>}
+            renderCard={r => (
+                <>
+                    <div><b>{r.descricao}</b></div>
+                    <div>{dataBR(r.dataRecebimento)} · {GetCurrencyBRL(r.valorTotal)} · <StatusBadge entrada={r} /></div>
+                </>
+            )}
+            renderModal={(edit, close) => (
+                <EntradaForm user={user} isOpen id={edit} setClose={close} />
+            )}
+        />
+    );
 }

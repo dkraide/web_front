@@ -101,7 +101,7 @@ export default function TabelaForm({ user, isOpen, id, setClose, color }: props)
     }
     async function remove(index) {
         if (item.produtos[index].id > 0) {
-            var res = await api.delete(`/TabelaPromocionalProduto/Delete?id=${item.produtos[index].id}`).then((response) => {
+            let res = await api.delete(`/TabelaPromocionalProduto/Delete?id=${item.produtos[index].id}`).then((response) => {
                 toast.success(`Item removido do banco de dados`);
                 return true;
             }).catch((err: AxiosError) => {

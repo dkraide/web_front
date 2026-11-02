@@ -35,7 +35,7 @@ export default function Configuracao() {
 
     useEffect(() => {
         const loadData = async () => {
-            var user = await getUser();
+            let user = await getUser();
             setUser(user);
         }
         loadData();
@@ -94,13 +94,13 @@ const ConfiguracaoNFCE = ({ handleSubmit, user, register, errors, setValue }: pr
     }
 
     function getFile() {
-        var input = document.createElement("input");
+        let input = document.createElement("input");
         input.type = "file";
         input.click();
         input.onchange = (e: Event) => {
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
-            var formData = new FormData();
+            let formData = new FormData();
             formData.append('file', files[0], files[0].name)
             formData.append('empresa', config.empresaId.toString())
            
@@ -224,7 +224,7 @@ const ConfiguracaoEmpresa = ({ handleSubmit, user, register, errors, setValue, g
 
 
     function getCep() {
-        var cep = fGetOnlyNumber(getValues("cep"));
+        let cep = fGetOnlyNumber(getValues("cep"));
         apiViaCep.get(`/${cep}/json`)
             .then(({ data }: AxiosResponse) => {
                 setObjeto({ ...objeto, endereco: data.logradouro, bairro: data.bairro, cidade: data.localidade, uf: data.uf, codCidade: data.ibge })

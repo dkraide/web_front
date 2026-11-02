@@ -16,7 +16,7 @@ interface IObj{
 export  default function SelectPISCofins({title, width, selected, setSelected}: selProps){
     const [formas, setFormas] = useState<IObj[]>([]);
     const loadFormas = async () => {
-           var res = [{
+           let res = [{
             value: 1,
             nome: '01 - Operação Tributável(base de cálculo = valor da operação alíquota normal(cumulativo / não cumulativo))'
            },{
@@ -56,9 +56,9 @@ export  default function SelectPISCofins({title, width, selected, setSelected}: 
         loadFormas();
     }, []);
     function getData() {
-        var data = [] as any[];
+        let data = [] as any[];
         formas.map((forma) => {
-            var x = {
+            let x = {
                 value: forma.value.toString(),
                 label: forma.nome || ''
             }
@@ -67,7 +67,7 @@ export  default function SelectPISCofins({title, width, selected, setSelected}: 
         return data;
     }
     function setSelectedProd(value: any){
-           var index = _.findIndex(formas, p => p.value == value);
+           let index = _.findIndex(formas, p => p.value == value);
            if(index  >= 0){
                 setSelected(formas[index].value);
            }

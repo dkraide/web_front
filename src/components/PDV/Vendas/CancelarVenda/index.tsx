@@ -35,7 +35,7 @@ export default function CancelarVenda({ venda, usuario, isOpen, setClose }: canc
 
 
     async function cancelarVenda(){
-        var motivo = getValues("motivoCancelamento")?.trim();
+        let motivo = getValues("motivoCancelamento")?.trim();
         if(!motivo || motivo.length < 15){
            toast.error('Motivo precisa conter mais de 15 caracteres.');
            return;

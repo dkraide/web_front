@@ -67,7 +67,7 @@ export default function IFoodLojaPage() {
       const result = await ifoodService.getInterrupcoes(empresaId);
       console.log(result.dados)
       if (result.sucesso) setInterrupcoes(result.dados);
-    } catch { }
+    } catch (err) { console.error(err); }
   }
 
 

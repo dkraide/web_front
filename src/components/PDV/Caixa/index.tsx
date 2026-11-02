@@ -62,7 +62,7 @@ export default function Caixa({ usuarioCaixa, caixa, isOpen, setClose }: cancela
     async function abrirFecharCaixa(valor: number) {
         setLoading(true);
         if (!movimentoCaixa.id) {
-            var obj = {
+            let obj = {
                 idMovimentoCaixa: 0,
                 id: 0,
                 idUsuario: usuarioCaixa.idUsuario,
@@ -120,12 +120,10 @@ export default function Caixa({ usuarioCaixa, caixa, isOpen, setClose }: cancela
         return movimentoCaixa.valorDinheiro + vendas - sangrias;
    }
    function calculaDiferenca(){
-       var esperado = calculaEsperado();
+       let esperado = calculaEsperado();
        return  movimentoCaixa.valorDinheiroFinal - esperado;
    }
 
-   console.log(movimentoCaixa);
-   console.log(caixa);
 
     return (
         <BaseModal headerOff={!movimentoCaixa?.id}  title={'Movimento Caixa'} isOpen={isOpen} setClose={

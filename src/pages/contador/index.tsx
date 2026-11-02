@@ -75,7 +75,7 @@ export default function Contador() {
                 toast.error(`Nao ha arquivos para download.`);
                 return;
             }
-            var files = [];
+            let files = [];
             arquivos.map(p => files.push(p.id));
             download(files);
             return;
@@ -84,7 +84,7 @@ export default function Contador() {
                 toast.error(`Nenhum xml selecionado para download.`);
                 return;
             }
-            var files = [];
+            let files = [];
             selected.map(p => {
                 files.push(p.xml.id);
             });
@@ -116,9 +116,9 @@ export default function Contador() {
     }
 
     function filter() {
-        var files = [];
-        var res = arquivos?.map((arquivo) => {
-            var str = arquivo.nnf.toString() + arquivo.dataEmissao.toString() + arquivo.vnf.toString() + "R$";
+        let files = [];
+        let res = arquivos?.map((arquivo) => {
+            let str = arquivo.nnf.toString() + arquivo.dataEmissao.toString() + arquivo.vnf.toString() + "R$";
             if (str.toUpperCase().includes(search.searchString.toUpperCase())) {
                 files.push(arquivo);
             }
@@ -129,16 +129,16 @@ export default function Contador() {
 
     useEffect(() => {
         if (!search) {
-            var s = { searchString: '', includeCancelamento: false, dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') };
+            let s = { searchString: '', includeCancelamento: false, dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') };
             setSearch(s);
             loadData(s);
         }
     }, [])
 
     const loadData = async (s?: searchProps) => {
-        var u: any;
+        let u: any;
         if (!user) {
-            var res = await getUser();
+            let res = await getUser();
             setUser(res);
             u = res;
         }

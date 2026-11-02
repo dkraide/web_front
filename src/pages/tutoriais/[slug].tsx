@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { FaPlayCircle, FaRegFileAlt, FaArrowLeft } from 'react-icons/fa';
 import TutoriaisTopBar from '@/components/TutoriaisTopBar';
+import SafeHtml from '@/components/ui/SafeHtml';
 import {
     Tutorial, TutorialResumo, listarTutoriais, nomeSistema, obterTutorial, urlEmbedYoutube,
 } from '@/services/tutorialService';
@@ -72,7 +73,7 @@ export default function TutorialPagina() {
                                         </div>
                                     )}
                                     {tutorial.corpo && (
-                                        <div className={styles.corpo} dangerouslySetInnerHTML={{ __html: tutorial.corpo }} />
+                                        <SafeHtml className={styles.corpo} html={tutorial.corpo} />
                                     )}
                                 </article>
 

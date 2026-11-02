@@ -20,14 +20,11 @@ export function canSSRAuth<P>(fn: GetServerSideProps<P>) {
         if (!token) {
             return { redirect: { destination: loginComRedirect, permanent: false } }
         }
-        var u = JSON.parse(cookies['@web_front.user']) as IUsuario;
-        if (!token) {
-            return {
-                redirect: {
-                    destination: loginComRedirect,
-                    permanent: false
-                }
-            }
+        let u: IUsuario | undefined;
+        try {
+            u = JSON.parse(cookies['@web_front.user']) as IUsuario;
+        } catch {
+            return { redirect: { destination: loginComRedirect, permanent: false } }
         }
 
         if (u.isPdv) {
@@ -53,7 +50,7 @@ export function canSSRAuth<P>(fn: GetServerSideProps<P>) {
             return await fn(ctx);
         } catch (err) {
             if (err instanceof AuthTokenError) {
-                destroyCookie(ctx, '@nextauth.token');
+                destroyCookie(ctx, '@web_front.token');
 
                 return {
                     redirect: {
@@ -62,6 +59,7 @@ export function canSSRAuth<P>(fn: GetServerSideProps<P>) {
                     }
                 }
             }
+            throw err;
         }
     }
 }

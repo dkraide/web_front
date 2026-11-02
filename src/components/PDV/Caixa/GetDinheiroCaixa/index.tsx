@@ -22,8 +22,8 @@ export default function GetDinheiroCaixa({isOpen,  setClose}: cancelarProps) {
 
 
         const onSubmit =  (data: any) => {
-            var v1 = fGetNumber(data.valor1);
-            var v2 = fGetNumber(data.valor2);
+            let v1 = fGetNumber(data.valor1);
+            let v2 = fGetNumber(data.valor2);
             if(v1 != v2){
                 toast.error('Os valores nao conferem.');
                 return;

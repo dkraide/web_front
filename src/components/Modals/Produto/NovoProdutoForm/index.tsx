@@ -56,7 +56,6 @@ export default function NovoProdutoForm({ isOpen, setClose, user }: novoProdutoP
         setValue('cod', res.data);
       }
     }).catch(errr => {
-      console.log(errr);
     });
   }
 
@@ -144,8 +143,8 @@ export default function NovoProdutoForm({ isOpen, setClose, user }: novoProdutoP
 
   const steps = [
     <FormGrupoTributacao key="tributacao" formData={formData} setFormData={setFormData} />,
-    <FormDados />,
-    <FormOutrasInfos />
+    <FormDados key="dados" />,
+    <FormOutrasInfos key="outras" />
   ];
 
   const validarTela = () => {
@@ -206,7 +205,6 @@ export default function NovoProdutoForm({ isOpen, setClose, user }: novoProdutoP
 
 
   const onSubmit = async (data) => {
-    console.log('submit', data);
     setLoading(true);
     formData.empresaId = user.empresaSelecionada;
     formData.cod = data.cod;
@@ -222,7 +220,6 @@ export default function NovoProdutoForm({ isOpen, setClose, user }: novoProdutoP
       toast.success(`Sucesso!`);
       setClose(true);
     }).catch(err => {
-       console.log(`erro`, err);
     })
 
 

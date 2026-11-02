@@ -1,16 +1,3 @@
-// import BaseModal from '@/components/Modals/Base/Index';
-// import styles from './styles.module.scss';
-// import IProdutoGrupo from '@/interfaces/IGrupoAdicional';
-// import { useEffect, useRef, useState } from 'react';
-// import { InputGroup } from '@/components/ui/InputGroup';
-// import Switch from "react-switch";
-// import CustomButton from '@/components/ui/Buttons';
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-// import { faTrash } from '@fortawesome/free-solid-svg-icons';
-// import _ from 'lodash';
-// import { v4 as uuidv4 } from 'uuid';
-// import SelectMateriaPrima from '@/components/Selects/SelectMateriaPrima';
-// import IMateriaPrima from '@/interfaces/IMateriaPrima';
 
 // type props = {
 //     isOpen: boolean
@@ -28,28 +15,14 @@
 
 //     const fileInputRef = useRef<HTMLInputElement>(null);
 
-//     const handleChangeValue = (newValue: any, field: string) => {
-//         const indexItem = _.findIndex(grupo.itens, p => p.id == item.id);
-//         grupo.itens[indexItem][field] = newValue;
-//         setGrupo({ ...grupo });
-//     }
 
 //     const handleMateriaPrimaChanged = (m: IMateriaPrima) => {
 //         const indexItem = _.findIndex(grupo.itens, p => p.id == item.id);
 
-//         grupo.itens[indexItem].materiaPrimaId = m.id;
-//         grupo.itens[indexItem].idMateriaPrima = m.idMateriaPrima;
-//         grupo.itens[indexItem].nome = m.nome;
-//         grupo.itens[indexItem].valor = m.valorVenda;
 
 //         setGrupo({ ...grupo });
 //     }
 
-//     const handleRemove = () => {
-//         const indexItem = _.findIndex(grupo.itens, p => p.id == item.id);
-//         grupo.itens.splice(indexItem, 1);
-//         setGrupo({ ...grupo });
-//     }
 
 //     const handleImageClick = () => {
 //         fileInputRef.current?.click();

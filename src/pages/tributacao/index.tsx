@@ -1,149 +1,43 @@
-import { useContext, useEffect, useState } from 'react';
-import styles from './styles.module.scss';
-import { api } from '@/services/apiClient';
-import { AuthContext } from '@/contexts/AuthContext';
-import { AxiosError, AxiosResponse } from 'axios';
-import { InputGroup } from '@/components/ui/InputGroup';
-import CustomTable from '@/components/ui/CustomTable';
-import { toast } from 'react-toastify';
-import CustomButton from '@/components/ui/Buttons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import IUsuario from '@/interfaces/IUsuario';
-import ITributacao from '@/interfaces/ITributacao';
+import CrudPage from '@/components/ui/CrudPage';
+import { KRDColumn } from '@/components/ui/KRDTable';
 import TributacaoForm from '@/components/Modals/Tributacao/TributacaoForm';
-import { isMobile } from 'react-device-detect';
+import ITributacao from '@/interfaces/ITributacao';
+import { useListaCrud } from '@/hooks/useListaCrud';
 
+const columns: KRDColumn<ITributacao>[] = [
+    { name: '#', selector: r => r.id, sortable: true, width: '70px' },
+    { name: 'Local', selector: r => r.idTributacao >= 0 ? 'SIM' : 'NAO', sortable: true, width: '70px' },
+    { name: 'NCM', selector: r => r.ncm, sortable: true, width: '110px' },
+    { name: 'Nome', selector: r => r.descricao, sortable: true },
+    { name: 'ICMS', selector: r => r.cstIcms, sortable: true, width: '80px' },
+    { name: 'CFOP', selector: r => r.cfop, sortable: true, width: '80px' },
+    { name: 'PIS', selector: r => r.cstPis, sortable: true, width: '80px' },
+    { name: 'COFINS', selector: r => r.cstCofins, sortable: true, width: '90px' },
+    { name: 'Status', selector: r => r.status ? 'Ativo' : 'Inativo', sortable: true, width: '90px' },
+];
 
 export default function Tributacao() {
-    const [loading, setLoading] = useState(true)
-    const [classes, setClasses] = useState<ITributacao[]>([])
-    const { getUser } = useContext(AuthContext)
-    const [search, setSearch] = useState('')
-    const [edit, setEdit] = useState(-1);
-    const [user, setUser] = useState<IUsuario>()
+    const { list, loading, reload, user } = useListaCrud<ITributacao>('/Tributacao/List');
 
-    const loadData = async () => {
-        var u: any;
-        if (!user) {
-            var res = await getUser();
-            setUser(res);
-            u = res;
-        }
-        await api
-            .get(`/Tributacao/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
-            .then(({ data }: AxiosResponse) => {
-                setClasses(data);
-                console.log(data);
-            }).catch((err: AxiosError) => {
-                toast.error(`Erro ao carregar dados. ${err.response?.data || err.message}`);
-            });
-        setLoading(false);
-    }
-    useEffect(() => {
-        loadData();
-    }, [])
-
-    function getFiltered() {
-        var res = classes.filter(p => {
-            return (p.descricao + p.ncm + p.id.toString()).toLowerCase().includes(search.toLowerCase())
-        });
-        return res;
-    }
-
-    const columns = [
-        {
-            name: '#',
-            cell: ({ id }: ITributacao) => <CustomButton onClick={() => { setEdit(id) }} typeButton={'outline-main'}><FontAwesomeIcon icon={faEdit} /></CustomButton>,
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'Local',
-            selector: row => row['idTributacao'] >= 0 ? 'SIM' : 'NAO',
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'NCM',
-            selector: row => row['ncm'],
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'Nome',
-            selector: row => row['descricao'],
-            sortable: true,
-        },
-        {
-            name: 'ICMS',
-            selector: row => row['cstIcms'],
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'CFOP',
-            selector: row => row['cfop'],
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'PIS',
-            selector: row => row['cstPis'],
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'COFINS',
-            selector: row => row['cstCofins'],
-            sortable: true,
-            grow: 0
-        },
-        {
-            name: 'Status',
-            selector: row => row['status'] ? 'Ativo' : 'Inativo',
-            sortable: true,
-            grow: 0
-        }
-    ]
-
-    if (loading) {
-        return <></>
-    }
-    const Item = (item: ITributacao) => {
-        return (
-            <div className={styles.item} onClick={() => { setEdit(item.id) }} >
-                <span className={styles.w20}>NCM<br /><b>{item.ncm}</b></span>
-                <span className={styles.w80}>Descricao<br /><b>{item.descricao}</b></span>
-                <span className={styles.w20}>CFOP<br /><b>{item.cfop}</b></span>
-                <span className={styles.w20}>ICMS<br /><b>{item.cstIcms}</b></span>
-                <span className={styles.w20}>PIS<br /><b>{item.cstPis}</b></span>
-                <span className={styles.w20}>COFINS<br /><b>{item.cstCofins}</b></span>
-            </div>
-        )
-    }
     return (
-        <div className={styles.container}>
-            <h4>Tributações</h4>
-            <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={search} onChange={(e) => { setSearch(e.target.value) }} />
-            <CustomButton typeButton={'dark'} onClick={() => { setEdit(0) }} >Nova Tributação</CustomButton>
-            {isMobile ? <>
-                {getFiltered()?.map((item) => Item(item))}
-            </> : <>
-                <CustomTable
-                    columns={columns}
-                    data={getFiltered()}
-                    loading={loading}
-                />
-            </>}
-
-            {(edit >= 0) && <TributacaoForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if (v) {
-                    loadData();
-                }
-                setEdit(-1);
-            }} />}
-
-        </div>
-    )
+        <CrudPage<ITributacao>
+            title="Tributações"
+            newLabel="Nova Tributação"
+            list={list}
+            loading={loading}
+            columns={columns}
+            searchText={r => `${r.descricao} ${r.ncm}`}
+            onReload={reload}
+            renderCard={r => (
+                <>
+                    <div>NCM <b>{r.ncm}</b> · CFOP <b>{r.cfop}</b></div>
+                    <div>Descrição <b>{r.descricao}</b></div>
+                    <div>ICMS <b>{r.cstIcms}</b> · PIS <b>{r.cstPis}</b> · COFINS <b>{r.cstCofins}</b></div>
+                </>
+            )}
+            renderModal={(edit, close) => (
+                <TributacaoForm user={user} isOpen id={edit} setClose={close} />
+            )}
+        />
+    );
 }

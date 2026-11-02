@@ -62,7 +62,6 @@ export function EditarCardapioForm({ item, setClose }: props) {
             setClose(true);
 
         }).catch((err) => {
-            console.log(err);
         });
         setLoading(false);
 

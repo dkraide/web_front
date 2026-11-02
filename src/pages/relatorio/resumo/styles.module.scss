@@ -1,14 +1,33 @@
-// ─── Aliases locais para as variáveis do projeto ─────────────────────────────
-// Seu projeto usa hsl(var(--token)) — seguimos o mesmo padrão
+// ─── Tema da página ──────────────────────────────────────────────────────────
+// Os tokens hsl(var(--...)) do :root são do tema ESCURO (usados na landing page). As telas do painel
+// são claras, com a cor da marca (#fc4f6b). Por isso a página redefine os tokens aqui, só para ela:
+// todas as regras abaixo continuam lendo hsl(var(--token)) e passam a sair claras.
 
 $radius: var(--radius, 0.75rem);
 
 // ─── Container ────────────────────────────────────────────────────────────────
 .container {
+  // Claro: texto escuro azulado (o --dark-900 das outras telas), cartões brancos, bordas e cinzas roxos suaves.
+  --foreground: 240 41% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 240 41% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 41% 11%;
+  --secondary: 290 20% 96%;
+  --secondary-foreground: 240 41% 11%;
+  --muted: 290 20% 96%;
+  --muted-foreground: 280 7% 45%;
+  --border: 292 19% 91.7%;
+  --input: 292 19% 91.7%;
+  // Cor da marca (#fc4f6b) no lugar do azul do tema escuro.
+  --primary: 350 97% 65%;
+  --primary-foreground: 0 0% 100%;
+  --ring: 350 97% 65%;
+
   padding-bottom: 2rem;
   font-size: 14px;
   color: hsl(var(--foreground));
-  background: var(--dark-900);
+  background: var(--background);
 }
 
 // ─── Header ───────────────────────────────────────────────────────────────────
@@ -192,11 +211,11 @@ $radius: var(--radius, 0.75rem);
   padding: 0.875rem 1rem;
 
   &.green .metricValue {
-    color: #4ade80;
+    color: #16a34a;
   }
 
   &.red .metricValue {
-    color: #f87171;
+    color: #dc2626;
   }
 }
 

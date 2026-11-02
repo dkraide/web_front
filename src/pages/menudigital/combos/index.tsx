@@ -32,9 +32,9 @@ export default function Promocoes() {
     const [prodEdit, setProdEdit] = useState<prodEdit | undefined>()
 
     const loadData = async () => {
-        var u: any;
+        let u: any;
         if (!user) {
-            var res = await getUser();
+            let res = await getUser();
             setUser(res);
             u = res;
         }
@@ -52,18 +52,18 @@ export default function Promocoes() {
     }, [])
 
     function getFiltered() {
-        var res = list.filter(p => {
+        let res = list.filter(p => {
             return ((p.descricao || '') + (p.codigo || '') + p.id.toString()).toLowerCase().includes(search.toLowerCase())
         });
         return res;
     }
 
     async function onToggle(id) {
-        var res = await onConfirm('', id, 'VISIVELMENU');
+        let res = await onConfirm('', id, 'VISIVELMENU');
         if(!res){
             return;
         }
-        var index = _.findIndex(list, p => p.id == id);
+        let index = _.findIndex(list, p => p.id == id);
         list[index].visivelMenu = !list[index].visivelMenu;
         setList([...list]);
     }
@@ -83,7 +83,7 @@ export default function Promocoes() {
     }
 
     function setImage(c: ICombo){
-        var input = document.createElement("input");
+        let input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
         input.click();
@@ -91,7 +91,7 @@ export default function Promocoes() {
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
             setLoading(true);
-            var str = await sendImage(files);
+            let str = await sendImage(files);
             if(str){
                 c.localPath = str;
                 await api.put(`/Combo/UpdateCombo`,c).then(({data}) => {

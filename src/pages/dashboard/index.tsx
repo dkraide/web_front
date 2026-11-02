@@ -64,17 +64,17 @@ export default function Dashboard() {
   }, []);
 
   function getData() {
-    var orcamento = _.sumBy(obj, p => {
+    let orcamento = _.sumBy(obj, p => {
       if (p.statusVenda && !p.estd) {
         return p.valorTotal;
       } else return 0;
     })
-    var faturado = _.sumBy(obj, p => {
+    let faturado = _.sumBy(obj, p => {
       if (p.statusVenda && p.estd) {
         return p.valorTotal;
       } else return 0;
     });
-    var list = [];
+    let list = [];
 
     list.push({
       label: 'Orcamento',
@@ -90,11 +90,11 @@ export default function Dashboard() {
 
   }
   function getDataDia() {
-    var res = _.groupBy(obj, v => {
-      var formatted = format(new Date(v.dataVenda), 'dd/MM/yyyy');
+    let res = _.groupBy(obj, v => {
+      let formatted = format(new Date(v.dataVenda), 'dd/MM/yyyy');
       return formatted;
     });
-    var list = _.map(res, (collection, key) => {
+    let list = _.map(res, (collection, key) => {
       return {
         key,
         venda: Number(_.sumBy(collection, (p: IVenda) => p.statusVenda ? p.valorTotal : 0).toFixed(2)),
@@ -105,14 +105,14 @@ export default function Dashboard() {
   }
 
   function getDataForma() {
-    var pagamentos = [];
+    let pagamentos = [];
     obj?.map((p) => {
       if (p.statusVenda) {
         pagamentos.push(...p.pagamentos);
       }
     });
-    var grouped = _.groupBy(pagamentos, (p: IVendaPagamento) => p.descricao);
-    var list = _.map(grouped, (collection, key) => {
+    let grouped = _.groupBy(pagamentos, (p: IVendaPagamento) => p.descricao);
+    let list = _.map(grouped, (collection, key) => {
       return {
         label: key,
         value: Number(_.sumBy(collection, (p: IVendaPagamento) => p.valor).toFixed(2)),
@@ -225,7 +225,7 @@ export default function Dashboard() {
 const CardInfo = ({ title, style, vendas }) => {
 
   function getValor(onlyToday) {
-    var total = 0;
+    let total = 0;
     switch (style) {
       case 'success':
         total = _.sumBy(vendas, (p: IVenda) => {
@@ -279,7 +279,7 @@ const CardInfo = ({ title, style, vendas }) => {
     return total;
   }
   function getCount(onlyToday) {
-    var total = 0;
+    let total = 0;
     switch (style) {
       case 'success':
         total = _.sumBy(vendas, (p: IVenda) => {

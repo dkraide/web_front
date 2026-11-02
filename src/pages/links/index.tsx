@@ -28,7 +28,6 @@ export default function Links() {
 
             const data = await response.json();
 
-            console.log(data);
             setConfiguracao(data);
         } catch (err) {
             console.log(err);
@@ -71,7 +70,7 @@ export default function Links() {
             return `https://menu.krdsystem.com/?empresa=${configuracao.empresaId}`;
         }
         const getLinks = async () => {
-            var res = [
+            let res = [
                 {
                     url: await linkCardápio(),
                     label: 'Meu Cardápio',

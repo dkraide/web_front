@@ -54,7 +54,6 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
             api.get(`/Produto/Select?id=${id}`)
                 .then(({ data }: AxiosResponse<IProduto>) => {
                     setObj(data);
-                    console.log(data);
                     setLoading(false);
                 })
                 .catch((err) => {
@@ -140,7 +139,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         setSending(false);
     }
     function addCodigo() {
-        var codigo = getValues("codigoBarras");
+        let codigo = getValues("codigoBarras");
         if (!codigo || codigo.length == 0) {
             toast.error(`Informe um codigo para adicionar`);
             return;
@@ -148,7 +147,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         if (!obj.codBarras) {
             obj.codBarras = [];
         }
-        var ind = _.findIndex(obj.codBarras, o => o.codigo == codigo);
+        let ind = _.findIndex(obj.codBarras, o => o.codigo == codigo);
         if (ind >= 0) {
             toast.error(`Codigo ja adicionado.`);
             return;
@@ -164,7 +163,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
     }
     async function removeCodigo(index: number) {
         if (obj.codBarras[index].id > 0) {
-            var res = await api.delete(`/CodBarras/Delete?id=${obj.codBarras[index].id}`)
+            let res = await api.delete(`/CodBarras/Delete?id=${obj.codBarras[index].id}`)
                 .then((res: AxiosResponse) => {
                     toast.success(`Codigo de barras excluido na nuvem`)
                     return true;
@@ -240,7 +239,7 @@ export default function ProdutoForm({ user, isOpen, id, setClose, color }: props
         }
         let id = obj.materiaPrimas[index].id;
         if (id > 0) {
-            var res = await api.delete(`/ProdutoMateriaPrima/Delete?id=${id}`)
+            let res = await api.delete(`/ProdutoMateriaPrima/Delete?id=${id}`)
                 .then((res: AxiosResponse) => {
                     toast.success(`Materia prima excluida na nuvem`)
                     return true;

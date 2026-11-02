@@ -20,7 +20,7 @@ export default function SelectCliente({ignore, width, selected, setSelected }: s
     const { getUser } = useContext(AuthContext);
     const loadFormas = async () => {
         const res = await getUser();
-        var ret = await api.get(`/Cliente/List?EmpresaId=${res?.empresaSelecionada}&status=true`)
+        let ret = await api.get(`/Cliente/List?EmpresaId=${res?.empresaSelecionada}&status=true`)
             .then(({ data }: AxiosResponse<ICliente[]>) => {
                 setFormas(data);
             })
@@ -37,10 +37,10 @@ export default function SelectCliente({ignore, width, selected, setSelected }: s
        }
     }, [ignore]);
     function getData() {
-        var data = [] as any[];
-        var isSelected = false;
+        let data = [] as any[];
+        let isSelected = false;
         formas.map((forma, index) => {
-            var ind = _.findIndex(ignore, p => p == forma.id);
+            let ind = _.findIndex(ignore, p => p == forma.id);
            if(ind >= 0){
             return;
            }
@@ -48,7 +48,7 @@ export default function SelectCliente({ignore, width, selected, setSelected }: s
               setSelected(forma);
               isSelected = true;
            }
-            var x = {
+            let x = {
                 value: forma.id.toString(),
                 label: `${forma.nome}`
             }
@@ -57,7 +57,7 @@ export default function SelectCliente({ignore, width, selected, setSelected }: s
         return data;
     }
     function setSelectedProd(value: any) {
-        var index = _.findIndex(formas, p => p.id == value);
+        let index = _.findIndex(formas, p => p.id == value);
         if (index >= 0) {
             setSelected(formas[index]);
         }

@@ -25,7 +25,7 @@ export  const  SelectBaseRef = forwardRef<SelectInstance<dataProps>, selectProps
         return <></>
     }
     function getSelected(){
-        var i = _.findIndex(datas, p => p.value == selected);
+        let i = _.findIndex(datas, p => p.value == selected);
         if(i >= 0){
             return datas[i];
         }
@@ -59,7 +59,7 @@ export function SelectBase({error, id, maxTitleSize, width, datas, selected, tit
         return <></>
     }
     function getSelected(){
-        var i = _.findIndex(datas, p => p.value == selected);
+        let i = _.findIndex(datas, p => p.value == selected);
         if(i >= 0){
             return datas[i];
         }
