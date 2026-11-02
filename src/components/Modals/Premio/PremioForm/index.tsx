@@ -11,7 +11,7 @@ import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
-import { isMobile, validateString } from "@/utils/functions";
+import { validateString } from "@/utils/functions";
 import IPremio from "@/interfaces/IPremio";
 import KRDToggleSwitch from "@/components/ui/KRDToggleSwitch";
 import SelectProduto from "@/components/Selects/SelectProduto";

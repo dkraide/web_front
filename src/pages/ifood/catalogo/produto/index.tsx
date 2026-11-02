@@ -446,14 +446,14 @@ export default function IFoodProdutoPage() {
       if (!catalogId) return;
       const r = await ifoodCatalogService.listarCategorias(eid, catalogId);
       if (r.sucesso) setCategorias(r.dados);
-    } catch {}
+    } catch (err) { console.error(err); }
   }
 
   async function carregarProdutos(eid: number) {
     try {
       const r = await produtoService.getAll(eid, true);
       if (r) setProdutos(r);
-    } catch {}
+    } catch (err) { console.error(err); }
   }
 
   async function carregarItem(eid: number, id: string) {

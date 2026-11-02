@@ -16,7 +16,7 @@ interface IObj{
 export  default function SelectStatusLancamento({title, width, selected, setSelected}: selProps){
     const [formas, setFormas] = useState<IObj[]>([]);
     const loadFormas = async () => {
-           var res = [{
+           let res = [{
             value: 0,
             nome: 'Geral'
            }, {
@@ -35,9 +35,9 @@ export  default function SelectStatusLancamento({title, width, selected, setSele
         loadFormas();
     }, []);
     function getData() {
-        var data = [] as any[];
+        let data = [] as any[];
         formas.map((forma) => {
-            var x = {
+            let x = {
                 value: forma.value.toString(),
                 label: forma.nome || ''
             }
@@ -46,7 +46,7 @@ export  default function SelectStatusLancamento({title, width, selected, setSele
         return data;
     }
     function setSelectedProd(value: any){
-           var index = _.findIndex(formas, p => p.value == value);
+           let index = _.findIndex(formas, p => p.value == value);
            if(index  >= 0){
                 setSelected(formas[index].value);
            }

@@ -41,18 +41,14 @@ export  default function SelectMateriaPrima({width, selected, setSelected, empre
        }
     }, [ignore]);
         function getData() {
-            var data = [] as any[];
+            let data = [] as any[];
            // var isSelected = false;
             formas.map((forma, index) => {
-                var ind = _.findIndex(ignore, p => p == forma.id);
+                let ind = _.findIndex(ignore, p => p == forma.id);
                if(ind >= 0){
                 return;
                }
-            //    if(!isSelected && !selected){
-            //       setSelected(forma);
-            //       isSelected = true;
-            //    }
-                var x = {
+                let x = {
                     value: forma.id.toString(),
                     label: `${forma.nome}` || ''
                 }
@@ -61,7 +57,7 @@ export  default function SelectMateriaPrima({width, selected, setSelected, empre
             return data;
         }
         function setSelectedProd(value: any) {
-            var index = _.findIndex(formas, p => p.id == value);
+            let index = _.findIndex(formas, p => p.id == value);
             if (index >= 0) {
                 setSelected(formas[index]);
             }

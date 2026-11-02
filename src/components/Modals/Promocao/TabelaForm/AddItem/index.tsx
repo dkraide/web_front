@@ -45,11 +45,11 @@ export default function AddItem({ isOpen, setClose, user }: props) {
             return;
         }
 
-        var list = [];
-        var valor = fGetNumber(data.valorUnitario);
+        let list = [];
+        let valor = fGetNumber(data.valorUnitario);
         if(isProduto){
-            var selected = item as IProduto;
-            var obj =  {
+            let selected = item as IProduto;
+            let obj =  {
                   id: 0,
                   idTabelaPromocionalProduto: 0,
                   idTabelaPromocional: 0,
@@ -63,7 +63,7 @@ export default function AddItem({ isOpen, setClose, user }: props) {
             } as ITabelaPromocionalProduto;
             list.push(obj);
         }else{
-            var produtos = await api.get(`/Produto/List?empresaId=${user.empresaSelecionada}&classeId=${item.id}&status=true`)
+            let produtos = await api.get(`/Produto/List?empresaId=${user.empresaSelecionada}&classeId=${item.id}&status=true`)
             .then(({data}: AxiosResponse<IProduto[]>) => {
                  if(!data || data.length == 0){
                     toast.error(`Nao ha produtos para essa classe.`);
@@ -79,7 +79,7 @@ export default function AddItem({ isOpen, setClose, user }: props) {
                 return;
             }
             produtos.map((item: IProduto) => {
-                var obj =  {
+                let obj =  {
                     id: 0,
                     idTabelaPromocionalProduto: 0,
                     idTabelaPromocional: 0,

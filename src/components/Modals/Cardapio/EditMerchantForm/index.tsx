@@ -43,7 +43,6 @@ export default function EditMerchantForm({ setClose }: props) {
         await api.get(`/opendelivery/merchant?empresaId=${user.empresaSelecionada}`).then(response => {
             setMerchant(response.data);
         }).catch(error => {
-            console.log(error);
         });
         setLoading(false);
 

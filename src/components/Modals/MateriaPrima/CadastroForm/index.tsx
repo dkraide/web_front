@@ -95,7 +95,7 @@ export default function MateriaPrimaForm({ user, isOpen, id, setClose, color }: 
     }
 
     function setImage() {
-        var input = document.createElement("input");
+        let input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
         input.click();
@@ -105,7 +105,7 @@ export default function MateriaPrimaForm({ user, isOpen, id, setClose, color }: 
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
             setLoading(true);
-            var str = await sendImage(files);
+            let str = await sendImage(files);
             if (str) {
                 setClasse({ ...classe, localPath: str });
             } else {

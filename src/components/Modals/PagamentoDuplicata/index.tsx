@@ -26,7 +26,7 @@ export default function PagamentoDuplicata({ isOpen, duplicatas, setClose }: can
         }
 
         const loadPix = async () => {
-            var data = {
+            let data = {
                 abertos: true,
                 valor: Number(_.sumBy(duplicatas, d => d.valor).toFixed(2)),
                 empresa: duplicatas[0].empresaId
@@ -77,7 +77,7 @@ export default function PagamentoDuplicata({ isOpen, duplicatas, setClose }: can
                                 </tr>
                             </thead>
                             <tbody>
-                                {duplicatas?.map((duplicata) => <tr>
+                                {duplicatas?.map((duplicata) => <tr key={duplicata?.id}>
                                     <td>{duplicata?.id}</td>
                                     <td>{duplicata?.empresa.nomeFantasia}</td>
                                     <td>{format(new Date(duplicata?.dataVencimento), 'dd/MM/yyyy')}</td>

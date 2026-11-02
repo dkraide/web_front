@@ -56,7 +56,7 @@ export default function DetalheConferenciaForm({ user, isOpen, conferencia, setC
         } }/>
     }
     function getTotal(isEntrada, isQntd){
-        var valor = 0;
+        let valor = 0;
         result.lancamentos.map((lancamento) => {
                     if(lancamento.isEntrada == isEntrada){
                         valor += isQntd ? 1 : lancamento.custoUnitario * lancamento.quantidade
@@ -129,7 +129,7 @@ export default function DetalheConferenciaForm({ user, isOpen, conferencia, setC
 const Saidas = ({  lancamentos }: resultProps) => {
 
     function getSaidas() {
-        var list = [];
+        let list = [];
         lancamentos.map((lancamento) => {
             if (!lancamento.isEntrada) {
                 list.push({
@@ -189,7 +189,7 @@ const Saidas = ({  lancamentos }: resultProps) => {
 const Entradas = ({ lancamentos }: resultProps) => {
 
     function getSaidas() {
-        var list = [];
+        let list = [];
         lancamentos.map((lancamento) => {
             if (lancamento.isEntrada) {
                 list.push({

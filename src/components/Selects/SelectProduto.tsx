@@ -26,7 +26,7 @@ export  const  SelectProdutoRef = forwardRef<SelectInstance<any>, selProps>(func
     const { getUser } = useContext(AuthContext);
     const loadFormas = async () => {
         const res = await getUser();
-        var ret = await api.get(`/Produto/List?EmpresaId=${res?.empresaSelecionada}&status=true`)
+        let ret = await api.get(`/Produto/List?EmpresaId=${res?.empresaSelecionada}&status=true`)
             .then(({ data }: AxiosResponse<IProduto[]>) => {
                 setFormas(data);
             })
@@ -43,23 +43,22 @@ export  const  SelectProdutoRef = forwardRef<SelectInstance<any>, selProps>(func
        }
     }, [ignore]);
     function getData() {
-        var data = [] as any[];
+        let data = [] as any[];
         formas.map((forma, index) => {
-            var ind = _.findIndex(ignore, p => p == forma.id);
+            let ind = _.findIndex(ignore, p => p == forma.id);
            if(ind >= 0){
             return;
            }
-            var x = {
+            let x = {
                 value: forma.id.toString(),
                 label: `${forma.cod.toString()} - ${forma.nome}` || ''
             }
             data.push(x);
         });
-        console.log('recarregou');
         return data;
     }
     function setSelectedProd(value: any) {
-        var index = _.findIndex(formas, p => p.id == value);
+        let index = _.findIndex(formas, p => p.id == value);
         if (index >= 0) {
             setSelected(formas[index]);
         }
@@ -80,14 +79,14 @@ export default function SelectProduto({includeInativos, empresaId, id,ignore, wi
     const [formas, setFormas] = useState<IProduto[]>([]);
     const { getUser } = useContext(AuthContext);
     const loadFormas = async () => {
-        var res = 0;
+        let res = 0;
         if(empresaId){
             res =  empresaId;
         }else{
-            var user  = await getUser();
+            let user  = await getUser();
             res = user.empresaSelecionada;
         }
-        var ret = await api.get(`/Produto/List?EmpresaId=${res}${includeInativos ? '' : '&status=true'}`)
+        let ret = await api.get(`/Produto/List?EmpresaId=${res}${includeInativos ? '' : '&status=true'}`)
             .then(({ data }: AxiosResponse<IProduto[]>) => {
                 setFormas(data);
             })
@@ -104,10 +103,10 @@ export default function SelectProduto({includeInativos, empresaId, id,ignore, wi
        }
     }, [ignore]);
     function getData() {
-        var data = [] as any[];
-        var isSelected = false;
+        let data = [] as any[];
+        let isSelected = false;
         formas.map((forma, index) => {
-            var ind = _.findIndex(ignore, p => p == forma.id);
+            let ind = _.findIndex(ignore, p => p == forma.id);
            if(ind >= 0){
             return;
            }
@@ -115,7 +114,7 @@ export default function SelectProduto({includeInativos, empresaId, id,ignore, wi
               setSelected(forma);
               isSelected = true;
            }
-            var x = {
+            let x = {
                 value: forma.id.toString(),
                 label: `${forma.cod.toString()} - ${forma.nome}` || ''
             }
@@ -124,7 +123,7 @@ export default function SelectProduto({includeInativos, empresaId, id,ignore, wi
         return data;
     }
     function setSelectedProd(value: any) {
-        var index = _.findIndex(formas, p => p.id == value);
+        let index = _.findIndex(formas, p => p.id == value);
         if (index >= 0) {
             setSelected(formas[index]);
         }

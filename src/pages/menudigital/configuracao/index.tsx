@@ -40,7 +40,6 @@ export default function Configuracao() {
                 api.get(`/MenuDigital/Configuracao?id=${id}&withHorarios=true`)
                     .then(({ data }: AxiosResponse) => {
                         setObjeto(data);
-                        console.log(data);
                         setLoading(false);
                     })
                     .catch((err) => {
@@ -57,12 +56,11 @@ export default function Configuracao() {
 
     const onSubmit = async (data: any) => {
         setSending(true);
-        console.log(data);
-        var horario = "";
+        let horario = "";
         if (objeto.todoDia) {
             horario += `${data.iniciot}#${data.fimt};`
         } else {
-            var horario = "";
+            let horario = "";
             if (data.iniciodom && data.fimdom) {
                 horario += `${data.iniciodom}#${data.fimdom};`
             } else {
@@ -132,7 +130,7 @@ export default function Configuracao() {
         setObjeto({ ...objeto, horarios: objeto.horarios });
     }
     function setImage(isPerfil) {
-        var input = document.createElement("input");
+        let input = document.createElement("input");
         input.type = "file";
         input.accept = 'image/png, image/jpeg';
         input.click();
@@ -140,7 +138,7 @@ export default function Configuracao() {
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
             setLoading(true);
-            var str = await sendImage(files);
+            let str = await sendImage(files);
             if (str) {
                 if (isPerfil) {
                     setObjeto({ ...objeto, logoPath: str })

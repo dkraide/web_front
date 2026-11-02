@@ -49,7 +49,7 @@ export default function EstoqueLancamento() {
     }, [])
 
     const loadData = async () => {
-        var u = await getUser();
+        let u = await getUser();
         if (!user) {
             setUser(u);
         }

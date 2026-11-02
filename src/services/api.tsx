@@ -16,6 +16,14 @@ export function setupAPIClient(ctx = undefined) {
             Authorization: `Bearer ${cookies['@web_front.token']}`,
         }
     });
+    // O token é lido a cada request: após login/troca de sessão não depende do header fixado na criação.
+    api.interceptors.request.use(config => {
+        const token = parseCookies(ctx)['@web_front.token'];
+        if (token && !config.headers.Authorization?.toString().endsWith(token)) {
+            config.headers.Authorization = `Bearer ${token}`;
+        }
+        return config;
+    });
     api.interceptors.response.use(response => {
         return response;
     }, (error: AxiosError) => {

@@ -11,7 +11,7 @@ import styles from './styles.module.scss';
 import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
-import { GetCurrencyBRL, isMobile, validateString } from "@/utils/functions";
+import { GetCurrencyBRL, validateString } from "@/utils/functions";
 import { endOfMonth, format, startOfMonth } from "date-fns";
 import IVendaProduto from "@/interfaces/IVendaProduto";
 import BoxInfo from "@/components/ui/BoxInfo";
@@ -61,7 +61,6 @@ export default function ResultadoCombo({ user, isOpen, comboId, setClose, color 
 
         await api.get(`/Relatorio/Promocao?empresaid=${user.empresaSelecionada}&dataIn=${search.ini}&dataFim=${search.end}&comboId=${comboId}`).then(({data} : AxiosResponse) => {
             setItens(data);
-            console.log(data);
         }).catch((err) => {
             toast.error(`Erro ao buscar dados.`)
         })

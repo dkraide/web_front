@@ -24,7 +24,7 @@ export  default function SelectAno({title, width, selected, setSelected, min, ma
         if(!max){
             max = new Date().getFullYear();
         }
-        var res = []
+        let res = []
         for(let i = min; i <= max; i++){
              res.push({
                 value: i,
@@ -37,9 +37,9 @@ export  default function SelectAno({title, width, selected, setSelected, min, ma
         loadFormas();
     }, []);
     function getData() {
-        var data = [] as any[];
+        let data = [] as any[];
         formas.map((forma) => {
-            var x = {
+            let x = {
                 value: forma.value.toString(),
                 label: forma.nome || ''
             }
@@ -48,7 +48,7 @@ export  default function SelectAno({title, width, selected, setSelected, min, ma
         return data;
     }
     function setSelectedProd(value: any){
-           var index = _.findIndex(formas, p => p.value == value);
+           let index = _.findIndex(formas, p => p.value == value);
            if(index  >= 0){
                 setSelected(formas[index].value);
            }

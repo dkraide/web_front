@@ -82,14 +82,14 @@ export default function DespesaFormaForm({ user, isOpen, setClose, color }: prop
         setSending(false);
     }
     function calculaTotal() {
-        var sub = fGetNumber(getValues("valorSubTotal"));
-        var desconto = fGetNumber(getValues("desconto"));
-        var acrescimo = fGetNumber(getValues("acrescimo"));
+        let sub = fGetNumber(getValues("valorSubTotal"));
+        let desconto = fGetNumber(getValues("desconto"));
+        let acrescimo = fGetNumber(getValues("acrescimo"));
         if (desconto > sub + acrescimo) {
             toast.error(`Desconto excessivo.`);
             return;
         }
-        var total = sub - desconto + acrescimo;
+        let total = sub - desconto + acrescimo;
         setValue("valorTotal", total.toFixed(2));
         setValue("acrescimo", acrescimo.toFixed(2));
         setValue("desconto", desconto.toFixed(2));
@@ -101,8 +101,8 @@ export default function DespesaFormaForm({ user, isOpen, setClose, color }: prop
 
     async function pesquisarValor() {
         setLoading(true);
-        var din = getValues('dataIn');
-        var dfim = getValues('dataFim');
+        let din = getValues('dataIn');
+        let dfim = getValues('dataFim');
         await api.get(`/Relatorio/FormaPagamento?dataIn=${din}&dataFim=${dfim}&empresaId=${user.empresaSelecionada}&descricao=${forma.nome}`)
             .then(({ data }) => {
 
@@ -121,7 +121,7 @@ export default function DespesaFormaForm({ user, isOpen, setClose, color }: prop
 
     }
     function gerarObjeto(){
-        var porcentagem = fGetNumber(getValues("porcentagem"));
+        let porcentagem = fGetNumber(getValues("porcentagem"));
         if(relatorio == null || !relatorio.venda){
             return;
         }
@@ -129,8 +129,8 @@ export default function DespesaFormaForm({ user, isOpen, setClose, color }: prop
             toast.error(`Defina uma porcentagem maior que zero`);
             return;
         }
-        var res = (relatorio.venda * porcentagem) / 100;
-        var x = fGetNumber(res.toFixed(2));
+        let res = (relatorio.venda * porcentagem) / 100;
+        let x = fGetNumber(res.toFixed(2));
         objeto.id = 0;
         objeto.dataLancamento = new Date();
         objeto.dataVencimento = new Date();

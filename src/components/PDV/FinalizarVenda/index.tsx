@@ -55,7 +55,7 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
 
         }
         loadData();
-        var valorTotal = _.sumBy(venda.produtos, p => p.valorTotal);
+        let valorTotal = _.sumBy(venda.produtos, p => p.valorTotal);
         setValue("valorPagar", valorTotal.toFixed(2))
         setRestante(valorTotal);
         onFocus("valorPagar");
@@ -72,7 +72,7 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
         useForm();
 
     function eventKeyUp(e) {
-        var key = e.key.toLowerCase();
+        let key = e.key.toLowerCase();
         switch (key) {
             case "arrowdown": {
                 increaseSelectedForma(+1);
@@ -129,8 +129,8 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
         if (selected < 0) {
             return;
         }
-        var container = document.getElementsByClassName(styles.formas).item(0) as HTMLElement;
-        var element = container.children[selected] as HTMLElement;
+        let container = document.getElementsByClassName(styles.formas).item(0) as HTMLElement;
+        let element = container.children[selected] as HTMLElement;
         //Determine container top and bottom
         let cTop = container.scrollTop + container.offsetTop;
         let cBottom = cTop + container.clientHeight;
@@ -157,12 +157,12 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
     }, [pagamentos])
 
     function addPagamento() {
-        var forma = formas[selected];
-        var valor = fGetNumber(getValues("valorPagar"));
+        let forma = formas[selected];
+        let valor = fGetNumber(getValues("valorPagar"));
         if (valor > restante) {
             valor = restante;
         }
-        var vendaPagamento = {
+        let vendaPagamento = {
             forma: forma,
             idPagamento: 0,
             idVenda: 0,
@@ -182,16 +182,16 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
     }
 
     function calculaRestante() {
-        var subTotal = _.sumBy(venda.produtos, p => p.valorTotal);
-        var valorPago = _.sumBy(pagamentos, p => p.valor);
-        var desconto = fGetNumber(getValues("desconto"));
+        let subTotal = _.sumBy(venda.produtos, p => p.valorTotal);
+        let valorPago = _.sumBy(pagamentos, p => p.valor);
+        let desconto = fGetNumber(getValues("desconto"));
         if (desconto >= subTotal) {
             toast.error(`Impossivel dar 100% ou mais de desconto.`);
             onFocus("desconto");
             return;
         }
-        var acrescimo = fGetNumber(getValues("acrescimo"));
-        var resultado = (subTotal - desconto + acrescimo) - valorPago;
+        let acrescimo = fGetNumber(getValues("acrescimo"));
+        let resultado = (subTotal - desconto + acrescimo) - valorPago;
         setRestante(resultado);
         setValue("valorPagar", resultado.toFixed(2));
         onFocus("valorPagar", true);
@@ -219,7 +219,7 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
         if(venda.nnf > 0){
             imprimirNFce(impressao);
         }else{
-            var res = window.open(`/pdv/impressao/?id=${impressao}`);
+            let res = window.open(`/pdv/impressao/?id=${impressao}`);
         }
 
     }
@@ -253,7 +253,7 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
     }, [restante])
 
     function getValorTroco(e: any) {
-        var valor = Number(e?.currentTarget?.value);
+        let valor = Number(e?.currentTarget?.value);
         if (isNaN(valor) || valor < restante) {
             setTroco(0);
             return;
@@ -263,7 +263,7 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
 
 
     function getCep() {
-        var cep = fGetOnlyNumber(getValues("cep"));
+        let cep = fGetOnlyNumber(getValues("cep"));
         apiViaCep.get(`/${cep}/json`)
             .then(({ data }: AxiosResponse) => {
                 setValue("logradouro", data.logradouro);
@@ -283,7 +283,7 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
 
 
     function gerarNFce(vendaId: number){
-        var gerar = false;
+        let gerar = false;
         venda.pagamentos.forEach((pagamento) => {
             if(pagamento.forma.geraFaturamento){
                 gerar = true;
@@ -349,7 +349,6 @@ export default function FinalizarVenda({usuario,caixa, venda, isOpen, setClose }
                         <InputFormSm id="nro" width={'30%'} title={'Nro'} register={register} errors={errors} inputName={'nro'} />
                         <InputFormSm width={'30%'} title={'Compl'} register={register} errors={errors} inputName={'compl'} />
                         <InputFormSm onKeyUp={(e) => {
-                            console.log(e.key);
                             if (e.key.toLowerCase() == "enter") {
                                 getCep();
                             }

@@ -116,7 +116,7 @@ export default function Impressao() {
                 </tr>
                 {nota.pagamentos.map(pag => {
                     return (
-                        <tr className={styles.ttu}>
+                        <tr key={pag.descricao} className={styles.ttu}>
                             <td colSpan={2}>{pag.descricao}</td>
                             <td align="right">R${pag.valor.toFixed(2)}</td>
                         </tr>

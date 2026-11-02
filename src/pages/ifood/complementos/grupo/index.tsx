@@ -184,7 +184,7 @@ export default function IFoodGrupoComplementoPage() {
     try {
       const r = await materiaPrimaService.getAll(eid);
       if (r) setMaterias(r);
-    } catch { }
+    } catch (err) { console.error(err); }
   }
 
   async function carregarGrupo(eid: number, id: string) {

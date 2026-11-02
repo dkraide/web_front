@@ -49,7 +49,6 @@ export default function ResumoAnual() {
         const d1 = format(startOfYear(new Date(search.ano, 1, 1)), 'yyyy-MM-dd');
         const d2 = format(endOfYear(new Date(search.ano, 1, 1)), 'yyyy-MM-dd');
         const url = `/Venda/List?EmpresaId=${user.empresaSelecionada}&dataIn=${d1}&datafim=${d2}&specific=true`;
-        console.log(url);
         await api.get(url).then(({ data }) => {
             setVendas(data);
         }).catch((err: AxiosError) => {

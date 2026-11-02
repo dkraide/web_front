@@ -11,7 +11,7 @@ import IUsuario from "@/interfaces/IUsuario";
 import CustomButton from "@/components/ui/Buttons";
 import BaseModal from "../../Base/Index";
 import SelectStatus from "@/components/Selects/SelectStatus";
-import { isMobile, validateString } from "@/utils/functions";
+import { validateString } from "@/utils/functions";
 import ICliente from "@/interfaces/ICliente";
 import { format } from "date-fns";
 import SelectTipoIE from "@/components/Selects/SelectTipoIE";

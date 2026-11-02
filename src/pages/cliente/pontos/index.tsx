@@ -67,15 +67,15 @@ export default function ClientePontos() {
     }
 
     const totalEntrada = () => {
-        var total = _.sumBy(pontosGerados, p => p.pontosGanhos ?? 0);
+        let total = _.sumBy(pontosGerados, p => p.pontosGanhos ?? 0);
         return total;
     }
     const totalSaida = () => {
-        var total = _.sumBy(premiosRetirados, p => p.pontos ?? 0);
+        let total = _.sumBy(premiosRetirados, p => p.pontos ?? 0);
         return total;
     }
     const totalAtivo = () => {
-        var total = _.sumBy(clientes, p => p.pontos ?? 0);
+        let total = _.sumBy(clientes, p => p.pontos ?? 0);
         return total;
     }
 

@@ -59,17 +59,16 @@ export default function Venda() {
     }, [])
 
     const loadData = async () => {
-        var u: any;
+        let u: any;
         if (!user) {
-            var res = await getUser();
+            let res = await getUser();
             setUser(res);
             u = res;
         }
-        var url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}&vendedorId=${search.vendedorId}&movimentoCaixa=${search.movimentoCaixa}&status=${search.status}`;
+        let url = `/Venda/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}&dataIn=${search.dateIn}&dataFim=${search.dateFim}&vendedorId=${search.vendedorId}&movimentoCaixa=${search.movimentoCaixa}&status=${search.status}`;
         await api.get(url)
             .then(({ data }: AxiosResponse<IVenda[]>) => {
                 setVendas(data);
-                console.log(data);
             }).catch((err: AxiosError) => {
                 toast.error(`Erro ao buscar vendas. ${err.response?.data || err.message}`);
             });

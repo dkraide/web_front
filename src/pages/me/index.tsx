@@ -55,7 +55,7 @@ export default function Me() {
                 </div></> : <Loading />}
             <hr />
             <h3>Empresas</h3>
-            {empresas.map((e) => <ItemEmpresa {...e}/>)}
+            {empresas.map((e) => <ItemEmpresa key={e.id} {...e}/>)}
         </div>
     )
 }

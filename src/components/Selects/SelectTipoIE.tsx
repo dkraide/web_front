@@ -16,7 +16,7 @@ interface IObj{
 export  default function SelectTipoIE({title, width, selected, setSelected}: selProps){
     const [formas, setFormas] = useState<IObj[]>([]);
     const loadFormas = async () => {
-           var res = [{
+           let res = [{
             value: 0,
             nome: 'Contribuente'
            }, {
@@ -32,9 +32,9 @@ export  default function SelectTipoIE({title, width, selected, setSelected}: sel
         loadFormas();
     }, []);
     function getData() {
-        var data = [] as any[];
+        let data = [] as any[];
         formas.map((forma) => {
-            var x = {
+            let x = {
                 value: forma.value.toString(),
                 label: forma.nome || ''
             }
@@ -43,7 +43,7 @@ export  default function SelectTipoIE({title, width, selected, setSelected}: sel
         return data;
     }
     function setSelectedProd(value: any){
-           var index = _.findIndex(formas, p => p.value == value);
+           let index = _.findIndex(formas, p => p.value == value);
            if(index  >= 0){
                 setSelected(formas[index].value);
            }

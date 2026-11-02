@@ -39,7 +39,6 @@ export default function EditMerchantForm() {
         await api.get(`/opendelivery/merchant?empresaId=${user.empresaSelecionada}`).then(response => {
             setMerchant(response.data);
         }).catch(error => {
-            console.log(error);
         });
         setLoading(false);
 
@@ -67,23 +66,8 @@ export default function EditMerchantForm() {
         if (merchant) {
             reset(merchant);
             setValue('document', maskCnpj(merchant.document));
-            // setValue('name', merchant.name);
-            // setValue('corporateName', merchant.corporateName);
-            // setValue('description', merchant.description);
-            // setValue('commercialPhone', merchant.commercialPhone);
             setValue('whatsappNumber', maskWhatsapp(merchant.whatsappNumber));
-            // setValue('contactEmails', merchant.contactEmails);
-            // setValue('averageTicket', merchant.averageTicket);
-            // setValue('averagePreparationTime', merchant.averagePreparationTime);
-            // setValue('minOrderValue', merchant.minOrderValue);
             setValue('postalCode', maskCep(merchant.postalCode));
-            // setValue('street', merchant.street);
-            // setValue('number', merchant.number);
-            // setValue('district', merchant.district);
-            // setValue('city', merchant.city);
-            // setValue('state', merchant.state);
-            // setValue('complement', merchant.complement);
-            // setValue('reference', merchant.reference);
         }
     }, [merchant]);
 

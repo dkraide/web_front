@@ -64,7 +64,7 @@ export default function AddCarrinho({action, onKeyEvent, finalizar, onAddProduto
 
 
     function keyEvent(e) {
-        var key = e.key.toLowerCase();
+        let key = e.key.toLowerCase();
         switch (key) {
             case "enter":
                 if (e.currentTarget.id == "codProduto") {
@@ -102,14 +102,14 @@ export default function AddCarrinho({action, onKeyEvent, finalizar, onAddProduto
 
 
     async function getProduto() {
-        var cod = getValues("codProduto");
+        let cod = getValues("codProduto");
         if (!cod || cod.length == 0) {
             toast.error(`Digite um codigo valido`);
             return;
         }
         setLoading(true);
-        var codProduto = cod.length > 8 ? 0 : fGetNumber(cod);
-        var codBarras = cod.length <= 8 ? '' : cod;
+        let codProduto = cod.length > 8 ? 0 : fGetNumber(cod);
+        let codBarras = cod.length <= 8 ? '' : cod;
         await api.get(`/PDV/SelectProduto?empresaId=${user.empresaSelecionada}&codProduto=${codProduto}&CodigoBarras=${codBarras}`)
             .then(({ data }: AxiosResponse) => {
                 if (codProduto > 0) {
@@ -152,8 +152,8 @@ export default function AddCarrinho({action, onKeyEvent, finalizar, onAddProduto
             onFocus("codProduto", true);
             return;
         }
-        var qntd = fGetNumber(getValues("qntdProduto"));
-        var valor = fGetNumber(getValues("valorProduto"));
+        let qntd = fGetNumber(getValues("qntdProduto"));
+        let valor = fGetNumber(getValues("valorProduto"));
         if (qntd <= 0) {
             toast.error(`Quantidade nao pode ser menor ou igual a zero.`);
             onFocus("qntdProduto", true);
@@ -165,7 +165,7 @@ export default function AddCarrinho({action, onKeyEvent, finalizar, onAddProduto
             return;
         }
 
-        var vp = {
+        let vp = {
             idVendaProduto: 0,
             idVenda: 0,
             idPromocao: 0,
@@ -186,7 +186,7 @@ export default function AddCarrinho({action, onKeyEvent, finalizar, onAddProduto
             empresaId: 0
         } as IVendaProduto;
         setLoading(true);
-        var res = await onAddProduto(vp);
+        let res = await onAddProduto(vp);
         if (res) {
             limparCampos();
         }

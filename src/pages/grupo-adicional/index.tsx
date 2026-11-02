@@ -1,17 +1,13 @@
-import { useContext, useEffect, useState } from 'react'
+import { useState } from 'react'
 import styles from './styles.module.scss'
-import { api } from '@/services/apiClient'
-import { AuthContext } from '@/contexts/AuthContext'
-import { AxiosError } from 'axios'
 import { InputGroup } from '@/components/ui/InputGroup'
 import KRDTable, { KRDColumn } from '@/components/ui/KRDTable'
-import { toast } from 'react-toastify'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faLayerGroup } from '@fortawesome/free-solid-svg-icons'
-import IUsuario from '@/interfaces/IUsuario'
 import IGrupoAdicional from '@/interfaces/IGrupoAdicional'
 import GrupoAdicionalForm from '@/components/Modals/GrupoAdicional/GrupoAdicionalForm'
 import { searchHelper } from '@/utils/functions'
+import { useListaCrud } from '@/hooks/useListaCrud'
 
 const TIPO_LABELS: Record<string, string> = {
     PADRAO: 'Padrão',
@@ -27,39 +23,11 @@ type SearchProps = {
 }
 
 export default function GrupoAdicionalPage() {
-    const { getUser } = useContext(AuthContext)
-
-    const [loading, setLoading] = useState(true)
-    const [list, setList] = useState<IGrupoAdicional[]>([])
-    const [user, setUser] = useState<IUsuario>()
+    const { list, loading, reload: loadData, user } = useListaCrud<IGrupoAdicional>('/v2/GrupoAdicional')
     const [search, setSearch] = useState<SearchProps>({
         str: '',
         edit: -1,
     })
-
-    useEffect(() => {
-        loadData()
-    }, [])
-
-    const loadData = async () => {
-        let u = user
-        if (!u) {
-            const res = await getUser()
-            setUser(res)
-            u = res
-        }
-        try {
-            const { data } = await api.get<IGrupoAdicional[]>(
-                `/v2/GrupoAdicional?empresaId=${u.empresaSelecionada}`
-            )
-            setList(data)
-        } catch (err) {
-            const e = err as AxiosError
-            toast.error(`Erro ao carregar dados. ${e.response?.data || e.message}`)
-        } finally {
-            setLoading(false)
-        }
-    }
 
     function getFiltered() {
         return list.filter(g =>

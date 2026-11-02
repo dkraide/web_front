@@ -37,16 +37,16 @@ export default function ArquivosXml() {
 
     useEffect(() => {
         if (!search) {
-            var s = { dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') };
+            let s = { dateIn: format(startOfMonth(new Date()), 'yyyy-MM-dd'), dateFim: format(endOfMonth(new Date()), 'yyyy-MM-dd') };
             setSearch(s);
             loadData(s);
         }
     }, [])
 
     const loadData = async (s?: searchProps) => {
-        var u: any;
+        let u: any;
         if (!user) {
-            var res = await getUser();
+            let res = await getUser();
             setUser(res);
             u = res;
         }
@@ -108,7 +108,7 @@ export default function ArquivosXml() {
                 toast.error(`Nao ha arquivos para download.`);
                 return;
             }
-            var files = [];
+            let files = [];
             arquivos.map(p => files.push(p.id));
             download(files);
             return;
@@ -117,7 +117,7 @@ export default function ArquivosXml() {
                 toast.error(`Nenhum xml selecionado para download.`);
                 return;
             }
-            var files = [];
+            let files = [];
             selected.map(p => {
                 files.push(p.xml.id);
             });

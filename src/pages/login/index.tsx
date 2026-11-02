@@ -38,7 +38,7 @@ export default function Login() {
       <div className={styles.containerCenter} style={{ paddingTop: '4rem' }}>
         <div className={styles.login}>
           <form onSubmit={handleLogin}>
-            <img style={{ marginBottom: '0px' }} src={'/krd_logo.png'} width={'500px'} height={'200px'} />
+            <img alt="KRD System" style={{ marginBottom: '0px' }} src={'/krd_logo.png'} width={'500px'} height={'200px'} />
             <FloatingLabel
               controlId="floatingInput"
               label="Usuario"

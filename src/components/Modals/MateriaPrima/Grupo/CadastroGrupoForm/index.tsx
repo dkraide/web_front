@@ -1,23 +1,3 @@
-// import { useEffect, useState } from "react";
-// import { api } from "@/services/apiClient";
-// import { AxiosError, AxiosResponse } from "axios";
-// import Loading from "@/components/Loading";
-// import { InputForm } from "@/components/ui/InputGroup";
-// import { useForm } from "react-hook-form";
-// import { toast } from "react-toastify";
-// import styles from './styles.module.scss';
-// import IUsuario from "@/interfaces/IUsuario";
-// import CustomButton from "@/components/ui/Buttons";
-// import SelectStatus from "@/components/Selects/SelectStatus";
-// import IMateriaPrima from "@/interfaces/IMateriaPrima";
-// import { fGetNumber, sendImage , validateString } from "@/utils/functions";
-// import IGrupoAdicional, { IGrupoAdicionalMateriaPrima } from "@/interfaces/IGrupoAdicional";
-// import BaseModal from "@/components/Modals/Base/Index";
-// import { faTrash } from "@fortawesome/free-solid-svg-icons";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import CustomTable from "@/components/ui/CustomTable";
-// import _ from "lodash";
-// import VincularMateriaGrupo from "../VincularMateriaGrupo";
 
 
 // interface props {
@@ -38,49 +18,7 @@
 //         useForm();
 
 
-//     const [classe, setClasse] = useState<IGrupoAdicional>({} as IGrupoAdicional)
-//     const [loading, setLoading] = useState<boolean>(true)
-//     const [sending, setSending] = useState(false);
-//     const [modalItem, setModalItem] = useState(false);
-//     useEffect(() => {
-//         if (id > 0) {
-//             api.get(`/GrupoAdicional/Select?id=${id}`)
-//                 .then(({ data }: AxiosResponse<IGrupoAdicional>) => {
-//                     setClasse(data);
-//                     setLoading(false);
-//                 })
-//                 .catch((err) => {
-//                     toast.error(`Erro ao buscar dados. ${err.message}`)
-//                     setLoading(false);
-//                 })
-//         } else {
-//             classe.id = 0;
-//             classe.status = true;
-//             setClasse(classe);
-//             setLoading(false);
-//         }
 
-//     }, []);
-//     const onSubmit = async (data: any) => {
-//         setSending(true);
-//         classe.descricao = data.descricao;
-//         classe.minimo = fGetNumber(data.minimo);
-//         classe.maximo = fGetNumber(data.maximo);
-//         if(!validateString(classe.descricao,3)){
-//             const message="Informe uma descrição de no mínimo 3 caracteres!"
-//             toast.error(message);
-//             setSending(false);
-//             return;
-//         }
-//         if (classe.id > 0) {
-//             api.put(`GrupoAdicional/UpdateGrupo`, classe)
-//                 .then(({ data }: AxiosResponse) => {
-//                     toast.success(`ingrediente atualizado com sucesso!`);
-//                     setClose(true);
-//                 })
-//                 .catch((err: AxiosError) => {
-//                     toast.error(`Erro ao atualizar ingrediente. ${err.response?.data}`);
-//                 })
 
 //         } else {
 //             classe.empresaId = user.empresaSelecionada;
@@ -166,41 +104,4 @@
 //             grow: 0
 //         },
 //     ]
-
-//     if(modalItem){
-//         return <VincularMateriaGrupo isOpen={modalItem} setClose={(materiaPrima, valor) => {
-//             if(materiaPrima){
-//                 addItem(materiaPrima, valor)
-//             }
-//             setModalItem(false);
-//         }}/>
-//     }
-//     return (
-//         <BaseModal color={color} title={'Cadastro de grupo'} isOpen={isOpen} setClose={setClose}>
-//             {loading ? (
-//                 <Loading />
-//             ) : (
-//                 <div className={styles.container}>
-//                     <InputForm defaultValue={classe.id} width={'10%'} title={'Cod'} readOnly={true} errors={errors} inputName={"id"} register={register} />
-//                     <InputForm defaultValue={classe.descricao} width={'55%'} title={'Descrição'} errors={errors} inputName={"descricao"} register={register} />
-//                     <InputForm defaultValue={classe.minimo} width={'10%'} title={'Minimo'} errors={errors} inputName={"minimo"} register={register} />
-//                     <InputForm defaultValue={classe.maximo} width={'10%'} title={'Maximo'} errors={errors} inputName={"maximo"} register={register} />
-//                     <SelectStatus width={'10%'} selected={classe.status} setSelected={(v) => { setClasse({ ...classe, status: v }) }} />
-//                     <div className={styles.table}>
-//                         <CustomButton onClick={() => {setModalItem(true)}} typeButton={'main'}>Adicionar item</CustomButton>
-//                         <CustomTable
-//                             paginationPerPage={10}
-//                             columns={columns}
-//                             data={classe.produtosAdicionais || []}
-//                             loading={loading}
-//                         />
-//                     </div>
-//                     <div className={styles.button}>
-//                         <CustomButton onClick={() => { setClose(); }} typeButton={"secondary"}>Cancelar</CustomButton>
-//                         <CustomButton typeButton={'dark'} loading={sending} onClick={() => { handleSubmit(onSubmit)() }}>Confirmar</CustomButton>
-//                     </div>
-//                 </div>
-//             )}
-//         </BaseModal>
-//     )
-// }
+

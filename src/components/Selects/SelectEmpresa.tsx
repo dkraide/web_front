@@ -30,9 +30,9 @@ export  default function SelectEmpresa({isContador, width, selected, setSelected
         loadFormas();
     }, []);
     function getData() {
-        var data = [] as any[];
+        let data = [] as any[];
         formas.map((forma) => {
-            var x = {
+            let x = {
                 value: forma.id.toString(),
                 label: forma.nomeFantasia || ''
             }
@@ -42,7 +42,7 @@ export  default function SelectEmpresa({isContador, width, selected, setSelected
     }
 
     function onSelect(value: any) {
-        var index = _.findIndex(formas, p => p.id == value);
+        let index = _.findIndex(formas, p => p.id == value);
         if (index >= 0) {
             setSelected(formas[index].id);
         }

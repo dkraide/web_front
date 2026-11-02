@@ -25,7 +25,7 @@ export const fGetNumber = (value) => {
     if (!value) {
         return 0;
     }
-    var res = Number(value.toString().replace(`,`, `.`));
+    let res = Number(value.toString().replace(`,`, `.`));
     return isNaN(res) ? 0 : res;
 }
 export const nameof = <T>(name: keyof T) => name;
@@ -35,7 +35,7 @@ export const fGetOnlyNumber = (value) => {
 }
 
 export const getURLImagemMenu = (id, empresa) => {
-    var _url = "http://krd.emartim.com.br/MenuDigital";
+    let _url = "http://krd.emartim.com.br/MenuDigital";
     if (id == undefined) {
         return `${_url}/${empresa}.jpg`;
     }
@@ -69,7 +69,7 @@ export const formatNumber = (n: number, money: boolean) => {
 
 export const sendImage = async (files: any): Promise<string|undefined> => {
    
-    var formData = new FormData();
+    let formData = new FormData();
     formData.append('image', files[0], files[0].name)
     setTimeout(() => {
     }, 500)
@@ -77,7 +77,6 @@ export const sendImage = async (files: any): Promise<string|undefined> => {
         .then(({ data }: AxiosResponse) => {
             return data.path;
         }).catch((err: AxiosError) => {
-            console.log(err);
             return undefined;
         });
 }
@@ -103,35 +102,13 @@ export const isNullOrWhitespace = (input?: string) => {
 export const blobToBase64 = blob => blobToDataUrl(blob).then((text: string) => text.slice(text.indexOf(",") + 1));
 
 function getBase64(file) {
-    var reader = new FileReader();
+    let reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = function () {
-        console.log(reader.result);
     };
     reader.onerror = function (error) {
-        console.log('Error: ', error);
     };
 }
-
-export const isMobile = () => {
-    const { innerWidth } = useWindowSize();
-    const [mobile, setMobile] = useState(false);
-
-    useEffect(() => {
-    console.log('innerWidth', innerWidth)
-
-        if (!innerWidth) {
-            return;
-        }
-        setMobile(innerWidth < 600);
-
-    }, [innerWidth]);
-
-
-    return mobile;
-
-}
-
 
 export const printHTML = (html: any) => {
     const blob: Blob = new Blob([html], { type: 'text/html' });
@@ -142,7 +119,6 @@ export const printHTML = (html: any) => {
     document.body.appendChild(iframe);
 
     const printWin: Window = iframe.contentWindow!;
-    console.log(printWin);
 
     printWin.print();
     printWin.onafterprint = () => { printWin.close(); document.body.removeChild(iframe); };
@@ -160,11 +136,10 @@ export const imprimirNFce = async (vendaId) => {
 
 }
 export const random_rgba = () => {
-    var o = Math.round, r = Math.random, s = 255;
+    let o = Math.round, r = Math.random, s = 255;
     return 'rgba(' + o(r() * s) + ',' + o(r() * s) + ',' + o(r() * s) + ',0.7)';
 }
 export const getMonths = (fromDate, toDate) => {
-    console.log(fromDate);
     const fromYear = fromDate.getFullYear();
     const fromMonth = fromDate.getMonth();
     const toYear = toDate.getFullYear();
@@ -184,7 +159,7 @@ export const getMonths = (fromDate, toDate) => {
 }
 
 export const fGetDate = (date: string) => {
-    var str = date.split(`-`);
+    let str = date.split(`-`);
     return new Date(Number(str[0]), Number(str[1]) - 1, Number(str[2]));
 }
 
@@ -194,7 +169,7 @@ export const fgetDate = (date) => {
     if (!date || date == '') {
         return new Date();
     }
-    var r = new Date(date);
+    let r = new Date(date);
     r = addHours(r, 3);
     return r;
 }
@@ -205,8 +180,8 @@ type ColumnData = {
 }
 
 export const ExportToExcel = (columns: ColumnData[], data: any[], fileName: string) => {
-    var formattedArray = data.map((p) => {
-        var object = {};
+    let formattedArray = data.map((p) => {
+        let object = {};
         columns.map((c) => {
             object[c.label] = p[c.key];
         });
@@ -243,7 +218,7 @@ export const validateString = (value: string, minlenght?: number) => {
 }
 
 export const validateNumber = (value: any, min?: number, max?: number) => {
-    var number = fGetNumber(value);
+    let number = fGetNumber(value);
     if(!value){
         return false;
     }

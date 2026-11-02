@@ -683,7 +683,7 @@ export default function IFoodCatalogoPage() {
         const def = result.dados.find(c => c.context.includes("DEFAULT"));
         setCatalogoAtivo(def?.catalogId ?? result.dados[0]?.catalogId ?? null);
       }
-    } catch { }
+    } catch (err) { console.error(err); }
   }
 
   async function carregarCategorias(catalogId: string) {
@@ -728,28 +728,28 @@ export default function IFoodCatalogoPage() {
           }),
         };
       }));
-    } catch { }
+    } catch (err) { console.error(err); }
   }
 
   async function carregarProdutos() {
     try {
       const result = await produtoService.getAll(empresaId, true);
       if (result) setProdutos(result);
-    } catch { }
+    } catch (err) { console.error(err); }
   }
 
   async function carregarClasses() {
     try {
       const result = await classeMaterialService.getAll(empresaId);
       if (result) setClasses(result);
-    } catch { }
+    } catch (err) { console.error(err); }
   }
 
   async function carregarMaterias() {
     try {
       const result = await materiaPrimaService.getAll(empresaId);
       if (result) setMaterias(result);
-    } catch { }
+    } catch (err) { console.error(err); }
   }
 
   // ─── Effects ─────────────────────────────────────────────────────────────────

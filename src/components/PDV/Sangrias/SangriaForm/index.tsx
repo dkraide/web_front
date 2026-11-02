@@ -36,13 +36,13 @@ export default function SangriaForm({ usuario, caixa, isOpen, setClose }: cancel
     }
 
     async function enviarSangria() {
-        var valor = fGetNumber(getValues("valor"));
+        let valor = fGetNumber(getValues("valor"));
         if(valor <= 0){
             toast.error(`Valor invalido.`);
             return;
         }
         setLoading(true);
-        var sangria = {
+        let sangria = {
             id: 0,
             idSangriaReforco: 0,
             idMovimentoCaixa: caixa.idMovimentoCaixa,

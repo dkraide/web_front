@@ -45,17 +45,17 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
         const groupedByClasseMaterial = _.groupBy(produtos, (produto) => produto.classeMaterialId);
 
         // Transforma o objeto agrupado em um array tipado
-        var res = Object.entries(groupedByClasseMaterial).map(([classeId, produtos]) => {
+        let res = Object.entries(groupedByClasseMaterial).map(([classeId, produtos]) => {
             const classe = produtos[0].classeMaterial; // Assume que todos os produtos no grupo têm a mesma classe
 
-            var p = _.filter(produtos, (item) => {
+            let p = _.filter(produtos, (item) => {
                 if (search?.status && !item.status) {
                     return false;
                 }
                 if (search?.status === false && item.status) {
                     return false;
                 }
-                var text = `${item.cod} ${item.nome}`;
+                let text = `${item.cod} ${item.nome}`;
 
                 return text.toUpperCase().includes(search?.str?.toUpperCase())
             })

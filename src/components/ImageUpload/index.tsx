@@ -32,7 +32,7 @@ export default function ImageUpload({ label, onUpload, preview }: Props) {
         }}
       >
         {preview ? (
-          <img
+          <img alt=""
             src={preview}
             style={{ width: '100%', height: '100%', objectFit: 'cover' }}
           />

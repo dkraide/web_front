@@ -236,12 +236,12 @@ function useVendasAgregadas(
 
 // Cores fixas para os gráficos Recharts (não leem CSS vars)
 const CHART_COLORS = {
-  grid: 'rgba(255,255,255,0.08)',
-  tick: '#94a3b8',
-  line1: '#6366f1',   // azul/indigo — visível em dark e light
-  line2: '#4ade80',   // verde
-  bar1: '#6366f1',
-  bar2: '#4ade80',
+  grid: 'rgba(16,16,38,0.08)',   // linha de grade suave sobre fundo claro
+  tick: '#6b6475',
+  line1: '#fc4f6b',   // cor da marca
+  line2: '#16a34a',   // verde
+  bar1: '#fc4f6b',
+  bar2: '#16a34a',
   bar3: '#f59e0b',
 };
 

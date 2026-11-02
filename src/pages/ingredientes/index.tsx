@@ -1,7 +1,6 @@
-import { useContext, useEffect, useState } from 'react';
+import { useState } from 'react';
 import styles from './styles.module.scss';
 import { api } from '@/services/apiClient';
-import { AuthContext } from '@/contexts/AuthContext';
 import { AxiosError, AxiosResponse } from 'axios';
 import { InputGroup } from '@/components/ui/InputGroup';
 import CustomTable from '@/components/ui/CustomTable';
@@ -9,8 +8,8 @@ import { toast } from 'react-toastify';
 import CustomButton from '@/components/ui/Buttons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
-import IUsuario from '@/interfaces/IUsuario';
 import IMateriaPrima from '@/interfaces/IMateriaPrima';
+import { useListaCrud } from '@/hooks/useListaCrud';
 import MateriaPrimaForm from '@/components/Modals/MateriaPrima/CadastroForm';
 import { isMobile } from 'react-device-detect';
 import { GetCurrencyBRL } from '@/utils/functions';
@@ -22,38 +21,15 @@ type searchProps = {
     estoque: number
 }
 export default function Ingredientes() {
-    const [loading, setLoading] = useState(true)
-    const [classes, setClasses] = useState<IMateriaPrima[]>([])
-    const { getUser } = useContext(AuthContext)
+    const { list: classes, loading, reload: loadData, user } = useListaCrud<IMateriaPrima>('/MateriaPrima/List')
     const [searchProps, setSearchProps] = useState<searchProps>({
         str: '',
         edit: -1,
         estoque: -1
     })
-    const [user, setUser] = useState<IUsuario>()
-
-    const loadData = async () => {
-        var u: any;
-        if (!user) {
-            var res = await getUser();
-            setUser(res);
-            u = res;
-        }
-        await api
-            .get(`/MateriaPrima/List?empresaId=${user?.empresaSelecionada || u.empresaSelecionada}`)
-            .then(({ data }: AxiosResponse) => {
-                setClasses(data);
-            }).catch((err: AxiosError) => {
-                toast.error(`Erro ao carregar dados. ${err.response?.data || err.message}`);
-            });
-        setLoading(false);
-    }
-    useEffect(() => {
-        loadData();
-    }, [])
 
     function getFiltered() {
-        var res = classes.filter(p => {
+        let res = classes.filter(p => {
             return (p.nome + p.id.toString()).toLowerCase().includes(searchProps.str.toLowerCase())
         });
         return res;

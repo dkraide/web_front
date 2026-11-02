@@ -31,9 +31,9 @@ export  default function SelectCidade({uf, width, selected, setSelected}: selPro
         loadFormas();
     }, [uf]);
     function getData() {
-        var data = [] as any[];
+        let data = [] as any[];
         formas.map((forma) => {
-            var x = {
+            let x = {
                 value: forma.id,
                 label: forma.nome || ''
             }
@@ -42,7 +42,7 @@ export  default function SelectCidade({uf, width, selected, setSelected}: selPro
         return data;
     }
     function setSelectedProd(value: any){
-           var index = _.findIndex(formas, p => p.id == value);
+           let index = _.findIndex(formas, p => p.id == value);
            if(index  >= 0){
                 setSelected(formas[index]);
            }

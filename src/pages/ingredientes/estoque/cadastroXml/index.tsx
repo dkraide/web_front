@@ -37,19 +37,19 @@ export default function IngredientesEstoqueCadastroXml(){
 
     useEffect(() => {
        const loadData = async () => {
-           var user = await getUser();
+           let user = await getUser();
            setUser(user);
        }
        loadData();
     }, [])
     async function getFile() {
-        var input = document.createElement("input");
+        let input = document.createElement("input");
         input.type = "file";
         input.click();
         input.onchange = async (e: Event) => {
             const target = e.target as HTMLInputElement;
             const files = target.files as FileList;
-            var formData = new FormData();
+            let formData = new FormData();
             formData.append('file', files[0], files[0].name)
             formData.append('EmpresaId', user.empresaSelecionada.toString())
             formData.append('IsProduto', 'false')
@@ -84,7 +84,7 @@ export default function IngredientesEstoqueCadastroXml(){
         )
     }
     function onLeave(index, value, field){
-        var number = value.toString().replace(`,`, `.`);
+        let number = value.toString().replace(`,`, `.`);
        if(field == "multiplicadorFornecedor"){
          if(!ingredientes[index].ingrediente){
             ingredientes[index].ingrediente = {};
@@ -96,9 +96,9 @@ export default function IngredientesEstoqueCadastroXml(){
        setIngredientes([...ingredientes]);
     }
     async function updateProdutoInfo(){
-        var errors = '';
-        var list = ingredientes.map((item) => {
-            var p = item.ingrediente;
+        let errors = '';
+        let list = ingredientes.map((item) => {
+            let p = item.ingrediente;
             if(!p || !p.nome){
                 errors += `${item.item.xProd} - Sem referencia no sistema\n`;
             }
@@ -123,7 +123,7 @@ export default function IngredientesEstoqueCadastroXml(){
         })
     }
     async function createLancamento(){
-        var obj = {
+        let obj = {
           idLancamentoEstoque: 0,
           id: 0,
           dataLancamento: new Date(),
@@ -136,9 +136,9 @@ export default function IngredientesEstoqueCadastroXml(){
           empresaId: user.empresaSelecionada
         } as ILancamentoEstoque;
         obj.produtos = ingredientes.map((o) => {
-            var qtd = fGetNumber(o.item.qCom);
-            var mult = fGetNumber(o.ingrediente.multiplicadorFornecedor) || 1;
-            var quantidade = qtd * mult;
+            let qtd = fGetNumber(o.item.qCom);
+            let mult = fGetNumber(o.ingrediente.multiplicadorFornecedor) || 1;
+            let quantidade = qtd * mult;
             const custo = custoUnitario(o); 
             return{
                 idLancamentoEstoque: 0,
@@ -172,9 +172,9 @@ export default function IngredientesEstoqueCadastroXml(){
         })
     }
     async function onSubmit(){
-        var errors = '';
+        let errors = '';
         ingredientes.map((item) => {
-            var p = item.ingrediente;
+            let p = item.ingrediente;
             if(!p || !p.nome){
                 errors += `${item.item.xProd} - Sem referencia no sistema\n`;
             }
@@ -184,7 +184,7 @@ export default function IngredientesEstoqueCadastroXml(){
             return;
        }
        setMessage(`Atualizando Informações dos produtos...`);
-       var res = await updateProdutoInfo();
+       let res = await updateProdutoInfo();
        if(!res){
           setMessage('');
           return;
@@ -208,8 +208,8 @@ export default function IngredientesEstoqueCadastroXml(){
         return GetCurrencyBRL(total ?? 0);
     }
     const custoUnitario = (item: itemLancamento) => {
-        var custoUn = fGetNumber(item.item.vUnCom);
-        var multiplicador = item.ingrediente?.multiplicadorFornecedor || 1;
+        let custoUn = fGetNumber(item.item.vUnCom);
+        let multiplicador = item.ingrediente?.multiplicadorFornecedor || 1;
         return Number((custoUn / multiplicador).toFixed(2));
     }
     if(message.length > 0){
@@ -237,7 +237,7 @@ export default function IngredientesEstoqueCadastroXml(){
                 <tbody>
                     {ingredientes.map((produto, index) => {
                         return(
-                            <tr>
+                            <tr key={index}>
                                 <td>{produto.item.cProd} - {produto.item.xProd}</td>
                                 <td>
                                     {produto.ingrediente?.nome ? <>

@@ -35,14 +35,14 @@ export default function Xml() {
 
     useEffect(() => {
         const loadData = async () => {
-            var user = await getUser();
+            let user = await getUser();
             setUser(user);
         }
         loadData();
     }, [])
     async function getFile(isExcel: boolean) {
 
-        var input = document.createElement("input");
+        let input = document.createElement("input");
         input.type = "file";
         input.accept = isExcel ? ".xlsx,.xls" : ".xml";
         input.click();
@@ -55,7 +55,7 @@ export default function Xml() {
             if (!files || files.length === 0)
                 return;
 
-            var formData = new FormData();
+            let formData = new FormData();
             formData.append('file', files[0], files[0].name);
             formData.append('EmpresaId', user.empresaSelecionada.toString());
             formData.append('IsProduto', 'true');
@@ -109,7 +109,7 @@ export default function Xml() {
         )
     }
     function onLeave(index, value, field) {
-        var number = value.toString().replace(`,`, `.`);
+        let number = value.toString().replace(`,`, `.`);
         if (field == "multiplicadorFornecedor") {
             if (!produtos[index].produto) {
                 produtos[index].produto = {};
@@ -121,9 +121,9 @@ export default function Xml() {
         setProdutos([...produtos]);
     }
     async function updateProdutoInfo() {
-        var errors = '';
-        var list = produtos.map((item) => {
-            var p = item.produto;
+        let errors = '';
+        let list = produtos.map((item) => {
+            let p = item.produto;
             if (!p || !p.nome) {
                 errors += `${item.item.xProd} - Sem referencia no sistema\n`;
             }
@@ -148,7 +148,7 @@ export default function Xml() {
             })
     }
     async function createLancamento() {
-        var obj = {
+        let obj = {
             idLancamentoEstoque: 0,
             id: 0,
             dataLancamento: new Date(),
@@ -161,9 +161,9 @@ export default function Xml() {
             empresaId: user.empresaSelecionada
         } as ILancamentoEstoque;
         obj.produtos = produtos.map((o) => {
-            var qtd = fGetNumber(o.item.qCom);
-            var mult = fGetNumber(o.produto.multiplicadorFornecedor) || 1;
-            var quantidade = qtd * mult;
+            let qtd = fGetNumber(o.item.qCom);
+            let mult = fGetNumber(o.produto.multiplicadorFornecedor) || 1;
+            let quantidade = qtd * mult;
             return {
                 idLancamentoEstoque: 0,
                 idLancamentoEstoqueProduto: 0,
@@ -196,9 +196,9 @@ export default function Xml() {
         })
     }
     async function onSubmit() {
-        var errors = '';
+        let errors = '';
         produtos.map((item) => {
-            var p = item.produto;
+            let p = item.produto;
             if (!p || !p.nome) {
                 errors += `${item.item.xProd} - Sem referencia no sistema\n`;
             }
@@ -208,7 +208,7 @@ export default function Xml() {
             return;
         }
         setMessage(`Atualizando Informações dos produtos...`);
-        var res = await updateProdutoInfo();
+        let res = await updateProdutoInfo();
         if (!res) {
             setMessage('');
             return;
@@ -235,8 +235,8 @@ export default function Xml() {
     }
 
     const custoUnitario = (item: itemLancamento) => {
-        var custoUn = fGetNumber(item.item.vUnCom);
-        var multiplicador = item.produto?.multiplicadorFornecedor || 1;
+        let custoUn = fGetNumber(item.item.vUnCom);
+        let multiplicador = item.produto?.multiplicadorFornecedor || 1;
         return Number((custoUn / multiplicador).toFixed(2));
     }
 
@@ -266,7 +266,7 @@ export default function Xml() {
                     <tbody>
                         {produtos.map((produto, index) => {
                             return (
-                                <tr>
+                                <tr key={index}>
                                     <td>{produto.item.cProd} - {produto.item.xProd}</td>
                                     <td>
                                         {produto.produto?.nome ? <>
