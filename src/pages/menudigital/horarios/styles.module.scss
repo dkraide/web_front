@@ -624,3 +624,47 @@ $shadow-md:     0 4px 12px rgba(0,0,0,.08), 0 2px 4px rgba(0,0,0,.04);
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+// =============================================
+// SLUG
+// =============================================
+.slugCard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: $surface;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  box-shadow: $shadow-sm;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+
+  strong {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 2px;
+  }
+}
+
+.slugRow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  input {
+    flex: 1;
+    max-width: 360px;
+    padding: 10px 12px;
+    border: 1px solid $border-strong;
+    border-radius: $radius-md;
+    font-size: 14px;
+    color: $text-primary;
+
+    &:focus {
+      outline: none;
+      border-color: $brand;
+    }
+  }
+}
+
+.slugOk  { font-size: 12px; color: $brand-dark; }
+.slugErr { font-size: 12px; color: $danger; }

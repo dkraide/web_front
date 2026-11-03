@@ -116,6 +116,8 @@ export default function ServiceSetupPage() {
                 </button>
             </div>
 
+            <SlugCard empresaId={empresaId} />
+
             {/* ---- Tab bar ---- */}
             <div className={styles.tabBar}>
                 {services.map((service) => {
@@ -150,6 +152,96 @@ export default function ServiceSetupPage() {
                     onChange={updateService}
                     merchantConfig={merchantConfig}
                 />
+            )}
+        </div>
+    );
+}
+
+// ======================================================
+// SLUG CARD
+// ======================================================
+const slugify = (s: string) =>
+    s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9-]+/g, '-').replace(/-{2,}/g, '-');
+
+type SlugStatus = { ok: boolean; msg?: string } | null;
+
+function SlugCard({ empresaId }: { empresaId: number }) {
+    const [original, setOriginal] = useState('');
+    const [slug, setSlug]         = useState('');
+    const [status, setStatus]     = useState<SlugStatus>(null);
+    const [saving, setSaving]     = useState(false);
+
+    useEffect(() => {
+        if (empresaId === 0) return;
+        api.get('/EmpresaSlug')
+            .then(({ data }) => {
+                setOriginal(data?.slug ?? '');
+                setSlug(data?.slug ?? '');
+            })
+            .catch(console.error);
+    }, [empresaId]);
+
+    // Verifica disponibilidade (debounce) enquanto o usuário digita
+    useEffect(() => {
+        const value = slug.replace(/^-+|-+$/g, '');
+        if (!value || value === original) {
+            setStatus(null);
+            return;
+        }
+        const t = setTimeout(() => {
+            api.get('/EmpresaSlug/Disponivel', { params: { slug: value } })
+                .then(({ data }) => setStatus({ ok: data.disponivel, msg: data.disponivel ? 'Endereço disponível' : data.mensagem }))
+                .catch(() => setStatus(null));
+        }, 400);
+        return () => clearTimeout(t);
+    }, [slug, original]);
+
+    const handleSave = async () => {
+        const value = slug.replace(/^-+|-+$/g, '');
+        setSaving(true);
+        try {
+            const { data } = await api.put('/EmpresaSlug', { slug: value });
+            setOriginal(data.slug);
+            setSlug(data.slug);
+            setStatus(null);
+            alert('Endereço atualizado com sucesso');
+        } catch (e: any) {
+            const msg = typeof e?.response?.data === 'string' ? e.response.data : 'Não foi possível salvar o endereço.';
+            setStatus({ ok: false, msg });
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    const dirty = slug.replace(/^-+|-+$/g, '') !== original;
+
+    return (
+        <div className={styles.slugCard}>
+            <div>
+                <strong>Endereço personalizado</strong>
+                <span className={styles.cardDesc}>
+                    Nome único da sua loja no link do menu digital. Apenas letras minúsculas, números e hífen.
+                </span>
+            </div>
+            <div className={styles.slugRow}>
+                <input
+                    type="text"
+                    value={slug}
+                    maxLength={50}
+                    placeholder="minha-loja"
+                    onChange={(e) => setSlug(slugify(e.target.value))}
+                />
+                <button
+                    type="button"
+                    className={styles.saveBtn}
+                    onClick={handleSave}
+                    disabled={saving || !dirty || !slug || status?.ok === false}
+                >
+                    {saving ? '⏳ Salvando…' : 'Salvar endereço'}
+                </button>
+            </div>
+            {status?.msg && (
+                <span className={status.ok ? styles.slugOk : styles.slugErr}>{status.msg}</span>
             )}
         </div>
     );
