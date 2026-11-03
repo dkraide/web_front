@@ -2,54 +2,54 @@
 
 import { z } from 'zod';
 
-const optionalString = z.string().optional().or(z.literal(''));
+// Todos os campos são opcionais: null/undefined/espaços viram '' (ou 0 nos números),
+// então o submit nunca recebe null nem texto só com espaço.
+const text = z
+    .string()
+    .nullish()
+    .transform((v) => (v ?? '').trim());
+
+const textWithFormat = (regex: RegExp, message: string) =>
+    text.refine((v) => v === '' || regex.test(v), message);
+
+const amount = z
+    .union([z.number(), z.string()])
+    .nullish()
+    .transform((v) => {
+        const n = Number(v ?? 0);
+        return Number.isFinite(n) && n > 0 ? n : 0;
+    });
 
 export const merchantSchema = z.object({
-    document: z
-        .string()
-        .min(1, 'CNPJ é obrigatório')
-        .regex(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido'),
-    corporateName: z
-        .string()
-        .min(1, 'Razão social é obrigatória'),
-    name: z
-        .string()
-        .min(1, 'Nome Fantasia é obrigatório'),
-    description: optionalString,          // ← era obrigatório
-    commercialPhone: z
-        .string()
-        .min(1, 'Telefone Comercial é obrigatório'),
-    whatsappNumber: z
-        .string()
-        .min(1, 'WhatsApp é obrigatório'),
-    contactEmails: z
-        .string()
-        .min(1, 'Pelo menos um email é obrigatório'),
-    averageTicket: z.number().min(0),
-    averagePreparationTime: z.number().min(0),
-    minOrderValue: z.number().min(0),
+    document: textWithFormat(/^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/, 'CNPJ inválido'),
+    corporateName: text,
+    name: text,
+    description: text,
+    commercialPhone: text,
+    whatsappNumber: text,
+    contactEmails: text,
+    averageTicket: amount,
+    averagePreparationTime: amount,
+    minOrderValue: amount,
 
     // Endereço
-    postalCode: z
-        .string()
-        .min(1, 'CEP é obrigatório')
-        .regex(/^\d{5}-\d{3}$/, 'CEP inválido'),
-    street: z.string().min(1, 'Rua é obrigatória'),
-    number: z.string().min(1, 'Número é obrigatório'),
-    district: z.string().min(1, 'Bairro é obrigatório'),
-    city: z.string().min(1, 'Cidade é obrigatória'),
-    state: z.string().min(1, 'Estado é obrigatório'),
-    complement: optionalString,           // ← já era optional, mas precisava do or('')
-    reference: optionalString,            // ← idem
+    postalCode: textWithFormat(/^\d{5}-\d{3}$/, 'CEP inválido'),
+    street: text,
+    number: text,
+    district: text,
+    city: text,
+    state: text,
+    complement: text,
+    reference: text,
 
-    // Links / redes — todos opcionais
-    facebook: optionalString,
-    instagram: optionalString,
-    urlIfood: optionalString,
-    urlGoomer: optionalString,
-    url99: optionalString,
-    urlUberEats: optionalString,
-    urlKeeta: optionalString,
+    // Links / redes
+    facebook: text,
+    instagram: text,
+    urlIfood: text,
+    urlGoomer: text,
+    url99: text,
+    urlUberEats: text,
+    urlKeeta: text,
 });
 
 export type MerchantFormData = z.infer<typeof merchantSchema>;

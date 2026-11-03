@@ -102,7 +102,7 @@ export default function EditMerchantForm({ setClose }: props) {
         getValues,
         watch,
         setValue,
-    } = useForm<MerchantFormData>({
+    } = useForm<z.input<typeof merchantSchema>, any, MerchantFormData>({
         resolver: zodResolver(merchantSchema),
         defaultValues: {
             minOrderValue: 0,
