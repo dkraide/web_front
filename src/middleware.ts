@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Páginas abertas: landing, login, política, vitrine do setor (tag NFC), tutoriais e páginas de links/download.
-const ROTAS_PUBLICAS = ['/', '/login', '/home', '/vitrine', '/tutoriais', '/baixe-app', '/downloads', '/links'];
+const ROTAS_PUBLICAS = ['/', '/login', '/home', '/vitrine', '/tutoriais', '/baixe-app', '/downloads', '/links', '/acessoRemoto'];
 
 function ehPublica(pathname: string) {
     return ROTAS_PUBLICAS.some(r => pathname === r || (r !== '/' && pathname.startsWith(`${r}/`)));
