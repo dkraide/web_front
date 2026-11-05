@@ -88,53 +88,45 @@ export default function LancamentoEstoqueIA() {
     await processImages(files, newImages);
   }
 
+  // O servidor lê um arquivo por chamada, então cada foto é enviada separadamente:
+  // uma falha não perde as demais e cada miniatura mostra o próprio estado.
   async function processImages(files: File[], newImages: UploadedImage[]) {
     if (!user) return;
     setLoadingIA(true);
 
-    // marca como carregando
-    setImages((prev) =>
-      prev.map((img) =>
-        newImages.find((n) => n.preview === img.preview)
-          ? { ...img, status: 'loading' }
-          : img
-      )
-    );
+    const marcar = (preview: string, status: UploadedImage['status']) =>
+      setImages((prev) => prev.map((img) => (img.preview === preview ? { ...img, status } : img)));
 
-    const formData = new FormData();
-    files.forEach((f) => formData.append('file', f, f.name));
-    formData.append('empresaId', user.empresaSelecionada.toString());
+    let total = 0;
+    let falhas = 0;
 
-    try {
-      const { data }: AxiosResponse<ItemIA[]> = await api.post(
-        '/v2/LancamentoEstoque/ler-pedido',
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
-      );
+    for (let idx = 0; idx < files.length; idx++) {
+      const preview = newImages[idx].preview;
+      marcar(preview, 'loading');
 
-      setItens((prev) => mergeItens(prev, data));
+      const formData = new FormData();
+      formData.append('file', files[idx], files[idx].name);
+      formData.append('empresaId', user.empresaSelecionada.toString());
 
-      setImages((prev) =>
-        prev.map((img) =>
-          newImages.find((n) => n.preview === img.preview)
-            ? { ...img, status: 'done' }
-            : img
-        )
-      );
-
-      toast.success(`${data.length} item(s) carregado(s)!`);
-    } catch (err: any) {
-      setImages((prev) =>
-        prev.map((img) =>
-          newImages.find((n) => n.preview === img.preview)
-            ? { ...img, status: 'error' }
-            : img
-        )
-      );
-      toast.error(`Erro ao processar imagem: ${err.response?.data || err.message}`);
-    } finally {
-      setLoadingIA(false);
+      try {
+        const { data }: AxiosResponse<ItemIA[]> = await api.post(
+          '/v2/LancamentoEstoque/ler-pedido',
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+        setItens((prev) => mergeItens(prev, data));
+        marcar(preview, 'done');
+        total += data.length;
+      } catch (err: any) {
+        falhas++;
+        marcar(preview, 'error');
+        toast.error(`Erro ao processar ${files[idx].name}: ${err.response?.data || err.message}`);
+      }
     }
+
+    if (total > 0) toast.success(`${total} item(s) carregado(s)!`);
+    setLoadingIA(false);
+    return falhas;
   }
 
   function mergeItens(prev: ItemIA[], incoming: ItemIA[]): ItemIA[] {

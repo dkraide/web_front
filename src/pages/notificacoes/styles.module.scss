@@ -1,0 +1,35 @@
+.container { max-width: 860px; margin: 0 auto; padding: 24px 16px; }
+
+.header {
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 16px;
+    h1 { font-size: 24px; margin: 0; }
+    p { margin: 4px 0 0; color: #666; }
+}
+.acoes { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.btnLink { background: none; border: none; color: #1b5e9e; font-weight: 600; cursor: pointer; padding: 6px 0; text-align: left; }
+.btnConfig {
+    display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border: 1px solid #d6d6d6; border-radius: 8px;
+    color: #333; text-decoration: none; background: #fff;
+    &:hover { background: #f6f8fa; color: #333; }
+}
+
+.lista { display: flex; flex-direction: column; gap: 8px; }
+.card {
+    display: flex; align-items: flex-start; gap: 12px; width: 100%; text-align: left; cursor: pointer;
+    background: #fff; border: 1px solid #e5e5e5; border-radius: 10px; padding: 12px 14px; color: #333;
+    &:hover { background: #f6f8fa; }
+}
+.naoLida { border-color: #1b5e9e; background: #f3f8fe; }
+.icone {
+    flex: 0 0 36px; height: 36px; border-radius: 50%; background: #e8f1fb; color: #1b5e9e;
+    display: flex; align-items: center; justify-content: center;
+}
+.texto { flex: 1; min-width: 0; b { display: block; } small { display: block; color: #666; margin-top: 2px; } }
+.data { color: #888; font-size: 12px; white-space: nowrap; }
+.vazio { padding: 24px; text-align: center; color: #888; }
+
+@media (max-width: 600px) {
+    .card { flex-wrap: wrap; }
+    .data { width: 100%; padding-left: 48px; }
+}
