@@ -44,7 +44,7 @@ const GRUPOS_PERMISSOES: { titulo: string, campos: (keyof IUsuarioCaixa)[] }[] =
             'editarComanda', 'removeItemComanda', 'finalizaVendaSemEstoque',
             'imprimeProdutoFechamento', 'visualizaVendasAntigas',
             'visualizarVendaCaixa', 'impFechamentoCanceladas',
-            'permitePausarVenda',
+            'permitePausarVenda', 'alterarItemComanda',
         ],
     },
 ]
@@ -77,6 +77,7 @@ const LABELS: Partial<Record<keyof IUsuarioCaixa, string>> = {
     visualizarVendaCaixa: 'Visualizar venda no caixa',
     impFechamentoCanceladas: 'Impr. fechamento canc.',
     permitePausarVenda: 'Permite pausar venda',
+    alterarItemComanda: 'Altera item da comanda',
 }
 
 export default function UsuarioCaixaForm({ user, isOpen, classeId, setClose, color }: props) {

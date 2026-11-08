@@ -38,7 +38,7 @@ export default function DefinirSenhaWebModal({ isOpen, usuarioId, usuarioNome, s
     }
 
     return (
-        <BaseModal title={'Definir Senha Web'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal title={'Definir Senha Web'} isOpen={isOpen} setClose={setClose} width={'420px'} height={'auto'}>
             <div className={styles.container}>
                 <p className={styles.hint}>
                     Definindo a senha de acesso web para <strong>{usuarioNome}</strong>.
