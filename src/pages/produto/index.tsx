@@ -11,11 +11,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faBoxes, faRobot, faPizzaSlice, faBox, faNetworkWired, faSlidersH, faFileExcel, faCamera, faTshirt } from '@fortawesome/free-solid-svg-icons'
 import IUsuario from '@/interfaces/IUsuario'
 import IProduto from '@/interfaces/IProduto'
-import ProdutoForm from '@/components/Modals/Produto'
 import { useWindowSize } from 'rooks'
 import ProdutoMobile from '@/components/Mobile/Pages/Produto/ProdutoMobile'
 import { ExportToExcel, searchHelper } from '@/utils/functions'
-import NovoProdutoForm from '@/components/Modals/Produto/NovoProdutoForm'
 import EstoqueForm from '@/components/Modals/Produto/EstoqueForm'
 import CreateFromIAForm from '@/components/Modals/Produto/CreateFromIAForm'
 import SelectClasseMaterial from '@/components/Selects/SelectClasseMaterial'
@@ -25,7 +23,6 @@ import { useRouter } from 'next/router'
 
 type SearchProps = {
     str: string
-    edit: number
     ajuste: boolean
     viewEstoque: number
 }
@@ -46,7 +43,6 @@ export default function Produto() {
     const [modalIa, setModalIa] = useState(false)
     const [search, setSearch] = useState<SearchProps>({
         str: '',
-        edit: -1,
         ajuste: false,
         viewEstoque: 0,
     })
@@ -310,6 +306,8 @@ export default function Produto() {
                 user={user}
                 loadData={loadData}
                 handleNovaPizza={() => { window.location.href = '/produto/novaPizza' }}
+                handleNovoItem={() => { window.location.href = '/produto/item' }}
+                handleEdit={handleEdit}
             />
         )
     }
@@ -414,21 +412,6 @@ export default function Produto() {
             />
 
             {/* Modals */}
-            {search.edit === 0 && (
-                <NovoProdutoForm
-                    user={user}
-                    isOpen
-                    setClose={v => { if (v) loadData(); setSearch(prev => ({ ...prev, edit: -1 })) }}
-                />
-            )}
-            {search.edit > 0 && (
-                <ProdutoForm
-                    user={user}
-                    isOpen
-                    id={search.edit}
-                    setClose={v => { if (v) loadData(); setSearch(prev => ({ ...prev, edit: -1 })) }}
-                />
-            )}
             {search.viewEstoque > 0 && (
                 <EstoqueForm
                     user={user}

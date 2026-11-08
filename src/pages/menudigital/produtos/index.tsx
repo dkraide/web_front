@@ -11,7 +11,6 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-solid-svg-icons';
 import IUsuario from '@/interfaces/IUsuario';
 import IProduto from '@/interfaces/IProduto';
-import ProdutoForm from '@/components/Modals/Produto';
 import PictureBox from '@/components/ui/PictureBox';
 import Toggle from 'react-bootstrap-toggle';
 import _ from 'lodash';

@@ -10,7 +10,6 @@ import CustomButton from "@/components/ui/Buttons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGear } from "@fortawesome/free-solid-svg-icons";
 import FiltroProduto from "@/components/Modals/Produto/Mobile/FiltroProduto";
-import ProdutoForm from "@/components/Modals/Produto";
 import IUsuario from "@/interfaces/IUsuario";
 import PictureBox from "@/components/ui/PictureBox";
 
@@ -20,6 +19,8 @@ type props = {
     user: IUsuario
     loadData: () => void
     handleNovaPizza: () => void
+    handleNovoItem: () => void
+    handleEdit: (produto: IProduto) => void
 }
 
 type groupped = {
@@ -33,11 +34,10 @@ type searchProps = {
     status?: boolean
 }
 
-export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizza }: props) {
+export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizza, handleNovoItem, handleEdit }: props) {
     const [list, setList] = useState<groupped[]>([])
     const [search, setSearch] = useState<searchProps>({ str: '', status: true })
     const [formSearch, setFormSearch] = useState(false)
-    const [edit, setEdit] = useState(-1);
     useEffect(() => {
         if (!produtos) {
             return;
@@ -94,7 +94,7 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
     const ProdutoItem = (produto: IProduto) => {
         return (
             <div className={styles.card} onClick={(v) => {
-                setEdit(produto.id);
+                handleEdit(produto);
             }}>
                 <div className={styles.desc} style={{width: '100%'}}>
                     <span className={styles.nome}>{produto.cod} - {produto.nome}</span>
@@ -134,7 +134,7 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
             </div>
             <hr />
             <div className={styles.buttons}>
-                <CustomButton style={{ width: '30%' }} typeButton={'dark'} onClick={() => { setEdit(0) }} >Novo Produto</CustomButton>
+                <CustomButton style={{ width: '30%' }} typeButton={'dark'} onClick={handleNovoItem} >Novo Produto</CustomButton>
                 <CustomButton style={{ width: '30%' }} typeButton={'dark'} onClick={handleNovaPizza}  >Nova Pizza</CustomButton>
             </div>
             <hr />
@@ -145,12 +145,6 @@ export default function ProdutoMobile({ produtos, user, loadData, handleNovaPizz
                 setSearch(v ? v : { str: '' })
             }} />}
 
-            {(edit >= 0) && <ProdutoForm user={user} isOpen={edit >= 0} id={edit} setClose={(v) => {
-                if (v) {
-                    loadData();
-                }
-                setEdit(-1);
-            }} />}
         </div>
     )
 }
