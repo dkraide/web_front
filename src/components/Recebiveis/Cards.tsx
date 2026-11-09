@@ -64,7 +64,9 @@ export function CardTotais({ titulo, totais }: { titulo: string, totais: Totais 
     )
 }
 
-export function CardParcela({ parcela: p }: { parcela: Parcela }) {
+export const podeReceber = (p: Parcela) => p.situacao == "A_VENCER" || p.situacao == "VENCIDO"
+
+export function CardParcela({ parcela: p, onReceber, recebendo }: { parcela: Parcela, onReceber?: (p: Parcela) => void, recebendo?: boolean }) {
     const s = SITUACAO[p.situacao]
     return (
         <div className={styles.card} style={{ ["--card-color" as any]: s.cor }}>
@@ -81,6 +83,12 @@ export function CardParcela({ parcela: p }: { parcela: Parcela }) {
                 <div><b>Forma</b>{p.forma}</div>
                 <div><b>Venda / Documento</b>#{p.vendaId} · {p.documento == "FATURADA" ? "Faturada" : "Orçamento"}</div>
             </div>
+            {onReceber && podeReceber(p) && (
+                <button type="button" disabled={recebendo} onClick={() => onReceber(p)}
+                    style={{ marginTop: 8, width: "100%", padding: "8px", border: 0, borderRadius: 6, background: COR.pago, color: "#fff", fontWeight: 600, cursor: "pointer" }}>
+                    {recebendo ? "Salvando..." : "Recebido"}
+                </button>
+            )}
         </div>
     )
 }

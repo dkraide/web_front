@@ -13,7 +13,7 @@ import ICliente from "@/interfaces/ICliente"
 import { InputGroup } from "@/components/ui/InputGroup"
 import CustomButton from "@/components/ui/Buttons"
 import ListaResponsiva, { useTelaEstreita } from "@/components/Recebiveis/ListaResponsiva"
-import { CardTotais, CardParcela, COR, SITUACAO, Totais, Parcela, Situacao } from "@/components/Recebiveis/Cards"
+import { CardTotais, CardParcela, COR, SITUACAO, Totais, Parcela, Situacao, podeReceber } from "@/components/Recebiveis/Cards"
 import { GetCurrencyBRL } from "@/utils/functions"
 import styles from "./styles.module.scss"
 
@@ -100,6 +100,7 @@ export default function RecebiveisPage() {
     const [clientes, setClientes] = useState<ICliente[]>([])
     const [loading, setLoading] = useState(true)
     const [data, setData] = useState<Recebiveis>()
+    const [recebendo, setRecebendo] = useState(0)
     const [filtros, setFiltros] = useState<Filtros>({
         dataIn: format(startOfMonth(new Date()), "yyyy-MM-dd"),
         dataFim: format(endOfMonth(new Date()), "yyyy-MM-dd"),
@@ -130,6 +131,18 @@ export default function RecebiveisPage() {
             .then(({ data }: AxiosResponse<Recebiveis>) => setData(data))
             .catch((err: AxiosError) => toast.error(`Erro ao buscar recebíveis. ${err.response?.data || err.message}`))
         setLoading(false)
+    }
+
+    async function receber(p: Parcela) {
+        if (!window.confirm(`Confirmar o recebimento de ${moeda(p.valor)} da venda #${p.vendaId} (${p.cliente})?`)) return
+        setRecebendo(p.id)
+        await api.post(`/Venda/ReceberPagamento`, { id: p.id, vendaId: p.vendaId, empresaId: user.empresaSelecionada })
+            .then(async () => {
+                toast.success("Pagamento marcado como recebido.")
+                await carregar()
+            })
+            .catch((err: AxiosError) => toast.error(`Erro ao marcar como recebido. ${err.response?.data || err.message}`))
+        setRecebendo(0)
     }
 
     const set = (campo: keyof Filtros, valor: string | number) => setFiltros(f => ({ ...f, [campo]: valor }))
@@ -178,6 +191,12 @@ export default function RecebiveisPage() {
         {
             name: "Situação", selector: (row: Parcela) => row.situacao, sortable: true,
             cell: (row: Parcela) => <span className={styles.badge} style={{ background: SITUACAO[row.situacao].cor }}>{SITUACAO[row.situacao].label}</span>
+        },
+        {
+            name: "Ação", width: "130px",
+            cell: (row: Parcela) => podeReceber(row) ? (
+                <CustomButton typeButton={"dark"} loading={recebendo == row.id} onClick={() => receber(row)}>Recebido</CustomButton>
+            ) : null
         },
     ]
 
@@ -337,7 +356,7 @@ export default function RecebiveisPage() {
                     <section className={styles.setor}>
                         <h5>Parcelas</h5>
                         <div className={styles.setorDesc}>Detalhamento de cada pagamento considerado no relatório.</div>
-                        <ListaResponsiva columns={colunasParcela} data={data.parcelas} loading={loading} pageSize={15} renderCard={(p) => <CardParcela parcela={p} />} />
+                        <ListaResponsiva columns={colunasParcela} data={data.parcelas} loading={loading} pageSize={15} renderCard={(p) => <CardParcela parcela={p} onReceber={receber} recebendo={recebendo == p.id} />} />
                     </section>
                 </>
             )}

@@ -1,17 +1,293 @@
 .container {
-    padding: 10px 10px;
-}
-.detail{
-    h4{
-        width: 100%;
-    }
-    width: 100%;
+    padding: 6px 4px 12px;
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
+    gap: 14px;
+}
+
+// ── Cancelamento ─────────────────────────────────────────
+.acoes {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btnCancelar {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid #f0c4c4;
+    background: var(--white);
+    color: var(--danger);
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    &:hover {
+        background: #fceaea;
+    }
+}
+
+.confirmar {
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #fff6f6;
+    border: 1px solid #f3cccc;
+    font-size: 13px;
+    color: #a33a3a;
+
+    p {
+        margin: 4px 0 10px;
+        color: #8a5a5a;
+    }
+}
+
+.motivo {
+    width: 100%;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #e6c9c9;
+    background: var(--white);
+    font-size: 13px;
+    outline: none;
+
+    &:focus {
+        border-color: var(--danger);
+    }
+}
+
+.confirmarBtns {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.btnVoltar,
+.btnConfirmar {
+    font-size: 12px;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 1px solid #e0d8e1;
+    background: var(--white);
+    color: #6b5d70;
+
+    &:disabled { opacity: 0.6; cursor: default; }
+}
+
+.btnConfirmar {
+    background: var(--danger);
+    border-color: var(--danger);
+    color: #fff;
+}
+
+// ── Resumo ───────────────────────────────────────────────
+.hero {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #f5f2ff 0%, #fff4f6 100%);
+    border: 1px solid #e6dff5;
+}
+
+.heroLabel {
+    font-size: 12px;
+    color: #8a7d90;
+}
+
+.heroValue {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--dark-900);
+    line-height: 1.2;
+}
+
+.heroCancelada {
+    color: #9a8d9e;
+    text-decoration: line-through;
+}
+
+.heroSub {
+    margin-top: 2px;
+    font-size: 12px;
+    color: #8a7d90;
+}
+
+.badges {
+    display: flex;
+    gap: 6px;
     flex-wrap: wrap;
 }
-.items{
-    width: 50%;
-    max-height: 500px;
+
+%badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 3px 11px;
+    border-radius: 99px;
+}
+
+.badgeOk { @extend %badge; background: #eaf5f0; color: #3d7a5c; }
+.badgeDanger { @extend %badge; background: #fceaea; color: var(--danger); }
+.badgeNeutro { @extend %badge; background: #f2edf3; color: #6b5d70; }
+.badgeInfo { @extend %badge; background: #eaf0fb; color: #2f5fb0; }
+
+.alerta {
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: #fceaea;
+    border: 1px solid #f3cccc;
+    color: #a33a3a;
+    font-size: 13px;
+}
+
+// ── Cards de seção ───────────────────────────────────────
+.card {
+    background: var(--white);
+    border: 1px solid #ede6ee;
+    border-radius: 12px;
+    padding: 14px 16px;
+
+    h5 {
+        margin: 0 0 10px;
+        font-size: 13px;
+        font-weight: 600;
+        color: #6b5d70;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+    }
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 12px 16px;
+}
+
+.info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.infoLabel {
+    font-size: 11px;
+    color: #9a8d9e;
+}
+
+.infoValue {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark-900);
+}
+
+// ── Tabelas ──────────────────────────────────────────────
+.tableWrap {
+    overflow-x: auto;
+    max-height: 340px;
     overflow-y: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+
+    th {
+        position: sticky;
+        top: 0;
+        background: var(--white);
+        text-align: left;
+        font-size: 11px;
+        font-weight: 600;
+        color: #9a8d9e;
+        padding: 6px 8px;
+        border-bottom: 1px solid #ede6ee;
+    }
+
+    td {
+        padding: 8px;
+        border-bottom: 1px solid #f4eff5;
+        color: var(--dark-900);
+    }
+
+    tbody tr:hover td {
+        background: #faf8fb;
+    }
+
+    tfoot td {
+        font-weight: 600;
+        border-bottom: none;
+        border-top: 1px solid #ede6ee;
+    }
+}
+
+// ── Lista mobile (cards no lugar da tabela) ──────────────
+.lista {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-height: 340px;
+    overflow-y: auto;
+}
+
+.linha {
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #faf8fb;
+    border: 1px solid #f0eaf2;
+    font-size: 13px;
+    color: var(--dark-900);
+}
+
+.linhaNome {
+    font-weight: 500;
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.linhaRodape {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12px;
+    color: #8a7d90;
+
+    b {
+        font-size: 14px;
+        color: var(--dark-900);
+    }
+}
+
+.linhaPag {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+}
+
+.linhaTotal {
+    background: transparent;
+    border: none;
+    border-top: 1px solid #ede6ee;
+    border-radius: 0;
+    font-weight: 600;
+}
+
+.right {
+    text-align: right !important;
+    white-space: nowrap;
+}
+
+.vazio {
+    text-align: center;
+    color: #9a8d9e;
+    padding: 16px !important;
 }
