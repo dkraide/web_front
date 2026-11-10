@@ -50,7 +50,7 @@ export default function Produto() {
     // Filtros opcionais (opt-in): so aplicam quando o respectivo checkbox esta ligado,
     // preservando o comportamento padrao de listar todos os produtos.
     const [filtroClasse, setFiltroClasse] = useState<IClasseMaterial>()
-    const [filtroStatus, setFiltroStatus] = useState<boolean | undefined>(undefined)
+    const [filtroStatus, setFiltroStatus] = useState<boolean | undefined>(true)
 
     const { innerWidth } = useWindowSize()
     const mobile = !!innerWidth && innerWidth < 600

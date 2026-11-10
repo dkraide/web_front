@@ -31,15 +31,16 @@ interface props {
     empresaId?: number
     selectedId?: number
     includeInativos?: boolean
+    filtroFinalidade?: boolean
 }
-export default function SelectProdutoModal({selectedId, empresaId, isOpen,  setClose, color, includeInativos = true }: props) {
+export default function SelectProdutoModal({selectedId, empresaId, isOpen,  setClose, color, includeInativos = true, filtroFinalidade }: props) {
 
 
     const [prod, setProd] = useState<IProduto>();
     return (
         <BaseModal height={'50vh'} width={'100%'} color={color} title={'Selecionar Produto'} isOpen={isOpen} setClose={setClose}>
             <div className={styles.container}>
-                <SelectProduto includeInativos={includeInativos} empresaId={empresaId} selected={prod?.id || (selectedId|| 0)} setSelected={(setProd)}/>
+                <SelectProduto filtroFinalidade={filtroFinalidade} includeInativos={includeInativos} empresaId={empresaId} selected={prod?.id || (selectedId|| 0)} setSelected={(setProd)}/>
                     <div className={styles.button}>
                         <CustomButton onClick={() => { setClose(); } } typeButton={"secondary"}>Cancelar</CustomButton>
                         <CustomButton typeButton={'dark'}  onClick={() => {

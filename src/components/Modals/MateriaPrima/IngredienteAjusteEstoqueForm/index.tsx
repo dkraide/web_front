@@ -44,10 +44,11 @@ export default function IngredienteAjusteEstoqueForm({ ingrediente, user, isOpen
         obj.idLancamentoEstoqueProduto = 0;
         obj.lancamentoEstoqueId = -1;
         obj.id = 0;
-        obj.idProduto = 0;
-        obj.produtoId = 0;
-        obj.idMateriaPrima = ingrediente.idMateriaPrima;
-        obj.materiaPrimaId = ingrediente.id;
+        // ingrediente = Produto Finalidade MATERIA_PRIMA: o estoque se move pelo produto
+        obj.idProduto = ingrediente.idMateriaPrima;
+        obj.produtoId = ingrediente.id;
+        obj.idMateriaPrima = 0;
+        obj.materiaPrimaId = 0;
         obj.nomeProduto = ingrediente.nome;
         obj.custoUnitario = fGetNumber(data.custoUnitario);
         obj.quantidade = fGetNumber(data.quantidade);

@@ -184,8 +184,9 @@
   font-weight: 500;
   padding: 2px 9px;
   border-radius: 99px;
-  background: #f2edf3;
-  color: #9a8d9e;
+  background: #fceaea;
+  color: var(--danger);
+  font-weight: 600;
 }
 
 .badgeSuccess {

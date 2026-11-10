@@ -600,6 +600,7 @@ export default function LancamentoEstoqueIA() {
       {/* ══════════════ MODAL: SELECIONAR PRODUTO ══════════════ */}
       {prodModal >= 0 && (
         <SelectProdutoModal
+          filtroFinalidade
           isOpen={prodModal >= 0}
           selectedId={0}
           includeInativos={false}

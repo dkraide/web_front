@@ -276,7 +276,7 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
                     ) : (
                         <div className={styles.box}>
                             <h3>Adicionar Itens</h3>
-                            <SelectProduto ignore={ignore} width={isMobile ? '100%': '50%'} selected={prod?.id || 0} setSelected={setProd} />
+                            <SelectProduto filtroFinalidade ignore={ignore} width={isMobile ? '100%': '50%'} selected={prod?.id || 0} setSelected={setProd} />
                             <InputForm width={'15%'} errors={errors} register={register} inputName={'quantidade'} title={'Qntd'} />
                             <InputForm width={'15%'} errors={errors} register={register} inputName={'multiplicador'} title={'Multiplicador'} />
                             <InputForm width={'15%'} errors={errors} register={register} inputName={'custoUnitario'} title={'Custo Un.'} />

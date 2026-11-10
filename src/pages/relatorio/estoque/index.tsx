@@ -15,6 +15,8 @@ import { Spinner } from "react-bootstrap"
 import IProduto from "@/interfaces/IProduto"
 import SelectClasseMaterial from "@/components/Selects/SelectClasseMaterial"
 import { isMobile } from "react-device-detect"
+import MultiSelect from "@/components/ui/MultiSelect"
+import { FINALIDADES_VISIVEIS, finalidadeKey, finalidadeLabel } from "@/utils/finalidade"
 import {
     BarChart, Bar, XAxis, YAxis, Tooltip,
     ResponsiveContainer, CartesianGrid
@@ -57,6 +59,7 @@ function getDateRange(period: PeriodType) {
 
 const EXCEL_HEADERS = [
     { label: "Produto", key: "produto" },
+    { label: "Finalidade", key: "finalidade" },
     { label: "Estoque", key: "estoque" },
     { label: "Entrada", key: "entrada" },
     { label: "Saída", key: "saida" },
@@ -69,6 +72,7 @@ export default function RelatorioEstoque() {
     const [result, setResult] = useState<RelatorioProps[]>([])
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState<IUsuario>()
+    const [finalidades, setFinalidades] = useState<string[]>(FINALIDADES_VISIVEIS.map(f => f.value))
     const [search, setSearch] = useState<SearchProps>({
         ...getDateRange('mes'),
         period: 'mes',
@@ -112,10 +116,12 @@ export default function RelatorioEstoque() {
     }
 
     const filtered = useMemo(() =>
-        search.classeId
-            ? result.filter(r => r.produto?.classeMaterialId === search.classeId)
-            : result,
-        [result, search.classeId]
+        result.filter(r =>
+            r.produto &&
+            finalidades.includes(finalidadeKey(r.produto.finalidade)) &&
+            (!search.classeId || r.produto.classeMaterialId === search.classeId)
+        ),
+        [result, search.classeId, finalidades]
     )
 
     const totalEntrada = _.sumBy(filtered, 'entrada')
@@ -138,6 +144,7 @@ export default function RelatorioEstoque() {
     function getExcelData() {
         return filtered.map(p => ({
             produto: p.produto.nome,
+            finalidade: finalidadeLabel(p.produto.finalidade),
             estoque: p.produto.quantidade,
             entrada: p.entrada,
             saida: p.saida,
@@ -156,6 +163,12 @@ export default function RelatorioEstoque() {
             name: 'Produto',
             selector: row => row.produto?.nome ?? '',
             sortable: true,
+        },
+        {
+            name: 'Finalidade',
+            selector: row => finalidadeLabel(row.produto?.finalidade),
+            sortable: true,
+            width: '170px',
         },
         {
             name: 'Estoque',
@@ -202,6 +215,7 @@ export default function RelatorioEstoque() {
                     <div>
                         <span className={styles.mobileCod}>{item.produto?.cod}</span>
                         <span className={styles.mobileNome}>{item.produto?.nome}</span>
+                        <small> ({finalidadeLabel(item.produto?.finalidade)})</small>
                     </div>
                     <span className={resultado >= 0 ? styles.badgeSuccess : styles.badgeDanger}>
                         {resultado.toFixed(2)}
@@ -255,10 +269,16 @@ export default function RelatorioEstoque() {
 
             {/* Filtros adicionais */}
             <div className={styles.filtersRow}>
-                <SelectClasseMaterial
+                <SelectClasseMaterial allowAll
                     width={isMobile ? '100%' : '300px'}
                     selected={search.classeId}
                     setSelected={v => setSearch(prev => ({ ...prev, classeId: v.id }))}
+                />
+                <MultiSelect
+                    title="Finalidade"
+                    options={FINALIDADES_VISIVEIS.map(f => ({ value: f.value, label: f.label }))}
+                    selected={finalidades}
+                    onChange={setFinalidades}
                 />
                 <CustomButton onClick={() => { loadData(); }} typeButton="dark" style={{ marginBottom: 10 }}>
                     Pesquisar
@@ -276,7 +296,7 @@ export default function RelatorioEstoque() {
                         <div className={styles.metricCard}>
                             <span className={styles.metricLabel}>Produtos</span>
                             <span className={styles.metricValue}>{filtered.length.toLocaleString('pt-BR')}</span>
-                            <span className={styles.metricSub}>itens no período</span>
+                            <span className={styles.metricSub}>itens ativos</span>
                         </div>
                         <div className={styles.metricCard}>
                             <span className={styles.metricLabel}>Estoque total</span>

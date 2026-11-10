@@ -7,6 +7,8 @@ import IProduto from "@/interfaces/IProduto";
 import _ from 'lodash';
 import { SelectBase, SelectBaseRef } from "./SelectBase";
 import { SelectInstance } from "react-select";
+import MultiSelect from "@/components/ui/MultiSelect";
+import { FINALIDADES_VISIVEIS, finalidadeKey } from "@/utils/finalidade";
 
 interface selProps {
     selected: number;
@@ -17,6 +19,8 @@ interface selProps {
     empresaId?: number
     onKeyDown?: (e) => void
     includeInativos?: boolean
+    /** Traz tambem os insumos e mostra um filtro de finalidade (telas de estoque). */
+    filtroFinalidade?: boolean
 }
 
 
@@ -75,8 +79,10 @@ export  const  SelectProdutoRef = forwardRef<SelectInstance<any>, selProps>(func
     )
   });
 
-export default function SelectProduto({includeInativos, empresaId, id,ignore, width, selected, setSelected }: selProps) {
-    const [formas, setFormas] = useState<IProduto[]>([]);
+export default function SelectProduto({includeInativos, empresaId, id,ignore, width, selected, setSelected, filtroFinalidade }: selProps) {
+    const [todas, setFormas] = useState<IProduto[]>([]);
+    const [finalidades, setFinalidades] = useState<string[]>(FINALIDADES_VISIVEIS.map(f => f.value));
+    const formas = filtroFinalidade ? todas.filter(p => finalidades.includes(finalidadeKey(p.finalidade))) : todas;
     const { getUser } = useContext(AuthContext);
     const loadFormas = async () => {
         let res = 0;
@@ -86,7 +92,9 @@ export default function SelectProduto({includeInativos, empresaId, id,ignore, wi
             let user  = await getUser();
             res = user.empresaSelecionada;
         }
-        let ret = await api.get(`/Produto/List?EmpresaId=${res}${includeInativos ? '' : '&status=true'}`)
+        // /Produto/List nao traz insumos; /Estoque/List traz todos os ativos
+        const url = filtroFinalidade ? `/Estoque/List?EmpresaId=${res}` : `/Produto/List?EmpresaId=${res}${includeInativos ? '' : '&status=true'}`;
+        let ret = await api.get(url)
             .then(({ data }: AxiosResponse<IProduto[]>) => {
                 setFormas(data);
             })
@@ -129,6 +137,13 @@ export default function SelectProduto({includeInativos, empresaId, id,ignore, wi
         }
     }
     return (
-        <SelectBase   id={id} width={width} datas={getData()} selected={selected.toString()} title={'Produto'} setSelected={setSelectedProd} />
+        <>
+            {filtroFinalidade && (
+                <div style={{ marginBottom: 8 }}>
+                    <MultiSelect title="Finalidade" options={FINALIDADES_VISIVEIS.map(f => ({ value: f.value, label: f.label }))} selected={finalidades} onChange={setFinalidades} />
+                </div>
+            )}
+            <SelectBase   id={id} width={width} datas={getData()} selected={selected.toString()} title={'Produto'} setSelected={setSelectedProd} />
+        </>
     )
 }

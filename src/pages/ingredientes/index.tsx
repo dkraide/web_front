@@ -13,7 +13,7 @@ import { useListaCrud } from '@/hooks/useListaCrud';
 import MateriaPrimaForm from '@/components/Modals/MateriaPrima/CadastroForm';
 import { isMobile } from 'react-device-detect';
 import { GetCurrencyBRL } from '@/utils/functions';
-import IngredienteEstoqueForm from '@/components/Modals/MateriaPrima/IngredienteEstoqueForm';
+import EstoqueForm from '@/components/Modals/Produto/EstoqueForm';
 
 type searchProps = {
     str: string
@@ -94,7 +94,6 @@ export default function Ingredientes() {
             <h4>Ingredientes</h4>
             <InputGroup width={'50%'} placeholder={'Filtro'} title={'Pesquisar'} value={searchProps.str} onChange={(e) => { setSearchProps({...searchProps, str: e.currentTarget.value}) }} />
             <CustomButton typeButton={'dark'} onClick={() => { setSearchProps({...searchProps, edit: 0}) }} >Novo Ingrediente</CustomButton>
-            <CustomButton style={{ marginLeft: 5 }} typeButton={'dark'} onClick={() => { window.location.href = '/materiaPrima/grupos' }} >Grupos</CustomButton>
             <hr />
             {isMobile ? <>
                 {getFiltered()?.map((item) => Item(item))}
@@ -112,7 +111,7 @@ export default function Ingredientes() {
                 }
                 setSearchProps({...searchProps, edit: -1})
             }} />}
-             {(searchProps.estoque >= 0) && <IngredienteEstoqueForm user={user} isOpen={searchProps.estoque >= 0} id={searchProps.estoque} setClose={(v) => {
+             {(searchProps.estoque >= 0) && <EstoqueForm user={user} isOpen={searchProps.estoque >= 0} id={searchProps.estoque} setClose={(v) => {
                 if (v) {
                     loadData();
                 }

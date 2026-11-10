@@ -1,44 +1,238 @@
 .container {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  width: 100%;
 }
-.detail{
-    h4{
-        width: 100%;
-    }
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
+
+// ── Cabeçalho (identificação do caixa) ───────────────────
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 24px;
+  padding: 12px 14px;
+  background: var(--white);
+  border: 1px solid #ede6ee;
+  border-radius: 10px;
 }
-.vendas{
-    padding: 0px 5px;
-    width: 50%;
-    max-height: 500px;
-    overflow-y: auto;
+
+.headItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  color: #9a8d9e;
+
+  b {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--dark-900);
+  }
 }
-.sangrias{
-    padding: 0px 5px;
-    width: 25%;
-    max-height: 500px;
-    overflow-y: auto;
+
+// ── Cards de totais ──────────────────────────────────────
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
 }
-.totais{
-    padding: 0px 5px;
-    width: 25%;
-    max-height: 500px;
-    overflow-y: auto;
+
+.kpi {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: var(--white);
+  border: 1px solid #ede6ee;
+  border-radius: 10px;
+  font-size: 12px;
+  color: #9a8d9e;
+
+  b {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--dark-900);
+  }
 }
-.item{
-    b{
-        text-align: start;
-    }
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    padding: 0px 10px;
-    border-bottom:  solid 1pt black;
+
+.kpiOk b { color: #3d7a5c; }
+.kpiDanger b { color: var(--danger); }
+
+// ── Abas ─────────────────────────────────────────────────
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  border-bottom: 1px solid #e8e0ea;
+  padding-bottom: 8px;
+}
+
+.tab {
+  font-size: 12px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  border: 1px solid #e0d8e1;
+  background: var(--white);
+  color: #6b5d70;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    border-color: var(--main-light);
+    color: var(--main);
+  }
+}
+
+.tabActive {
+  background: var(--main);
+  border-color: var(--main);
+  color: #fff;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+// ── Tabelas ──────────────────────────────────────────────
+.tableWrap {
+  overflow-x: auto;
+  border: 1px solid #ede6ee;
+  border-radius: 10px;
+  background: var(--white);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: var(--dark-900);
+
+  th {
+    padding: 9px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    text-align: left;
+    color: #9a8d9e;
+    background: #faf7fb;
+    border-bottom: 1px solid #ede6ee;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f2edf3;
+    vertical-align: middle;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background: #fdfbfe;
+  }
+}
+
+.right { text-align: right !important; }
+
+.cancelada td {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+.rowTotal td {
+  font-weight: 600;
+  background: #faf7fb;
+}
+
+.vazio {
+  padding: 24px;
+  text-align: center;
+  color: #9a8d9e;
+  font-size: 13px;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.hint {
+  font-size: 12px;
+  color: #9a8d9e;
+}
+
+// ── Badges ───────────────────────────────────────────────
+%badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 9px;
+  border-radius: 99px;
+  white-space: nowrap;
+}
+
+.badgeAtivo { @extend %badge; background: #eaf5f0; color: #3d7a5c; }
+.badgeDanger { @extend %badge; background: #fceaea; color: var(--danger); }
+.badgeNeutro { @extend %badge; background: #f2edf3; color: #6b5d70; }
+.badgeInfo { @extend %badge; background: #eaf0fb; color: #2f5fb0; }
+.badgeAberto { @extend %badge; background: #fff4e0; color: #b06f00; }
+
+// ── Lista mobile (cards no lugar da tabela) ──────────────
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.linha {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: #faf8fb;
+  border: 1px solid #f0eaf2;
+  font-size: 13px;
+  color: var(--dark-900);
+}
+
+.linhaTopo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.linhaNome {
+  font-weight: 500;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.linhaRodape {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12px;
+  color: #8a7d90;
+
+  b {
+    font-size: 14px;
+    color: var(--dark-900);
+  }
+}
+
+.linhaTotal {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-top: 1px solid #ede6ee;
+  font-weight: 600;
 }

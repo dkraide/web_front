@@ -36,7 +36,7 @@ export default function ProdutoGrupos({
                     <MateriaPrimaItem
                         key={index}
                         item={item}
-                        onRemove={() => onRemoveMateriaPrima(item.materiaPrimaId)}
+                        onRemove={() => onRemoveMateriaPrima(item.produtoInsumoId)}
                     />
                 ))}
             </div>

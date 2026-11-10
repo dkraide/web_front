@@ -15,7 +15,7 @@ export default function MateriaPrimaItem({ item, onRemove }: MateriaPrimaItemPro
             <div style={{ width: '90%', display: 'flex', flexDirection: 'row' }}>
                 <div style={{ width: '70%' }}>
                     <h5>
-                        {item.materiaPrima?.nome} - {item.opcional ? 'Opcional' : 'Obrigatorio'}
+                        {item.insumo?.nome} - {item.opcional ? 'Opcional' : 'Obrigatorio'}
                     </h5>
                     <b>Quantidade: {item.quantidadeMateriaPrima}</b>
                 </div>

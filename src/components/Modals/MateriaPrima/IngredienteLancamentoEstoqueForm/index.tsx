@@ -125,7 +125,7 @@ export default function IngredienteLancamentoEstoqueForm({ user, isOpen, id, set
             return;
         }
 
-        let index = _.findIndex(produtos, p => p.materiaPrimaId == produtoId);
+        let index = _.findIndex(produtos, p => p.produtoId == produtoId);
         if (index < 0) {
             toast.error(`Erro ao excluir item.`);
         }
@@ -165,7 +165,7 @@ export default function IngredienteLancamentoEstoqueForm({ user, isOpen, id, set
             toast.error(`Quantidade precisa ser maior que zero`);
             return;
         }
-        let ind = _.findIndex(produtos, p => p.materiaPrimaId == ingrediente.id);
+        let ind = _.findIndex(produtos, p => p.produtoId == ingrediente.id);
         if (ind >= 0) {
             toast.error(`Produto ja adicionado ao lancamento`);
             return;
@@ -182,9 +182,10 @@ export default function IngredienteLancamentoEstoqueForm({ user, isOpen, id, set
             idLancamentoEstoque: lancamento.idLancamentoEstoque,
             idLancamentoEstoqueProduto: 0,
             lancamentoEstoqueId: lancamento.id,
-            idProduto: 0,
-            produtoId: 0,
-            idMateriaPrima: ingrediente.idMateriaPrima,
+            // ingrediente = Produto Finalidade MATERIA_PRIMA: o estoque se move pelo produto
+            idProduto: ingrediente.idMateriaPrima,
+            produtoId: ingrediente.id,
+            idMateriaPrima: 0,
             nomeProduto: ingrediente.nome,
             custoUnitario: custo,
             quantidade: qntd,
@@ -193,7 +194,7 @@ export default function IngredienteLancamentoEstoqueForm({ user, isOpen, id, set
             dataLancamento: new Date(),
             isEntrada: lancamento.isEntrada,
             empresaId: user.empresaSelecionada,
-            materiaPrimaId: ingrediente.id,
+            materiaPrimaId: 0,
         } as ILancamentoEstoqueProduto;
         setProdutos([...produtos, obj]);
         toast.success(`Ingrediente adicionado com sucesso`);
