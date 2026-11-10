@@ -10,7 +10,11 @@ export default interface IProdutoMateriaPrima{
      opcional: boolean
      lastChange: Date
      localCriacao: string
-     materiaPrima: IMateriaPrima
+     materiaPrima?: IMateriaPrima // legado
+     // Insumo = Produto Finalidade MATERIA_PRIMA: idProdutoInsumo = local, produtoInsumoId = nuvem
+     idProdutoInsumo: number
+     produtoInsumoId: number
+     insumo?: { id: number; idProduto: number; nome: string; valorCompra: number; localPath?: string }
      produto: IProduto
      produtoId: number
      materiaPrimaId: number

@@ -45,6 +45,8 @@ export default interface IProduto{
          aliqFCPFornecedor: number
          aliqMVAFornecedor: number
          tipo: string
+         // Finalidade (SPED TIPO_ITEM): a API manda o numero do enum; use utils/finalidade
+         finalidade?: number | string
          posicao: number
          visivelMenu: boolean
          promocoes: IPromocao[]

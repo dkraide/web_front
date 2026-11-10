@@ -19,7 +19,7 @@ export function useMateriaPrima(
 
         const index = _.findIndex(
             produto.materiaPrimas,
-            (o: IProdutoMateriaPrima) => o.materiaPrimaId === mp.id
+            (o: IProdutoMateriaPrima) => o.produtoInsumoId === mp.id
         );
 
         if (index >= 0) {
@@ -30,15 +30,17 @@ export function useMateriaPrima(
         produto.materiaPrimas.push({
             idProdutoMateriaPrima: 0,
             idProduto: produto.idProduto,
-            idMateriaPrima: mp.idMateriaPrima,
+            idMateriaPrima: 0,
+            idProdutoInsumo: mp.idMateriaPrima,
+            produtoInsumoId: mp.id,
             id: 0,
             quantidadeMateriaPrima: qntd,
             opcional: opc,
             lastChange: new Date(),
             localCriacao: 'ONLINE',
-            materiaPrima: mp,
+            insumo: { id: mp.id, idProduto: mp.idMateriaPrima, nome: mp.nome, valorCompra: mp.valorCusto, localPath: mp.localPath },
             produtoId: produto.id,
-            materiaPrimaId: mp.id,
+            materiaPrimaId: 0,
             empresaId: user.empresaSelecionada,
         } as IProdutoMateriaPrima);
 
@@ -48,7 +50,7 @@ export function useMateriaPrima(
     const removeMateriaPrima = async (materiaPrimaId: number) => {
         const index = _.findIndex(
             produto.materiaPrimas,
-            (o: IProdutoMateriaPrima) => o.materiaPrimaId === materiaPrimaId
+            (o: IProdutoMateriaPrima) => o.produtoInsumoId === materiaPrimaId
         );
 
         if (index < 0) {

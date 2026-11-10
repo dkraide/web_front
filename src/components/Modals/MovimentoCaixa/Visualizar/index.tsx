@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { api } from "@/services/apiClient";
-import { AxiosError, AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import Loading from "@/components/Loading";
 import { toast } from "react-toastify";
 import styles from './styles.module.scss';
@@ -9,8 +9,9 @@ import BaseModal from "../../Base/Index";
 import _ from "lodash";
 import { format } from "date-fns";
 import IMovimentoCaixa from "@/interfaces/IMovimentoCaixa";
-import { Spinner, Tab, Tabs } from "react-bootstrap";
-import { isMobile } from "react-device-detect";
+import { GetCurrencyBRL } from "@/utils/functions";
+import { useWindowSize } from "rooks";
+import ConferenciaCaixa from "./Conferencia";
 
 interface props {
     isOpen: boolean
@@ -29,13 +30,27 @@ type prodProps = {
     qntd: number
     valor: number
 }
-export default function Visualizar({ user, isOpen, id, setClose, color }: props) {
 
+type Aba = 'conferencia' | 'pagamentos' | 'vendas' | 'produtos' | 'sangrias'
+const ABAS: { key: Aba, label: string }[] = [
+    { key: 'conferencia', label: 'Conferência' },
+    { key: 'pagamentos', label: 'Pagamentos' },
+    { key: 'vendas', label: 'Vendas' },
+    { key: 'produtos', label: 'Produtos' },
+    { key: 'sangrias', label: 'Sangrias / Reforços' },
+]
+
+const fmtData = (d: Date | string) => format(new Date(d), 'dd/MM/yyyy HH:mm')
+
+export default function Visualizar({ user, isOpen, id, setClose, color }: props) {
 
     const [obj, setObj] = useState<IMovimentoCaixa>({} as IMovimentoCaixa)
     const [totais, setTotais] = useState<valorProps[]>()
     const [produtos, setProdutos] = useState<prodProps[]>([])
     const [loading, setLoading] = useState<boolean>(true)
+    const [aba, setAba] = useState<Aba>('conferencia')
+    const { innerWidth } = useWindowSize()
+    const mobile = !!innerWidth && innerWidth < 700
 
     useEffect(() => {
         api.get(`/MovimentoCaixa/Select?id=${id}`)
@@ -59,307 +74,225 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                 setProdutos(data);
             })
             .catch((err) => {
-                toast.error(`Erro ao buscar totais. ${err.message}`)
+                toast.error(`Erro ao buscar produtos. ${err.message}`)
             })
     }, []);
 
-    function calcularVendas() {
-        if (!totais) {
-            return 0;
-        }
-        let total = 0;
-        totais.map(p => {
-            if (p.forma.toUpperCase().includes('DINHEIRO')) {
-                total += p.valor
-            }
-        });
-        return total;
-    }
-    function calcularSangrias() {
-        if (!obj || !obj.sangrias) {
-            return 0;
-        }
-        let total = _.sumBy(obj.sangrias, o => o.isSangria ? o.valorMovimento : 0);
-        return total;
-    }
-    function calculaEntradas() {
-        if (!obj || !obj.sangrias) {
-            return 0;
-        }
-        let total = _.sumBy(obj.sangrias, o => !o.isSangria ? o.valorMovimento : 0);
-        return total;
-    }
-    function calculaEsperado() {
-        let sangrias = calcularSangrias();
-        let entradas = calculaEntradas();
-        let vendas = calcularVendas();
-        let resultado = obj.valorDinheiro + vendas + entradas - sangrias;
-        return resultado;
-    }
-    function calculaDiferenca() {
-        let resultado = calculaEsperado();
-        return obj.valorDinheiroFinal - resultado;
-    }
+    const vendasDinheiro = _.sumBy(totais ?? [], p => p.forma.toUpperCase().includes('DINHEIRO') ? p.valor : 0);
+    const sangrias = _.sumBy(obj.sangrias ?? [], o => o.isSangria ? o.valorMovimento : 0);
+    const entradas = _.sumBy(obj.sangrias ?? [], o => !o.isSangria ? o.valorMovimento : 0);
+    const esperado = (obj.valorDinheiro ?? 0) + vendasDinheiro + entradas - sangrias;
+    const diferenca = (obj.valorDinheiroFinal ?? 0) - esperado;
+    const fechado = !!obj.status;
+
+    const kpi = (label: string, valor: string, classe?: string) => (
+        <div className={`${styles.kpi} ${classe ?? ''}`}>
+            {label}
+            <b>{valor}</b>
+        </div>
+    )
 
     return (
-        <BaseModal height={'80%'} width={'80%'} color={color} title={'Visualizar Movimento Caixa'} isOpen={isOpen} setClose={setClose}>
+        <BaseModal height={'85%'} width={'85%'} color={color} title={`Caixa ${obj.idMovimentoCaixa || obj.id || ''}`} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading />
             ) : (
                 <div className={styles.container}>
-                    <div hidden={isMobile} className={styles.detail}>
-                        <div style={{ width: '45%' }}>
-                            <table className={"table"}>
-                                <thead>
-                                    <tr>
-                                        <th colSpan={2}>Detalhe</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Nro</td>
-                                        <td>{obj.idMovimentoCaixa || obj.id}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Abertura</td>
-                                        <td>{format(new Date(obj.dataMovimento || new Date()), 'dd/MM/yyyy HH:mm')}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Usuario</td>
-                                        <td>{obj.usuario?.nome || obj.idUsuario}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Status</td>
-                                        <td>{obj.status ? 'FECHADO' : 'ABERTO'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Fechamento</td>
-                                        <td>{obj.status ? format(new Date(obj.dataFechamento), 'dd/MM/yyyy HH:mm') : '--'}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div style={{ width: '45%' }}>
-                            <table className={"table"}>
-                                <thead>
-                                    <tr>
-                                        <th colSpan={2}>Totais</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Abertura (+)</td>
-                                        <td>R$ {obj.valorDinheiro.toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Vendas (+)</td>
-                                        <td>R$ {calcularVendas().toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Entradas (+)</td>
-                                        <td>R$ {calculaEntradas().toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Sangrias (-)</td>
-                                        <td>R$ {calcularSangrias().toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Informado (=)</td>
-                                        <td>R$ {obj.status ? obj.valorDinheiroFinal.toFixed(2) : '--'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Esperado (=)</td>
-                                        <td>R$ {obj.status ? calculaEsperado().toFixed(2) : '--'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Diferenca (=)</td>
-                                        <td>R$ {obj.status ? calculaDiferenca().toFixed(2) : '--'}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
+                    {/* Identificação */}
+                    <div className={styles.head}>
+                        <span className={styles.headItem}>Caixa<b>{obj.idMovimentoCaixa || obj.id}</b></span>
+                        <span className={styles.headItem}>Usuário<b>{obj.usuario?.nome || obj.idUsuario}</b></span>
+                        <span className={styles.headItem}>Abertura<b>{fmtData(obj.dataMovimento || new Date())}</b></span>
+                        <span className={styles.headItem}>Fechamento<b>{fechado ? fmtData(obj.dataFechamento) : '--'}</b></span>
+                        <span className={styles.headItem}>
+                            Status
+                            <span className={fechado ? styles.badgeNeutro : styles.badgeAberto}>{fechado ? 'Fechado' : 'Aberto'}</span>
+                        </span>
                     </div>
-                    <div style={{ width: '100%' }}>
-                        <Tabs
-                            id="controlled-tab-example"
-                            className="mb-3"
-                            justify
-                        >
-                            {isMobile && <Tab eventKey="detalhes" title="Detalhes">
-                                <div style={{ width: '100%' }}>
-                                    <table className={"table"}>
-                                        <thead>
-                                            <tr>
-                                                <th colSpan={2}>Detalhe</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>Nro</td>
-                                                <td>{obj.idMovimentoCaixa || obj.id}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Abertura</td>
-                                                <td>{format(new Date(obj.dataMovimento || new Date()), 'dd/MM/yyyy HH:mm')}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Usuario</td>
-                                                <td>{obj.usuario?.nome || obj.idUsuario}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Status</td>
-                                                <td>{obj.status ? 'FECHADO' : 'ABERTO'}</td>
-                                            </tr>
-                                            <tr>
-                                                <td>Fechamento</td>
-                                                <td>{obj.status ? format(new Date(obj.dataFechamento), 'dd/MM/yyyy HH:mm') : '--'}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
+
+                    {/* Totais do dinheiro */}
+                    <div className={styles.kpis}>
+                        {kpi('Abertura (+)', GetCurrencyBRL(obj.valorDinheiro ?? 0))}
+                        {kpi('Vendas em dinheiro (+)', GetCurrencyBRL(vendasDinheiro))}
+                        {kpi('Reforços (+)', GetCurrencyBRL(entradas))}
+                        {kpi('Sangrias (-)', GetCurrencyBRL(sangrias))}
+                        {kpi('Esperado (=)', fechado ? GetCurrencyBRL(esperado) : '--')}
+                        {kpi('Informado (=)', fechado ? GetCurrencyBRL(obj.valorDinheiroFinal) : '--')}
+                        {kpi('Diferença', fechado ? GetCurrencyBRL(diferenca) : '--', fechado ? (diferenca === 0 ? styles.kpiOk : styles.kpiDanger) : undefined)}
+                    </div>
+
+                    {/* Abas */}
+                    <div className={styles.tabs}>
+                        {ABAS.map(a => (
+                            <button key={a.key} type="button"
+                                className={`${styles.tab} ${aba === a.key ? styles.tabActive : ''}`}
+                                onClick={() => setAba(a.key)}>
+                                {a.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    {aba === 'conferencia' && <ConferenciaCaixa id={id} mobile={mobile} />}
+
+                    {mobile && aba === 'pagamentos' && (
+                        <div className={styles.lista}>
+                            {totais?.map((item, index) => (
+                                <div key={index} className={styles.linha}>
+                                    <div className={styles.linhaNome}>{item.forma}</div>
+                                    <div className={styles.linhaRodape}><span>{item.qntd} pagamento(s)</span><b>{GetCurrencyBRL(item.valor)}</b></div>
                                 </div>
-                            </Tab>}
-                            {isMobile && <Tab eventKey="totais" title="Totais">
-                                <div style={{ width: '100%' }}>
-                            <table className={"table"}>
+                            ))}
+                            <div className={styles.linhaTotal}><span>Total</span><b>{GetCurrencyBRL(_.sumBy(totais, t => t.valor))}</b></div>
+                        </div>
+                    )}
+                    {mobile && aba === 'vendas' && (
+                        <div className={styles.lista}>
+                            {(!obj.vendas || obj.vendas.length === 0) && <div className={styles.vazio}>Sem vendas neste caixa.</div>}
+                            {obj.vendas?.map(item => (
+                                <div key={item.id} className={styles.linha}>
+                                    <div className={styles.linhaTopo}>
+                                        <b>Venda {item.id}</b>
+                                        <span className={item.statusVenda ? styles.badgeAtivo : styles.badgeDanger}>{item.statusVenda ? 'OK' : 'Cancelada'}</span>
+                                    </div>
+                                    <div className={styles.linhaRodape}>
+                                        <span>{fmtData(item.dataVenda)} · {item.usuario?.nome || '--'} · {item.estd ? 'Faturada' : 'Orçamento'}</span>
+                                        <b>{GetCurrencyBRL(item.valorTotal)}</b>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {mobile && aba === 'produtos' && (
+                        <div className={styles.lista}>
+                            {produtos.length === 0 && <div className={styles.vazio}>Sem produtos vendidos.</div>}
+                            {produtos.map((item, index) => (
+                                <div key={index} className={styles.linha}>
+                                    <div className={styles.linhaNome}>{item.nome}</div>
+                                    <div className={styles.linhaRodape}><span>Qtd {item.qntd}</span><b>{GetCurrencyBRL(item.valor)}</b></div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                    {mobile && aba === 'sangrias' && (
+                        <div className={styles.lista}>
+                            {(!obj.sangrias || obj.sangrias.length === 0) && <div className={styles.vazio}>Sem sangrias ou reforços.</div>}
+                            {obj.sangrias?.map(item => (
+                                <div key={item.id} className={styles.linha}>
+                                    <div className={styles.linhaTopo}>
+                                        <span className={item.isSangria ? styles.badgeAberto : styles.badgeNeutro}>{item.isSangria ? 'Sangria' : 'Reforço'}</span>
+                                        <b>{GetCurrencyBRL(item.valorMovimento)}</b>
+                                    </div>
+                                    <div className={styles.linhaRodape}><span>{fmtData(item.dataSangria)}{item.motivo ? ` · ${item.motivo}` : ''}</span></div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {!mobile && aba === 'pagamentos' && (
+                        <div className={styles.tableWrap}>
+                            <table className={styles.table}>
                                 <thead>
                                     <tr>
-                                        <th colSpan={2}>Totais</th>
+                                        <th>Forma de pagamento</th>
+                                        <th className={styles.right}>Qntd</th>
+                                        <th className={styles.right}>Valor</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr>
-                                        <td>Abertura (+)</td>
-                                        <td>R$ {obj.valorDinheiro.toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Vendas (+)</td>
-                                        <td>R$ {calcularVendas().toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Entradas (+)</td>
-                                        <td>R$ {calculaEntradas().toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Sangrias (-)</td>
-                                        <td>R$ {calcularSangrias().toFixed(2)}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Informado (=)</td>
-                                        <td>R$ {obj.status ? obj.valorDinheiroFinal.toFixed(2) : '--'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Esperado (=)</td>
-                                        <td>R$ {obj.status ? calculaEsperado().toFixed(2) : '--'}</td>
-                                    </tr>
-                                    <tr>
-                                        <td>Diferenca (=)</td>
-                                        <td>R$ {obj.status ? calculaDiferenca().toFixed(2) : '--'}</td>
+                                    {totais?.map((item, index) =>
+                                        <tr key={index}>
+                                            <td>{item.forma}</td>
+                                            <td className={styles.right}>{item.qntd}</td>
+                                            <td className={styles.right}>{GetCurrencyBRL(item.valor)}</td>
+                                        </tr>)}
+                                    <tr className={styles.rowTotal}>
+                                        <td>TOTAL</td>
+                                        <td className={styles.right}>{_.sumBy(totais, t => t.qntd)}</td>
+                                        <td className={styles.right}>{GetCurrencyBRL(_.sumBy(totais, t => t.valor))}</td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                            </Tab>}
-                            <Tab eventKey="home" title="Pagamentos">
-                                <div>
-                                    <table className={"table"}>
-                                        <thead>
-                                            <tr>
-                                                <th>Forma de Pagamento</th>
-                                                <th>Qntd</th>
-                                                <th>Valor</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {totais?.map((item, index) =>
-                                                <tr key={index}>
-                                                    <td>{item.forma}</td>
-                                                    <td>{item.qntd}</td>
-                                                    <td>R$ {item.valor.toFixed(2)}</td>
-                                                </tr>)}
-                                            <tr >
-                                                <td><b>TOTAL</b></td>
-                                                <td>{_.sumBy(totais, t => t.qntd)}</td>
-                                                <td>R$ {_.sumBy(totais, t => t.valor)}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Tab>
-                            <Tab eventKey="profile" title="Vendas">
-                                <div>
-                                    <table className={"table"}>
-                                        <thead>
-                                            <tr>
-                                                <th>Nro</th>
-                                                <th>Usuario</th>
-                                                <th>Data</th>
-                                                <th>Status</th>
-                                                <th>Tipo</th>
-                                                <th>Valor</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {obj.vendas?.map((item) =>
-                                                <tr key={item.id}>
-                                                    <td>{item.id}</td>
-                                                    <td>{item.usuario?.nome || '--'}</td>
-                                                    <td>{format(new Date(item.dataVenda), 'dd/MM/yyyy HH:mm')}</td>
-                                                    <td>{item.statusVenda ? 'OK' : 'Cancelada'}</td>
-                                                    <td>{item.estd ? 'FATURADA' : 'ORCAMENTO'}</td>
-                                                    <td>{item.valorTotal.toFixed(2)}</td>
-                                                </tr>)}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Tab>
-                            <Tab eventKey="produtos" title="Produtos">
-                                <div>
-                                    <table className={"table"}>
-                                        <thead>
-                                            <tr>
-                                                <th style={{ width: '60%' }}>Produto</th>
-                                                <th style={{ width: '20%' }}>Quantidade</th>
-                                                <th style={{ width: '20%' }}>Valor</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {produtos?.map((item, index) =>
-                                                <tr key={index}>
-                                                    <td>{item.nome}</td>
-                                                    <td>{item.qntd}</td>
-                                                    <td>R${item.valor.toFixed(2)}</td>
-                                                </tr>)}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Tab>
-                            <Tab eventKey="contact" title="Sangrias">
-                                <div>
-                                    <table className={"table"}>
-                                        <thead>
-                                            <tr>
-                                                <th>Nro</th>
-                                                <th>Tipo</th>
-                                                <th>Data</th>
-                                                <th>Motivo</th>
-                                                <th>Valor</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {obj.sangrias?.map((item) =>
-                                                <tr key={item.id}>
-                                                    <td>{item.id}</td>
-                                                    <td>{item.isSangria ? 'SANGRIA' : 'ENTRADA'}</td>
-                                                    <td>{format(new Date(item.dataSangria), 'dd/MM/yyyy HH:mm')}</td>
-                                                    <td>{item.motivo}</td>
-                                                    <td>{item.valorMovimento.toFixed(2)}</td>
-                                                </tr>)}
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </Tab>
-                        </Tabs>
-                    </div>
+                    )}
+
+                    {!mobile && aba === 'vendas' && (
+                        <div className={styles.tableWrap}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Nro</th>
+                                        <th>Usuário</th>
+                                        <th>Data</th>
+                                        <th>Status</th>
+                                        <th>Tipo</th>
+                                        <th className={styles.right}>Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {obj.vendas?.map((item) =>
+                                        <tr key={item.id}>
+                                            <td>{item.id}</td>
+                                            <td>{item.usuario?.nome || '--'}</td>
+                                            <td>{fmtData(item.dataVenda)}</td>
+                                            <td><span className={item.statusVenda ? styles.badgeAtivo : styles.badgeDanger}>{item.statusVenda ? 'OK' : 'Cancelada'}</span></td>
+                                            <td><span className={item.estd ? styles.badgeInfo : styles.badgeNeutro}>{item.estd ? 'Faturada' : 'Orçamento'}</span></td>
+                                            <td className={styles.right}>{GetCurrencyBRL(item.valorTotal)}</td>
+                                        </tr>)}
+                                    {(!obj.vendas || obj.vendas.length === 0) && <tr><td colSpan={6} className={styles.vazio}>Sem vendas neste caixa.</td></tr>}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {!mobile && aba === 'produtos' && (
+                        <div className={styles.tableWrap}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Produto</th>
+                                        <th className={styles.right}>Quantidade</th>
+                                        <th className={styles.right}>Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {produtos?.map((item, index) =>
+                                        <tr key={index}>
+                                            <td>{item.nome}</td>
+                                            <td className={styles.right}>{item.qntd}</td>
+                                            <td className={styles.right}>{GetCurrencyBRL(item.valor)}</td>
+                                        </tr>)}
+                                    {produtos.length === 0 && <tr><td colSpan={3} className={styles.vazio}>Sem produtos vendidos.</td></tr>}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+
+                    {!mobile && aba === 'sangrias' && (
+                        <div className={styles.tableWrap}>
+                            <table className={styles.table}>
+                                <thead>
+                                    <tr>
+                                        <th>Nro</th>
+                                        <th>Tipo</th>
+                                        <th>Data</th>
+                                        <th>Motivo</th>
+                                        <th className={styles.right}>Valor</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {obj.sangrias?.map((item) =>
+                                        <tr key={item.id}>
+                                            <td>{item.id}</td>
+                                            <td><span className={item.isSangria ? styles.badgeAberto : styles.badgeNeutro}>{item.isSangria ? 'Sangria' : 'Reforço'}</span></td>
+                                            <td>{fmtData(item.dataSangria)}</td>
+                                            <td>{item.motivo}</td>
+                                            <td className={styles.right}>{GetCurrencyBRL(item.valorMovimento)}</td>
+                                        </tr>)}
+                                    {(!obj.sangrias || obj.sangrias.length === 0) && <tr><td colSpan={5} className={styles.vazio}>Sem sangrias ou reforços.</td></tr>}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
                 </div>
             )}
         </BaseModal>

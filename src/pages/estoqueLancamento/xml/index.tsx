@@ -300,7 +300,7 @@ export default function Xml() {
                 <DataItem title={'Valor Total'} value={valorItens()} />
                 <CustomButton className={styles.btn} typeButton={'main'} onClick={onSubmit}>Enviar lançamento</CustomButton>
             </div>
-            {prodModal >= 0 && <SelectProdutoModal isOpen={prodModal >= 0} selectedId={0} setClose={(v) => {
+            {prodModal >= 0 && <SelectProdutoModal filtroFinalidade isOpen={prodModal >= 0} selectedId={0} setClose={(v) => {
                 if (v) {
                     selectProduto(v);
                 } else {

@@ -13,4 +13,5 @@ export default interface IMateriaPrima{
      localPath: string
      multiplicadorFornecedor: number
      codigoFornecedor: string
+     quantidadeMinima: number
 }

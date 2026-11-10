@@ -39,6 +39,8 @@ const emptyItem = (): IGrupoAdicionalItem => ({
     materiaPrima: null,
     idMateriaPrima: 0,
     materiaPrimaId: 0,
+    idProduto: 0,
+    produtoId: 0,
     nome: '',
     descricao: '',
     valor: 0,
@@ -296,13 +298,16 @@ export default function GrupoAdicionalForm({ isOpen, id, empresaId, setClose }: 
                                             <label className={styles.label}>Matéria Prima</label>
                                             <select
                                                 className={styles.select}
-                                                value={itemEdit.materiaPrimaId ?? 0}
+                                                value={itemEdit.produtoId ?? 0}
                                                 onChange={(e) => {
                                                     const mp = materiaPrimas.find(m => m.id === Number(e.target.value));
                                                     setItemEdit({
                                                         ...itemEdit,
-                                                        materiaPrimaId: mp?.id ?? 0,
-                                                        idMateriaPrima: mp?.idMateriaPrima ?? 0,
+                                                        // o insumo e um Produto: a lista traz Produto.Id em id e Produto.IDProduto em idMateriaPrima
+                                                        produtoId: mp?.id ?? 0,
+                                                        idProduto: mp?.idMateriaPrima ?? 0,
+                                                        materiaPrimaId: 0,
+                                                        idMateriaPrima: 0,
                                                     });
                                                 }}
                                             >

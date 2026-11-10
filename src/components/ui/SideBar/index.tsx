@@ -134,21 +134,15 @@ export default function SideBar({ children, ...props }) {
                                 <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Produtos"
                                     rootStyles={subMenuStyle}>
                                     <MenuItem component={<Link href={'/produto'} />}>Produtos</MenuItem>
+                                    {user.tipoSistema !== 'LOJA_ROUPA' && <MenuItem component={<Link href={'/ingredientes'} />}>Ingredientes</MenuItem>}
                                     <MenuItem component={<Link href={'/classeMaterial'} />}>Classes</MenuItem>
                                     <MenuItem component={<Link href={'/setorestoque'} />}>Setores de estoque (NFC)</MenuItem>
                                     <MenuItem component={<Link href={'/grupo-adicional'} />}>Grupos de Compl.</MenuItem>
                                     <MenuItem component={<Link href={'/tributacao'} />}>Tributações</MenuItem>
-                                    <MenuItem component={<Link href={'/estoque'} />}>Estoque de produtos</MenuItem>
+                                    <MenuItem component={<Link href={'/estoque'} />}>Estoque</MenuItem>
                                     <MenuItem component={<Link href={'/estoqueLancamento'} />}>Lançamento de estoque</MenuItem>
                                     <MenuItem component={<Link href={'/estoque/conferenciaEstoque'} />}>Conferência</MenuItem>
                                 </SubMenu>
-                                {user.tipoSistema !== 'LOJA_ROUPA' && (
-                                    <SubMenu icon={<FontAwesomeIcon icon={faBox} color={'var(--main)'} />} label="Ingredientes"
-                                        rootStyles={subMenuStyle}>
-                                        <MenuItem component={<Link href={'/ingredientes'} />}>Ingredientes</MenuItem>
-                                        <MenuItem component={<Link href={'/ingredientes/estoque'} />}>Estoque de ingredientes</MenuItem>
-                                    </SubMenu>
-                                )}
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promoções">
                                     <MenuItem component={<Link href={'/promocao/atacado'} />}> Promoção</MenuItem>
                                     <MenuItem component={<Link href={'/promocao/combo'} />}> Combos</MenuItem>

@@ -1,0 +1,92 @@
+// Mesmo visual do InputGroup (label + campo de 36px)
+.wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 10px;
+  min-width: 220px;
+}
+
+.title {
+  font-size: 12px;
+  font-weight: 500;
+  color: #9a8d9e;
+}
+
+.button {
+  height: 36px;
+  padding: 0 10px;
+  font-size: 13px;
+  color: var(--dark-900);
+  text-align: left;
+  background: var(--white);
+  border: 1px solid #e0d8e1;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    border-color: #c8bfcc;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: var(--main);
+    box-shadow: 0 0 0 3px rgba(252, 79, 107, 0.1);
+  }
+}
+
+.caret {
+  font-size: 10px;
+  color: #9a8d9e;
+}
+
+.menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  max-height: 320px;
+  overflow-y: auto;
+  margin-top: -6px;
+  background: var(--white);
+  border: 1px solid #e0d8e1;
+  border-radius: 8px;
+  padding: 8px 10px;
+  box-shadow: 0 6px 18px rgba(60, 30, 70, 0.12);
+}
+
+.actions {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #f2edf3;
+
+  a {
+    color: var(--main);
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+  }
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 13px;
+  color: var(--dark-900);
+  cursor: pointer;
+
+  input {
+    accent-color: var(--main);
+  }
+}

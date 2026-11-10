@@ -7,9 +7,12 @@ export interface IGrupoAdicionalItem {
   idGrupoAdicional: number;
   grupoAdicionalId: number;
   grupoAdicional?: IGrupoAdicional;
-  materiaPrima: IMateriaPrima;
+  materiaPrima?: IMateriaPrima; // legado
   idMateriaPrima: number;
   materiaPrimaId: number;
+  // insumo (Produto Finalidade MATERIA_PRIMA) do complemento: idProduto = local, produtoId = nuvem
+  idProduto?: number;
+  produtoId?: number;
   nome: string;
   descricao: string;
   valor: number;

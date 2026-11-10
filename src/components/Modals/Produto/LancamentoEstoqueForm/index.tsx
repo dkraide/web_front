@@ -22,6 +22,7 @@ import ILancamentoEstoqueProduto from "@/interfaces/ILancamentoEstoqueProduto";
 import _ from "lodash";
 import { isMobile } from "react-device-detect";
 import { LabelGroup } from "@/components/ui/LabelGroup";
+import DetalheLancamento from "./Detalhe";
 
 
 interface props {
@@ -250,6 +251,8 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
         <BaseModal height={'90%'} width={'90%'} color={color} title={'Lançamento de estoque'} isOpen={isOpen} setClose={setClose}>
             {loading ? (
                 <Loading />
+            ) : lancamento.id > 0 ? (
+                <DetalheLancamento lancamento={lancamento} produtos={produtos} onClose={() => setClose()} />
             ) : (
                 <div className={styles.container}>
                     <div className={styles.box}>
@@ -276,7 +279,7 @@ export default function LancamentoEstoqueForm({ user, isOpen, id, setClose, colo
                     ) : (
                         <div className={styles.box}>
                             <h3>Adicionar Itens</h3>
-                            <SelectProduto ignore={ignore} width={isMobile ? '100%': '50%'} selected={prod?.id || 0} setSelected={setProd} />
+                            <SelectProduto filtroFinalidade ignore={ignore} width={isMobile ? '100%': '50%'} selected={prod?.id || 0} setSelected={setProd} />
                             <InputForm width={'15%'} errors={errors} register={register} inputName={'quantidade'} title={'Qntd'} />
                             <InputForm width={'15%'} errors={errors} register={register} inputName={'multiplicador'} title={'Multiplicador'} />
                             <InputForm width={'15%'} errors={errors} register={register} inputName={'custoUnitario'} title={'Custo Un.'} />

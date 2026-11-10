@@ -28,7 +28,6 @@ export default function MateriaPrima() {
             columns={columns}
             searchText={r => r.nome}
             onReload={reload}
-            extraActions={<CustomButton typeButton={'dark'} onClick={() => router.push('/materiaPrima/grupos')}>Grupos</CustomButton>}
             renderCard={r => (
                 <>
                     <div>Descrição <b>{r.nome}</b></div>
