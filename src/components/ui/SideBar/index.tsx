@@ -141,6 +141,7 @@ export default function SideBar({ children, ...props }) {
                                     <MenuItem component={<Link href={'/tributacao'} />}>Tributações</MenuItem>
                                     <MenuItem component={<Link href={'/estoque'} />}>Estoque</MenuItem>
                                     <MenuItem component={<Link href={'/estoqueLancamento'} />}>Lançamento de estoque</MenuItem>
+                                    <MenuItem component={<Link href={'/pedidoCompra'} />}>Pedidos de compra</MenuItem>
                                     <MenuItem component={<Link href={'/estoque/conferenciaEstoque'} />}>Conferência</MenuItem>
                                 </SubMenu>
                                 <SubMenu rootStyles={subMenuStyle} icon={<FontAwesomeIcon icon={faPercent} color={'var(--main)'} />} label="Promoções">
