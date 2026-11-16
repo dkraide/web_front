@@ -40,4 +40,5 @@ export default interface IUsuarioCaixa {
     impFechamentoCanceladas: boolean
     permitePausarVenda: boolean
     alterarItemComanda: boolean
+    permitePassarVenda: boolean
 }

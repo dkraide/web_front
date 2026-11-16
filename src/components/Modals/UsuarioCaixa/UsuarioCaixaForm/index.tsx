@@ -44,7 +44,7 @@ const GRUPOS_PERMISSOES: { titulo: string, campos: (keyof IUsuarioCaixa)[] }[] =
             'editarComanda', 'removeItemComanda', 'finalizaVendaSemEstoque',
             'imprimeProdutoFechamento', 'visualizaVendasAntigas',
             'visualizarVendaCaixa', 'impFechamentoCanceladas',
-            'permitePausarVenda', 'alterarItemComanda',
+            'permitePausarVenda', 'alterarItemComanda', 'permitePassarVenda',
         ],
     },
 ]
@@ -78,6 +78,7 @@ const LABELS: Partial<Record<keyof IUsuarioCaixa, string>> = {
     impFechamentoCanceladas: 'Impr. fechamento canc.',
     permitePausarVenda: 'Permite pausar venda',
     alterarItemComanda: 'Altera item da comanda',
+    permitePassarVenda: 'Permite passar venda',
 }
 
 export default function UsuarioCaixaForm({ user, isOpen, classeId, setClose, color }: props) {
@@ -104,7 +105,8 @@ export default function UsuarioCaixaForm({ user, isOpen, classeId, setClose, col
                     setLoading(false);
                 })
         } else {
-            setObj({ ...obj, id: 0 });
+            // Novo usuário: pode passar venda por padrão (igual ao default do backend).
+            setObj({ ...obj, id: 0, permitePassarVenda: true });
             setLoading(false);
         }
     }, []);
