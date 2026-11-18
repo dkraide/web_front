@@ -167,6 +167,7 @@ export default function Visualizar({ user, isOpen, id, setClose, color }: props)
                             {obj.nnf > 0 && <Info label="NNF" value={obj.nnf} />}
                             <Info label="Caixa" value={obj.movimentoCaixaId || '--'} />
                             <Info label="Usuário" value={obj.usuario?.nome || obj.idUsuario || '--'} />
+                            {(obj.cliente?.nome || obj.nomeCliente) && <Info label="Cliente" value={obj.cliente?.nome || obj.nomeCliente} />}
                             <Info label="Itens" value={qtdItens.toFixed(2).replace(/\.00$/, '')} />
                         </div>
                     </section>

@@ -216,7 +216,9 @@ export default function ProdutoItem() {
             router.push('/produto');
 
         } catch (err) {
-            toast.error('Erro ao salvar produto');
+            const d = (err as any)?.response?.data;
+            const detalhe = d?.message || d?.erro || d?.title || (typeof d === 'string' ? d : '') || (err as any)?.message;
+            toast.error(`Erro ao salvar produto${detalhe ? `. ${detalhe}` : ''}`);
         } finally {
             setLoading(false);
         }
