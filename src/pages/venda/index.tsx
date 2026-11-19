@@ -10,6 +10,8 @@ import { api } from "@/services/apiClient"
 import { AuthContext } from "@/contexts/AuthContext"
 import IVenda from "@/interfaces/IVenda"
 import IUsuario from "@/interfaces/IUsuario"
+import ICliente from "@/interfaces/ICliente"
+import Select from "react-select"
 import KRDTable, { KRDColumn } from "@/components/ui/KRDTable"
 import { InputGroup } from "@/components/ui/InputGroup"
 import CustomButton from "@/components/ui/Buttons"
@@ -25,7 +27,10 @@ type SearchProps = {
     dateFim: string
     movimentoCaixa: string
     status: number
+    clienteId: number
 }
+
+const nomeCliente = (v: IVenda) => v.cliente?.nome || v.nomeCliente || ""
 
 export default function Venda() {
     const { getUser } = useContext(AuthContext)
@@ -41,7 +46,9 @@ export default function Venda() {
         dateFim: format(endOfMonth(new Date()), "yyyy-MM-dd"),
         movimentoCaixa: "",
         status: 0,
+        clienteId: 0,
     })
+    const [clientes, setClientes] = useState<ICliente[]>([])
 
     const { innerWidth } = useWindowSize()
     const mobile = !!innerWidth && innerWidth < 600
@@ -53,6 +60,9 @@ export default function Venda() {
         if (!u) {
             u = await getUser()
             setUser(u)
+            api.get(`/Cliente/List?EmpresaId=${u.empresaSelecionada}&status=true`)
+                .then(({ data }: AxiosResponse<ICliente[]>) => setClientes(data))
+                .catch(() => { /* filtro de cliente fica sem opções */ })
         }
         const id = ++reqId.current
         setLoading(true)
@@ -82,9 +92,15 @@ export default function Venda() {
         const caixaId = fGetNumber(search.movimentoCaixa)
         if (caixaId > 0 && v.idMovimentoCaixa !== caixaId) return false
         if (search.status > 0 && v.statusVenda !== (search.status == 1)) return false
-        if (search.str && !searchHelper(search.str, `${v.idVenda} ${v.usuario?.nome || ""} ${v.estd ? "faturado" : "orcamento"}`)) return false
+        if (search.clienteId > 0 && (v.clienteId ?? v.cliente?.id) !== search.clienteId) return false
+        if (search.str && !searchHelper(search.str, `${v.idVenda} ${v.usuario?.nome || ""} ${nomeCliente(v)} ${v.estd ? "faturado" : "orcamento"}`)) return false
         return true
-    }), [vendas, search.movimentoCaixa, search.status, search.str])
+    }), [vendas, search.movimentoCaixa, search.status, search.str, search.clienteId])
+
+    const clienteOptions = useMemo(
+        () => clientes.map(c => ({ value: c.id, label: c.nome })),
+        [clientes]
+    )
 
     const totais = useMemo(() => {
         let total = 0, cancelado = 0, faturado = 0
@@ -105,6 +121,7 @@ export default function Venda() {
             { label: "Caixa", key: "caixa" },
             { label: "Data", key: "data" },
             { label: "Usuario", key: "usuario" },
+            { label: "Cliente", key: "cliente" },
             { label: "Tipo", key: "tipo" },
             { label: "Status", key: "status" },
             { label: "Valor", key: "valor" },
@@ -114,6 +131,7 @@ export default function Venda() {
             caixa: v.idMovimentoCaixa,
             data: format(new Date(v.dataVenda.toString()), "dd/MM/yyyy HH:mm"),
             usuario: v.usuario?.nome || "--",
+            cliente: nomeCliente(v) || "--",
             tipo: v.estd ? "FATURADO" : "ORCAMENTO",
             status: v.statusVenda ? "OK" : "CANCELADO",
             valor: v.valorTotal,
@@ -154,6 +172,11 @@ export default function Venda() {
         {
             name: "Usuário",
             selector: row => row.usuario?.nome || "--",
+            sortable: true,
+        },
+        {
+            name: "Cliente",
+            selector: row => nomeCliente(row) || "--",
             sortable: true,
         },
         {
@@ -214,6 +237,16 @@ export default function Venda() {
                     <SelectStatusVenda width="200px" selected={search.status}
                         setSelected={s => setSearch(prev => ({ ...prev, status: s }))} />
                 </div>
+                <div className={styles.filterControl} style={{ minWidth: 220 }}>
+                    <Select
+                        isClearable
+                        placeholder="Cliente..."
+                        options={clienteOptions}
+                        value={clienteOptions.find(o => o.value === search.clienteId) || null}
+                        onChange={o => setSearch(prev => ({ ...prev, clienteId: o?.value || 0 }))}
+                        noOptionsMessage={() => "Nenhum cliente encontrado"}
+                    />
+                </div>
                 <div className={styles.filterControl}>
                     <InputGroup type="number" title="Caixa" value={search.movimentoCaixa}
                         onChange={e => setSearch(prev => ({ ...prev, movimentoCaixa: e.target.value }))} />
@@ -250,6 +283,7 @@ export default function Venda() {
                                 <span>Valor<br /><b>{GetCurrencyBRL(v.valorTotal)}</b></span>
                                 <span>Caixa<br /><b>{v.idMovimentoCaixa}</b></span>
                                 <span>Usuário<br /><b>{v.usuario?.nome || "--"}</b></span>
+                                {nomeCliente(v) && <span>Cliente<br /><b>{nomeCliente(v)}</b></span>}
                                 <span>Tipo<br /><b>{v.estd ? "Faturado" : "Orçamento"}</b></span>
                             </div>
                         </div>

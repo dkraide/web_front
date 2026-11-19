@@ -10,6 +10,7 @@ import IProduto from '@/interfaces/IProduto';
 import { ExportToExcel, GetCurrencyBRL } from '@/utils/functions';
 import { useListaCrud } from '@/hooks/useListaCrud';
 import MultiSelect from '@/components/ui/MultiSelect';
+import SelectStatus from '@/components/Selects/SelectStatus';
 import { FINALIDADES_VISIVEIS, finalidadeKey, finalidadeLabel } from '@/utils/finalidade';
 
 const positivo = (n: number) => (n > 0 ? n : 0);
@@ -49,9 +50,12 @@ function exportarExcel(produtos: IProduto[]) {
 export default function Estoque() {
     const { list: todos, loading, reload, user } = useListaCrud<IProduto>('/Estoque/List');
     const [finalidades, setFinalidades] = useState<string[]>(FINALIDADES_VISIVEIS.map(f => f.value));
+    const [status, setStatus] = useState<boolean | undefined>(true);
     const list = useMemo(
-        () => todos.filter(p => finalidades.includes(finalidadeKey(p.finalidade))),
-        [todos, finalidades]
+        () => todos.filter(p =>
+            finalidades.includes(finalidadeKey(p.finalidade)) &&
+            (status === undefined || !!p.status === status)),
+        [todos, finalidades, status]
     );
 
     return (
@@ -72,6 +76,7 @@ export default function Estoque() {
                     selected={finalidades}
                     onChange={setFinalidades}
                 />
+                <SelectStatus allowAll width="160px" selected={status} setSelected={setStatus} />
                     <CustomButton typeButton={'dark'} onClick={() => exportarExcel(filtered)} style={{ marginBottom: 10 }}>Excel</CustomButton>
                 </>
             )}
