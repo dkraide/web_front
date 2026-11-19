@@ -98,7 +98,7 @@ export default function Venda() {
     }), [vendas, search.movimentoCaixa, search.status, search.str, search.clienteId])
 
     const clienteOptions = useMemo(
-        () => clientes.map(c => ({ value: c.id, label: c.nome })),
+        () => clientes.map(c => ({ value: c.id, label: c.razaoSocial && c.razaoSocial !== c.nome ? `${c.nome} - ${c.razaoSocial}` : c.nome })),
         [clientes]
     )
 
