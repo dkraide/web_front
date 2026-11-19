@@ -50,7 +50,7 @@ export default function SelectCliente({ignore, width, selected, setSelected }: s
            }
             let x = {
                 value: forma.id.toString(),
-                label: `${forma.nome}`
+                label: forma.razaoSocial && forma.razaoSocial !== forma.nome ? `${forma.nome} - ${forma.razaoSocial}` : `${forma.nome}`
             }
             data.push(x);
         });
