@@ -12,7 +12,7 @@ import AnuncioTef from '@/components/Modals/AnuncioTef';
 export default function App({ Component, pageProps }: AppProps) {
       const router = useRouter();
       // Paginas publicas (vitrine do setor, aberta pela tag NFC; tutoriais): sem login nem menu lateral.
-      if (router.pathname.startsWith('/vitrine') || router.pathname.startsWith('/tutoriais')) {
+      if (router.pathname.startsWith('/vitrine') || router.pathname.startsWith('/tutoriais') || router.pathname.startsWith('/suporte')) {
             return <Component {...pageProps} />;
       }
       return (
